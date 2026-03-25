@@ -1,11 +1,11 @@
-package pt.isel.project
+package pt.isel
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class ProjectApplication
+class JagozApplication
 
 fun main(args: Array<String>) {
-	runApplication<ProjectApplication>(*args)
+	runApplication<JagozApplication>(*args)
 }
