@@ -6,5 +6,5 @@ data class AthleteConsent(
     val privacyAccepted: Boolean,
     val comsAccepted: Boolean,
     val scholarInformationAccepted: Boolean,
-    val consentDate: String
+    val consentDate: String,
 )

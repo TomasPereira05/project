@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class JagozApplication
 
 fun main(args: Array<String>) {
-	runApplication<JagozApplication>(*args)
+    runApplication<JagozApplication>(*args)
 }
