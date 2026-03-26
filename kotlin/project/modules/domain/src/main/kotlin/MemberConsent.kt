@@ -2,7 +2,7 @@ package pt.isel
 
 import kotlinx.datetime.LocalDate
 
-data class MemberConsent (
+data class MemberConsent(
     val MemberConsentId: Long,
     val memberId: Long,
     val date: LocalDate,

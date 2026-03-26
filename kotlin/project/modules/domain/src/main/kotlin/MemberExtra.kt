@@ -1,6 +1,6 @@
 package pt.isel
 
-data class MemberExtra (
+data class MemberExtra(
     val id: Long,
     val memberId: Long,
     val monthlyQuota: Double,
