@@ -5,4 +5,5 @@ enum class SponsorshipStatus {
     APROVADO,
     PAGO,
     ATIVO,
+    CANCELADO,
 }
