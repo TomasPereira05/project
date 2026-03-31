@@ -1,4 +1,5 @@
--- Enumerados
+CREATE TYPE member_category AS ENUM ('SOCIO', 'ATLETA_SOCIO');
+CREATE TYPE member_status AS ENUM ('PENDENTE', 'ATIVO', 'INATIVO');
 
 CREATE TYPE sponsor_type AS ENUM ('PUB', 'TEAM', 'OTHER');
 
@@ -30,7 +31,53 @@ CREATE TYPE other_sport AS ENUM ('PATINAGEM', 'VOLEIBOL', 'FUTEBOL_PRAIA', 'GOLF
 
 CREATE TYPE sponsorship_status AS ENUM ('SUBMETIDO', 'APROVADO', 'PAGO', 'ATIVO');
 
--- Tabelas
+CREATE TABLE member (
+    member_id        SERIAL PRIMARY KEY,
+    member_number    INT UNIQUE,
+    complete_name    VARCHAR(255) NOT NULL,
+    birth_date       DATE NOT NULL,
+    email            VARCHAR(255) NOT NULL,
+    phone            VARCHAR(20) NOT NULL,
+    home_phone       VARCHAR(20),
+    address          VARCHAR(255) NOT NULL,
+    postal_code      VARCHAR(20) NOT NULL,
+    city             VARCHAR(255) NOT NULL,
+    category         member_category NOT NULL,
+    status           member_status NOT NULL DEFAULT 'PENDENTE',
+    monthly_quota    DOUBLE PRECISION NOT NULL,
+    billing_location VARCHAR(255),
+    registration_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    approval_date    DATE
+);
+
+CREATE TABLE athlete (
+    athlete_id       SERIAL PRIMARY KEY,
+    member_id        INT NOT NULL UNIQUE REFERENCES member(member_id) ON DELETE CASCADE,
+    nationality      VARCHAR(100) NOT NULL,
+    niss             VARCHAR(50) NOT NULL UNIQUE,
+    nif              VARCHAR(50) NOT NULL UNIQUE,
+    numero_utente    VARCHAR(50) NOT NULL UNIQUE,
+    bi               VARCHAR(50) NOT NULL UNIQUE,
+    bi_expiration_date DATE NOT NULL,
+    school           VARCHAR(255),
+    school_year      VARCHAR(50),
+    school_class     VARCHAR(50),
+    last_club        VARCHAR(255),
+    season           VARCHAR(50),
+    has_family_in_club BOOLEAN NOT NULL,
+    team_category    team_category NOT NULL,
+    active           BOOLEAN NOT NULL DEFAULT true
+);
+
+CREATE TABLE guardian (
+    guardian_id SERIAL PRIMARY KEY,
+    athlete_id  INT NOT NULL REFERENCES athlete(athlete_id) ON DELETE CASCADE,
+    name        VARCHAR(255) NOT NULL,
+    kinship     VARCHAR(50) NOT NULL,
+    email       VARCHAR(255) NOT NULL,
+    phone       VARCHAR(20) NOT NULL,
+    work        VARCHAR(255)
+);
 
 CREATE TABLE sponsor (
     sponsor_id  SERIAL PRIMARY KEY,
@@ -40,25 +87,20 @@ CREATE TABLE sponsor (
     nif         VARCHAR(9)   NOT NULL UNIQUE
 );
 
-CREATE TABLE sponsorship_package (
-    sponsorship_package_id SERIAL PRIMARY KEY,
-    type                   sponsor_type        NOT NULL,
-    price                  DOUBLE PRECISION    NOT NULL,
-    pub_option             pub_option,
-    team_category          team_category,
-    placement              equipment_placement,
-    sport                  other_sport
-);
-
 CREATE TABLE sponsorship (
     sponsorship_id SERIAL PRIMARY KEY,
-    sponsor_id     INT                NOT NULL REFERENCES sponsor(sponsor_id),
+    sponsor_id     INT                NOT NULL REFERENCES sponsor(sponsor_id) ON DELETE CASCADE,
     season         VARCHAR(9)         NOT NULL,
-    status         sponsorship_status NOT NULL DEFAULT 'SUBMETIDO'
-);
-
-CREATE TABLE sponsorship_package_selection (
-    sponsorship_id         INT NOT NULL REFERENCES sponsorship(sponsorship_id),
-    sponsorship_package_id INT NOT NULL REFERENCES sponsorship_package(sponsorship_package_id),
-    PRIMARY KEY (sponsorship_id, sponsorship_package_id)
+    status         sponsorship_status NOT NULL DEFAULT 'SUBMETIDO',
+    type           sponsor_type       NOT NULL,
+    price          DOUBLE PRECISION   NOT NULL,
+    pub_option     pub_option,
+    team_category  team_category,
+    placement      equipment_placement,
+    sport          other_sport,
+    CONSTRAINT chk_sponsorship_type CHECK (
+        (type = 'PUB' AND pub_option IS NOT NULL AND team_category IS NULL AND placement IS NULL AND sport IS NULL) OR
+        (type = 'TEAM' AND team_category IS NOT NULL AND placement IS NOT NULL AND pub_option IS NULL AND sport IS NULL) OR
+        (type = 'OTHER' AND sport IS NOT NULL AND pub_option IS NULL AND team_category IS NULL AND placement IS NULL)
+    )
 );

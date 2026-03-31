@@ -7,10 +7,10 @@ package pt.isel
  */
 data class Sponsorship(
     val sponsorshipId: Long,
-    val sponsorId: Long,               // FK → Sponsor
-    val season: String,                // Época (ex: "2025/2026")
+    val sponsorId: Long, // FK → Sponsor
+    val season: String, // Época (ex: "2025/2026")
     val status: SponsorshipStatus,
-    val type: SponsorType,             // PUB, TEAM, ou OTHER
+    val type: SponsorType, // PUB, TEAM, ou OTHER
     val price: Double,
     // Campos específicos por tipo (só um grupo é preenchido conforme o type)
     val pubOption: PubOption? = null,
