@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="279d893e-afff-4343-9414-4662db9150ad" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/host/src/main/kotlin/JagozApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/host/src/main/kotlin/JagozApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/http/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/http/src/main/kotlin/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/repository/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/repository/src/main/kotlin/Main.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/services/src/main/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/services/src/main/kotlin/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Member.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Member.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberConsent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberConsent.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,9 +81,10 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;database&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/tomas/Desktop/Universidade/5 Ano/10 Semestre/project&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.ktlint-plugin&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -149,6 +147,7 @@
       <workItem from="1774453576497" duration="1054000" />
       <workItem from="1774479787785" duration="239000" />
       <workItem from="1774544149912" duration="615000" />
+      <workItem from="1774636338616" duration="2337000" />
     </task>
     <servers />
   </component>
