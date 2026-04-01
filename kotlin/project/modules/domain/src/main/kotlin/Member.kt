@@ -14,6 +14,7 @@ data class Member(
     val postalCode: String,
     val city: String,
     val category: MemberCategory, // SOCIO ou ATLETA_SOCIO
+    val formerMember: Boolean,
     val status: MemberStatus, // PENDENTE, ATIVO, INATIVO
     val monthlyQuota: Double, // Mínimo 1.5€ (0.0 para atletas ativos)
     val billingLocation: String?, // Local de cobrança

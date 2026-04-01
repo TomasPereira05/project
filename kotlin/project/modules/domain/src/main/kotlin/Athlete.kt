@@ -16,7 +16,6 @@ data class Athlete(
     val schoolClass: String?,
     val lastClub: String?,
     val season: String?, // Época desportiva (ex: "2025/2026")
-    val hasFamilyInClub: Boolean,
     val teamCategory: TeamCategory, // Escalão em que joga
     val active: Boolean = true, // Se ainda é atleta ativo do clube
 )
