@@ -29,7 +29,7 @@ CREATE TYPE equipment_placement AS ENUM ('FRENTE', 'COSTAS', 'MANGA', 'CALCAO');
 
 CREATE TYPE other_sport AS ENUM ('PATINAGEM', 'VOLEIBOL', 'FUTEBOL_PRAIA', 'GOLF');
 
-CREATE TYPE sponsorship_status AS ENUM ('SUBMETIDO', 'APROVADO', 'PAGO', 'ATIVO');
+CREATE TYPE sponsorship_status AS ENUM ('SUBMETIDO', 'APROVADO', 'PAGO', 'ATIVO', 'CANCELADO');
 
 CREATE TABLE member (
     member_id        SERIAL PRIMARY KEY,
@@ -44,6 +44,7 @@ CREATE TABLE member (
     city             VARCHAR(255) NOT NULL,
     category         member_category NOT NULL,
     status           member_status NOT NULL DEFAULT 'PENDENTE',
+    former_member    BOOLEAN NOT NULL,
     monthly_quota    DOUBLE PRECISION NOT NULL,
     billing_location VARCHAR(255),
     registration_date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -64,7 +65,6 @@ CREATE TABLE athlete (
     school_class     VARCHAR(50),
     last_club        VARCHAR(255),
     season           VARCHAR(50),
-    has_family_in_club BOOLEAN NOT NULL,
     team_category    team_category NOT NULL,
     active           BOOLEAN NOT NULL DEFAULT true
 );
@@ -76,7 +76,8 @@ CREATE TABLE guardian (
     kinship     VARCHAR(50) NOT NULL,
     email       VARCHAR(255) NOT NULL,
     phone       VARCHAR(20) NOT NULL,
-    work        VARCHAR(255)
+    work        VARCHAR(255),
+    has_family_in_club BOOLEAN NOT NULL
 );
 
 CREATE TABLE sponsor (
