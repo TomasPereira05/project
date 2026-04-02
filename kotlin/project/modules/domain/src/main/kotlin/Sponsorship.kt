@@ -12,7 +12,7 @@ data class Sponsorship(
     val status: SponsorshipStatus,
     val type: SponsorType, // PUB, TEAM, ou OTHER
     val price: Double,
-    // Campos específicos por tipo (só um grupo é preenchido conforme o type)
+    // Só é preenchida 1 das 3 propriedades, conforme o tipo de contrato
     val pubOption: PubOption? = null,
     val teamCategory: TeamCategory? = null,
     val placement: EquipmentPlacement? = null,

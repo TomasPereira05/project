@@ -1,5 +1,5 @@
 CREATE TYPE member_category AS ENUM ('SOCIO', 'ATLETA_SOCIO');
-CREATE TYPE member_status AS ENUM ('PENDENTE', 'ATIVO', 'INATIVO');
+CREATE TYPE member_status AS ENUM ('PENDENTE', 'ATIVO', 'INATIVO', 'REJEITADO');
 
 CREATE TYPE sponsor_type AS ENUM ('PUB', 'TEAM', 'OTHER');
 
