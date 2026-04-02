@@ -6,4 +6,5 @@ data class User(
     val username: String,
     val passwordHash: String,
     val role: Role,
+    val activeMemberId: Long? = null // pode associar a sua conta a um sócio e trocar quando quiser
 )
