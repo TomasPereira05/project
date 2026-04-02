@@ -6,12 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="279d893e-afff-4343-9414-4662db9150ad" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Athlete.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Athlete.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Guardian.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Guardian.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Member.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Member.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberConsent.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberConsent.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberStatus.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberStatus.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Quota.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Charge.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Ticket.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Ticket.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/User.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/sql/JagozSchema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/sql/JagozSchema.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/repository/src/main/kotlin/Main.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,7 +174,7 @@
       <workItem from="1774544149912" duration="615000" />
       <workItem from="1774636338616" duration="2337000" />
       <workItem from="1775037271325" duration="94000" />
-      <workItem from="1775037402623" duration="2782000" />
+      <workItem from="1775037402623" duration="7956000" />
     </task>
     <servers />
   </component>
