@@ -26,4 +26,6 @@ data class Member(
     val billingLocation: String?, // Local de cobrança
     val registrationDate: LocalDate,
     val approvalDate: LocalDate? = null, // Aprovação pelos diretores (null = pendente)
+    val privacyAccepted: Boolean,
+    val comsAccepted: Boolean,
 )
