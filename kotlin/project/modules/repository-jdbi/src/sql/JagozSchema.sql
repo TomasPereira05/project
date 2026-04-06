@@ -48,8 +48,12 @@ CREATE TABLE member (
     monthly_quota    DOUBLE PRECISION NOT NULL,
     billing_location VARCHAR(255),
     registration_date DATE NOT NULL DEFAULT CURRENT_DATE,
-    approval_date    DATE
+    approval_date    DATE,
+    privacy_accepted BOOLEAN NOT NULL,
+    coms_accepted    BOOLEAN NOT NULL
 );
+
+
 
 CREATE TABLE athlete (
     athlete_id       SERIAL PRIMARY KEY,
@@ -72,6 +76,7 @@ CREATE TABLE athlete (
 CREATE TABLE guardian (
     guardian_id SERIAL PRIMARY KEY,
     athlete_id  INT NOT NULL REFERENCES athlete(athlete_id) ON DELETE CASCADE,
+    member_id   INT REFERENCES member(member_id) ON DELETE SET NULL,
     name        VARCHAR(255) NOT NULL,
     kinship     VARCHAR(50) NOT NULL,
     email       VARCHAR(255) NOT NULL,
@@ -104,4 +109,73 @@ CREATE TABLE sponsorship (
         (type = 'TEAM' AND team_category IS NOT NULL AND placement IS NOT NULL AND pub_option IS NULL AND sport IS NULL) OR
         (type = 'OTHER' AND sport IS NOT NULL AND pub_option IS NULL AND team_category IS NULL AND placement IS NULL)
     )
+);
+
+CREATE TYPE user_role AS ENUM ('ADMIN', 'SECRETARIA', 'NORMAL');
+CREATE TYPE charge_type AS ENUM ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE', 'SPONSORSHIP_FEE');
+CREATE TYPE charge_status AS ENUM ('PAID', 'PENDING', 'CANCELLED');
+CREATE TYPE payment_status AS ENUM ('PENDING', 'PAID', 'FAILED');
+
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(255) UNIQUE NOT NULL,
+    password_validation VARCHAR(255) NOT NULL,
+    role user_role NOT NULL,
+    active_member_id INT REFERENCES member(member_id) ON DELETE SET NULL
+);
+
+CREATE TABLE user_token (
+    token_validation VARCHAR(255) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    created_at TIMESTAMP NOT NULL,
+    last_used_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE event (
+    event_id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    date DATE NOT NULL,
+    location VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE ticket (
+    ticket_id SERIAL PRIMARY KEY,
+    member_id INT REFERENCES member(member_id) ON DELETE SET NULL,
+    buyer_email VARCHAR(255) NOT NULL,
+    buyer_name VARCHAR(255) NOT NULL,
+    event_id INT NOT NULL REFERENCES event(event_id) ON DELETE CASCADE,
+    price DOUBLE PRECISION NOT NULL,
+    qr_code VARCHAR(255) UNIQUE NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT false,
+    used_at TIMESTAMP
+);
+
+CREATE TABLE charge (
+    charge_id SERIAL PRIMARY KEY,
+    type charge_type NOT NULL,
+    member_id INT REFERENCES member(member_id) ON DELETE CASCADE,
+    sponsorship_id INT REFERENCES sponsorship(sponsorship_id) ON DELETE CASCADE,
+    value DOUBLE PRECISION NOT NULL,
+    status charge_status NOT NULL DEFAULT 'PENDING',
+    season VARCHAR(50),
+    month INT,
+    created_at DATE NOT NULL,
+    paid_at DATE,
+    CONSTRAINT chk_charge_target CHECK (
+        (type IN ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE') AND member_id IS NOT NULL) OR
+        (type = 'SPONSORSHIP_FEE' AND sponsorship_id IS NOT NULL)
+    )
+);
+
+CREATE TABLE payment (
+    payment_id SERIAL PRIMARY KEY,
+    charge_id INT NOT NULL REFERENCES charge(charge_id) ON DELETE CASCADE,
+    amount DOUBLE PRECISION NOT NULL,
+    provider VARCHAR(50) NOT NULL,
+    provider_ref VARCHAR(255),
+    status payment_status NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP NOT NULL,
+    confirmed_at TIMESTAMP
 );
