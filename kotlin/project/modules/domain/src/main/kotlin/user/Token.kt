@@ -1,7 +1,6 @@
 package pt.isel.user
 
 import kotlinx.datetime.Instant
-import pt.isel.user.TokenValidationInfo
 
 /**
  * Represents an authentication token.

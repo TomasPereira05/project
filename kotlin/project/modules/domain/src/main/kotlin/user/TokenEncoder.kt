@@ -1,7 +1,5 @@
 package pt.isel.user
 
-import pt.isel.user.TokenValidationInfo
-
 /**
  * Interface for encoding tokens into validation information.
  */

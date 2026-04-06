@@ -1,7 +1,5 @@
 package pt.isel.user
 
-import pt.isel.user.TokenEncoder
-import pt.isel.user.TokenValidationInfo
 import java.security.MessageDigest
 import java.util.Base64
 

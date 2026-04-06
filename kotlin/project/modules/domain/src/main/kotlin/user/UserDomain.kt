@@ -81,8 +81,8 @@ class UserDomain(
     ): Boolean {
         val now = clock.now()
         return token.createdAt <= now &&
-                (now - token.createdAt) <= config.tokenTtl &&
-                (now - token.lastUsedAt) <= config.tokenRollingTtl
+            (now - token.createdAt) <= config.tokenTtl &&
+            (now - token.lastUsedAt) <= config.tokenRollingTtl
     }
 
     /**
@@ -107,7 +107,6 @@ class UserDomain(
         val (_, tokenValue) = createToken(user.userId)
         return AuthenticatedUser(user, tokenValue)
     }
-
 
     /**
      * Creates validation information for a token string.
@@ -158,5 +157,4 @@ class UserDomain(
      * @return True if the password is safe (at least 8 chars, contains digit and letter).
      */
     fun isSafePassword(password: String): Boolean = password.length >= 8 && password.any { it.isDigit() } && password.any { it.isLetter() }
-
 }

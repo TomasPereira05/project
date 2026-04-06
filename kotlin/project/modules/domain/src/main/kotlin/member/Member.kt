@@ -1,8 +1,6 @@
 package pt.isel.member
 
 import kotlinx.datetime.LocalDate
-import pt.isel.member.MemberCategory
-import pt.isel.member.MemberStatus
 
 data class Member(
     val memberId: Long,

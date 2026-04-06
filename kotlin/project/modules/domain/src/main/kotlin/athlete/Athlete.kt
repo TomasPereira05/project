@@ -1,4 +1,4 @@
-package athlete
+package pt.isel.athlete
 
 import kotlinx.datetime.LocalDate
 import pt.isel.sponsor.TeamCategory
