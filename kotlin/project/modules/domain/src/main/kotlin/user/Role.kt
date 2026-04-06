@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.user
 
 enum class Role {
     ADMIN,

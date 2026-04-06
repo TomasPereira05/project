@@ -1,4 +1,6 @@
-package pt.isel
+package pt.isel.sponsor
+
+import pt.isel.sponsor.EquipmentPlacement
 
 /**
  * Representa um contrato de patrocínio individual.

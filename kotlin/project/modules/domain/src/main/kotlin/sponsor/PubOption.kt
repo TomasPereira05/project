@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.sponsor
 
 enum class PubOption {
     LONA_3X0_8,

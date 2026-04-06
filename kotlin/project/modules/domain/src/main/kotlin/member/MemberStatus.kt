@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.member
 
 enum class MemberStatus {
     PENDENTE, // Aguarda aprovação dos diretores

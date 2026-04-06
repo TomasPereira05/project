@@ -1,6 +1,4 @@
-package pt.isel
-
-// Perguntar se existem mais categorias e se existem diferenças de patrocinios entre elas(ex: benjamins 10 e 9, jun e juv,..)
+package pt.isel.sponsor
 
 enum class TeamCategory {
     // Seniores / Veteranos

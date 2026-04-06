@@ -1,6 +1,4 @@
-package pt.isel
-
-import kotlinx.datetime.LocalDate
+package pt.isel.member
 
 data class MemberConsent(
     val memberConsentId: Long,

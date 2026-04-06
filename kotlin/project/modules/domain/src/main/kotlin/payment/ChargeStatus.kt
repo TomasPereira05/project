@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.payment
 
 enum class ChargeStatus {
     PAID,

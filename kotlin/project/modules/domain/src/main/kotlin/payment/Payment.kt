@@ -1,6 +1,7 @@
-package pt.isel
+package pt.isel.payment
 
 import kotlinx.datetime.LocalDateTime
+import pt.isel.payment.PaymentStatus
 
 data class Payment(
     val paymentId: Long,

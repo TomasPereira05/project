@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.member
 
 enum class MemberCategory {
     SOCIO, // Sócio normal (paga quotas)

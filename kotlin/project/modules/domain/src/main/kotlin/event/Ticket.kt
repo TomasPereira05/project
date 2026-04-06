@@ -1,4 +1,4 @@
-package pt.isel
+package event
 
 import kotlinx.datetime.LocalDateTime
 import java.util.UUID

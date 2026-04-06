@@ -1,4 +1,4 @@
-package pt.isel
+package athlete
 
 data class Guardian(
     val guardianId: Long,
