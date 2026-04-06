@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.event
 
 import kotlinx.datetime.LocalDate
 

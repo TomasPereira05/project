@@ -1,7 +1,7 @@
-package pt.isel
+package pt.isel.payment
 
 enum class PaymentStatus {
     PENDING,
     PAID,
-    FAILED
+    FAILED,
 }

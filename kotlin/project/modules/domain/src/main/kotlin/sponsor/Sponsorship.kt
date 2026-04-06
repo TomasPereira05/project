@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.sponsor
 
 /**
  * Representa um contrato de patrocínio individual.

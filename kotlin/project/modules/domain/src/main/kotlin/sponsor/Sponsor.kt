@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.sponsor
 
 data class Sponsor(
     val sponsorId: Long,

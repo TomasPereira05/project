@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.sponsor
 
 enum class SponsorshipStatus {
     SUBMETIDO,
