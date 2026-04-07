@@ -7,6 +7,8 @@ data class Athlete(
     val athleteId: Long,
     val memberId: Long, // FK → Member (todo atleta é sócio)
     val nationality: String,
+    val birthplace: String,
+    // dado que todo atleta é socio precisamos de data de nascimento, email, telemovel aqui?
     val niss: String, // Número de Identificação da Segurança Social
     val nif: String, // Número de Identificação Fiscal
     val numeroUtente: String, // Número de Utente da Saúde

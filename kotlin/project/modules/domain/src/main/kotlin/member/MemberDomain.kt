@@ -1,6 +1,7 @@
 package pt.isel.member
 
 import kotlinx.datetime.LocalDate
+import org.springframework.stereotype.Component
 import pt.isel.utils.Either
 import pt.isel.utils.failure
 import pt.isel.utils.success
@@ -37,7 +38,8 @@ sealed class MemberError {
  * Implemented as pure functions returning [Either]<[MemberError], [Member]> so callers
  * can handle failures explicitly.
  */
-object MemberDomain {
+@Component
+class MemberDomain {
     /**
      * Approve a pending member application.
      *

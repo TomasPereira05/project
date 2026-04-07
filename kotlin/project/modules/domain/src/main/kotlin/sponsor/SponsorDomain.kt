@@ -1,8 +1,9 @@
 package pt.isel.sponsor
 
+import org.springframework.stereotype.Component
+import pt.isel.utils.Either
 import pt.isel.utils.failure
 import pt.isel.utils.success
-import pt.isel.utils.Either
 
 /**
  * Errors produced by sponsor domain operations.
@@ -32,8 +33,8 @@ sealed class SponsorError {
  * Domain functions to operate on `Sponsor` and `Sponsorship` entities.
  * Pure functions that return [Either] with [SponsorError] on failure.
  */
-object SponsorDomain {
-
+@Component
+class SponsorDomain {
     /**
      * Update sponsor contact information.
      *
@@ -55,7 +56,13 @@ object SponsorDomain {
      * @param nif new tax identification number
      * @return Either a [SponsorError] or the updated [Sponsor]
      */
-    fun updateContact(sponsor: Sponsor, name: String, email: String, phone: String, nif: String): Either<SponsorError, Sponsor> {
+    fun updateContact(
+        sponsor: Sponsor,
+        name: String,
+        email: String,
+        phone: String,
+        nif: String,
+    ): Either<SponsorError, Sponsor> {
         if (name.isBlank()) return failure(SponsorError.ValidationError("name cannot be blank"))
         if (email.isBlank() || !email.contains("@")) return failure(SponsorError.ValidationError("invalid email"))
         if (phone.isBlank()) return failure(SponsorError.ValidationError("phone cannot be empty"))
@@ -161,7 +168,10 @@ object SponsorDomain {
      * @param newPlacement the new equipment placement
      * @return Either a [SponsorError] or the updated [Sponsorship]
      */
-    fun changePlacement(s: Sponsorship, newPlacement: EquipmentPlacement): Either<SponsorError, Sponsorship> {
+    fun changePlacement(
+        s: Sponsorship,
+        newPlacement: EquipmentPlacement,
+    ): Either<SponsorError, Sponsorship> {
         if (s.type != SponsorType.TEAM) return failure(SponsorError.ValidationError("placement only valid for TEAM sponsorships"))
         if (s.status == SponsorshipStatus.CANCELADO) return failure(SponsorError.InvalidTransition(s.status, "changePlacement"))
         return success(s.copy(placement = newPlacement))
@@ -186,7 +196,12 @@ object SponsorDomain {
         if (s.price < 0.0) return failure(SponsorError.ValidationError("price cannot be negative"))
         when (s.type) {
             SponsorType.PUB -> if (s.pubOption == null) return failure(SponsorError.ValidationError("pubOption required for PUB type"))
-            SponsorType.TEAM -> if (s.teamCategory == null || s.placement == null) return failure(SponsorError.ValidationError("teamCategory and placement required for TEAM type"))
+            SponsorType.TEAM ->
+                if (s.teamCategory == null || s.placement == null) {
+                    return failure(
+                        SponsorError.ValidationError("teamCategory and placement required for TEAM type"),
+                    )
+                }
             SponsorType.OTHER -> if (s.sport == null) return failure(SponsorError.ValidationError("sport required for OTHER type"))
         }
         return success(s)
@@ -197,7 +212,3 @@ object SponsorDomain {
      */
     fun isActive(s: Sponsorship): Boolean = s.status == SponsorshipStatus.ATIVO
 }
-
-
-
-
