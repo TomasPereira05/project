@@ -7,7 +7,6 @@ import pt.isel.user.TokenValidationInfo
 import pt.isel.user.User
 
 interface UserRepository {
-
     fun save(user: User): Long
 
     fun updatePassword(
@@ -23,7 +22,7 @@ interface UserRepository {
 
     fun update(user: User)
 
-    //Gestão dos maxTokens talvez possa ser feita no domain ou no service, não aqui
+    // Gestão dos maxTokens talvez possa ser feita no domain ou no service, não aqui
     fun createToken(token: Token)
 
     fun getTokenByValidation(validation: TokenValidationInfo): Pair<User, Token>?

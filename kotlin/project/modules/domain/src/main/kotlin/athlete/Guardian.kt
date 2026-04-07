@@ -2,12 +2,17 @@ package pt.isel.athlete
 
 data class Guardian(
     val guardianId: Long,
-    val athleteId: Long, // Aponta para o Atleta (Menor)
-    val memberId: Long?, // Caso o encarregado de educação seja socio
+    // Aponta para o Atleta (Menor)
+    val athleteId: Long,
+    // Caso o encarregado de educação seja socio
+    val memberId: Long?,
     val name: String,
-    val kinship: String, // Grau de Parentesco (Pai, Mãe, etc.)
+    val role: GuardianRole,
+    // Grau de Parentesco (Pai, Mãe, etc.)
+    val kinship: String,
     val email: String,
     val phone: String,
     val work: String,
+    val isPrimary: Boolean = false,
     val hasFamilyInClub: Boolean,
 )
