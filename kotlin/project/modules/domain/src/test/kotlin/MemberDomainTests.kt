@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.fail
 
-class MemberTests {
+class MemberDomainTests {
     private fun sampleMember(
         status: MemberStatus = MemberStatus.PENDENTE,
         category: MemberCategory = MemberCategory.SOCIO,
@@ -31,6 +31,7 @@ class MemberTests {
         billingLocation = null,
         registrationDate = registrationDate,
         approvalDate = null,
+
     )
 
     @Test
