@@ -10,7 +10,8 @@ import kotlinx.datetime.LocalDate
  */
 data class Member(
     val memberId: Long,
-    val memberNumber: Int, // Número sequencial único (1, 2, 3...)
+    // Número sequencial único (1, 2, 3...)
+    val memberNumber: Int,
     val completeName: String,
     val birthDate: LocalDate,
     val email: String,
@@ -19,13 +20,18 @@ data class Member(
     val address: String,
     val postalCode: String,
     val city: String,
-    val category: MemberCategory, // SOCIO ou ATLETA_SOCIO
+    // SOCIO ou ATLETA_SOCIO
+    val category: MemberCategory,
     val formerMember: Boolean,
-    val status: MemberStatus, // PENDENTE, ATIVO, INATIVO, REJEITADO
-    val monthlyQuota: Double, // Mínimo 1.5€ (0.0 para atletas ativos)
-    val billingLocation: String?, // Local de cobrança
+    // PENDENTE, ATIVO, INATIVO, REJEITADO
+    val status: MemberStatus,
+    // Mínimo 1.5€ (0.0 para atletas ativos)
+    val monthlyQuota: Double,
+    // Local de cobrança
+    val billingLocation: String?,
     val registrationDate: LocalDate,
-    val approvalDate: LocalDate? = null, // Aprovação pelos diretores (null = pendente)
+    // Aprovação pelos diretores (null = pendente)
+    val approvalDate: LocalDate? = null,
     val privacyAccepted: Boolean = false,
     val comsAccepted: Boolean = false,
 )

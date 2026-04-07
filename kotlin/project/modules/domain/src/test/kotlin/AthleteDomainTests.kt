@@ -23,13 +23,13 @@ class AthleteDomainTests {
         email = "athlete@mail.com",
         phone = "912000111",
         postalCode = "1000-100",
-        adress = "Rua Antiga 1",
+        address = "Rua Antiga 1",
         city = "Lisboa",
         state = "PT",
-        niss = "987654321",
+        niss = "98765432123",
         nif = "123456789",
         numeroUtente = "111222333",
-        bi = "AA123456",
+        bi = "12345678",
         biExpirationDate = LocalDate.parse("2030-01-01"),
         school = "Escola X",
         schoolYear = "10",
@@ -44,13 +44,14 @@ class AthleteDomainTests {
     fun validateForCreation_success_and_failures() {
         val a = sampleAthlete()
         val ok = domain.validateForCreation(a)
+        print(ok)
         assertTrue(ok is Either.Right)
 
         val badNif = a.copy(nif = "")
         val r1 = domain.validateForCreation(badNif)
         assertTrue(r1 is Either.Left)
 
-        val badDate = a.copy(biExpirationDate = LocalDate.Companion.parse("1990-01-01"))
+        val badDate = a.copy(biExpirationDate = LocalDate.parse("1990-01-01"))
         val r2 = domain.validateForCreation(badDate)
         assertTrue(r2 is Either.Left)
     }

@@ -2,6 +2,9 @@ package pt.isel.sponsor
 
 import org.springframework.stereotype.Component
 import pt.isel.utils.Either
+import pt.isel.utils.ValidationError
+import pt.isel.utils.ValidationPatterns
+import pt.isel.utils.ValidationUtils
 import pt.isel.utils.failure
 import pt.isel.utils.success
 
@@ -63,10 +66,22 @@ class SponsorDomain {
         phone: String,
         nif: String,
     ): Either<SponsorError, Sponsor> {
-        if (name.isBlank()) return failure(SponsorError.ValidationError("name cannot be blank"))
-        if (email.isBlank() || !email.contains("@")) return failure(SponsorError.ValidationError("invalid email"))
-        if (phone.isBlank()) return failure(SponsorError.ValidationError("phone cannot be empty"))
-        if (nif.isBlank()) return failure(SponsorError.ValidationError("nif cannot be empty"))
+        fun mapErr(err: pt.isel.utils.ValidationError?): SponsorError.ValidationError? {
+            if (err == null) return null
+            return when (err) {
+                is pt.isel.utils.ValidationError.FieldError -> SponsorError.ValidationError("${err.field} ${err.message}")
+                is pt.isel.utils.ValidationError.GlobalError -> SponsorError.ValidationError(err.message)
+            }
+        }
+
+        mapErr(ValidationUtils.requireNotBlank(name, "name"))?.let { return failure(it) }
+        mapErr(ValidationUtils.requireNotBlank(email, "email"))?.let { return failure(it) }
+        mapErr(
+            ValidationUtils.requireRegex(email, ValidationPatterns.EMAIL, "email", "must be a valid address"),
+        )?.let { return failure(it) }
+        mapErr(ValidationUtils.requireNotBlank(phone, "phone"))?.let { return failure(it) }
+        mapErr(ValidationUtils.requireNotBlank(nif, "nif"))?.let { return failure(it) }
+
         return success(sponsor.copy(name = name, email = email, phone = phone, nif = nif))
     }
 
@@ -178,32 +193,43 @@ class SponsorDomain {
     }
 
     /**
-     * Validate a sponsorship before persisting or processing it.
+     * Validate a [Sponsorship] before creation.
      *
-     * Checks performed:
-     * - season is not blank
-     * - price is not negative
-     * - required fields for the specific sponsorship type are present
-     *
-     * Errors:
-     * - Returns [SponsorError.ValidationError] when a check fails.
-     *
-     * @param s the sponsorship to validate
-     * @return Either a [SponsorError] or the validated [Sponsorship]
+     * Performs basic checks: non-blank season, non-negative price and type-specific
+     * required fields. Returns the first [ValidationError] encountered or the
+     * validated [Sponsorship] on success.
      */
-    fun validateForCreation(s: Sponsorship): Either<SponsorError, Sponsorship> {
-        if (s.season.isBlank()) return failure(SponsorError.ValidationError("season cannot be blank"))
-        if (s.price < 0.0) return failure(SponsorError.ValidationError("price cannot be negative"))
+    fun validateForCreation(s: Sponsorship): Either<ValidationError, Sponsorship> {
+        ValidationUtils.requireNotBlank(s.season, "season")?.let { return failure(it) }
+
+        ValidationUtils.requireCondition(
+            s.price >= 0.0,
+            "price",
+            "cannot be negative",
+        )?.let { return failure(it) }
+
         when (s.type) {
-            SponsorType.PUB -> if (s.pubOption == null) return failure(SponsorError.ValidationError("pubOption required for PUB type"))
-            SponsorType.TEAM ->
+            SponsorType.PUB -> {
+                if (s.pubOption == null) {
+                    return failure(ValidationError.FieldError("pubOption", "required for PUB type"))
+                }
+            }
+
+            SponsorType.TEAM -> {
                 if (s.teamCategory == null || s.placement == null) {
                     return failure(
-                        SponsorError.ValidationError("teamCategory and placement required for TEAM type"),
+                        ValidationError.GlobalError("teamCategory and placement required for TEAM type"),
                     )
                 }
-            SponsorType.OTHER -> if (s.sport == null) return failure(SponsorError.ValidationError("sport required for OTHER type"))
+            }
+
+            SponsorType.OTHER -> {
+                if (s.sport == null) {
+                    return failure(ValidationError.FieldError("sport", "required for OTHER type"))
+                }
+            }
         }
+
         return success(s)
     }
 

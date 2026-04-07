@@ -10,7 +10,8 @@ data class Ticket(
     val buyerName: String,
     val eventId: Long,
     val price: Double,
-    val qrCode: String = UUID.randomUUID().toString(), // Gerar o código no Service ou aqui?
+    // Gerar o código no Service ou aqui?
+    val qrCode: String = UUID.randomUUID().toString(),
     val used: Boolean = false,
     val usedAt: LocalDateTime? = null,
 )

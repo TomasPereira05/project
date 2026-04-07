@@ -3,6 +3,9 @@ package pt.isel.member
 import kotlinx.datetime.LocalDate
 import org.springframework.stereotype.Component
 import pt.isel.utils.Either
+import pt.isel.utils.ValidationError
+import pt.isel.utils.ValidationPatterns
+import pt.isel.utils.ValidationUtils
 import pt.isel.utils.failure
 import pt.isel.utils.success
 
@@ -259,22 +262,72 @@ class MemberDomain {
         }
 
     /**
-     * Perform basic validation for creating a member record.
+     * Validate a [Member] before creation.
      *
-     * Checks performed:
-     * - Name is not blank
-     * - Email contains '@'
-     * - Monthly quota is not negative
-     * - Registration date is a plausible date
-     *
-     * @param member the member to validate
-     * @return Either a [MemberError] or the validated [Member]
+     * The function delegates checks to smaller helpers for presence, condition and
+     * regex-based validation. Returns the first encountered [ValidationError]
+     * wrapped in [Either.Left], or the original member on success.
      */
-    fun validateForCreation(member: Member): Either<MemberError, Member> {
-        if (member.completeName.isBlank()) return failure(MemberError.ValidationError("name cannot be blank"))
-        if (member.email.isBlank() || !member.email.contains("@")) return failure(MemberError.ValidationError("invalid email"))
-        if (member.monthlyQuota < 0.0) return failure(MemberError.ValidationError("monthlyQuota cannot be negative"))
-        if (member.registrationDate > LocalDate.parse("9999-12-31")) return failure(MemberError.ValidationError("registrationDate invalid"))
+    fun validateForCreation(member: Member): Either<ValidationError, Member> {
+        requireNotBlackInMember(member)?.let { return failure(it) }
+        requireConditionInMember(member)?.let { return failure(it) }
+        requireRegexInMember(member)?.let { return failure(it) }
         return success(member)
+    }
+
+    /**
+     * Helper that ensures required (non-blank) member fields are present.
+     *
+     * Returns a [ValidationError] for the first blank field found, or null when
+     * all required fields are present.
+     */
+    private fun requireNotBlackInMember(member: Member): ValidationError? {
+        ValidationUtils.requireNotBlank(member.completeName, "completeName")?.let { return it }
+        ValidationUtils.requireNotBlank(member.email, "email")?.let { return it }
+        ValidationUtils.requireNotBlank(member.phone, "phone")?.let { return it }
+        ValidationUtils.requireNotBlank(member.address, "address")?.let { return it }
+        ValidationUtils.requireNotBlank(member.postalCode, "postalCode")?.let { return it }
+        ValidationUtils.requireNotBlank(member.city, "city")?.let { return it }
+        return null
+    }
+
+    /**
+     * Helper that checks pattern constraints for contact fields.
+     *
+     * Validates email, phone and postal code formats and returns the first
+     * failing [ValidationError] or null if all patterns match.
+     */
+    private fun requireRegexInMember(member: Member): ValidationError? {
+        ValidationUtils.requireRegex(member.email, ValidationPatterns.EMAIL, "email", "must be a valid address")?.let { return it }
+        ValidationUtils.requireRegex(member.phone, ValidationPatterns.PHONE, "phone", "must be 7 to 15 digits")?.let { return it }
+        ValidationUtils.requireRegex(
+            member.postalCode,
+            ValidationPatterns.POSTAL_CODE,
+            "postalCode",
+            "must match 'NNNN-NNN'",
+        )?.let { return it }
+        return null
+    }
+
+    /**
+     * Helper that enforces numeric/date conditions for a member.
+     *
+     * Examples: monthly quota non-negative, registration date plausible and
+     * birthdate not unrealistically old. Returns the first failing
+     * [ValidationError] or null when all conditions pass.
+     */
+    private fun requireConditionInMember(member: Member): ValidationError? {
+        ValidationUtils.requireCondition(member.monthlyQuota >= 0.0, "monthlyQuota", "cannot be negative")?.let { return it }
+        ValidationUtils.requireCondition(
+            member.registrationDate <= LocalDate.parse("9999-12-31"),
+            "registrationDate",
+            "invalid",
+        )?.let { return it }
+        ValidationUtils.requireCondition(
+            member.birthDate >= LocalDate.parse("1900-01-01"),
+            "birthDate",
+            "is unrealistic",
+        )?.let { return it }
+        return null
     }
 }

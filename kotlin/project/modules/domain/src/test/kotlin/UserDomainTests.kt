@@ -15,10 +15,13 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.seconds
 
 class UserDomainTests {
-
     private class FakePasswordEncoder : PasswordEncoder {
-        override fun encode(rawPassword: CharSequence?): String = "ENC:${rawPassword.toString()}"
-        override fun matches(rawPassword: CharSequence?, encodedPassword: String?): Boolean = encodedPassword == encode(rawPassword)
+        override fun encode(rawPassword: CharSequence?): String = "ENC:$rawPassword"
+
+        override fun matches(
+            rawPassword: CharSequence?,
+            encodedPassword: String?,
+        ): Boolean = encodedPassword == encode(rawPassword)
     }
 
     private class FixedClock(private val instant: Instant) : Clock {
@@ -27,12 +30,13 @@ class UserDomainTests {
 
     @Test
     fun token_generation_and_format_checks() {
-        val cfg = UserDomainConfig(
-            tokenSizeInBytes = 32,
-            tokenTtl = 60.seconds,
-            tokenRollingTtl = 120.seconds,
-            maxTokensPerUser = 5,
-        )
+        val cfg =
+            UserDomainConfig(
+                tokenSizeInBytes = 32,
+                tokenTtl = 60.seconds,
+                tokenRollingTtl = 120.seconds,
+                maxTokensPerUser = 5,
+            )
         val domain = UserDomain(FakePasswordEncoder(), Sha256TokenEncoder(), cfg)
 
         val (token, raw) = domain.createToken(1)
@@ -46,12 +50,13 @@ class UserDomainTests {
 
     @Test
     fun token_time_validity_and_expiration() {
-        val cfg = UserDomainConfig(
-            tokenSizeInBytes = 16,
-            tokenTtl = 10.seconds,
-            tokenRollingTtl = 20.seconds,
-            maxTokensPerUser = 3,
-        )
+        val cfg =
+            UserDomainConfig(
+                tokenSizeInBytes = 16,
+                tokenTtl = 10.seconds,
+                tokenRollingTtl = 20.seconds,
+                maxTokensPerUser = 3,
+            )
         val domain = UserDomain(FakePasswordEncoder(), Sha256TokenEncoder(), cfg)
         val (token, raw) = domain.createToken(2)
 
@@ -85,8 +90,8 @@ class UserDomainTests {
         println("pwInfo.validationInfo=${pwInfo.validationInfo}")
         println("domain.encode(Secret123)=${domain.encodePassword("Secret123")}")
         println("domain.encode(wrong)=${domain.encodePassword("wrong")}")
-        println("validate correct=${correct}")
-        println("validate wrong=${wrong}")
+        println("validate correct=$correct")
+        println("validate wrong=$wrong")
         assertTrue(correct)
         assertFalse(wrong)
 
@@ -103,13 +108,14 @@ class UserDomainTests {
         val cfg = UserDomainConfig(24, 60.seconds, 60.seconds, 5)
         val domain = UserDomain(FakePasswordEncoder(), Sha256TokenEncoder(), cfg)
 
-        val user = User(
-            userId = 7,
-            email = "a@b.c",
-            username = "u",
-            passwordValidation = PasswordValidationInfo("x"),
-            role = Role.NORMAL
-        )
+        val user =
+            User(
+                userId = 7,
+                email = "a@b.c",
+                username = "u",
+                passwordValidation = PasswordValidationInfo("x"),
+                role = Role.NORMAL,
+            )
         val auth = domain.createAuthenticatedUser(user)
         assertEquals(user, auth.user)
         assertTrue(auth.token.isNotBlank())
