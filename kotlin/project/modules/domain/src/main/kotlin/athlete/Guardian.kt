@@ -9,5 +9,6 @@ data class Guardian(
     val email: String,
     val phone: String,
     val work: String,
+    val isGuardian: Boolean,
     val hasFamilyInClub: Boolean,
 )

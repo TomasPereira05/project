@@ -23,7 +23,7 @@ class AthleteDomainTests {
         nif = "123456789",
         numeroUtente = "111222333",
         bi = "AA123456",
-        biExpirationDate = LocalDate.Companion.parse("2030-01-01"),
+        biExpirationDate = LocalDate.parse("2030-01-01"),
         school = "Escola X",
         schoolYear = "10",
         schoolClass = "A",
