@@ -269,7 +269,7 @@ class MemberDomain {
      * wrapped in [Either.Left], or the original member on success.
      */
     fun validateForCreation(member: Member): Either<ValidationError, Member> {
-        requireNotBlackInMember(member)?.let { return failure(it) }
+        requireNotBlankInMember(member)?.let { return failure(it) }
         requireConditionInMember(member)?.let { return failure(it) }
         requireRegexInMember(member)?.let { return failure(it) }
         return success(member)
@@ -281,7 +281,7 @@ class MemberDomain {
      * Returns a [ValidationError] for the first blank field found, or null when
      * all required fields are present.
      */
-    private fun requireNotBlackInMember(member: Member): ValidationError? {
+    private fun requireNotBlankInMember(member: Member): ValidationError? {
         ValidationUtils.requireNotBlank(member.completeName, "completeName")?.let { return it }
         ValidationUtils.requireNotBlank(member.email, "email")?.let { return it }
         ValidationUtils.requireNotBlank(member.phone, "phone")?.let { return it }
