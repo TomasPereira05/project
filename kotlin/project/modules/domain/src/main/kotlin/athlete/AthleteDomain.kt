@@ -39,7 +39,7 @@ class AthleteDomain {
      * as a [ValidationError] (wrapped in [Either.Left]) or the original athlete on success.
      */
     fun validateForCreation(athlete: Athlete): Either<ValidationError, Athlete> {
-        requireNotBlackInAthlete(athlete)?.let { return failure(it) }
+        requireNotBlankInAthlete(athlete)?.let { return failure(it) }
         requireConditionInAthlete(athlete)?.let { return failure(it) }
         requireRegexInAthlete(athlete)?.let { return failure(it) }
 
@@ -59,7 +59,7 @@ class AthleteDomain {
      * Returns a [ValidationError] when a required field is blank or null, or null
      * when all required fields are present.
      */
-    private fun requireNotBlackInAthlete(athlete: Athlete): ValidationError? {
+    private fun requireNotBlankInAthlete(athlete: Athlete): ValidationError? {
         ValidationUtils.requireNotBlank(athlete.nationality, "nationality")?.let { return it }
         ValidationUtils.requireNotBlank(athlete.birthplace, "birthplace")?.let { return it }
         ValidationUtils.requireNotBlank(athlete.bi, "bi")?.let { return it }
@@ -154,7 +154,6 @@ class AthleteDomain {
         return success(guardian)
     }
 
-
     /**
      * Change the athlete's team category.
      *
@@ -179,7 +178,6 @@ class AthleteDomain {
         return success(athlete.copy(active = false))
     }
 
-
     /**
      * Reactivate a previously inactive athlete. Returns the updated athlete on success
      * or [AthleteError.InvalidOperation] if the athlete is already active.
@@ -188,7 +186,6 @@ class AthleteDomain {
         if (athlete.active) return failure(AthleteError.InvalidOperation("athlete already active"))
         return success(athlete.copy(active = true))
     }
-
 
     /**
      * Update school-related information for the athlete (school, year, class).
@@ -202,7 +199,6 @@ class AthleteDomain {
     ): Either<AthleteError, Athlete> {
         return success(athlete.copy(school = school, schoolYear = schoolYear, schoolClass = schoolClass))
     }
-
 
     /**
      * Update identification documents for an athlete.
