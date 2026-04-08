@@ -76,15 +76,15 @@ class MemberDomain {
 
         val newQuota =
             when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> 0.0
-                MemberCategory.SOCIO -> maxOf(member.monthlyQuota, 1.5)
+                MemberCategory.ATLETA_SOCIO -> 0 // 0 cêntimos - não paga quota
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cêntimos (1.50€)
             }
 
         val updated =
             member.copy(
                 status = MemberStatus.ATIVO,
                 approvalDate = approvalDate,
-                monthlyQuota = newQuota,
+                membershipQuota = newQuota,
             )
 
         return success(updated)
@@ -165,10 +165,10 @@ class MemberDomain {
         }
         val newQuota =
             when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> 0.0
-                MemberCategory.SOCIO -> maxOf(member.monthlyQuota, 1.5)
+                MemberCategory.ATLETA_SOCIO -> 0 // 0 cêntimos - não paga quota
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cêntimos (1.50€)
             }
-        return success(member.copy(status = MemberStatus.ATIVO, approvalDate = reactivationDate, monthlyQuota = newQuota))
+        return success(member.copy(status = MemberStatus.ATIVO, approvalDate = reactivationDate, membershipQuota = newQuota))
     }
 
     /**
@@ -240,25 +240,26 @@ class MemberDomain {
         }
         val newQuota =
             when (newCategory) {
-                MemberCategory.ATLETA_SOCIO -> 0.0
-                MemberCategory.SOCIO -> maxOf(member.monthlyQuota, 1.5)
+                MemberCategory.ATLETA_SOCIO -> 0 // 0 cêntimos
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cêntimos
             }
-        return success(member.copy(category = newCategory, monthlyQuota = newQuota))
+        return success(member.copy(category = newCategory, membershipQuota = newQuota))
     }
 
     /**
-     * Compute the canonical monthly quota for the given [member] according to business rules.
+     * Compute the canonical membership quota for the given [member] according to business rules.
+     * Values are in cents (centimos).
      *
-     * - [MemberCategory.ATLETA_SOCIO] -> 0.0
-     * - [MemberCategory.SOCIO] -> at least 1.5 or the existing monthlyQuota if higher
+     * - [MemberCategory.ATLETA_SOCIO] -> 0 cents
+     * - [MemberCategory.SOCIO] -> at least 150 cents (1.50€) or the existing membershipQuota if higher
      *
      * @param member the member whose quota to compute
-     * @return the computed monthly quota
+     * @return the computed membership quota in cents
      */
-    fun calculateMonthlyQuota(member: Member): Double =
+    fun calculateMembershipQuota(member: Member): Int =
         when (member.category) {
-            MemberCategory.ATLETA_SOCIO -> 0.0
-            MemberCategory.SOCIO -> maxOf(member.monthlyQuota, 1.5)
+            MemberCategory.ATLETA_SOCIO -> 0 // 0 cents
+            MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cents
         }
 
     /**
@@ -312,12 +313,12 @@ class MemberDomain {
     /**
      * Helper that enforces numeric/date conditions for a member.
      *
-     * Examples: monthly quota non-negative, registration date plausible and
+     * Examples: membership quota non-negative, registration date plausible and
      * birthdate not unrealistically old. Returns the first failing
      * [ValidationError] or null when all conditions pass.
      */
     private fun requireConditionInMember(member: Member): ValidationError? {
-        ValidationUtils.requireCondition(member.monthlyQuota >= 0.0, "monthlyQuota", "cannot be negative")?.let { return it }
+        ValidationUtils.requireCondition(member.membershipQuota >= 0, "membershipQuota", "cannot be negative")?.let { return it }
         ValidationUtils.requireCondition(
             member.registrationDate <= LocalDate.parse("9999-12-31"),
             "registrationDate",

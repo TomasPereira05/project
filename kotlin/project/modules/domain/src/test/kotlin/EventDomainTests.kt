@@ -30,7 +30,7 @@ class EventDomainTests {
             buyerEmail = "buyer@example.com",
             buyerName = "Buyer",
             eventId = 1,
-            price = 10.0,
+            price = 1000,
             qrCode = "qr",
             used = used,
             usedAt = null,

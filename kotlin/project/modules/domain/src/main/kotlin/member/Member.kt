@@ -25,8 +25,10 @@ data class Member(
     val formerMember: Boolean,
     // PENDENTE, ATIVO, INATIVO, REJEITADO
     val status: MemberStatus,
-    // Mínimo 1.5€ (0.0 para atletas ativos)
-    val monthlyQuota: Double,
+    // Quota mensal do sócio em cêntimos (ex: 150 = 1.50€)
+    // SOCIO: mínimo 150 cêntimos (1.50€)
+    // ATLETA_SOCIO: 0 cêntimos (não paga quota de sócio)
+    val membershipQuota: Int = 150,
     // Local de cobrança
     val billingLocation: String?,
     val registrationDate: LocalDate,

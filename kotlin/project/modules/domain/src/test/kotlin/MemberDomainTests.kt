@@ -1,6 +1,9 @@
-package pt.isel.member
-
 import kotlinx.datetime.LocalDate
+import pt.isel.member.Member
+import pt.isel.member.MemberCategory
+import pt.isel.member.MemberDomain
+import pt.isel.member.MemberError
+import pt.isel.member.MemberStatus
 import pt.isel.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,7 +16,7 @@ class MemberDomainTests {
     private fun sampleMember(
         status: MemberStatus = MemberStatus.PENDENTE,
         category: MemberCategory = MemberCategory.SOCIO,
-        monthlyQuota: Double = 2.0,
+        membershipQuota: Int = 200,
         registrationDate: LocalDate = LocalDate.parse("2025-01-01"),
     ) = Member(
         memberId = 1,
@@ -29,7 +32,7 @@ class MemberDomainTests {
         category = category,
         formerMember = false,
         status = status,
-        monthlyQuota = monthlyQuota,
+        membershipQuota = membershipQuota,
         billingLocation = null,
         registrationDate = registrationDate,
         approvalDate = null,
@@ -37,15 +40,18 @@ class MemberDomainTests {
 
     @Test
     fun approve_success() {
-        val m = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.SOCIO, monthlyQuota = 2.0)
+        val m = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.SOCIO, membershipQuota = 200)
         when (val res = domain.approve(m, LocalDate.parse("2025-01-02"))) {
             is Either.Right -> {
                 val updated = res.value
                 assertEquals(MemberStatus.ATIVO, updated.status)
                 assertEquals(LocalDate.parse("2025-01-02"), updated.approvalDate)
-                assertEquals(2.0, updated.monthlyQuota)
+                assertEquals(200, updated.membershipQuota)
             }
-            is Either.Left -> fail("Expected success but got error: ${'$'}{res.value}")
+
+            is Either.Left -> {
+                fail("Expected success but got error: ${'$'}{res.value}")
+            }
         }
     }
 
@@ -129,12 +135,12 @@ class MemberDomainTests {
 
     @Test
     fun changeCategory_behavior() {
-        val m = sampleMember(category = MemberCategory.SOCIO, monthlyQuota = 5.0)
+        val m = sampleMember(category = MemberCategory.SOCIO, membershipQuota = 500)
         val toAthlete = domain.changeCategory(m, MemberCategory.ATLETA_SOCIO)
         assertTrue(toAthlete is Either.Right)
         val ath = toAthlete.value
         assertEquals(MemberCategory.ATLETA_SOCIO, ath.category)
-        assertEquals(0.0, ath.monthlyQuota)
+        assertEquals(0, ath.membershipQuota)
 
         val same = domain.changeCategory(m, MemberCategory.SOCIO)
         assertTrue(same is Either.Left)
@@ -143,11 +149,11 @@ class MemberDomainTests {
 
     @Test
     fun calculateMonthlyQuota_checks() {
-        val a = sampleMember(category = MemberCategory.ATLETA_SOCIO, monthlyQuota = 10.0)
-        assertEquals(0.0, domain.calculateMonthlyQuota(a))
+        val a = sampleMember(category = MemberCategory.ATLETA_SOCIO, membershipQuota = 1000)
+        assertEquals(0, domain.calculateMembershipQuota(a))
 
-        val s = sampleMember(category = MemberCategory.SOCIO, monthlyQuota = 1.0)
-        assertEquals(1.5, domain.calculateMonthlyQuota(s))
+        val s = sampleMember(category = MemberCategory.SOCIO, membershipQuota = 100)
+        assertEquals(150, domain.calculateMembershipQuota(s))
     }
 
     @Test
@@ -165,22 +171,22 @@ class MemberDomainTests {
         val r2 = domain.validateForCreation(badEmail)
         assertTrue(r2 is Either.Left)
 
-        val negQuota = valid.copy(monthlyQuota = -1.0)
+        val negQuota = valid.copy(membershipQuota = -100)
         val r3 = domain.validateForCreation(negQuota)
         assertTrue(r3 is Either.Left)
     }
 
     @Test
     fun approve_atleta_sets_zero_quota_and_socio_minimum() {
-        val atleta = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.ATLETA_SOCIO, monthlyQuota = 5.0)
+        val atleta = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.ATLETA_SOCIO, membershipQuota = 500)
         val r1 = domain.approve(atleta, LocalDate.parse("2025-04-01"))
         assertTrue(r1 is Either.Right)
-        assertEquals(0.0, r1.value.monthlyQuota)
+        assertEquals(0, r1.value.membershipQuota)
 
-        val socio = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.SOCIO, monthlyQuota = 1.0)
+        val socio = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.SOCIO, membershipQuota = 100)
         val r2 = domain.approve(socio, LocalDate.parse("2025-04-01"))
         assertTrue(r2 is Either.Right)
-        assertEquals(1.5, r2.value.monthlyQuota)
+        assertEquals(150, r2.value.membershipQuota)
     }
 
     @Test
@@ -193,15 +199,15 @@ class MemberDomainTests {
 
     @Test
     fun reactivate_adjusts_quota_based_on_category() {
-        val inactiveSocio = sampleMember(status = MemberStatus.INATIVO, category = MemberCategory.SOCIO, monthlyQuota = 0.5)
+        val inactiveSocio = sampleMember(status = MemberStatus.INATIVO, category = MemberCategory.SOCIO, membershipQuota = 50)
         val r1 = domain.reactivate(inactiveSocio, LocalDate.parse("2025-06-01"))
         assertTrue(r1 is Either.Right)
-        assertEquals(1.5, r1.value.monthlyQuota)
+        assertEquals(150, r1.value.membershipQuota)
 
-        val inactiveAtleta = sampleMember(status = MemberStatus.INATIVO, category = MemberCategory.ATLETA_SOCIO, monthlyQuota = 3.0)
+        val inactiveAtleta = sampleMember(status = MemberStatus.INATIVO, category = MemberCategory.ATLETA_SOCIO, membershipQuota = 300)
         val r2 = domain.reactivate(inactiveAtleta, LocalDate.parse("2025-06-01"))
         assertTrue(r2 is Either.Right)
-        assertEquals(0.0, r2.value.monthlyQuota)
+        assertEquals(0, r2.value.membershipQuota)
     }
 
     @Test
@@ -230,16 +236,16 @@ class MemberDomainTests {
 
     @Test
     fun changeCategory_athlete_to_socio_sets_minimum_quota_if_needed() {
-        val m = sampleMember(category = MemberCategory.ATLETA_SOCIO, monthlyQuota = 0.0)
+        val m = sampleMember(category = MemberCategory.ATLETA_SOCIO, membershipQuota = 0)
         val r = domain.changeCategory(m, MemberCategory.SOCIO)
         assertTrue(r is Either.Right)
         assertEquals(MemberCategory.SOCIO, r.value.category)
-        assertEquals(1.5, r.value.monthlyQuota)
+        assertEquals(150, r.value.membershipQuota)
     }
 
     @Test
     fun calculateMonthlyQuota_keeps_large_quota_for_socios() {
-        val s = sampleMember(category = MemberCategory.SOCIO, monthlyQuota = 10.0)
-        assertEquals(10.0, domain.calculateMonthlyQuota(s))
+        val s = sampleMember(category = MemberCategory.SOCIO, membershipQuota = 1000)
+        assertEquals(1000, domain.calculateMembershipQuota(s))
     }
 }

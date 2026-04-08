@@ -24,7 +24,7 @@ class SponsorDomainTests {
             season = "2025/2026",
             status = SponsorshipStatus.SUBMETIDO,
             type = SponsorType.PUB,
-            price = 1000.0,
+            price = 100000,
             pubOption = PubOption.LONA_3X0_8,
         )
 
@@ -35,7 +35,7 @@ class SponsorDomainTests {
             season = "2025/2026",
             status = SponsorshipStatus.SUBMETIDO,
             type = SponsorType.TEAM,
-            price = 2000.0,
+            price = 200000,
             teamCategory = TeamCategory.JUNIORES,
             placement = EquipmentPlacement.FRENTE,
         )
@@ -93,7 +93,7 @@ class SponsorDomainTests {
         val ok = domain.validateForCreation(pub)
         assertTrue(ok is Either.Right)
 
-        val badPrice = pub.copy(price = -1.0)
+        val badPrice = pub.copy(price = -100)
         val r1 = domain.validateForCreation(badPrice)
         assertTrue(r1 is Either.Left)
 

@@ -14,7 +14,8 @@ data class Sponsorship(
     val status: SponsorshipStatus,
     // PUB, TEAM, ou OTHER
     val type: SponsorType,
-    val price: Double,
+    // Preço em cêntimos (ex: 50000 = 500.00€)
+    val price: Int,
     // Só é preenchida 1 das 3 propriedades, conforme o tipo de contrato
     val pubOption: PubOption? = null,
     val teamCategory: TeamCategory? = null,

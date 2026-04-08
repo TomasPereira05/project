@@ -22,7 +22,7 @@ class PaymentDomainTests {
             type = ChargeType.MEMBER_FEE,
             memberId = 1,
             sponsorshipId = null,
-            value = 20.0,
+            value = 2000,
             status = status,
             season = "2025/2026",
             month = 5,
@@ -34,7 +34,7 @@ class PaymentDomainTests {
         Payment(
             paymentId = 1,
             chargeId = 1,
-            amount = 20.0,
+            amount = 2000,
             provider = "stripe",
             providerRef = "sess_123",
             status = status,
@@ -48,7 +48,7 @@ class PaymentDomainTests {
         val ok = domain.validateChargeForCreation(c)
         assertTrue(ok is Either.Right)
 
-        val bad = c.copy(value = 0.0)
+        val bad = c.copy(value = 0)
         val r = domain.validateChargeForCreation(bad)
         assertTrue(r is Either.Left)
     }
