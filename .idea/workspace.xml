@@ -5,12 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="279d893e-afff-4343-9414-4662db9150ad" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/user/PasswordValidationInfo.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiAthleteRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiChargeRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiEventRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiMemberRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiPaymentRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiSponsorRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiSponsorshipRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiTicketRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiTransaction.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiTransactionManager.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/pt/isel/JdbiUserRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberStatus.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/MemberStatus.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Quota.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Charge.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Ticket.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/Ticket.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/User.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/sql/JagozSchema.sql" beforeDir="false" afterPath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/sql/JagozSchema.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/domain/src/main/kotlin/user/PasswrodValidationInfo.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/kotlin/project/modules/repository-jdbi/src/main/kotlin/Main.kt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,8 +36,8 @@
   </component>
   <component name="CopilotUserSelectedModel">
     <selectedModels>
-      <entry key="chat-panel" value="Claude Haiku 4.5" />
-      <entry key="agent-panel" value="Claude Haiku 4.5" />
+      <entry key="chat-panel" value="GPT-5.3-Codex" />
+      <entry key="agent-panel" value="GPT-5.3-Codex" />
     </selectedModels>
   </component>
   <component name="ExternalProjectsData">
@@ -78,10 +87,10 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$/kotlin/project" gradleHome="C:\Users\tomas\.gradle\wrapper\dists\gradle-9.3.1-bin\23ovyewtku6u96viwx3xl3oks\gradle-9.3.1" javaHome="C:\Users\tomas\.jdks\openjdk-23.0.2" gradleVersion="9.3.1" />
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -101,7 +110,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "database",
+    "git-widget-placeholder": "jdbi",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/tomas/Desktop/Universidade/5 Ano/10 Semestre/project",
     "nodejs_package_manager_path": "npm",

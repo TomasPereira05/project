@@ -1,6 +1,7 @@
 package pt.isel.payment
 
 import kotlinx.datetime.LocalDate
+import pt.isel.user.User
 
 data class Charge(
     val chargeId: Long,
@@ -13,5 +14,7 @@ data class Charge(
     val season: String? = null, // "2025/2026"
     val month: Int? = null, // 1..12
     val createdAt: LocalDate,
+    val creationUser: User,
+    val chargeUser: User? = null,
     val paidAt: LocalDate? = null,
 )
