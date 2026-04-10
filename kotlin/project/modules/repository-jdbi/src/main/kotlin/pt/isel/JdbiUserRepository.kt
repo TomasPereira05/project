@@ -10,13 +10,12 @@ import pt.isel.user.TokenValidationInfo
 import pt.isel.user.User
 
 class JdbiUserRepository(private val handle: Handle) : UserRepository {
-
     override fun save(user: User): Long {
         return handle.createUpdate(
             """
             INSERT INTO users (email, username, password_validation, role, active_member_id)
             VALUES (:email, :username, :passwordValidation, CAST(:role AS user_role), :activeMemberId)
-            """
+            """,
         )
             .bind("email", user.email)
             .bind("username", user.username)
@@ -28,7 +27,10 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
             .one()
     }
 
-    override fun updatePassword(userId: Long, newPassword: PasswordValidationInfo) {
+    override fun updatePassword(
+        userId: Long,
+        newPassword: PasswordValidationInfo,
+    ) {
         handle.createUpdate("UPDATE users SET password_validation = :pw WHERE user_id = :id")
             .bind("pw", newPassword.validationInfo)
             .bind("id", userId)
@@ -69,7 +71,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
                 role = CAST(:role AS user_role), 
                 active_member_id = :activeMemberId
             WHERE user_id = :id
-            """
+            """,
         )
             .bind("id", user.userId)
             .bind("email", user.email)
@@ -85,7 +87,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
             """
             INSERT INTO user_token (token_validation, user_id, created_at, last_used_at)
             VALUES (:validation, :userId, CAST(:createdAt AS TIMESTAMP), CAST(:lastUsedAt AS TIMESTAMP))
-            """
+            """,
         )
             .bind("validation", token.tokenValidationInfo.validationInfo)
             .bind("userId", token.userId)
@@ -95,26 +97,30 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     }
 
     override fun getTokenByValidation(validation: TokenValidationInfo): Pair<User, Token>? {
-        val userWithToken = handle.createQuery(
-            """
+        val userWithToken =
+            handle.createQuery(
+                """
             SELECT u.*, t.token_validation, t.created_at, t.last_used_at 
             FROM users u
             JOIN user_token t ON u.user_id = t.user_id
             WHERE t.token_validation = :validation
-            """
-        )
-            .bind("validation", validation.validationInfo)
-            .map { rs, _ ->
-                val user = UserMapper.map(rs)
-                val token = TokenMapper.map(rs)
-                Pair(user, token)
-            }
-            .findOne()
+            """,
+            )
+                .bind("validation", validation.validationInfo)
+                .map { rs, _ ->
+                    val user = UserMapper.map(rs)
+                    val token = TokenMapper.map(rs)
+                    Pair(user, token)
+                }
+                .findOne()
 
         return userWithToken.orElse(null)
     }
 
-    override fun updateTokenLastUsed(token: Token, now: Instant) {
+    override fun updateTokenLastUsed(
+        token: Token,
+        now: Instant,
+    ) {
         handle.createUpdate("UPDATE user_token SET last_used_at = CAST(:now AS TIMESTAMP) WHERE token_validation = :validation")
             .bind("now", now.toString())
             .bind("validation", token.tokenValidationInfo.validationInfo)

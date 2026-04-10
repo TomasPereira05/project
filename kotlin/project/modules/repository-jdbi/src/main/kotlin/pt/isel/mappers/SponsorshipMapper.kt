@@ -24,4 +24,3 @@ object SponsorshipMapper {
             sport = rs.getString("sport")?.let(OtherSport::valueOf),
         )
 }
-

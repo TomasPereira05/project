@@ -5,7 +5,6 @@ import pt.isel.mappers.SponsorshipMapper
 import pt.isel.sponsor.Sponsorship
 
 class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipRepository {
-
     override fun findById(id: Long): Sponsorship? {
         return handle.createQuery("SELECT * FROM sponsorship WHERE sponsorship_id = :id")
             .bind("id", id)
@@ -27,7 +26,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             INSERT INTO sponsorship (sponsor_id, season, status, type, price, pub_option, team_category, placement, sport)
             VALUES (:sponsorId, :season, CAST(:status AS sponsorship_status), CAST(:type AS sponsor_type), :price, 
                     CAST(:pubOption AS pub_option), CAST(:teamCategory AS team_category), CAST(:placement AS equipment_placement), CAST(:sport AS other_sport))
-            """
+            """,
         )
             .bind("sponsorId", sponsorship.sponsorId)
             .bind("season", sponsorship.season)
@@ -57,7 +56,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
                 placement = CAST(:placement AS equipment_placement),
                 sport = CAST(:sport AS other_sport)
             WHERE sponsorship_id = :id
-            """
+            """,
         )
             .bind("id", sponsorship.sponsorshipId)
             .bind("sponsorId", sponsorship.sponsorId)

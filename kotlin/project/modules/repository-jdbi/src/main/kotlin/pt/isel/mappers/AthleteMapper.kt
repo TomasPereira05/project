@@ -25,4 +25,3 @@ object AthleteMapper {
             active = rs.getBoolean("active"),
         )
 }
-

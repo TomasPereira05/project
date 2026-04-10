@@ -18,4 +18,3 @@ object PaymentMapper {
             confirmedAt = rs.getString("confirmed_at")?.let { LocalDateTime.parse(it.replace(" ", "T")) },
         )
 }
-

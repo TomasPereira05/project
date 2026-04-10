@@ -5,7 +5,6 @@ import pt.isel.mappers.PaymentMapper
 import pt.isel.payment.Payment
 
 class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
-
     override fun findByChargeId(chargeId: Long): List<Payment> {
         return handle.createQuery("SELECT * FROM payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
             .bind("chargeId", chargeId)
@@ -18,7 +17,7 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
             """
             INSERT INTO payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
             VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS payment_status), CAST(:createdAt AS TIMESTAMP), CAST(:confirmedAt AS TIMESTAMP))
-            """
+            """,
         )
             .bind("chargeId", payment.chargeId)
             .bind("amount", payment.amount)
@@ -44,7 +43,7 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
                 created_at = CAST(:createdAt AS TIMESTAMP),
                 confirmed_at = CAST(:confirmedAt AS TIMESTAMP)
             WHERE payment_id = :id
-            """
+            """,
         )
             .bind("id", payment.paymentId)
             .bind("chargeId", payment.chargeId)
