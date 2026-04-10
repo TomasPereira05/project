@@ -2,11 +2,10 @@ package pt.isel
 
 import kotlinx.datetime.LocalDateTime
 import org.jdbi.v3.core.Handle
-import pt.isel.mappers.TicketMapper
 import pt.isel.event.Ticket
+import pt.isel.mappers.TicketMapper
 
 class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
-
     override fun findById(id: Long): Ticket? {
         return handle.createQuery("SELECT * FROM ticket WHERE ticket_id = :id")
             .bind("id", id)
@@ -35,7 +34,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
             """
             INSERT INTO ticket (member_id, buyer_email, buyer_name, event_id, price, qr_code, used, used_at)
             VALUES (:memberId, :buyerEmail, :buyerName, :eventId, :price, :qrCode, :used, CAST(:usedAt AS TIMESTAMP))
-            """
+            """,
         )
             .bind("memberId", ticket.memberId)
             .bind("buyerEmail", ticket.buyerEmail)
@@ -50,14 +49,17 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
             .one()
     }
 
-    override fun markAsUsed(ticketId: Long, usedAt: LocalDateTime): Boolean {
+    override fun markAsUsed(
+        ticketId: Long,
+        usedAt: LocalDateTime,
+    ): Boolean {
         return handle.createUpdate(
             """
             UPDATE ticket SET 
                 used = true, 
                 used_at = CAST(:usedAt AS TIMESTAMP)
             WHERE ticket_id = :id AND used = false
-            """
+            """,
         )
             .bind("id", ticketId)
             .bind("usedAt", usedAt.toString())

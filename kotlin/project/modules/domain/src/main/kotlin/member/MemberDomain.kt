@@ -2,39 +2,16 @@ package pt.isel.member
 
 import kotlinx.datetime.LocalDate
 import org.springframework.stereotype.Component
+import pt.isel.utils.ATHLETE_MEMBER_QUOTA
 import pt.isel.utils.Either
+import pt.isel.utils.MAX_REGISTRATION_DATE
+import pt.isel.utils.MIN_BIRTH_DATE
+import pt.isel.utils.REGULAR_MEMBER_MIN_QUOTA
 import pt.isel.utils.ValidationError
 import pt.isel.utils.ValidationPatterns
 import pt.isel.utils.ValidationUtils
 import pt.isel.utils.failure
 import pt.isel.utils.success
-
-/**
- * Errors produced by member domain operations.
- *
- * Use these types to indicate why a domain operation failed. They are returned inside
- * the [Either.Left] value when an operation cannot be completed.
- */
-sealed class MemberError {
-    /**
-     * Indicates an invalid state transition was attempted.
-     * @property from the current member status
-     * @property attempted the name of the attempted operation (e.g. "approve")
-     */
-    data class InvalidTransition(val from: MemberStatus, val attempted: String) : MemberError()
-
-    /**
-     * Represents an input validation failure.
-     * @property message a human-readable validation message
-     */
-    data class ValidationError(val message: String) : MemberError()
-
-    /**
-     * Generic domain error for cases that don't fit other variants.
-     * @property message a description of the error
-     */
-    data class DomainError(val message: String) : MemberError()
-}
 
 /**
  * Domain operations for `Member`.
@@ -76,8 +53,8 @@ class MemberDomain {
 
         val newQuota =
             when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> 0 // 0 cêntimos - não paga quota
-                MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cêntimos (1.50€)
+                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA // 0 cêntimos - não paga quota
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA) // mínimo 150 cêntimos (1.50€)
             }
 
         val updated =
@@ -165,8 +142,8 @@ class MemberDomain {
         }
         val newQuota =
             when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> 0 // 0 cêntimos - não paga quota
-                MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cêntimos (1.50€)
+                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA)
             }
         return success(member.copy(status = MemberStatus.ATIVO, approvalDate = reactivationDate, membershipQuota = newQuota))
     }
@@ -197,13 +174,16 @@ class MemberDomain {
         homePhone: String? = null,
         billingLocation: String? = null,
     ): Either<MemberError, Member> {
-        if (email.isBlank() || !email.contains("@")) {
-            return failure(MemberError.ValidationError("invalid email"))
-        }
-        if (phone.isBlank()) {
-            return failure(MemberError.ValidationError("phone cannot be empty"))
-        }
+        ValidationUtils.requireNotBlank(email, "email")?.let { return failure(it.toMemberError()) }
+        ValidationUtils.requireRegex(email, ValidationPatterns.EMAIL, "email", "must be valid")?.let { return failure(it.toMemberError()) }
 
+        ValidationUtils.requireNotBlank(phone, "phone")?.let { return failure(it.toMemberError()) }
+        ValidationUtils.requireNotBlank(address, "address")?.let { return failure(it.toMemberError()) }
+        ValidationUtils.requireNotBlank(postalCode, "postalCode")?.let { return failure(it.toMemberError()) }
+        ValidationUtils.requireNotBlank(city, "city")?.let { return failure(it.toMemberError()) }
+
+        ValidationUtils.requireRegex(postalCode, ValidationPatterns.POSTAL_CODE, "postalCode", "must match 'NNNN-NNN'")
+            ?.let { return failure(it.toMemberError()) }
         return success(
             member.copy(
                 email = email,
@@ -236,12 +216,16 @@ class MemberDomain {
         newCategory: MemberCategory,
     ): Either<MemberError, Member> {
         if (member.category == newCategory) {
-            return failure(MemberError.DomainError("member already in category $newCategory"))
+            return failure(
+                MemberError.Conflict(
+                    "member already in category $newCategory",
+                ),
+            )
         }
         val newQuota =
             when (newCategory) {
-                MemberCategory.ATLETA_SOCIO -> 0 // 0 cêntimos
-                MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cêntimos
+                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA)
             }
         return success(member.copy(category = newCategory, membershipQuota = newQuota))
     }
@@ -258,8 +242,8 @@ class MemberDomain {
      */
     fun calculateMembershipQuota(member: Member): Int =
         when (member.category) {
-            MemberCategory.ATLETA_SOCIO -> 0 // 0 cents
-            MemberCategory.SOCIO -> maxOf(member.membershipQuota, 150) // mínimo 150 cents
+            MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA
+            MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA)
         }
 
     /**
@@ -269,10 +253,10 @@ class MemberDomain {
      * regex-based validation. Returns the first encountered [ValidationError]
      * wrapped in [Either.Left], or the original member on success.
      */
-    fun validateForCreation(member: Member): Either<ValidationError, Member> {
-        requireNotBlankInMember(member)?.let { return failure(it) }
-        requireConditionInMember(member)?.let { return failure(it) }
-        requireRegexInMember(member)?.let { return failure(it) }
+    fun validateForCreation(member: Member): Either<MemberError, Member> {
+        requireNotBlankInMember(member)?.let { return failure(it.toMemberError()) }
+        requireRegexInMember(member)?.let { return failure(it.toMemberError()) }
+        requireConditionInMember(member)?.let { return failure(it.toMemberError()) }
         return success(member)
     }
 
@@ -320,15 +304,21 @@ class MemberDomain {
     private fun requireConditionInMember(member: Member): ValidationError? {
         ValidationUtils.requireCondition(member.membershipQuota >= 0, "membershipQuota", "cannot be negative")?.let { return it }
         ValidationUtils.requireCondition(
-            member.registrationDate <= LocalDate.parse("9999-12-31"),
+            member.registrationDate <= MAX_REGISTRATION_DATE,
             "registrationDate",
             "invalid",
         )?.let { return it }
         ValidationUtils.requireCondition(
-            member.birthDate >= LocalDate.parse("1900-01-01"),
+            member.birthDate >= MIN_BIRTH_DATE,
             "birthDate",
             "is unrealistic",
         )?.let { return it }
         return null
     }
+
+    private fun ValidationError.toMemberError(): MemberError.ValidationError =
+        when (this) {
+            is ValidationError.FieldError -> MemberError.ValidationError("$field $message")
+            is ValidationError.GlobalError -> MemberError.ValidationError(message)
+        }
 }

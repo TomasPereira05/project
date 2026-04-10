@@ -5,7 +5,6 @@ import pt.isel.mappers.ChargeMapper
 import pt.isel.payment.Charge
 
 class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
-
     override fun findById(id: Long): Charge? {
         return handle.createQuery("SELECT * FROM charge WHERE charge_id = :id")
             .bind("id", id)
@@ -14,7 +13,10 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
             .orElse(null)
     }
 
-    override fun findByMemberAndSeason(memberId: Long, season: String): List<Charge> {
+    override fun findByMemberAndSeason(
+        memberId: Long,
+        season: String,
+    ): List<Charge> {
         return handle.createQuery("SELECT * FROM charge WHERE member_id = :memberId AND season = :season ORDER BY month ASC")
             .bind("memberId", memberId)
             .bind("season", season)
@@ -29,7 +31,11 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
             .list()
     }
 
-    override fun existsByMemberSeasonMonth(memberId: Long, season: String, month: Int): Boolean {
+    override fun existsByMemberSeasonMonth(
+        memberId: Long,
+        season: String,
+        month: Int,
+    ): Boolean {
         return handle.createQuery("SELECT COUNT(*) FROM charge WHERE member_id = :memberId AND season = :season AND month = :month")
             .bind("memberId", memberId)
             .bind("season", season)
@@ -43,7 +49,7 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
             """
             INSERT INTO charge (type, member_id, sponsorship_id, value, status, season, month, created_at, paid_at)
             VALUES (CAST(:type AS charge_type), :memberId, :sponsorshipId, :value, CAST(:status AS charge_status), :season, :month, CAST(:createdAt AS DATE), CAST(:paidAt AS DATE))
-            """
+            """,
         )
             .bind("type", charge.type.name)
             .bind("memberId", charge.memberId)
@@ -73,7 +79,7 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
                 created_at = CAST(:createdAt AS DATE),
                 paid_at = CAST(:paidAt AS DATE)
             WHERE charge_id = :id
-            """
+            """,
         )
             .bind("id", charge.chargeId)
             .bind("type", charge.type.name)

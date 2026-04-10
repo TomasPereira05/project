@@ -14,4 +14,3 @@ object TokenMapper {
             lastUsedAt = Instant.parse(rs.getString("last_used_at").replace(" ", "T")),
         )
 }
-

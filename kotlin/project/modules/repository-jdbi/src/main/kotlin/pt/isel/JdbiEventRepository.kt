@@ -1,11 +1,10 @@
 package pt.isel
 
 import org.jdbi.v3.core.Handle
-import pt.isel.mappers.EventMapper
 import pt.isel.event.Event
+import pt.isel.mappers.EventMapper
 
 class JdbiEventRepository(private val handle: Handle) : EventRepository {
-
     override fun findById(id: Long): Event? {
         return handle.createQuery("SELECT * FROM event WHERE event_id = :id")
             .bind("id", id)
@@ -25,7 +24,7 @@ class JdbiEventRepository(private val handle: Handle) : EventRepository {
             """
             INSERT INTO event (name, description, date, location)
             VALUES (:name, :description, CAST(:date AS DATE), :location)
-            """
+            """,
         )
             .bind("name", event.name)
             .bind("description", event.description)

@@ -13,4 +13,3 @@ object SponsorMapper {
             nif = rs.getString("nif"),
         )
 }
-

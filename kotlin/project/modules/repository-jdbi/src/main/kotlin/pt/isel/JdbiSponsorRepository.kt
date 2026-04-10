@@ -5,7 +5,6 @@ import pt.isel.mappers.SponsorMapper
 import pt.isel.sponsor.Sponsor
 
 class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
-
     override fun findById(id: Long): Sponsor? {
         return handle.createQuery("SELECT * FROM sponsor WHERE sponsor_id = :id")
             .bind("id", id)
@@ -33,7 +32,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             """
             INSERT INTO sponsor (name, email, phone, nif)
             VALUES (:name, :email, :phone, :nif)
-            """
+            """,
         )
             .bind("name", sponsor.name)
             .bind("email", sponsor.email)
@@ -53,7 +52,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
                 phone = :phone, 
                 nif = :nif
             WHERE sponsor_id = :id
-            """
+            """,
         )
             .bind("id", sponsor.sponsorId)
             .bind("name", sponsor.name)

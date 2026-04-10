@@ -5,7 +5,6 @@ import pt.isel.mappers.MemberMapper
 import pt.isel.member.Member
 
 class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
-
     override fun findById(id: Long): Member? {
         return handle.createQuery("SELECT * FROM member WHERE member_id = :id")
             .bind("id", id)
@@ -35,10 +34,11 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
     }
 
     override fun nextMemberNumber(): Int {
-        val maxNumber = handle.createQuery("SELECT MAX(member_number) FROM member WHERE member_number IS NOT NULL")
-            .mapTo(Int::class.javaObjectType)
-            .findOne()
-            .orElse(0)
+        val maxNumber =
+            handle.createQuery("SELECT MAX(member_number) FROM member WHERE member_number IS NOT NULL")
+                .mapTo(Int::class.javaObjectType)
+                .findOne()
+                .orElse(0)
         return (maxNumber ?: 0) + 1
     }
 
@@ -57,7 +57,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
                 :billingLocation, CAST(:registrationDate AS DATE), CAST(:approvalDate AS DATE), 
                 :privacyAccepted, :comsAccepted
             )
-            """
+            """,
         )
             .bind("memberNumber", if (member.memberNumber > 0) member.memberNumber else null)
             .bind("completeName", member.completeName)
@@ -105,7 +105,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
                 privacy_accepted = :privacyAccepted,
                 coms_accepted = :comsAccepted
             WHERE member_id = :id
-            """
+            """,
         )
             .bind("id", member.memberId)
             .bind("memberNumber", if (member.memberNumber > 0) member.memberNumber else null)

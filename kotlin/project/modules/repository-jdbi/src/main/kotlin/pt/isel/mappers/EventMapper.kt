@@ -14,4 +14,3 @@ object EventMapper {
             location = rs.getString("location"),
         )
 }
-
