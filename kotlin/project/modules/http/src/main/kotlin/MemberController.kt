@@ -17,7 +17,7 @@ import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.member.Member
 import pt.isel.jagoz.member.MemberError
-import pt.isel.jagoz.services.MemberService
+import pt.isel.jagoz.service.MemberService
 import pt.isel.jagoz.utils.handle
 
 @RestController
