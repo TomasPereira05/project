@@ -1,12 +1,9 @@
-package pt.isel
+package pt.isel.jagoz.event
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import pt.isel.event.Event
-import pt.isel.event.EventDomain
-import pt.isel.event.Ticket
-import pt.isel.utils.Either
+import pt.isel.jagoz.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

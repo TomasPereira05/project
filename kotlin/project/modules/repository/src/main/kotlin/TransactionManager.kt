@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
 /**
  * Abstraction over database transactions.

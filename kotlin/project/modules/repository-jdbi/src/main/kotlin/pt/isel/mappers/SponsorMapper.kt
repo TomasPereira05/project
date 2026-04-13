@@ -1,6 +1,6 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
-import pt.isel.sponsor.Sponsor
+import pt.isel.jagoz.sponsor.Sponsor
 import java.sql.ResultSet
 
 object SponsorMapper {

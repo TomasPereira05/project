@@ -1,12 +1,12 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
-import pt.isel.sponsor.EquipmentPlacement
-import pt.isel.sponsor.OtherSport
-import pt.isel.sponsor.PubOption
-import pt.isel.sponsor.SponsorType
-import pt.isel.sponsor.Sponsorship
-import pt.isel.sponsor.SponsorshipStatus
-import pt.isel.sponsor.TeamCategory
+import pt.isel.jagoz.sponsor.EquipmentPlacement
+import pt.isel.jagoz.sponsor.OtherSport
+import pt.isel.jagoz.sponsor.PubOption
+import pt.isel.jagoz.sponsor.SponsorType
+import pt.isel.jagoz.sponsor.Sponsorship
+import pt.isel.jagoz.sponsor.SponsorshipStatus
+import pt.isel.jagoz.sponsor.TeamCategory
 import java.sql.ResultSet
 
 object SponsorshipMapper {

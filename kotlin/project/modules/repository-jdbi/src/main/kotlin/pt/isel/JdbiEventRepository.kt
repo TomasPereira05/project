@@ -1,8 +1,9 @@
-package pt.isel
+package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.event.Event
-import pt.isel.mappers.EventMapper
+import pt.isel.jagoz.event.Event
+import pt.isel.jagoz.repository.EventRepository
+import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
 
 class JdbiEventRepository(private val handle: Handle) : EventRepository {
     override fun findById(id: Long): Event? {

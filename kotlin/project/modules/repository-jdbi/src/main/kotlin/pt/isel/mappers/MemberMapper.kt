@@ -1,9 +1,9 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
-import pt.isel.member.Member
-import pt.isel.member.MemberCategory
-import pt.isel.member.MemberStatus
+import pt.isel.jagoz.member.Member
+import pt.isel.jagoz.member.MemberCategory
+import pt.isel.jagoz.member.MemberStatus
 import java.sql.ResultSet
 
 object MemberMapper {

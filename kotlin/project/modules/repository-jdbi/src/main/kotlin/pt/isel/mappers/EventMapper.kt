@@ -1,7 +1,7 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
-import pt.isel.event.Event
+import pt.isel.jagoz.event.Event
 import java.sql.ResultSet
 
 object EventMapper {

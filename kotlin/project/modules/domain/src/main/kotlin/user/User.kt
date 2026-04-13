@@ -1,4 +1,4 @@
-package pt.isel.user
+package pt.isel.jagoz.user
 
 data class User(
     val userId: Long,

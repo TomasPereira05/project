@@ -1,7 +1,7 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
 import kotlinx.datetime.LocalDateTime
-import pt.isel.event.Ticket
+import pt.isel.jagoz.event.Ticket
 
 interface TicketRepository {
     fun findById(id: Long): Ticket?

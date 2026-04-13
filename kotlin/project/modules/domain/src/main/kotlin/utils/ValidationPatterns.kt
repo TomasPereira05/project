@@ -1,4 +1,4 @@
-package pt.isel.utils
+package pt.isel.jagoz.utils
 
 /**
  * Object containing predefined regular expression patterns for common validation scenarios.

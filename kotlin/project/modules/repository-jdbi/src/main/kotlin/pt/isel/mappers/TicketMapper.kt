@@ -1,7 +1,7 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDateTime
-import pt.isel.event.Ticket
+import pt.isel.jagoz.event.Ticket
 import java.sql.ResultSet
 
 object TicketMapper {

@@ -1,9 +1,9 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
-import pt.isel.payment.Charge
-import pt.isel.payment.ChargeStatus
-import pt.isel.payment.ChargeType
+import pt.isel.jagoz.payment.Charge
+import pt.isel.jagoz.payment.ChargeStatus
+import pt.isel.jagoz.payment.ChargeType
 import java.sql.ResultSet
 
 object ChargeMapper {

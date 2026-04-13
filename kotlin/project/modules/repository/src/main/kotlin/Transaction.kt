@@ -1,4 +1,4 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
 /**
  * Provides access to all repositories within a single database transaction.

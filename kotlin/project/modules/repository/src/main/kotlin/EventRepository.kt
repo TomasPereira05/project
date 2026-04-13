@@ -1,6 +1,6 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
-import pt.isel.event.Event
+import pt.isel.jagoz.event.Event
 
 interface EventRepository {
     fun findById(id: Long): Event?

@@ -1,8 +1,8 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.Instant
-import pt.isel.user.Token
-import pt.isel.user.TokenValidationInfo
+import pt.isel.jagoz.user.Token
+import pt.isel.jagoz.user.TokenValidationInfo
 import java.sql.ResultSet
 
 object TokenMapper {

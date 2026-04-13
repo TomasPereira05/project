@@ -1,7 +1,7 @@
-package pt.isel.athlete
+package pt.isel.jagoz.athlete
 
 import kotlinx.datetime.LocalDate
-import pt.isel.sponsor.TeamCategory
+import pt.isel.jagoz.sponsor.TeamCategory
 
 data class Athlete(
     val athleteId: Long,

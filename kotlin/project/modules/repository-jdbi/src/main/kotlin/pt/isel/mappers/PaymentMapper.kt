@@ -1,8 +1,8 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDateTime
-import pt.isel.payment.Payment
-import pt.isel.payment.PaymentStatus
+import pt.isel.jagoz.payment.Payment
+import pt.isel.jagoz.payment.PaymentStatus
 import java.sql.ResultSet
 
 object PaymentMapper {

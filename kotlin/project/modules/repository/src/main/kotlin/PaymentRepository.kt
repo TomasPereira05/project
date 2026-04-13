@@ -1,6 +1,6 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
-import pt.isel.payment.Payment
+import pt.isel.jagoz.payment.Payment
 
 interface PaymentRepository {
     fun findByChargeId(chargeId: Long): List<Payment>

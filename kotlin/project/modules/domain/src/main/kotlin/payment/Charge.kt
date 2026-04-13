@@ -1,7 +1,7 @@
-package pt.isel.payment
+package pt.isel.jagoz.payment
 
 import kotlinx.datetime.LocalDate
-import pt.isel.user.User
+import pt.isel.jagoz.user.User
 
 data class Charge(
     val chargeId: Long,

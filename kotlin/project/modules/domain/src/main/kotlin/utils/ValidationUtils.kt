@@ -1,4 +1,4 @@
-package pt.isel.utils
+package pt.isel.jagoz.utils
 
 /**
  * Represents validation errors that can occur during input validation.

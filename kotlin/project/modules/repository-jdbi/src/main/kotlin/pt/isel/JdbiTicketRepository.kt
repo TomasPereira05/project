@@ -1,9 +1,10 @@
-package pt.isel
+package pt.isel.jagoz.repository.jdbi
 
 import kotlinx.datetime.LocalDateTime
 import org.jdbi.v3.core.Handle
-import pt.isel.event.Ticket
-import pt.isel.mappers.TicketMapper
+import pt.isel.jagoz.event.Ticket
+import pt.isel.jagoz.repository.TicketRepository
+import pt.isel.jagoz.repository.jdbi.mappers.TicketMapper
 
 class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun findById(id: Long): Ticket? {

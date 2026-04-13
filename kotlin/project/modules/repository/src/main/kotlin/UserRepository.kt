@@ -1,10 +1,10 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
 import kotlinx.datetime.Instant
-import pt.isel.user.PasswordValidationInfo
-import pt.isel.user.Token
-import pt.isel.user.TokenValidationInfo
-import pt.isel.user.User
+import pt.isel.jagoz.user.PasswordValidationInfo
+import pt.isel.jagoz.user.Token
+import pt.isel.jagoz.user.TokenValidationInfo
+import pt.isel.jagoz.user.User
 
 interface UserRepository {
     fun save(user: User): Long

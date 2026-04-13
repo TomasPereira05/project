@@ -1,8 +1,8 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
-import pt.isel.athlete.Athlete
-import pt.isel.sponsor.TeamCategory
+import pt.isel.jagoz.athlete.Athlete
+import pt.isel.jagoz.sponsor.TeamCategory
 import java.sql.ResultSet
 
 object AthleteMapper {

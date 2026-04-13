@@ -1,8 +1,9 @@
-package pt.isel
+package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.mappers.MemberMapper
-import pt.isel.member.Member
+import pt.isel.jagoz.member.Member
+import pt.isel.jagoz.repository.MemberRepository
+import pt.isel.jagoz.repository.jdbi.mappers.MemberMapper
 
 class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
     override fun findById(id: Long): Member? {

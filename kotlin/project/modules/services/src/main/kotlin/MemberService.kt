@@ -1,17 +1,17 @@
-package pt.isel.services
+package pt.isel.jagoz.services
 
 import jakarta.inject.Named
 import kotlinx.datetime.LocalDate
 import org.slf4j.LoggerFactory
 import pt.isel.Transaction
 import pt.isel.TransactionManager
-import pt.isel.member.Member
-import pt.isel.member.MemberCategory
-import pt.isel.member.MemberDomain
-import pt.isel.member.MemberError
-import pt.isel.utils.Either
-import pt.isel.utils.failure
-import pt.isel.utils.success
+import pt.isel.jagoz.member.Member
+import pt.isel.jagoz.member.MemberCategory
+import pt.isel.jagoz.member.MemberDomain
+import pt.isel.jagoz.member.MemberError
+import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.utils.failure
+import pt.isel.jagoz.utils.success
 
 typealias MemberResult = Either<MemberError, Member>
 

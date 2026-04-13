@@ -1,6 +1,6 @@
-package pt.isel
+package pt.isel.jagoz.repository
 
-import pt.isel.sponsor.Sponsor
+import pt.isel.jagoz.sponsor.Sponsor
 
 interface SponsorRepository {
     fun findById(id: Long): Sponsor?

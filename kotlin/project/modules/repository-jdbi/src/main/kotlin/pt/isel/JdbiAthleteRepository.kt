@@ -1,8 +1,9 @@
-package pt.isel
+package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.athlete.Athlete
-import pt.isel.mappers.AthleteMapper
+import pt.isel.jagoz.athlete.Athlete
+import pt.isel.jagoz.repository.AthleteRepository
+import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
 
 class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
     override fun findById(id: Long): Athlete? {

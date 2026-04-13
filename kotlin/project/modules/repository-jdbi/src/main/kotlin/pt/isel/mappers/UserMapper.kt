@@ -1,8 +1,8 @@
-package pt.isel.mappers
+package pt.isel.jagoz.repository.jdbi.mappers
 
-import pt.isel.user.PasswordValidationInfo
-import pt.isel.user.Role
-import pt.isel.user.User
+import pt.isel.jagoz.user.PasswordValidationInfo
+import pt.isel.jagoz.user.Role
+import pt.isel.jagoz.user.User
 import java.sql.ResultSet
 
 object UserMapper {
