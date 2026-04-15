@@ -1,6 +1,6 @@
-package pt.isel.sponsor
+package pt.isel.jagoz.sponsor
 
-import pt.isel.utils.Either
+import pt.isel.jagoz.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

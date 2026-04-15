@@ -1,17 +1,17 @@
-package pt.isel.member
+package pt.isel.jagoz.member
 
 import kotlinx.datetime.LocalDate
 import org.springframework.stereotype.Component
-import pt.isel.utils.ATHLETE_MEMBER_QUOTA
-import pt.isel.utils.Either
-import pt.isel.utils.MAX_REGISTRATION_DATE
-import pt.isel.utils.MIN_BIRTH_DATE
-import pt.isel.utils.REGULAR_MEMBER_MIN_QUOTA
-import pt.isel.utils.ValidationError
-import pt.isel.utils.ValidationPatterns
-import pt.isel.utils.ValidationUtils
-import pt.isel.utils.failure
-import pt.isel.utils.success
+import pt.isel.jagoz.utils.ATHLETE_MEMBER_QUOTA
+import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.utils.MAX_REGISTRATION_DATE
+import pt.isel.jagoz.utils.MIN_BIRTH_DATE
+import pt.isel.jagoz.utils.REGULAR_MEMBER_MIN_QUOTA
+import pt.isel.jagoz.utils.ValidationError
+import pt.isel.jagoz.utils.ValidationPatterns
+import pt.isel.jagoz.utils.ValidationUtils
+import pt.isel.jagoz.utils.failure
+import pt.isel.jagoz.utils.success
 
 /**
  * Domain operations for `Member`.

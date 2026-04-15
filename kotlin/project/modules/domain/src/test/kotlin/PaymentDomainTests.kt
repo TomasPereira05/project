@@ -1,14 +1,11 @@
-package pt.isel
+package pt.isel.jagoz.payment
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import pt.isel.payment.Charge
-import pt.isel.payment.ChargeStatus
-import pt.isel.payment.ChargeType
-import pt.isel.payment.Payment
-import pt.isel.payment.PaymentDomain
-import pt.isel.payment.PaymentStatus
-import pt.isel.utils.Either
+import pt.isel.jagoz.user.PasswordValidationInfo
+import pt.isel.jagoz.user.Role
+import pt.isel.jagoz.user.User
+import pt.isel.jagoz.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -28,6 +25,8 @@ class PaymentDomainTests {
             month = 5,
             createdAt = LocalDate.parse("2025-05-01"),
             paidAt = null,
+            creationUser = createUser(),
+            chargeUser = createAdminUser(),
         )
 
     private fun samplePayment(status: PaymentStatus = PaymentStatus.PENDING) =
@@ -40,6 +39,26 @@ class PaymentDomainTests {
             status = status,
             createdAt = LocalDateTime.parse("2025-05-01T10:00:00"),
             confirmedAt = null,
+        )
+
+    private fun createUser(): User =
+        User(
+            userId = 1,
+            email = "user2@gmail.com",
+            username = "Zé Manel",
+            passwordValidation = PasswordValidationInfo("hashed"),
+            role = Role.NORMAL,
+            activeMemberId = null,
+        )
+
+    private fun createAdminUser(): User =
+        User(
+            userId = 1,
+            email = "user1@gmail.com",
+            username = "Zé",
+            passwordValidation = PasswordValidationInfo("hashed"),
+            role = Role.ADMIN,
+            activeMemberId = null,
         )
 
     @Test

@@ -1,4 +1,4 @@
-package pt.isel.athlete
+package pt.isel.jagoz.athlete
 
 enum class GuardianRole {
     FATHER,

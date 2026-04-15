@@ -1,10 +1,7 @@
+package pt.isel.jagoz.member
+
 import kotlinx.datetime.LocalDate
-import pt.isel.member.Member
-import pt.isel.member.MemberCategory
-import pt.isel.member.MemberDomain
-import pt.isel.member.MemberError
-import pt.isel.member.MemberStatus
-import pt.isel.utils.Either
+import pt.isel.jagoz.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -1,16 +1,16 @@
-package pt.isel.event
+package pt.isel.jagoz.event
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.springframework.stereotype.Component
-import pt.isel.utils.Either
-import pt.isel.utils.ValidationError
-import pt.isel.utils.ValidationPatterns
-import pt.isel.utils.ValidationUtils
-import pt.isel.utils.failure
-import pt.isel.utils.success
+import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.utils.ValidationError
+import pt.isel.jagoz.utils.ValidationPatterns
+import pt.isel.jagoz.utils.ValidationUtils
+import pt.isel.jagoz.utils.failure
+import pt.isel.jagoz.utils.success
 
 /**
  * Domain errors for ticket operations.

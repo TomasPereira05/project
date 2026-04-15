@@ -1,4 +1,4 @@
-package pt.isel.user
+package pt.isel.jagoz.user
 
 /**
  * Contains information required to validate a password (e.g., hash).

@@ -1,4 +1,4 @@
-package pt.isel.payment
+package pt.isel.jagoz.payment
 
 enum class ChargeType {
     MEMBER_FEE,
