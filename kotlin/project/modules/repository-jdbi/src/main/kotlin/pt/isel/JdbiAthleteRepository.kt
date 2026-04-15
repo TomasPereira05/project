@@ -1,11 +1,10 @@
 package pt.isel
 
 import org.jdbi.v3.core.Handle
-import pt.isel.mappers.AthleteMapper
 import pt.isel.athlete.Athlete
+import pt.isel.mappers.AthleteMapper
 
 class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
-
     override fun findById(id: Long): Athlete? {
         return handle.createQuery("SELECT * FROM athlete WHERE athlete_id = :id")
             .bind("id", id)
@@ -38,7 +37,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
                 :memberId, :nationality, :niss, :nif, :numeroUtente, :bi, CAST(:biExpirationDate AS DATE),
                 :school, :schoolYear, :schoolClass, :lastClub, :season, CAST(:teamCategory AS team_category), :active
             )
-            """
+            """,
         )
             .bind("memberId", athlete.memberId)
             .bind("nationality", athlete.nationality)
@@ -78,7 +77,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
                 team_category = CAST(:teamCategory AS team_category),
                 active = :active
             WHERE athlete_id = :id
-            """
+            """,
         )
             .bind("id", athlete.athleteId)
             .bind("memberId", athlete.memberId)

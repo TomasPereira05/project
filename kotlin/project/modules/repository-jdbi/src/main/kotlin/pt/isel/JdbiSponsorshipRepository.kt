@@ -4,32 +4,33 @@ import org.jdbi.v3.core.Handle
 import pt.isel.mappers.SponsorshipMapper
 import pt.isel.sponsor.Sponsorship
 
-class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipRepository {
-
-    override fun findById(id: Long): Sponsorship? {
-        return handle.createQuery("SELECT * FROM sponsorship WHERE sponsorship_id = :id")
+class JdbiSponsorshipRepository(
+    private val handle: Handle,
+) : SponsorshipRepository {
+    override fun findById(id: Long): Sponsorship? =
+        handle
+            .createQuery("SELECT * FROM sponsorship WHERE sponsorship_id = :id")
             .bind("id", id)
             .map { rs, _ -> SponsorshipMapper.map(rs) }
             .findOne()
             .orElse(null)
-    }
 
-    override fun findBySponsorId(sponsorId: Long): List<Sponsorship> {
-        return handle.createQuery("SELECT * FROM sponsorship WHERE sponsor_id = :sponsorId")
+    override fun findBySponsorId(sponsorId: Long): List<Sponsorship> =
+        handle
+            .createQuery("SELECT * FROM sponsorship WHERE sponsor_id = :sponsorId")
             .bind("sponsorId", sponsorId)
             .map { rs, _ -> SponsorshipMapper.map(rs) }
             .list()
-    }
 
-    override fun save(sponsorship: Sponsorship): Long {
-        return handle.createUpdate(
-            """
+    override fun save(sponsorship: Sponsorship): Long =
+        handle
+            .createUpdate(
+                """
             INSERT INTO sponsorship (sponsor_id, season, status, type, price, pub_option, team_category, placement, sport)
             VALUES (:sponsorId, :season, CAST(:status AS sponsorship_status), CAST(:type AS sponsor_type), :price, 
                     CAST(:pubOption AS pub_option), CAST(:teamCategory AS team_category), CAST(:placement AS equipment_placement), CAST(:sport AS other_sport))
-            """
-        )
-            .bind("sponsorId", sponsorship.sponsorId)
+            """,
+            ).bind("sponsorId", sponsorship.sponsorId)
             .bind("season", sponsorship.season)
             .bind("status", sponsorship.status.name)
             .bind("type", sponsorship.type.name)
@@ -41,11 +42,11 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun update(sponsorship: Sponsorship) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE sponsorship SET 
                 sponsor_id = :sponsorId,
                 season = :season,
@@ -57,9 +58,8 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
                 placement = CAST(:placement AS equipment_placement),
                 sport = CAST(:sport AS other_sport)
             WHERE sponsorship_id = :id
-            """
-        )
-            .bind("id", sponsorship.sponsorshipId)
+            """,
+            ).bind("id", sponsorship.sponsorshipId)
             .bind("sponsorId", sponsorship.sponsorId)
             .bind("season", sponsorship.season)
             .bind("status", sponsorship.status.name)

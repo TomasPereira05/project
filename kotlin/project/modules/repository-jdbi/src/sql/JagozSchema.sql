@@ -162,6 +162,8 @@ CREATE TABLE charge (
     season VARCHAR(50),
     month INT,
     created_at DATE NOT NULL,
+    creation_user_id INT NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
+    charged_user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
     paid_at DATE,
     CONSTRAINT chk_charge_target CHECK (
         (type IN ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE') AND member_id IS NOT NULL) OR
