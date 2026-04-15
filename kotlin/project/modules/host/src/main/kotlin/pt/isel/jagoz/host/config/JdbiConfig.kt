@@ -5,8 +5,8 @@ import org.postgresql.ds.PGSimpleDataSource
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
-import pt.isel.jagoz.configureWithAppRequirements
 import pt.isel.jagoz.host.Environment
+import pt.isel.jagoz.repository.jdbi.configureWithAppRequirements
 
 @Configuration
 @ComponentScan(basePackages = ["pt.isel.jagoz"])
