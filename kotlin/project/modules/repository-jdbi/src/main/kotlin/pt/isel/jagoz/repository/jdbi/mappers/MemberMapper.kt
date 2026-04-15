@@ -1,13 +1,18 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
+import org.jdbi.v3.core.mapper.RowMapper
+import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.member.Member
 import pt.isel.jagoz.member.MemberCategory
 import pt.isel.jagoz.member.MemberStatus
 import java.sql.ResultSet
 
-object MemberMapper {
-    fun map(rs: ResultSet): Member {
+class MemberMapper : RowMapper<Member> {
+    override fun map(
+        rs: ResultSet,
+        ctx: StatementContext,
+    ): Member {
         val memberNumber = (rs.getObject("member_number") as? Number)?.toInt() ?: 0
 
         return Member(
@@ -24,7 +29,7 @@ object MemberMapper {
             category = MemberCategory.valueOf(rs.getString("category")),
             formerMember = rs.getBoolean("former_member"),
             status = MemberStatus.valueOf(rs.getString("status")),
-            monthlyQuota = rs.getDouble("monthly_quota"),
+            membershipQuota = rs.getInt("monthly_quota"),
             billingLocation = rs.getString("billing_location"),
             registrationDate = LocalDate.parse(rs.getString("registration_date")),
             approvalDate = rs.getString("approval_date")?.let(LocalDate::parse),

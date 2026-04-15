@@ -1,10 +1,15 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
+import org.jdbi.v3.core.mapper.RowMapper
+import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.sponsor.Sponsor
 import java.sql.ResultSet
 
-object SponsorMapper {
-    fun map(rs: ResultSet): Sponsor =
+class SponsorMapper : RowMapper<Sponsor> {
+    override fun map(
+        rs: ResultSet,
+        ctx: StatementContext,
+    ): Sponsor =
         Sponsor(
             sponsorId = rs.getLong("sponsor_id"),
             name = rs.getString("name"),

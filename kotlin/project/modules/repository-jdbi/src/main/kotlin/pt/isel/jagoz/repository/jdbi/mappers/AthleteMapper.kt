@@ -1,16 +1,33 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
+import org.jdbi.v3.core.mapper.RowMapper
+import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.athlete.Athlete
 import pt.isel.jagoz.sponsor.TeamCategory
 import java.sql.ResultSet
 
-object AthleteMapper {
-    fun map(rs: ResultSet): Athlete =
-        Athlete(
+class AthleteMapper : RowMapper<Athlete> {
+    override fun map(
+        rs: ResultSet,
+        ctx: StatementContext,
+    ): Athlete {
+        // These fields exist in the domain but are not yet persisted in the current schema.
+        // To keep the domain strict (non-null), we provide explicit placeholders.
+        val notAvailable = "N/A"
+
+        return Athlete(
             athleteId = rs.getLong("athlete_id"),
             memberId = rs.getLong("member_id"),
             nationality = rs.getString("nationality"),
+            birthplace = notAvailable,
+            birthdate = LocalDate.parse(rs.getString("birth_date")),
+            email = rs.getString("email"),
+            phone = rs.getString("phone"),
+            postalCode = rs.getString("postal_code"),
+            address = rs.getString("address"),
+            city = rs.getString("city"),
+            state = notAvailable,
             niss = rs.getString("niss"),
             nif = rs.getString("nif"),
             numeroUtente = rs.getString("numero_utente"),
@@ -23,5 +40,9 @@ object AthleteMapper {
             season = rs.getString("season"),
             teamCategory = TeamCategory.valueOf(rs.getString("team_category")),
             active = rs.getBoolean("active"),
+            privacyAccepted = rs.getBoolean("privacy_accepted"),
+            comsAccepted = rs.getBoolean("coms_accepted"),
+            schoolCertificationAccepted = false,
         )
+    }
 }
