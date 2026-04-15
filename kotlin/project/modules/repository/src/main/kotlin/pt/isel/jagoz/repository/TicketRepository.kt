@@ -1,4 +1,4 @@
-package pt.isel.jagoz.repository.pt.isel.jagoz.repository
+package pt.isel.jagoz.repository
 
 import kotlinx.datetime.LocalDateTime
 import pt.isel.jagoz.event.Ticket

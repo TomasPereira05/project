@@ -7,7 +7,8 @@ import pt.isel.jagoz.member.Member
 import pt.isel.jagoz.member.MemberCategory
 import pt.isel.jagoz.member.MemberDomain
 import pt.isel.jagoz.member.MemberError
-import pt.isel.jagoz.repository.pt.isel.jagoz.repository.TransactionManager
+import pt.isel.jagoz.repository.Transaction
+import pt.isel.jagoz.repository.TransactionManager
 import pt.isel.jagoz.utils.Either
 import pt.isel.jagoz.utils.failure
 import pt.isel.jagoz.utils.success
