@@ -1,12 +1,12 @@
-package pt.isel.sponsor
+package pt.isel.jagoz.sponsor
 
 import org.springframework.stereotype.Component
-import pt.isel.utils.Either
-import pt.isel.utils.ValidationError
-import pt.isel.utils.ValidationPatterns
-import pt.isel.utils.ValidationUtils
-import pt.isel.utils.failure
-import pt.isel.utils.success
+import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.utils.ValidationError
+import pt.isel.jagoz.utils.ValidationPatterns
+import pt.isel.jagoz.utils.ValidationUtils
+import pt.isel.jagoz.utils.failure
+import pt.isel.jagoz.utils.success
 
 /**
  * Errors produced by sponsor domain operations.
@@ -66,11 +66,11 @@ class SponsorDomain {
         phone: String,
         nif: String,
     ): Either<SponsorError, Sponsor> {
-        fun mapErr(err: pt.isel.utils.ValidationError?): SponsorError.ValidationError? {
+        fun mapErr(err: ValidationError?): SponsorError.ValidationError? {
             if (err == null) return null
             return when (err) {
-                is pt.isel.utils.ValidationError.FieldError -> SponsorError.ValidationError("${err.field} ${err.message}")
-                is pt.isel.utils.ValidationError.GlobalError -> SponsorError.ValidationError(err.message)
+                is ValidationError.FieldError -> SponsorError.ValidationError("${err.field} ${err.message}")
+                is ValidationError.GlobalError -> SponsorError.ValidationError(err.message)
             }
         }
 

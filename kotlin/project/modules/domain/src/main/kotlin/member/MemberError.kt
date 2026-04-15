@@ -1,6 +1,4 @@
-package pt.isel.member
-
-import pt.isel.utils.Either
+package pt.isel.jagoz.member
 
 /**
  * Errors produced by member domain operations.

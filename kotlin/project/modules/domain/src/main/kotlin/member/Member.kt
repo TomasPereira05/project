@@ -1,4 +1,4 @@
-package pt.isel.member
+package pt.isel.jagoz.member
 
 import kotlinx.datetime.LocalDate
 

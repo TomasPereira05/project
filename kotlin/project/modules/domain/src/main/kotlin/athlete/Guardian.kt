@@ -1,4 +1,4 @@
-package pt.isel.athlete
+package pt.isel.jagoz.athlete
 
 data class Guardian(
     val guardianId: Long,

@@ -1,13 +1,13 @@
-package pt.isel.payment
+package pt.isel.jagoz.payment
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.springframework.stereotype.Component
-import pt.isel.utils.Either
-import pt.isel.utils.ValidationError
-import pt.isel.utils.ValidationUtils
-import pt.isel.utils.failure
-import pt.isel.utils.success
+import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.utils.ValidationError
+import pt.isel.jagoz.utils.ValidationUtils
+import pt.isel.jagoz.utils.failure
+import pt.isel.jagoz.utils.success
 
 /**
  * Errors produced by charge-related domain operations.

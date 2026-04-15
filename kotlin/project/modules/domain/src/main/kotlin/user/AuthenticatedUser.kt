@@ -1,4 +1,4 @@
-package pt.isel.user
+package pt.isel.jagoz.user
 
 /**
  * Represents an authenticated user with their associated token.
