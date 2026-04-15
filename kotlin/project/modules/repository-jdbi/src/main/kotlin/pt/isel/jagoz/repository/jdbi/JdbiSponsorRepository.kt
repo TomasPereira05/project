@@ -9,7 +9,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun findById(id: Long): Sponsor? {
         return handle.createQuery("SELECT * FROM sponsor WHERE sponsor_id = :id")
             .bind("id", id)
-            .map { rs, _ -> SponsorMapper.map(rs) }
+            .mapTo(Sponsor::class.java)
             .findOne()
             .orElse(null)
     }
@@ -17,14 +17,14 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun findByNif(nif: String): Sponsor? {
         return handle.createQuery("SELECT * FROM sponsor WHERE nif = :nif")
             .bind("nif", nif)
-            .map { rs, _ -> SponsorMapper.map(rs) }
+            .mapTo(Sponsor::class.java)
             .findOne()
             .orElse(null)
     }
 
     override fun findAll(): List<Sponsor> {
         return handle.createQuery("SELECT * FROM sponsor ORDER BY name ASC")
-            .map { rs, _ -> SponsorMapper.map(rs) }
+            .mapTo(Sponsor::class.java)
             .list()
     }
 

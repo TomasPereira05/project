@@ -7,24 +7,45 @@ import pt.isel.jagoz.repository.AthleteRepository
 
 class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
     override fun findById(id: Long): Athlete? {
-        return handle.createQuery("SELECT * FROM athlete WHERE athlete_id = :id")
+        return handle.createQuery(
+            """
+            SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
+            FROM athlete a
+            JOIN member m ON m.member_id = a.member_id
+            WHERE a.athlete_id = :id
+            """.trimIndent(),
+        )
             .bind("id", id)
-            .map { rs, _ -> AthleteMapper.map(rs) }
+            .mapTo(Athlete::class.java)
             .findOne()
             .orElse(null)
     }
 
     override fun findByMemberId(memberId: Long): Athlete? {
-        return handle.createQuery("SELECT * FROM athlete WHERE member_id = :memberId")
+        return handle.createQuery(
+            """
+            SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
+            FROM athlete a
+            JOIN member m ON m.member_id = a.member_id
+            WHERE a.member_id = :memberId
+            """.trimIndent(),
+        )
             .bind("memberId", memberId)
-            .map { rs, _ -> AthleteMapper.map(rs) }
+            .mapTo(Athlete::class.java)
             .findOne()
             .orElse(null)
     }
 
     override fun findAllActive(): List<Athlete> {
-        return handle.createQuery("SELECT * FROM athlete WHERE active = true")
-            .map { rs, _ -> AthleteMapper.map(rs) }
+        return handle.createQuery(
+            """
+            SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
+            FROM athlete a
+            JOIN member m ON m.member_id = a.member_id
+            WHERE a.active = true
+            """.trimIndent(),
+        )
+            .mapTo(Athlete::class.java)
             .list()
     }
 

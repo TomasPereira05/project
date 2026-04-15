@@ -20,7 +20,7 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
     override fun findById(id: Long): Charge? {
         return handle.createQuery("$selectQuery WHERE c.charge_id = :id")
             .bind("id", id)
-            .map { rs, _ -> ChargeMapper.map(rs) }
+            .mapTo(Charge::class.java)
             .findOne()
             .orElse(null)
     }
@@ -32,14 +32,14 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
         return handle.createQuery("$selectQuery WHERE c.member_id = :memberId AND c.season = :season ORDER BY c.month ASC")
             .bind("memberId", memberId)
             .bind("season", season)
-            .map { rs, _ -> ChargeMapper.map(rs) }
+            .mapTo(Charge::class.java)
             .list()
     }
 
     override fun findPendingByMember(memberId: Long): List<Charge> {
         return handle.createQuery("$selectQuery WHERE c.member_id = :memberId AND c.status = 'PENDING' ORDER BY c.created_at ASC")
             .bind("memberId", memberId)
-            .map { rs, _ -> ChargeMapper.map(rs) }
+            .mapTo(Charge::class.java)
             .list()
     }
 

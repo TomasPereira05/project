@@ -10,7 +10,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun findById(id: Long): Ticket? {
         return handle.createQuery("SELECT * FROM ticket WHERE ticket_id = :id")
             .bind("id", id)
-            .map { rs, _ -> TicketMapper.map(rs) }
+            .mapTo(Ticket::class.java)
             .findOne()
             .orElse(null)
     }
@@ -18,7 +18,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun findByQrCode(qrCode: String): Ticket? {
         return handle.createQuery("SELECT * FROM ticket WHERE qr_code = :qrCode")
             .bind("qrCode", qrCode)
-            .map { rs, _ -> TicketMapper.map(rs) }
+            .mapTo(Ticket::class.java)
             .findOne()
             .orElse(null)
     }
@@ -26,7 +26,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun findByEventId(eventId: Long): List<Ticket> {
         return handle.createQuery("SELECT * FROM ticket WHERE event_id = :eventId")
             .bind("eventId", eventId)
-            .map { rs, _ -> TicketMapper.map(rs) }
+            .mapTo(Ticket::class.java)
             .list()
     }
 
