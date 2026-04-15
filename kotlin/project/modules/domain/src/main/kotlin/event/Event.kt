@@ -1,4 +1,4 @@
-package pt.isel.event
+package pt.isel.jagoz.event
 
 import kotlinx.datetime.LocalDate
 

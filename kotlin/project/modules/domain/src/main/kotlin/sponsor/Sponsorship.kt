@@ -1,4 +1,4 @@
-package pt.isel.sponsor
+package pt.isel.jagoz.sponsor
 
 /**
  * Representa um contrato de patrocínio individual.
@@ -7,11 +7,15 @@ package pt.isel.sponsor
  */
 data class Sponsorship(
     val sponsorshipId: Long,
-    val sponsorId: Long, // FK → Sponsor
-    val season: String, // Época (ex: "2025/2026")
+    // FK → Sponsor
+    val sponsorId: Long,
+    // Época (ex: "2025/2026")
+    val season: String,
     val status: SponsorshipStatus,
-    val type: SponsorType, // PUB, TEAM, ou OTHER
-    val price: Double,
+    // PUB, TEAM, ou OTHER
+    val type: SponsorType,
+    // Preço em cêntimos (ex: 50000 = 500.00€)
+    val price: Int,
     // Só é preenchida 1 das 3 propriedades, conforme o tipo de contrato
     val pubOption: PubOption? = null,
     val teamCategory: TeamCategory? = null,

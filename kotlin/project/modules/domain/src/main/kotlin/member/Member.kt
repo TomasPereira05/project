@@ -1,4 +1,4 @@
-package pt.isel.member
+package pt.isel.jagoz.member
 
 import kotlinx.datetime.LocalDate
 
@@ -10,7 +10,8 @@ import kotlinx.datetime.LocalDate
  */
 data class Member(
     val memberId: Long,
-    val memberNumber: Int, // Número sequencial único (1, 2, 3...)
+    // Número sequencial único (1, 2, 3...)
+    val memberNumber: Int,
     val completeName: String,
     val birthDate: LocalDate,
     val email: String,
@@ -19,13 +20,20 @@ data class Member(
     val address: String,
     val postalCode: String,
     val city: String,
-    val category: MemberCategory, // SOCIO ou ATLETA_SOCIO
+    // SOCIO ou ATLETA_SOCIO
+    val category: MemberCategory,
     val formerMember: Boolean,
-    val status: MemberStatus, // PENDENTE, ATIVO, INATIVO, REJEITADO
-    val monthlyQuota: Double, // Mínimo 1.5€ (0.0 para atletas ativos)
-    val billingLocation: String?, // Local de cobrança
+    // PENDENTE, ATIVO, INATIVO, REJEITADO
+    val status: MemberStatus,
+    // Quota mensal do sócio em cêntimos (ex: 150 = 1.50€)
+    // SOCIO: mínimo 150 cêntimos (1.50€)
+    // ATLETA_SOCIO: 0 cêntimos (não paga quota de sócio)
+    val membershipQuota: Int = 150,
+    // Local de cobrança
+    val billingLocation: String?,
     val registrationDate: LocalDate,
-    val approvalDate: LocalDate? = null, // Aprovação pelos diretores (null = pendente)
-    val privacyAccepted: Boolean,
-    val comsAccepted: Boolean,
+    // Aprovação pelos diretores (null = pendente)
+    val approvalDate: LocalDate? = null,
+    val privacyAccepted: Boolean = false,
+    val comsAccepted: Boolean = false,
 )

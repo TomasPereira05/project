@@ -1,4 +1,4 @@
-package pt.isel.event
+package pt.isel.jagoz.event
 
 import kotlinx.datetime.LocalDateTime
 import java.util.UUID
@@ -10,7 +10,7 @@ data class Ticket(
     val buyerEmail: String,
     val buyerName: String,
     val eventId: Long,
-    val price: Double,
+    val price: Int,
     val qrCode: String = UUID.randomUUID().toString(),
     val used: Boolean = false,
     val usedAt: LocalDateTime? = null,

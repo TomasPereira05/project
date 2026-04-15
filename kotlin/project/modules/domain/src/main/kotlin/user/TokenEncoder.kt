@@ -1,4 +1,4 @@
-package pt.isel.user
+package pt.isel.jagoz.user
 
 /**
  * Interface for encoding tokens into validation information.

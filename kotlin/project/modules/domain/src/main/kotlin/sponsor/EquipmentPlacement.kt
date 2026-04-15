@@ -1,4 +1,4 @@
-package pt.isel.sponsor
+package pt.isel.jagoz.sponsor
 
 enum class EquipmentPlacement {
     FRENTE,

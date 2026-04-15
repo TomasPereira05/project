@@ -1,4 +1,4 @@
-package pt.isel.utils
+package pt.isel.jagoz.utils
 
 /**
  * Represents a value of one of two possible types (a disjoint union).
@@ -52,3 +52,17 @@ inline fun <L, R> Either<L, R>.getOrReturn(block: (L) -> Nothing): R =
         is Either.Left -> block(value)
         is Either.Right -> value
     }
+
+inline fun <L, R, T> Either<L, R>.fold(
+    onLeft: (L) -> T,
+    onRight: (R) -> T,
+): T =
+    when (this) {
+        is Either.Left -> onLeft(value)
+        is Either.Right -> onRight(value)
+    }
+
+inline fun <L, R, T> Either<L, R>.handle(
+    onFailure: (L) -> T,
+    onSuccess: (R) -> T,
+): T = fold(onFailure, onSuccess)
