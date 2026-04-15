@@ -1,36 +1,44 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDate
+import org.jdbi.v3.core.mapper.RowMapper
+import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.payment.Charge
 import pt.isel.jagoz.payment.ChargeStatus
 import pt.isel.jagoz.payment.ChargeType
+import pt.isel.jagoz.user.PasswordValidationInfo
+import pt.isel.jagoz.user.Role
+import pt.isel.jagoz.user.User
 import java.sql.ResultSet
 
-object ChargeMapper {
-    fun map(rs: ResultSet): Charge {
+class ChargeMapper : RowMapper<Charge> {
+    override fun map(
+        rs: ResultSet,
+        ctx: StatementContext,
+    ): Charge {
         val memberId = (rs.getObject("member_id") as? Number)?.toLong()
         val sponsorshipId = (rs.getObject("sponsorship_id") as? Number)?.toLong()
         val month = (rs.getObject("month") as? Number)?.toInt()
 
         val chargeUserRecord =
             rs.getObject("ch_user_id")?.let {
-                pt.isel.user.User(
+                User(
                     userId = rs.getLong("ch_user_id"),
                     email = rs.getString("ch_email"),
                     username = rs.getString("ch_username"),
-                    passwordValidation = pt.isel.user.PasswordValidationInfo(rs.getString("ch_password_validation")),
-                    role = pt.isel.user.Role.valueOf(rs.getString("ch_role")),
+                    passwordValidation = PasswordValidationInfo(rs.getString("ch_password_validation")),
+                    role = Role.valueOf(rs.getString("ch_role")),
                     activeMemberId = (rs.getObject("ch_active_member_id") as? Number)?.toLong(),
                 )
             }
 
         val creationUserRecord =
-            pt.isel.user.User(
+            User(
                 userId = rs.getLong("cu_user_id"),
                 email = rs.getString("cu_email"),
                 username = rs.getString("cu_username"),
-                passwordValidation = pt.isel.user.PasswordValidationInfo(rs.getString("cu_password_validation")),
-                role = pt.isel.user.Role.valueOf(rs.getString("cu_role")),
+                passwordValidation = PasswordValidationInfo(rs.getString("cu_password_validation")),
+                role = Role.valueOf(rs.getString("cu_role")),
                 activeMemberId = (rs.getObject("cu_active_member_id") as? Number)?.toLong(),
             )
 
@@ -39,7 +47,7 @@ object ChargeMapper {
             type = ChargeType.valueOf(rs.getString("type")),
             memberId = memberId,
             sponsorshipId = sponsorshipId,
-            value = rs.getDouble("value"),
+            value = rs.getInt("value"),
             status = ChargeStatus.valueOf(rs.getString("status")),
             season = rs.getString("season"),
             month = month,

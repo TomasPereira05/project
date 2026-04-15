@@ -9,7 +9,7 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
     override fun findByChargeId(chargeId: Long): List<Payment> {
         return handle.createQuery("SELECT * FROM payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
             .bind("chargeId", chargeId)
-            .map { rs, _ -> PaymentMapper.map(rs) }
+            .mapTo(Payment::class.java)
             .list()
     }
 

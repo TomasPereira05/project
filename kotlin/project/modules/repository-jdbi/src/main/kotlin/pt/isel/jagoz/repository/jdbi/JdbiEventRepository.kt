@@ -9,14 +9,14 @@ class JdbiEventRepository(private val handle: Handle) : EventRepository {
     override fun findById(id: Long): Event? {
         return handle.createQuery("SELECT * FROM event WHERE event_id = :id")
             .bind("id", id)
-            .map { rs, _ -> EventMapper.map(rs) }
+            .mapTo(Event::class.java)
             .findOne()
             .orElse(null)
     }
 
     override fun findAll(): List<Event> {
         return handle.createQuery("SELECT * FROM event ORDER BY date DESC")
-            .map { rs, _ -> EventMapper.map(rs) }
+            .mapTo(Event::class.java)
             .list()
     }
 

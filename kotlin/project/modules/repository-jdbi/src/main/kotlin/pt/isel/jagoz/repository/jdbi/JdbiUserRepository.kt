@@ -41,7 +41,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun findById(id: Long): User? {
         return handle.createQuery("SELECT * FROM users WHERE user_id = :id")
             .bind("id", id)
-            .map { rs, _ -> UserMapper.map(rs) }
+            .mapTo(User::class.java)
             .findOne()
             .orElse(null)
     }
@@ -49,7 +49,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun findByUsername(username: String): User? {
         return handle.createQuery("SELECT * FROM users WHERE username = :username")
             .bind("username", username)
-            .map { rs, _ -> UserMapper.map(rs) }
+            .mapTo(User::class.java)
             .findOne()
             .orElse(null)
     }
@@ -57,7 +57,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun findByEmail(email: String): User? {
         return handle.createQuery("SELECT * FROM users WHERE email = :email")
             .bind("email", email)
-            .map { rs, _ -> UserMapper.map(rs) }
+            .mapTo(User::class.java)
             .findOne()
             .orElse(null)
     }
@@ -108,9 +108,9 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
             """,
             )
                 .bind("validation", validation.validationInfo)
-                .map { rs, _ ->
-                    val user = UserMapper.map(rs)
-                    val token = TokenMapper.map(rs)
+                .map { rs, ctx ->
+                    val user = UserMapper().map(rs, ctx)
+                    val token = TokenMapper().map(rs, ctx)
                     Pair(user, token)
                 }
                 .findOne()

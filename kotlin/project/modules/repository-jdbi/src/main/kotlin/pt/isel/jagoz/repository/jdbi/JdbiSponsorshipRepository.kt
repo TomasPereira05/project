@@ -9,7 +9,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     override fun findById(id: Long): Sponsorship? {
         return handle.createQuery("SELECT * FROM sponsorship WHERE sponsorship_id = :id")
             .bind("id", id)
-            .map { rs, _ -> SponsorshipMapper.map(rs) }
+            .mapTo(Sponsorship::class.java)
             .findOne()
             .orElse(null)
     }
@@ -17,7 +17,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     override fun findBySponsorId(sponsorId: Long): List<Sponsorship> {
         return handle.createQuery("SELECT * FROM sponsorship WHERE sponsor_id = :sponsorId")
             .bind("sponsorId", sponsorId)
-            .map { rs, _ -> SponsorshipMapper.map(rs) }
+            .mapTo(Sponsorship::class.java)
             .list()
     }
 

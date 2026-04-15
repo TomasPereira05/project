@@ -9,7 +9,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
     override fun findById(id: Long): Member? {
         return handle.createQuery("SELECT * FROM member WHERE member_id = :id")
             .bind("id", id)
-            .map { rs, _ -> MemberMapper.map(rs) }
+            .mapTo(Member::class.java)
             .findOne()
             .orElse(null)
     }
@@ -17,20 +17,20 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
     override fun findByEmail(email: String): Member? {
         return handle.createQuery("SELECT * FROM member WHERE email = :email")
             .bind("email", email)
-            .map { rs, _ -> MemberMapper.map(rs) }
+            .mapTo(Member::class.java)
             .findOne()
             .orElse(null)
     }
 
     override fun findAll(): List<Member> {
         return handle.createQuery("SELECT * FROM member ORDER BY member_number ASC")
-            .map { rs, _ -> MemberMapper.map(rs) }
+            .mapTo(Member::class.java)
             .list()
     }
 
     override fun findAllActive(): List<Member> {
         return handle.createQuery("SELECT * FROM member WHERE status = 'ATIVO' ORDER BY member_number ASC")
-            .map { rs, _ -> MemberMapper.map(rs) }
+            .mapTo(Member::class.java)
             .list()
     }
 
@@ -72,7 +72,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .bind("category", member.category.name)
             .bind("status", member.status.name)
             .bind("formerMember", member.formerMember)
-            .bind("monthlyQuota", member.monthlyQuota)
+            .bind("monthlyQuota", member.membershipQuota)
             .bind("billingLocation", member.billingLocation)
             .bind("registrationDate", member.registrationDate.toString())
             .bind("approvalDate", member.approvalDate?.toString())
@@ -121,7 +121,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .bind("category", member.category.name)
             .bind("status", member.status.name)
             .bind("formerMember", member.formerMember)
-            .bind("monthlyQuota", member.monthlyQuota)
+            .bind("monthlyQuota", member.membershipQuota)
             .bind("billingLocation", member.billingLocation)
             .bind("registrationDate", member.registrationDate.toString())
             .bind("approvalDate", member.approvalDate?.toString())

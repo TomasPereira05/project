@@ -1,16 +1,21 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.LocalDateTime
+import org.jdbi.v3.core.mapper.RowMapper
+import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.payment.Payment
 import pt.isel.jagoz.payment.PaymentStatus
 import java.sql.ResultSet
 
-object PaymentMapper {
-    fun map(rs: ResultSet): Payment =
+class PaymentMapper : RowMapper<Payment> {
+    override fun map(
+        rs: ResultSet,
+        ctx: StatementContext,
+    ): Payment =
         Payment(
             paymentId = rs.getLong("payment_id"),
             chargeId = rs.getLong("charge_id"),
-            amount = rs.getDouble("amount"),
+            amount = rs.getInt("amount"),
             provider = rs.getString("provider"),
             providerRef = rs.getString("provider_ref"),
             status = PaymentStatus.valueOf(rs.getString("status")),
