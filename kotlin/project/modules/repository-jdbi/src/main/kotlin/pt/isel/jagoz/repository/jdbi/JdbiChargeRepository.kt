@@ -3,7 +3,7 @@ package pt.isel.jagoz.repository.jdbi
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.payment.Charge
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
-import pt.isel.jagoz.repository.pt.isel.jagoz.repository.ChargeRepository
+import pt.isel.jagoz.repository.ChargeRepository
 
 class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
     override fun findById(id: Long): Charge? {

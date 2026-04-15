@@ -1,4 +1,4 @@
-package pt.isel.jagoz.repository.pt.isel.jagoz.repository
+package pt.isel.jagoz.repository
 
 import kotlinx.datetime.Instant
 import pt.isel.jagoz.user.PasswordValidationInfo

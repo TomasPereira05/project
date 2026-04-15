@@ -1,4 +1,4 @@
-package pt.isel.jagoz.repository.pt.isel.jagoz.repository
+package pt.isel.jagoz.repository
 
 import pt.isel.jagoz.payment.Payment
 
