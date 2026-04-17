@@ -3,8 +3,8 @@ package pt.isel.jagoz.repository.jdbi.mappers
 import kotlinx.datetime.LocalDateTime
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.jagoz.payment.Payment
-import pt.isel.jagoz.payment.PaymentStatus
+import pt.isel.jagoz.domain.payment.Payment
+import pt.isel.jagoz.domain.payment.PaymentStatus
 import java.sql.ResultSet
 
 class PaymentMapper : RowMapper<Payment> {

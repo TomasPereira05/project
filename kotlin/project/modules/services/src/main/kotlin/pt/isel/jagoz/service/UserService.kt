@@ -4,30 +4,40 @@ import jakarta.inject.Named
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.slf4j.LoggerFactory
+import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.Token
+import pt.isel.jagoz.domain.user.User
+import pt.isel.jagoz.domain.user.UserDomain
+import pt.isel.jagoz.domain.user.toAuthenticatedUser
+import pt.isel.jagoz.domain.utils.Either
+import pt.isel.jagoz.domain.utils.failure
+import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager
-import pt.isel.jagoz.user.AuthenticatedUser
-import pt.isel.jagoz.user.PasswordValidationInfo
-import pt.isel.jagoz.user.Role
-import pt.isel.jagoz.user.Token
-import pt.isel.jagoz.user.User
-import pt.isel.jagoz.user.UserDomain
-import pt.isel.jagoz.user.toAuthenticatedUser
-import pt.isel.jagoz.utils.Either
-import pt.isel.jagoz.utils.failure
-import pt.isel.jagoz.utils.success
 
 typealias UserResult = Either<UserServiceError, User>
 typealias AuthenticatedUserResult = Either<UserServiceError, AuthenticatedUser>
 typealias TokenCreationResult = Either<UserServiceError, TokenExternalInfo>
 
 sealed class UserServiceError {
-    data class NotFound(val field: String, val value: Any) : UserServiceError()
+    data class NotFound(
+        val field: String,
+        val value: Any,
+    ) : UserServiceError()
 
-    data class AlreadyExists(val field: String, val value: Any) : UserServiceError()
+    data class AlreadyExists(
+        val field: String,
+        val value: Any,
+    ) : UserServiceError()
 
-    data class Validation(val message: String) : UserServiceError()
+    data class Validation(
+        val message: String,
+    ) : UserServiceError()
 
-    data class Unauthorized(val message: String) : UserServiceError()
+    data class Unauthorized(
+        val message: String,
+    ) : UserServiceError()
 }
 
 data class TokenExternalInfo(

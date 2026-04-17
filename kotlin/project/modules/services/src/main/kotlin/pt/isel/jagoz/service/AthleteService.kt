@@ -2,15 +2,15 @@ package pt.isel.jagoz.service
 
 import jakarta.inject.Named
 import org.slf4j.LoggerFactory
-import pt.isel.jagoz.athlete.Athlete
-import pt.isel.jagoz.athlete.AthleteDomain
-import pt.isel.jagoz.athlete.AthleteError
+import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.AthleteDomain
+import pt.isel.jagoz.domain.athlete.AthleteError
+import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.utils.Either
+import pt.isel.jagoz.domain.utils.failure
+import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
-import pt.isel.jagoz.sponsor.TeamCategory
-import pt.isel.jagoz.utils.Either
-import pt.isel.jagoz.utils.failure
-import pt.isel.jagoz.utils.success
 
 typealias AthleteResult = Either<AthleteError, Athlete>
 
@@ -55,11 +55,10 @@ class AthleteService(
         }
     }
 
-    fun getAllActiveAthletes(): List<Athlete> {
-        return transactionManager.run { tx ->
+    fun getAllActiveAthletes(): List<Athlete> =
+        transactionManager.run { tx ->
             tx.athleteRepository.findAllActive()
         }
-    }
 
     fun changeTeamCategory(
         athleteId: Long,
@@ -75,7 +74,10 @@ class AthleteService(
             val updatedRes = athleteDomain.changeTeamCategory(athlete, newCategory)
 
             when (updatedRes) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -96,7 +98,10 @@ class AthleteService(
             val updatedRes = athleteDomain.markInactive(athlete)
 
             when (updatedRes) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -117,7 +122,10 @@ class AthleteService(
             val updatedRes = athleteDomain.reactivate(athlete)
 
             when (updatedRes) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -143,7 +151,10 @@ class AthleteService(
             val updatedRes = athleteDomain.updateSchoolInfo(athlete, school, schoolYear, schoolClass)
 
             when (updatedRes) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)

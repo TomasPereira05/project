@@ -3,7 +3,7 @@ package pt.isel.jagoz.repository.jdbi.mappers
 import kotlinx.datetime.LocalDate
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.jagoz.event.Event
+import pt.isel.jagoz.domain.event.Event
 import java.sql.ResultSet
 
 class EventMapper : RowMapper<Event> {

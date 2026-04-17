@@ -2,7 +2,7 @@ package pt.isel.jagoz.repository.jdbi.mappers
 
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.jagoz.sponsor.Sponsor
+import pt.isel.jagoz.domain.sponsor.Sponsor
 import java.sql.ResultSet
 
 class SponsorMapper : RowMapper<Sponsor> {

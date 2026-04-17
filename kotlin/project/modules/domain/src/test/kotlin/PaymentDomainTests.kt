@@ -2,10 +2,16 @@ package pt.isel.jagoz.payment
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import pt.isel.jagoz.user.PasswordValidationInfo
-import pt.isel.jagoz.user.Role
-import pt.isel.jagoz.user.User
-import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.domain.payment.Charge
+import pt.isel.jagoz.domain.payment.ChargeStatus
+import pt.isel.jagoz.domain.payment.ChargeType
+import pt.isel.jagoz.domain.payment.Payment
+import pt.isel.jagoz.domain.payment.PaymentDomain
+import pt.isel.jagoz.domain.payment.PaymentStatus
+import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.User
+import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -45,7 +51,7 @@ class PaymentDomainTests {
         User(
             userId = 1,
             email = "user2@gmail.com",
-            username = "Zé Manel",
+            username = "ZÃƒÂ© Manel",
             passwordValidation = PasswordValidationInfo("hashed"),
             role = Role.NORMAL,
             activeMemberId = null,
@@ -55,7 +61,7 @@ class PaymentDomainTests {
         User(
             userId = 1,
             email = "user1@gmail.com",
-            username = "Zé",
+            username = "ZÃƒÂ©",
             passwordValidation = PasswordValidationInfo("hashed"),
             role = Role.ADMIN,
             activeMemberId = null,

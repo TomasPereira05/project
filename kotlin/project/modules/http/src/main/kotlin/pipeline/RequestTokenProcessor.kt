@@ -1,9 +1,9 @@
 package pt.isel.jagoz.http.pipeline
 
 import org.springframework.stereotype.Component
+import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.toAuthenticatedUser
 import pt.isel.jagoz.service.UserService
-import pt.isel.jagoz.user.AuthenticatedUser
-import pt.isel.jagoz.user.toAuthenticatedUser
 
 @Component
 class RequestTokenProcessor(

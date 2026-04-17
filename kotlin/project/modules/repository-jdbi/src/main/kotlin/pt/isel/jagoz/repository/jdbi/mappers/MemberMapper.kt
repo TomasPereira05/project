@@ -3,9 +3,9 @@ package pt.isel.jagoz.repository.jdbi.mappers
 import kotlinx.datetime.LocalDate
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.jagoz.member.Member
-import pt.isel.jagoz.member.MemberCategory
-import pt.isel.jagoz.member.MemberStatus
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberCategory
+import pt.isel.jagoz.domain.member.MemberStatus
 import java.sql.ResultSet
 
 class MemberMapper : RowMapper<Member> {

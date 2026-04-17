@@ -2,9 +2,9 @@ package pt.isel.jagoz.repository.jdbi.mappers
 
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.jagoz.user.PasswordValidationInfo
-import pt.isel.jagoz.user.Role
-import pt.isel.jagoz.user.User
+import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.User
 import java.sql.ResultSet
 
 class UserMapper : RowMapper<User> {

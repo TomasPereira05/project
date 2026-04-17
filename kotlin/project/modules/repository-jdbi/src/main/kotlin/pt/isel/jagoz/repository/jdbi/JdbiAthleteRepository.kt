@@ -1,7 +1,7 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.jagoz.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.repository.AthleteRepository
 
 class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {

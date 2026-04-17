@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository
 
-import pt.isel.jagoz.member.Member
+import pt.isel.jagoz.domain.member.Member
 
 interface MemberRepository {
     fun save(member: Member): Long

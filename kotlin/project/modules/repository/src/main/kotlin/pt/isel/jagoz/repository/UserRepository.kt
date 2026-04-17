@@ -1,10 +1,10 @@
 package pt.isel.jagoz.repository
 
 import kotlinx.datetime.Instant
-import pt.isel.jagoz.user.PasswordValidationInfo
-import pt.isel.jagoz.user.Token
-import pt.isel.jagoz.user.TokenValidationInfo
-import pt.isel.jagoz.user.User
+import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Token
+import pt.isel.jagoz.domain.user.TokenValidationInfo
+import pt.isel.jagoz.domain.user.User
 
 interface UserRepository {
     fun save(user: User): Long
@@ -22,7 +22,7 @@ interface UserRepository {
 
     fun update(user: User)
 
-    // Gestão dos maxTokens talvez possa ser feita no domain ou no service, não aqui
+    // GestÃ£o dos maxTokens talvez possa ser feita no domain ou no service, nÃ£o aqui
     fun createToken(token: Token)
 
     fun getTokenByValidation(validation: TokenValidationInfo): Pair<User, Token>?

@@ -1,8 +1,8 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
+import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.repository.SponsorRepository
-import pt.isel.jagoz.sponsor.Sponsor
 
 class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun findById(id: Long): Sponsor? {

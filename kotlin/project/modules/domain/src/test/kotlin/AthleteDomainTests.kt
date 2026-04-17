@@ -1,8 +1,10 @@
 package pt.isel.jagoz.athlete
 
 import kotlinx.datetime.LocalDate
-import pt.isel.jagoz.sponsor.TeamCategory
-import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.AthleteDomain
+import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

@@ -1,7 +1,12 @@
 package pt.isel.jagoz.member
 
 import kotlinx.datetime.LocalDate
-import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberCategory
+import pt.isel.jagoz.domain.member.MemberDomain
+import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.member.MemberStatus
+import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -18,7 +23,7 @@ class MemberDomainTests {
     ) = Member(
         memberId = 1,
         memberNumber = 42,
-        completeName = "José Manel",
+        completeName = "JosÃ© Manel",
         birthDate = LocalDate.parse("2000-01-01"),
         email = "joseManel@example.com",
         phone = "912345678",

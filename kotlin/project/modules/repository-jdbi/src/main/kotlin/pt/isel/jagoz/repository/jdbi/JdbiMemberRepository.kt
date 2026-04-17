@@ -1,7 +1,7 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.jagoz.member.Member
+import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.repository.MemberRepository
 
 class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
