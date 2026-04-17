@@ -13,7 +13,7 @@ import {
   getViewerMode,
   rejectMember,
   type Member,
-} from "../../shared/api/members";
+} from "..";
 
 function statusText(status: Member["status"]) {
   switch (status) {

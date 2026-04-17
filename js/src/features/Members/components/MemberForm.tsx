@@ -1,6 +1,6 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
-import type { MemberFormValues } from "../../shared/api/members";
+import type { MemberFormValues } from "..";
 
 type MemberFormProps = {
   title: string;

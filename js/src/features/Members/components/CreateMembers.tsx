@@ -4,7 +4,7 @@ import {
   createMember,
   defaultMemberFormValues,
   type MemberFormValues,
-} from "../../shared/api/members";
+} from "..";
 import { MemberForm } from "./MemberForm";
 
 export default function CreateMembers() {

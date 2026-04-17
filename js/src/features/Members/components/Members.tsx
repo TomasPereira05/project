@@ -8,7 +8,7 @@ import {
   getViewerMode,
   type Member,
   type ViewerMode,
-} from "../../shared/api/members";
+} from "..";
 
 const PAGE_SIZE = 8;
 

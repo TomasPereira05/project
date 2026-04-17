@@ -7,7 +7,7 @@ import {
   updateMember,
   type Member,
   type MemberFormValues,
-} from "../../shared/api/members";
+} from "..";
 import { MemberForm } from "./MemberForm";
 
 export default function UpdateMember() {

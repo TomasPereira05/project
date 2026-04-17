@@ -1,15 +1,22 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import Home from "./features/Home/Home";
-import CreateMembers from "./features/Members/CreateMembers";
-import MemberPage from "./features/Members/Member";
-import Members from "./features/Members/Members";
-import UpdateMember from "./features/Members/UpdateMember";
+import Home from "./features/home/Home";
+import SignIn from "./features/auth/components/signIn";
+import { 
+  CreateMembers, 
+  MemberPage, 
+  Members, 
+  UpdateMember 
+} from "./features/Members";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <SignIn />
   },
   {
     path: "/members",
