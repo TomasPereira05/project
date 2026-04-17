@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle } from "lucide-react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import "./Members.css";
+import "../styles/Members.css";
 import {
   approveMember,
   buildPaymentHistory,

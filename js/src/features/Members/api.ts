@@ -1,4 +1,4 @@
-import { BASE_URL } from "@/config";
+import { BASE_URL } from "../../shared/config/config";
 import type { Member, MemberFormValues } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {

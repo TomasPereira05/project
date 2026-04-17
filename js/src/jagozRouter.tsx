@@ -1,13 +1,14 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import Home from "./features/home/Home";
-import SignIn from "./features/auth/components/signIn";
+import { SignIn, SignUp } from "./features/auth";
 import { 
   CreateMembers, 
   MemberPage, 
   Members, 
   UpdateMember 
 } from "./features/Members";
+import { AuthProvider } from "./shared/components/AuthRequire";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <SignIn />
+  },
+  {
+    path: "/register",
+    element: <SignUp />
   },
   {
     path: "/members",
@@ -43,5 +48,9 @@ export function jagozRouter() {
     return;
   }
 
-  createRoot(container).render(<RouterProvider router={router} />);
+  createRoot(container).render(
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }

@@ -1,0 +1,53 @@
+/* Box styles */
+.form-box {
+    @apply mt-6 mb-4 rounded-lg p-4 flex items-center transition-colors;
+}
+
+.form-box-error {
+    @apply bg-red-100 text-red-700;
+}
+
+.form-box-success {
+    @apply bg-green-100 text-green-700;
+}
+
+.form-box-info {
+    @apply bg-surface text-text-main border border-border;
+}
+
+/* Icon styles */
+.form-box-icon {
+    @apply text-lg mr-3;
+}
+
+.form-box-icon-error {
+    @apply text-red-500;
+}
+
+.form-box-icon-success {
+    @apply text-green-500;
+}
+
+.form-box-icon-info {
+    @apply text-primary;
+}
+
+/* Toast styles */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.form-box-toast {
+    @apply fixed z-50 shadow-lg border border-opacity-20 backdrop-blur-sm;
+    top: 5rem;
+    right: 1rem;
+    max-width: 24rem;
+    animation: slideIn 0.5s ease-out forwards;
+}
