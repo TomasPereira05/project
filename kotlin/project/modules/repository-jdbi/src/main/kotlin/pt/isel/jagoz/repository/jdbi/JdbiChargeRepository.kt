@@ -3,7 +3,6 @@ package pt.isel.jagoz.repository.jdbi
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.payment.Charge
 import pt.isel.jagoz.repository.ChargeRepository
-import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 
 class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
     private val selectQuery =

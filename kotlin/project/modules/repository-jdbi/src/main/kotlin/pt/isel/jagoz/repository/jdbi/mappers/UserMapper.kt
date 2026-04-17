@@ -10,7 +10,7 @@ import java.sql.ResultSet
 class UserMapper : RowMapper<User> {
     override fun map(
         rs: ResultSet,
-        ctx: StatementContext
+        ctx: StatementContext,
     ): User {
         val activeMemberId = (rs.getObject("active_member_id") as? Number)?.toLong()
 

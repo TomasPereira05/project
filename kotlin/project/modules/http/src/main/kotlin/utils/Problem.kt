@@ -16,23 +16,45 @@ sealed class Problem(typeUri: URI) {
             .header("Content-Type", MEDIA_TYPE)
             .body(this)
 
+    data object UnknownError : Problem(URI("${PROBLEM_URI_PATH}/unknown-error")) {
+        val description = "Ocorreu um erro inesperado. Tente novamente mais tarde."
+    }
+
     data object MemberNotFound : Problem(URI("${PROBLEM_URI_PATH}/member-not-found")) {
-        val description = "Sócio não encontrado."
+        val description = "Socio nao encontrado."
     }
 
     data class ValidationError(val message: String) : Problem(URI("${PROBLEM_URI_PATH}/validation-error")) {
-        val description = "Erro de validação."
+        val description = "Erro de validacao."
     }
 
     data class MemberAlreadyExists(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/member-already-exists")) {
-        val description = "Sócio já existe."
+        val description = "Socio ja existe."
+    }
+
+    data class UserNotFound(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/user-not-found")) {
+        val description = "Utilizador nao encontrado."
+    }
+
+    data class UserAlreadyExists(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/user-already-exists")) {
+        val description = "Utilizador ja existe."
+    }
+
+    data class UserRelatedResourceNotFound(val field: String, val value: Any) : Problem(
+        URI("${PROBLEM_URI_PATH}/user-related-resource-not-found"),
+    ) {
+        val description = "Recurso associado ao utilizador nao encontrado."
+    }
+
+    data class Unauthorized(val message: String) : Problem(URI("${PROBLEM_URI_PATH}/unauthorized")) {
+        val description = "Autenticacao invalida ou em falta."
     }
 
     data class InvalidTransition(val from: String, val attempted: String) : Problem(URI("${PROBLEM_URI_PATH}/invalid-transition")) {
-        val description = "Transição inválida."
+        val description = "Transicao invalida."
     }
 
     data class InvalidOperation(val operation: String, val reason: String) : Problem(URI("${PROBLEM_URI_PATH}/invalid-operation")) {
-        val description = "Operação inválida."
+        val description = "Operacao invalida."
     }
 }

@@ -2,7 +2,6 @@ package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.repository.SponsorshipRepository
-import pt.isel.jagoz.repository.jdbi.mappers.SponsorshipMapper
 import pt.isel.jagoz.sponsor.Sponsorship
 
 class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipRepository {

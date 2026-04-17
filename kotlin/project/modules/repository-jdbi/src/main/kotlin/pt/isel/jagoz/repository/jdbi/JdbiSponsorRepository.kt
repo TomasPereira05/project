@@ -1,7 +1,6 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.jagoz.repository.jdbi.mappers.SponsorMapper
 import pt.isel.jagoz.repository.SponsorRepository
 import pt.isel.jagoz.sponsor.Sponsor
 

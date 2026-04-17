@@ -2,7 +2,6 @@ package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.payment.Payment
-import pt.isel.jagoz.repository.jdbi.mappers.PaymentMapper
 import pt.isel.jagoz.repository.PaymentRepository
 
 class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
