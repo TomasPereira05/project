@@ -23,4 +23,17 @@ object Uris {
 
         fun byId(memberId: Long): URI = UriTemplate(GET_BY_ID).expand(memberId)
     }
+
+    object Users {
+        const val GET_BY_ID = "$PREFIX/users/{userId}"
+        const val GET_BY_EMAIL = "$PREFIX/users/by-email"
+        const val GET_BY_USERNAME = "$PREFIX/users/by-username"
+        const val CREATE_USER = "$PREFIX/users"
+        const val LOGIN = "$PREFIX/users/login"
+        const val LOGOUT = "$PREFIX/users/logout"
+        const val TOKEN = "$PREFIX/users/token"
+        const val ME = "$PREFIX/users/me"
+
+        fun byId(userId: Long): URI = UriTemplate(GET_BY_ID).expand(userId)
+    }
 }

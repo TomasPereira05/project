@@ -2,9 +2,9 @@ package pt.isel.jagoz.repository.jdbi
 
 import kotlinx.datetime.Instant
 import org.jdbi.v3.core.Handle
+import pt.isel.jagoz.repository.UserRepository
 import pt.isel.jagoz.repository.jdbi.mappers.TokenMapper
 import pt.isel.jagoz.repository.jdbi.mappers.UserMapper
-import pt.isel.jagoz.repository.UserRepository
 import pt.isel.jagoz.user.PasswordValidationInfo
 import pt.isel.jagoz.user.Token
 import pt.isel.jagoz.user.TokenValidationInfo

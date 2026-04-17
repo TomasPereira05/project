@@ -3,7 +3,6 @@ package pt.isel.jagoz.repository.jdbi
 import kotlinx.datetime.LocalDateTime
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.event.Ticket
-import pt.isel.jagoz.repository.jdbi.mappers.TicketMapper
 import pt.isel.jagoz.repository.TicketRepository
 
 class JdbiTicketRepository(private val handle: Handle) : TicketRepository {

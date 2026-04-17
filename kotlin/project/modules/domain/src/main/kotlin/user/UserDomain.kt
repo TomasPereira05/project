@@ -105,7 +105,7 @@ class UserDomain(
      */
     fun createAuthenticatedUser(user: User): AuthenticatedUser {
         val (_, tokenValue) = createToken(user.userId)
-        return AuthenticatedUser(user, tokenValue)
+        return user.toAuthenticatedUser(tokenValue)
     }
 
     /**
