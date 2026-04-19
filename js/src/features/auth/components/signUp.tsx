@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {useReducer} from 'react';
-import './styles/Form.css';
-import { api } from '../../shared/api/api';
+import '../styles/Form.css';
+import { api } from '../api';
 import {useNavigate} from "react-router-dom";
-import {useStatusHandler} from "../../shared/hooks/useStatusHandler";
-import {StatusBox} from "../../shared/components/MessageFormBox";
-import Form from "../../shared/components/Form";
+import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
+import {StatusBox} from "../../../shared/components/MessageFormBox";
+import Form from "../../../shared/components/Form";
 import {LOGO_SRC} from "../../../shared/config/config";
 
 type State = {
@@ -13,22 +13,19 @@ type State = {
     email: string;
     password: string;
     repeatPassword: string;
-    invitationCode: string;
 };
 
 type Action =
     | { type: "SET_USERNAME"; payload: string }
     | { type: "SET_EMAIL"; payload: string }
     | { type: "SET_PASSWORD"; payload: string }
-    | { type: "SET_REPEAT_PASSWORD"; payload: string }
-    | { type: "SET_CODE"; payload: string };
+    | { type: "SET_REPEAT_PASSWORD"; payload: string };
 
 const initialState: State = {
     username: "",
     email: "",
     password: "",
     repeatPassword: "",
-    invitationCode: "",
 };
 
 function reducer(state: State, action: Action): State {
@@ -41,8 +38,6 @@ function reducer(state: State, action: Action): State {
             return {...state, password: action.payload};
         case "SET_REPEAT_PASSWORD":
             return {...state, repeatPassword: action.payload};
-        case "SET_CODE":
-            return {...state, invitationCode: action.payload};
         default:
             return state;
     }
@@ -55,7 +50,7 @@ const SignUp: React.FC = () => {
     const [isFormButtonDisabled, setIsFormButtonDisabled] = React.useState(true);
 
     React.useEffect(() => {
-          if (state.username && state.email && state.password && state.repeatPassword && state.invitationCode){
+          if (state.username && state.email && state.password && state.repeatPassword){
                 if (state.password === state.repeatPassword) {
                     setIsFormButtonDisabled(false);
                 }    
@@ -63,7 +58,7 @@ const SignUp: React.FC = () => {
             else{
                 setIsFormButtonDisabled(true);
             }
-        },[state.email, state.username, state.password, state.repeatPassword, state.invitationCode]);
+        },[state.email, state.username, state.password, state.repeatPassword]);
 
     const handleRegister = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -72,14 +67,9 @@ const SignUp: React.FC = () => {
             setError("Your repeated password does not match the original password. Please try again.");
             return;
         }
-
-        if (!state.invitationCode.trim()) {
-            setError("Invitation Code is required");
-            return;
-        }
         
         try {
-            await api.auth.register(state.username, state.email, state.password, state.invitationCode);
+            await api.auth.register(state.username, state.email, state.password);
             clearMessage();
             navigate("/login", {
                 state: {
@@ -128,16 +118,7 @@ const SignUp: React.FC = () => {
             onChange: (e: any) => dispatch({type: "SET_REPEAT_PASSWORD", payload: e.target.value}),
             required: true,
             autoComplete: "new-password",
-        },
-        {
-            id: "invitationCode",
-            label: "Invitation Code",
-            type: "text",
-            value: state.invitationCode,
-            onChange: (e: any) => dispatch({type: "SET_CODE", payload: e.target.value}),
-            required: true,
-            autoComplete: "off",
-        },
+        }
     ];
 
     return (

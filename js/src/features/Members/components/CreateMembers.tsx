@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import "./Members.css";
+import "../styles/Members.css";
 import {
   createMember,
   defaultMemberFormValues,

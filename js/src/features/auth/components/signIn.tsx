@@ -1,12 +1,12 @@
 import * as React from 'react';
 import {useEffect, useReducer} from 'react';
-import './styles/Form.css';
+import '../styles/Form.css';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../../shared/hooks/useAuth";
-import { api } from '../../shared/api/api';
-import {useStatusHandler} from "../../shared/hooks/useStatusHandler";
-import {InfoBox, StatusBox} from "../../shared/components/MessageFormBox";
-import Form from "../../shared/components/Form";
+import {useAuth} from "../../../shared/hooks/useAuth";
+import { api } from '../api';
+import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
+import {InfoBox, StatusBox} from "../../../shared/components/MessageFormBox";
+import Form from "../../../shared/components/Form";
 import {LOGO_SRC} from "../../../shared/config/config";
 
 
@@ -45,14 +45,24 @@ const SignIn: React.FC = () => {
     });
     const {message, type, setError, setSuccess, clearMessage, handleError} = useStatusHandler();
     const {username, setAuth} = useAuth();
+    const [isFormButtonDisabled, setIsFormButtonDisabled] = React.useState(true);
 
-    useRedirectIfAuthenticated(!!username, '/client');
+    useRedirectIfAuthenticated(!!username, '/Home');
     
     useEffect(() => {
         if (successMsg) {
             setSuccess(successMsg);
         }
     }, [successMsg, setSuccess]);
+
+    useEffect(() => {
+          if (state.username && state.password){
+                setIsFormButtonDisabled(false);   
+            }
+            else{
+                setIsFormButtonDisabled(true);
+            }
+        },[state.username, state.password]);
 
     const handleLogin = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -74,7 +84,7 @@ const SignIn: React.FC = () => {
     const fields = [
         {
             id: "username",
-            label: "Username",
+            label: "Username or Email",
             type: "text",
             value: state.username,
             onChange: (e: any) => dispatch({ type: "SET_USERNAME", payload: e.target.value }),
@@ -102,6 +112,7 @@ const SignIn: React.FC = () => {
             onSubmit={handleLogin}
             logoSrc={LOGO_SRC}
             submitLabel="Sign In"
+            disabled = {isFormButtonDisabled}
         >
             {/* Status Box (Error or Success) */}
             {message && (type === "error" || type === "success") && (

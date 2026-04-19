@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import "./Members.css";
+import "../styles/Members.css";
 import {
   fetchMembers,
   formatDate,

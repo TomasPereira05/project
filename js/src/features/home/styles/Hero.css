@@ -1,0 +1,242 @@
+.hero-section {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0, 29, 74, 0.9), rgba(0, 79, 152, 0.7), transparent);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 80rem;
+    margin-left: 0;
+    margin-right: auto;
+}
+
+@media (min-width: 640px) {
+    .hero-content {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-content {
+        padding-left: 15%;
+        padding-right: 2rem;
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+    }
+}
+
+.hero-text-container {
+    max-width: 48rem; /* max-w-3xl */
+}
+
+.location-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.location-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #FACC15;
+    border-radius: 9999px;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.location-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.hero-title {
+    font-family: "Oswald", sans-serif;
+    font-size: 3rem; 
+    line-height: 1;
+    color: white;
+    letter-spacing: -0.025em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 100ms;
+    opacity: 0;
+}
+
+@media (min-width: 640px) {
+    .hero-title {
+        font-size: 3.75rem; 
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-title {
+        font-size: 4.5rem; 
+    }
+}
+
+@media (min-width: 1280px) {
+    .hero-title {
+        font-size: 6rem;
+    }
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 300;
+    margin-bottom: 0.5rem;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 200ms;
+    opacity: 0;
+}
+
+@media (min-width: 640px) {
+    .hero-subtitle {
+        font-size: 1.25rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-subtitle {
+        font-size: 1.5rem;
+    }
+}
+
+.hero-tagline-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 300ms;
+    opacity: 0;
+}
+
+.hero-line {
+    height: 1px;
+    width: 3rem;
+    background-color: #FACC15;
+}
+
+.hero-tagline {
+    font-family: "Oswald", sans-serif;
+    font-size: 1.25rem;
+    color: #FACC15;
+    letter-spacing: 0.05em; 
+    text-transform: uppercase;
+}
+
+@media (min-width: 640px) {
+    .hero-tagline {
+        font-size: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-tagline {
+        font-size: 1.875rem;
+    }
+}
+
+.hero-desc {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 36rem;
+    line-height: 1.625;
+    animation: fadeInUp 1s ease-out forwards;
+    animation-delay: 400ms;
+    opacity: 0;
+}
+
+@media (min-width: 640px) {
+    .hero-desc {
+        font-size: 1.125rem;
+    }
+}
+
+.hero-scroll-btn {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.6);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: color 150ms ease;
+    animation: bounce 1s infinite;
+}
+
+.hero-scroll-btn:hover {
+    color: white;
+}
+
+.hero-scroll-btn svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+.hero-gradient-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6rem;
+    background: linear-gradient(to top, #F8FAFC, transparent);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .5;
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translate(-50%, -25%);
+        animation-timing-function: cubic-bezier(0.8,0,1,1);
+    }
+    50% {
+        transform: translate(-50%, 0);
+        animation-timing-function: cubic-bezier(0,0,0.2,1);
+    }
+}

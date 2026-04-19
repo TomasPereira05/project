@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
-import "./Members.css";
+import "../styles/Members.css";
 import {
   defaultMemberFormValues,
   fetchMember,
