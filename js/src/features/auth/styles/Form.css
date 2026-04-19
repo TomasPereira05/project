@@ -1,5 +1,5 @@
 .form-page {
-    @apply min-h-screen bg-bg-app flex items-center justify-center p-4 transition-colors;
+    @apply min-h-screen bg-background flex items-center justify-center p-4 transition-colors;
 }
 
 /* Login form */
@@ -8,7 +8,7 @@
 }
 
 .form-title {
-    @apply text-4xl font-medium text-text-main text-center mb-8;
+    @apply text-4xl font-medium text-text-primary text-center mb-8;
 }
 
 /* Label styling for form inputs */
@@ -18,7 +18,7 @@
 
 /* Input field styling */
 .form-input {
-    @apply w-full px-4 py-2 border border-border bg-bg-app text-text-main rounded-md focus:ring-primary focus:border-primary placeholder-text-muted;
+    @apply w-full px-4 py-2 border border-border bg-surface text-text-primary rounded-md focus:ring-primary focus:border-primary placeholder-text-secondary;
 }
 
 .form-button {

@@ -82,8 +82,7 @@ export function useStatusHandler() {
 
     
     // Centraliza a lógica de tratamento de erros: decide qual mensagem mostrar baseada no tipo de erro recebido.
-    const handleError = useCallback((error: any) => { // Mudei para 'any' para aceitar HttpError ou Error nativo
-        // Log para ajudar o programador a ver qualquer erro na consola
+    const handleError = useCallback((error: any) => {
         console.error("Error caught in useStatusHandler:", error);
 
         if (error instanceof HttpError) {

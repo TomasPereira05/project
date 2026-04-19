@@ -12,7 +12,7 @@
 }
 
 .form-box-info {
-    @apply bg-surface text-text-main border border-border;
+    @apply bg-surface text-text-primary border border-border;
 }
 
 /* Icon styles */

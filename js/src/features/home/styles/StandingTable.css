@@ -1,0 +1,258 @@
+.standings-section {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+    background-color: white;
+}
+
+@media (min-width: 1024px) {
+    .standings-section {
+        padding-top: 7rem;
+        padding-bottom: 7rem;
+    }
+}
+
+.st-container {
+    max-width: 80rem; 
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .st-container {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .st-container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+.standings-header-top {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+@media (min-width: 640px) {
+    .standings-header-top {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+    }
+}
+
+.standings-label {
+    display: block;
+    font-size: 0.875rem; 
+    font-weight: 600;
+    letter-spacing: 0.15em; 
+    text-transform: uppercase;
+    color: #00A3E0;
+    margin-bottom: 0.5rem;
+}
+
+.standings-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: "Oswald", sans-serif;
+    font-size: 1.875rem; 
+    color: #0F172A;
+    letter-spacing: -0.025em; 
+    text-transform: uppercase;
+}
+
+@media (min-width: 1024px) {
+    .standings-title {
+        font-size: 2.25rem;
+    }
+}
+
+.standings-subtitle {
+    font-size: 0.875rem;
+    color: #64748B;
+}
+
+.standings-table-card {
+    background-color: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 0;
+    overflow: hidden;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.standings-table-wrap {
+    overflow-x: auto;
+    width: 100%;
+}
+
+.s-table {
+    width: 100%;
+    font-size: 0.875rem;
+    border-collapse: collapse;
+}
+
+.s-table th {
+    height: 2.5rem; 
+    padding: 0 0.5rem;
+    background-color: #004F98;
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid #E2E8F0;
+    text-align: center;
+}
+
+.s-table th.left-align {
+    text-align: left;
+}
+
+.s-table td {
+    padding: 0.5rem;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.s-table td.left-align {
+    text-align: left;
+}
+
+.s-table tr {
+    border-bottom: 1px solid #E2E8F0;
+    transition: background-color 150ms;
+}
+
+.s-table tbody tr:hover {
+    background-color: #F8FAFC;
+}
+
+.s-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.row-highlight {
+    background-color: rgba(0, 79, 152, 0.05); 
+    border-left: 4px solid #004F98;
+}
+
+.row-highlight:hover {
+    background-color: rgba(0, 79, 152, 0.1); 
+}
+
+.pos-pill-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    background-color: #FACC15;
+    color: #0F172A;
+}
+
+.pos-pill-blue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    background-color: rgba(0, 163, 224, 0.2);
+    color: #00A3E0;
+}
+
+.pos-pill-gray {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    background-color: #F1F5F9;
+    color: #475569;
+}
+
+.team-name-blue {
+    font-weight: 600;
+    color: #004F98;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.team-name-slate {
+    font-weight: 600;
+    color: #1E293B;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.team-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: #004F98;
+    border-radius: 9999px;
+}
+
+.stat-val { color: #475569; }
+.stat-w { color: #16A34A; }
+.stat-l { color: #EF4444; }
+.stat-d { color: #64748B; }
+
+.pts-val-blue { color: #004F98; font-weight: 700; }
+.pts-val-slate { color: #1E293B; font-weight: 700; }
+
+.hide-sm { display: none; }
+@media (min-width: 640px) { .hide-sm { display: table-cell; } }
+
+.hide-md { display: none; }
+@media (min-width: 768px) { .hide-md { display: table-cell; } }
+
+.standings-legend-container {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .standings-legend-container {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.legend-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+.legend-items span {
+    display: inline;
+}
+
+.legend-items strong {
+    font-weight: 700;
+}
+
+.standings-footer-note {
+    font-size: 0.75rem;
+    color: #94A3B8;
+    font-style: italic;
+}

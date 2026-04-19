@@ -19,10 +19,8 @@ export default defineConfig({
           })
           proxy.on("proxyRes", (proxyRes: any, _: any, res: any) => {
             const upstreamSocket = proxyRes.socket
-            console.log("upstream connected")
             if(upstreamSocket) {
               upstreamSocket.once('close', () => {
-                console.log("upstream closed")
                 if(!res.writableFinished) {
                   console.log("destroying downstream")
                   res.destroy()

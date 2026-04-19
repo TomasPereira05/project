@@ -4,12 +4,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "rgb(var(--color-primary) / <alpha-value>)",
-        "bg-app": "rgb(var(--color-bg-app) / <alpha-value>)",
-        surface: "rgb(var(--color-surface) / <alpha-value>)",
-        "text-main": "rgb(var(--color-text-main) / <alpha-value>)",
-        "text-muted": "rgb(var(--color-text-muted) / <alpha-value>)",
-        border: "rgb(var(--color-border) / <alpha-value>)",
+        primary: "#004F98",
+        "primary-hover": "#003A70",
+        secondary: "#00A3E0",
+        "secondary-hover": "#008CBE",
+        accent: "#FACC15",
+
+        background: "#F8FAFC",
+        surface: "#FFFFFF",
+        border: "#E2E8F0",
+
+        "text-primary": "#0F172A",
+        "text-secondary": "#475569",
+      },
+      fontFamily: {
+        heading: ["Bebas Neue", "sans-serif"],
+        body: ["Inter", "sans-serif"],
       },
     },
   },
