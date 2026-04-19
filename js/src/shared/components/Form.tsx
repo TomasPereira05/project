@@ -1,4 +1,4 @@
-import React, {isValidElement, ReactElement} from "react";
+import React, {isValidElement, type ReactElement} from "react";
 import {StatusBox} from "./MessageFormBox";
 
 interface FormField {
