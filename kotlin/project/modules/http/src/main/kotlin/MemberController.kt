@@ -29,13 +29,7 @@ class MemberController(
         @PathVariable memberId: Long,
     ): ResponseEntity<*> =
         memberService.getMemberById(memberId).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
 
@@ -56,13 +50,7 @@ class MemberController(
         @RequestBody member: Member,
     ): ResponseEntity<*> =
         memberService.createMember(member).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                    is MemberError.AlreadyExists -> Problem.MemberAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
 
@@ -88,13 +76,7 @@ class MemberController(
                 homePhone,
                 billingLocation,
             ).handle(
-                onFailure = { error ->
-                    when (error) {
-                        is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                        is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                        else -> ResponseEntity.internalServerError().build()
-                    }
-                },
+                onFailure = { error -> handleMemberError(error) },
                 onSuccess = { res -> ResponseEntity.ok(res) },
             )
 
@@ -103,25 +85,7 @@ class MemberController(
         @PathVariable memberId: Long,
     ): ResponseEntity<*> =
         memberService.deactivateMember(memberId).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> {
-                        Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    }
-
-                    is MemberError.InvalidTransition -> {
-                        Problem
-                            .InvalidTransition(
-                                error.from.toString(),
-                                error.attempted,
-                            ).response(HttpStatus.BAD_REQUEST)
-                    }
-
-                    else -> {
-                        ResponseEntity.internalServerError().build()
-                    }
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
 
@@ -131,25 +95,7 @@ class MemberController(
         @RequestBody approvalRequest: ApprovalRequest,
     ): ResponseEntity<*> =
         memberService.approveMember(memberId, approvalRequest.approvalDate).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> {
-                        Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    }
-
-                    is MemberError.InvalidTransition -> {
-                        Problem
-                            .InvalidTransition(
-                                error.from.toString(),
-                                error.attempted,
-                            ).response(HttpStatus.BAD_REQUEST)
-                    }
-
-                    else -> {
-                        ResponseEntity.internalServerError().build()
-                    }
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
 
@@ -158,25 +104,7 @@ class MemberController(
         @PathVariable memberId: Long,
     ): ResponseEntity<*> =
         memberService.rejectMember(memberId).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> {
-                        Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    }
-
-                    is MemberError.InvalidTransition -> {
-                        Problem
-                            .InvalidTransition(
-                                error.from.toString(),
-                                error.attempted,
-                            ).response(HttpStatus.BAD_REQUEST)
-                    }
-
-                    else -> {
-                        ResponseEntity.internalServerError().build()
-                    }
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
 
@@ -186,25 +114,7 @@ class MemberController(
         @RequestBody reactivationRequest: ReactivationRequest,
     ): ResponseEntity<*> =
         memberService.reactivateMember(memberId, reactivationRequest.reactivationDate).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> {
-                        Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    }
-
-                    is MemberError.InvalidTransition -> {
-                        Problem
-                            .InvalidTransition(
-                                error.from.toString(),
-                                error.attempted,
-                            ).response(HttpStatus.BAD_REQUEST)
-                    }
-
-                    else -> {
-                        ResponseEntity.internalServerError().build()
-                    }
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
 
@@ -214,25 +124,25 @@ class MemberController(
         @RequestBody categoryRequest: CategoryRequest,
     ): ResponseEntity<*> =
         memberService.changeMemberCategory(memberId, categoryRequest.category).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> {
-                        Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    }
-
-                    is MemberError.InvalidOperation -> {
-                        Problem
-                            .InvalidOperation(
-                                error.operation,
-                                error.reason,
-                            ).response(HttpStatus.BAD_REQUEST)
-                    }
-
-                    else -> {
-                        ResponseEntity.internalServerError().build()
-                    }
-                }
-            },
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
+
+    private fun handleMemberError(error: MemberError): ResponseEntity<Any> =
+        when (error) {
+            is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
+            is MemberError.AlreadyExists -> Problem.MemberAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
+            is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+            is MemberError.InvalidTransition ->
+                Problem
+                    .InvalidTransition(
+                        error.from.toString(),
+                        error.attempted,
+                    ).response(HttpStatus.BAD_REQUEST)
+            is MemberError.InvalidOperation -> Problem.InvalidOperation(error.operation, error.reason).response(HttpStatus.BAD_REQUEST)
+            is MemberError.Conflict -> Problem.ValidationError(error.message).response(HttpStatus.CONFLICT)
+            is MemberError.Unauthorized -> Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
+            is MemberError.Forbidden -> Problem.Unauthorized(error.message).response(HttpStatus.FORBIDDEN)
+            is MemberError.DomainError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+        }
 }

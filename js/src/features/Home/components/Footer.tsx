@@ -1,8 +1,8 @@
 import { Waves } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
-import "./styles/Footer.css";
-import {LOGO_SRC} from "../../shared/config/config";
+import "../styles/Footer.css";
+import {LOGO_SRC} from "../../../shared/config/config";
 
 export function Footer() {
   return (

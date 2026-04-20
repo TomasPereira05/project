@@ -14,14 +14,26 @@ import pt.isel.jagoz.domain.utils.success
  * Errors produced by athlete domain operations.
  */
 sealed class AthleteError {
+    /** Requested resource was not found. */
+    data class NotFound(
+        val field: String,
+        val value: Any,
+    ) : AthleteError()
+
     /** Attempted operation is invalid given the current athlete state. */
-    data class InvalidOperation(val message: String) : AthleteError()
+    data class InvalidOperation(
+        val message: String,
+    ) : AthleteError()
 
     /** Input validation failure. */
-    data class ValidationError(val message: String) : AthleteError()
+    data class ValidationError(
+        val message: String,
+    ) : AthleteError()
 
     /** Generic domain error. */
-    data class DomainError(val message: String) : AthleteError()
+    data class DomainError(
+        val message: String,
+    ) : AthleteError()
 }
 
 /**
@@ -45,7 +57,10 @@ class AthleteDomain {
 
         athlete.guardians.forEach { g ->
             when (val res = validateGuardianForCreation(g)) {
-                is Either.Left -> return failure(res.value)
+                is Either.Left -> {
+                    return failure(res.value)
+                }
+
                 is Either.Right -> { /* ok */ }
             }
         }
@@ -83,21 +98,23 @@ class AthleteDomain {
      * Returns the first failing [ValidationError] or null if all ok.
      */
     private fun requireConditionInAthlete(athlete: Athlete): ValidationError? {
-        ValidationUtils.requireCondition(
-            athlete.birthdate >= LocalDate.parse("1900-01-01"),
-            "birthdate",
-            "is unrealistic",
-        )?.let { return it }
+        ValidationUtils
+            .requireCondition(
+                athlete.birthdate >= LocalDate.parse("1900-01-01"),
+                "birthdate",
+                "is unrealistic",
+            )?.let { return it }
         ValidationUtils.requireCondition(athlete.biExpirationDate > athlete.birthdate, "biExpirationDate", "must be after birthdate")?.let {
             return it
         }
-        ValidationUtils.requireCondition(
-            athlete.biExpirationDate >= LocalDate.parse("2000-01-01"),
-            "biExpirationDate",
-            "must be a realistic date",
-        )?.let {
-            return it
-        }
+        ValidationUtils
+            .requireCondition(
+                athlete.biExpirationDate >= LocalDate.parse("2000-01-01"),
+                "biExpirationDate",
+                "must be a realistic date",
+            )?.let {
+                return it
+            }
         return null
     }
 
@@ -115,12 +132,13 @@ class AthleteDomain {
         ValidationUtils.requireRegex(athlete.bi, ValidationPatterns.BI, "bi", "must be 8 digits")?.let { return it }
         ValidationUtils.requireRegex(athlete.email, ValidationPatterns.EMAIL, "email", "must be a valid address")?.let { return it }
         ValidationUtils.requireRegex(athlete.phone, ValidationPatterns.PHONE, "phone", "must be 7 to 15 digits")?.let { return it }
-        ValidationUtils.requireRegex(
-            athlete.postalCode,
-            ValidationPatterns.POSTAL_CODE,
-            "postalCode",
-            "must match 'NNNN-NNN'",
-        )?.let { return it }
+        ValidationUtils
+            .requireRegex(
+                athlete.postalCode,
+                ValidationPatterns.POSTAL_CODE,
+                "postalCode",
+                "must match 'NNNN-NNN'",
+            )?.let { return it }
 
         return null
     }
@@ -136,20 +154,22 @@ class AthleteDomain {
         ValidationUtils.requireNotBlank(guardian.kinship, "kinship")?.let { return failure(it) }
 
         ValidationUtils.requireNotBlank(guardian.email, "email")?.let { return failure(it) }
-        ValidationUtils.requireRegex(
-            guardian.email,
-            ValidationPatterns.EMAIL,
-            "email",
-            "must be a valid email",
-        )?.let { return failure(it) }
+        ValidationUtils
+            .requireRegex(
+                guardian.email,
+                ValidationPatterns.EMAIL,
+                "email",
+                "must be a valid email",
+            )?.let { return failure(it) }
 
         ValidationUtils.requireNotBlank(guardian.phone, "phone")?.let { return failure(it) }
-        ValidationUtils.requireRegex(
-            guardian.phone,
-            ValidationPatterns.PHONE,
-            "phone",
-            "must be 7 to 15 digits",
-        )?.let { return failure(it) }
+        ValidationUtils
+            .requireRegex(
+                guardian.phone,
+                ValidationPatterns.PHONE,
+                "phone",
+                "must be 7 to 15 digits",
+            )?.let { return failure(it) }
 
         return success(guardian)
     }
@@ -196,9 +216,7 @@ class AthleteDomain {
         school: String?,
         schoolYear: String?,
         schoolClass: String?,
-    ): Either<AthleteError, Athlete> {
-        return success(athlete.copy(school = school, schoolYear = schoolYear, schoolClass = schoolClass))
-    }
+    ): Either<AthleteError, Athlete> = success(athlete.copy(school = school, schoolYear = schoolYear, schoolClass = schoolClass))
 
     /**
      * Update identification documents for an athlete.
