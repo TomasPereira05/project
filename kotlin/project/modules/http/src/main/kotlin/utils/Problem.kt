@@ -40,6 +40,10 @@ sealed class Problem(typeUri: URI) {
         val description = "Utilizador ja existe."
     }
 
+    data class AthleteNotFound(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/athlete-not-found")) {
+        val description = "Atleta nao encontrado."
+    }
+
     data class UserRelatedResourceNotFound(val field: String, val value: Any) : Problem(
         URI("${PROBLEM_URI_PATH}/user-related-resource-not-found"),
     ) {

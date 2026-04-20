@@ -24,6 +24,19 @@ object Uris {
         fun byId(memberId: Long): URI = UriTemplate(GET_BY_ID).expand(memberId)
     }
 
+    object Athletes {
+        const val GET_BY_ID = "$PREFIX/athletes/{athleteId}"
+        const val GET_BY_MEMBER_ID = "$PREFIX/athletes/member/{memberId}"
+        const val GET_ACTIVE_ATHLETES = "$PREFIX/athletes/active"
+        const val CREATE_ATHLETE = "$PREFIX/athletes"
+        const val CHANGE_TEAM_CATEGORY = "$PREFIX/athletes/{athleteId}/team-category"
+        const val UPDATE_SCHOOL_INFO = "$PREFIX/athletes/{athleteId}/school-info"
+        const val DEACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}"
+        const val REACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}/reactivate"
+
+        fun byId(athleteId: Long): URI = UriTemplate(GET_BY_ID).expand(athleteId)
+    }
+
     object Users {
         const val GET_BY_ID = "$PREFIX/users/{userId}"
         const val GET_BY_EMAIL = "$PREFIX/users/by-email"

@@ -1,6 +1,6 @@
 import { ArrowRight, Calendar } from "lucide-react";
-import { news } from "./NewsItemHolders";
-import "./styles/NewsGrid.css";
+import { news } from "../NewsItemHolders";
+import "../styles/NewsGrid.css";
 
 export function NewsGrid() {
   return (
