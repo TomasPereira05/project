@@ -3,6 +3,8 @@
 @import "./features/home/styles/Hero.css";
 @import "./features/home/styles/NewsGrid.css";
 @import "./features/home/styles/StandingTable.css";
+@import "./features/auth/styles/Form.css";
+@import "./shared/styles/FormBox.css";
 
 @tailwind base;
 @tailwind components;

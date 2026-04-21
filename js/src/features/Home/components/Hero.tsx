@@ -1,5 +1,5 @@
 import { ChevronDown } from "lucide-react";
-import {HERO_IMG_SRC} from "../../shared/config/config";
+import {HERO_IMG_SRC} from "../../../shared/config/config";
 
 export function Hero() {
   return (

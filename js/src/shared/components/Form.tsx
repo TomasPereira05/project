@@ -44,7 +44,7 @@ const Form: React.FC<FormProps> = ({ title, fields, onSubmit, logoSrc, submitLab
                 {logoSrc && (
                     <div className="flex justify-center mb-6">
                         <a href="/">
-                            <img src={logoSrc} alt="Jagoz Logo" className="h-12" width="82" height="82" />
+                            <img src={logoSrc} alt="Jagoz Logo" className="h-24" width="82" height="82" />
                         </a>
                     </div>
                 )}

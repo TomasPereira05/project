@@ -1,5 +1,4 @@
 import React from "react";
-import "../styles/FormBox.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCheckCircle, faExclamationCircle, faInfoCircle} from "@fortawesome/free-solid-svg-icons";
 
@@ -39,9 +38,27 @@ export const StatusBox: React.FC<StatusBoxProps> = ({type, message}) => {
 
 interface InfoBoxProps {
     message: string;
+    action?: {
+    label: string;
+    onClick: () => void;
+  };
 }
 
 
-export const InfoBox: React.FC<InfoBoxProps> = ({message}) => {
-    return <FormBox type="info" message={message}/>;
+export const InfoBox: React.FC<InfoBoxProps> = ({message, action}) => {
+    return (
+        <div className="form-box form-box-info">
+            
+            <p className="text-sm">{message}</p>
+
+            {action && (
+                <button
+                    onClick={action.onClick}
+                    className="text-primary font-semibold text-sm hover:underline transition"
+                >
+                    {action.label}
+                </button>
+            )}
+        </div>
+    );
 };

@@ -1,6 +1,6 @@
 /* Box styles */
 .form-box {
-    @apply mt-6 mb-4 rounded-lg p-4 flex items-center transition-colors;
+    @apply mt-6 mb-4 rounded-lg p-4 flex justify-center gap-1 transition-colors;
 }
 
 .form-box-error {

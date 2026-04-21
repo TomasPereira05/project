@@ -1,5 +1,5 @@
 import { Trophy } from "lucide-react";
-import { standings } from "./standingplaceholders";
+import { standings } from "../standingplaceholders";
 
 export function StandingsTable() {
   return (

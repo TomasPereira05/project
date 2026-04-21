@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import Home from "./features/home/Home";
+import Home from "./features/home/components/Home";
 import { SignIn, SignUp } from "./features/auth";
 import { 
   CreateMembers, 
