@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "../styles/Header.css"
 import {LOGO_SRC} from "../config/config"
 
 export default function Header() {
@@ -11,7 +10,7 @@ export default function Header() {
 
     return (
         <header className="header">
-            <div className="container">
+            <div className="container-custom">
                 <div className="header-inner">
                     <div className="logo">
                         <img src={LOGO_SRC} alt="Logo" className="logo-box" />
@@ -22,12 +21,12 @@ export default function Header() {
                     </div>
                     <nav className="nav">
                         <a href="#" className="nav-link">Início</a>
-                        <span className="nav-item-disabled">Notícias</span>
-                        <span className="nav-item-disabled">Equipa</span>
+                        <span className="nav-disabled">Notícias</span>
+                        <span className="nav-disabled">Equipa</span>
                     </nav>
                     <div className="header-actions">
-                        <button className="base-button btn-outline">Entrar</button>
-                        <button className="base-button btn-solid">Registar</button>
+                        <button className="btn btn-outline">Entrar</button>
+                        <button className="btn btn-solid">Registar</button>
                     </div>
                     <button className="mobile-menu-btn" aria-label="Menu" onClick={toggleMobileMenu}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -44,12 +43,12 @@ export default function Header() {
                 <div className="mobile-dropdown">
                     <nav className="mobile-nav">
                         <a href="#" className="mobile-nav-link">Início</a>
-                        <span className="mobile-nav-item-disabled">Notícias</span>
-                        <span className="mobile-nav-item-disabled">Equipa</span>
+                        <span className="mobile-nav-disabled">Notícias</span>
+                        <span className="mobile-nav-disabled">Equipa</span>
                     </nav>
                     <div className="mobile-header-actions">
-                        <button className="base-button btn-outline">Entrar</button>
-                        <button className="base-button btn-solid">Registar</button>
+                        <button className="btn btn-outline">Entrar</button>
+                        <button className="btn btn-solid">Registar</button>
                     </div>
                 </div>
             )}

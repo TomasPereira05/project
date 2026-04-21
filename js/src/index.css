@@ -1,0 +1,15 @@
+@import "./shared/styles/Header.css";
+@import "./features/home/styles/Footer.css";
+@import "./features/home/styles/Hero.css";
+@import "./features/home/styles/NewsGrid.css";
+@import "./features/home/styles/StandingTable.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .delay-400 {
+    animation-delay: 400ms;
+  }
+}

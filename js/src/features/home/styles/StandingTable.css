@@ -1,258 +1,163 @@
+@layer components {
+
+/* SECTION */
 .standings-section {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-    background-color: white;
+  @apply py-20 lg:py-28 bg-white;
 }
 
-@media (min-width: 1024px) {
-    .standings-section {
-        padding-top: 7rem;
-        padding-bottom: 7rem;
-    }
-}
-
+/* CONTAINER */
 .st-container {
-    max-width: 80rem; 
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-@media (min-width: 640px) {
-    .st-container {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    .st-container {
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-}
-
+/* HEADER */
 .standings-header-top {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 3rem;
-}
-
-@media (min-width: 640px) {
-    .standings-header-top {
-        flex-direction: row;
-        align-items: flex-end;
-        justify-content: space-between;
-    }
+  @apply flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12;
 }
 
 .standings-label {
-    display: block;
-    font-size: 0.875rem; 
-    font-weight: 600;
-    letter-spacing: 0.15em; 
-    text-transform: uppercase;
-    color: #00A3E0;
-    margin-bottom: 0.5rem;
+  @apply block text-sm font-semibold tracking-widest uppercase text-secondary mb-2;
 }
 
 .standings-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-family: "Oswald", sans-serif;
-    font-size: 1.875rem; 
-    color: #0F172A;
-    letter-spacing: -0.025em; 
-    text-transform: uppercase;
-}
-
-@media (min-width: 1024px) {
-    .standings-title {
-        font-size: 2.25rem;
-    }
+  @apply flex items-center gap-3 font-heading text-3xl lg:text-4xl text-text-primary uppercase tracking-tight;
 }
 
 .standings-subtitle {
-    font-size: 0.875rem;
-    color: #64748B;
+  @apply text-sm text-text-secondary;
 }
 
+/* CARD */
 .standings-table-card {
-    background-color: white;
-    border: 1px solid #E2E8F0;
-    border-radius: 0;
-    overflow: hidden;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  @apply bg-white border border-border shadow-sm overflow-hidden;
 }
 
+/* TABLE WRAP */
 .standings-table-wrap {
-    overflow-x: auto;
-    width: 100%;
+  @apply w-full overflow-x-auto;
 }
 
+/* TABLE */
 .s-table {
-    width: 100%;
-    font-size: 0.875rem;
-    border-collapse: collapse;
+  @apply w-full text-sm border-collapse;
 }
 
+/* HEAD */
 .s-table th {
-    height: 2.5rem; 
-    padding: 0 0.5rem;
-    background-color: #004F98;
-    color: white;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-bottom: 1px solid #E2E8F0;
-    text-align: center;
+  @apply h-10 px-2 bg-primary text-white font-semibold text-xs uppercase tracking-wider text-center border-b border-border;
 }
 
 .s-table th.left-align {
-    text-align: left;
+  @apply text-left;
 }
 
+/* CELLS */
 .s-table td {
-    padding: 0.5rem;
-    vertical-align: middle;
-    text-align: center;
+  @apply p-2 text-center align-middle;
 }
 
 .s-table td.left-align {
-    text-align: left;
+  @apply text-left;
 }
 
+/* ROWS */
 .s-table tr {
-    border-bottom: 1px solid #E2E8F0;
-    transition: background-color 150ms;
+  @apply border-b border-border transition-colors;
 }
 
 .s-table tbody tr:hover {
-    background-color: #F8FAFC;
+  @apply bg-muted;
 }
 
 .s-table tbody tr:last-child {
-    border-bottom: none;
+  @apply border-b-0;
 }
 
+/* HIGHLIGHT ROW */
 .row-highlight {
-    background-color: rgba(0, 79, 152, 0.05); 
-    border-left: 4px solid #004F98;
+  @apply bg-primary/5 border-l-4 border-primary;
 }
 
 .row-highlight:hover {
-    background-color: rgba(0, 79, 152, 0.1); 
+  @apply bg-primary/10;
 }
 
+/* POSITION PILL */
 .pos-pill-gold {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    background-color: #FACC15;
-    color: #0F172A;
+  @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-sm bg-accent text-text-primary;
 }
 
 .pos-pill-blue {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    background-color: rgba(0, 163, 224, 0.2);
-    color: #00A3E0;
+  @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-sm bg-secondary/20 text-secondary;
 }
 
 .pos-pill-gray {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
-    background-color: #F1F5F9;
-    color: #475569;
+  @apply inline-flex items-center justify-center w-7 h-7 rounded-full text-sm bg-muted text-text-secondary;
 }
 
+/* TEAM NAME */
 .team-name-blue {
-    font-weight: 600;
-    color: #004F98;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  @apply font-semibold text-primary flex items-center gap-2;
 }
+
 .team-name-slate {
-    font-weight: 600;
-    color: #1E293B;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  @apply font-semibold text-text-primary flex items-center gap-2;
 }
 
 .team-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    background-color: #004F98;
-    border-radius: 9999px;
+  @apply w-2 h-2 bg-primary rounded-full;
 }
 
-.stat-val { color: #475569; }
-.stat-w { color: #16A34A; }
-.stat-l { color: #EF4444; }
-.stat-d { color: #64748B; }
+/* STATS */
+.stat-val {
+  @apply text-text-secondary;
+}
 
-.pts-val-blue { color: #004F98; font-weight: 700; }
-.pts-val-slate { color: #1E293B; font-weight: 700; }
+.stat-w {
+  @apply text-green-600;
+}
 
-.hide-sm { display: none; }
-@media (min-width: 640px) { .hide-sm { display: table-cell; } }
+.stat-l {
+  @apply text-red-500;
+}
 
-.hide-md { display: none; }
-@media (min-width: 768px) { .hide-md { display: table-cell; } }
+.stat-d {
+  @apply text-text-secondary;
+}
 
+.pts-val-blue {
+  @apply text-primary font-bold;
+}
+
+.pts-val-slate {
+  @apply text-text-primary font-bold;
+}
+
+/* RESPONSIVE HIDE */
+.hide-sm {
+  @apply hidden sm:table-cell;
+}
+
+.hide-md {
+  @apply hidden md:table-cell;
+}
+
+/* LEGEND */
 .standings-legend-container {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-@media (min-width: 640px) {
-    .standings-legend-container {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-    }
+  @apply mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4;
 }
 
 .legend-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    font-size: 0.75rem;
-    color: #64748B;
-}
-
-.legend-items span {
-    display: inline;
+  @apply flex flex-wrap gap-4 text-xs text-text-secondary;
 }
 
 .legend-items strong {
-    font-weight: 700;
+  @apply font-bold;
 }
 
+/* FOOTER NOTE */
 .standings-footer-note {
-    font-size: 0.75rem;
-    color: #94A3B8;
-    font-style: italic;
+  @apply text-xs text-muted-foreground italic;
+}
+
 }
