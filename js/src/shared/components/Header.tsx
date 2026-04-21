@@ -1,15 +1,42 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {LOGO_SRC} from "../config/config"
+import {useNavigate} from "react-router-dom";
 
 export default function Header() {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [activeMenu, setActiveMenu] = useState<MenuType>(null);
+    const navigate = useNavigate();
+    const ref = useRef<HTMLDivElement>(null);
 
-    const toggleMobileMenu = () => {
-        setIsMobileMenuOpen(!isMobileMenuOpen);
+    type MenuType = "mobile" | "socios" | "conta" | null;
+
+    const toggleMenu = (menu: Exclude<MenuType, null>) => {
+        setActiveMenu((prev) => (prev === menu ? null : menu));
     };
 
+    const closeMenus = () => {
+        setActiveMenu(null);
+    };
+
+    const handleLoginClick = () => {
+        navigate('/login')
+    };
+
+    const handleRegisterClick = () => {
+        navigate('/register')
+    };
+
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                closeMenus();
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
     return (
-        <header className="header">
+        <header className="header" ref={ref}>
             <div className="container-custom">
                 <div className="header-inner">
                     <div className="logo">
@@ -20,15 +47,17 @@ export default function Header() {
                         </div>
                     </div>
                     <nav className="nav">
-                        <a href="#" className="nav-link">Início</a>
-                        <span className="nav-disabled">Notícias</span>
-                        <span className="nav-disabled">Equipa</span>
+                        <a className="nav-link">Início</a>
+                        <button className="nav-link" onClick={() => toggleMenu("socios")}>Sócios</button>
+                        <button className="nav-link" onClick={() => toggleMenu("conta")}>Conta</button>
+                        <span className="nav-disabled">Patrocinios</span>
+                        <span className="nav-disabled">Equipas</span>
                     </nav>
                     <div className="header-actions">
-                        <button className="btn btn-outline">Entrar</button>
-                        <button className="btn btn-solid">Registar</button>
+                        <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
+                        <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
                     </div>
-                    <button className="mobile-menu-btn" aria-label="Menu" onClick={toggleMobileMenu}>
+                    <button className="mobile-menu-btn" aria-label="Menu" onClick={() => toggleMenu("mobile")}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                             <path d="M4 12h16"></path>
                             <path d="M4 18h16"></path>
@@ -39,19 +68,39 @@ export default function Header() {
             </div>
             
             {/* Mobile Dropdown Menu */}
-            {isMobileMenuOpen && (
-                <div className="mobile-dropdown">
-                    <nav className="mobile-nav">
-                        <a href="#" className="mobile-nav-link">Início</a>
-                        <span className="mobile-nav-disabled">Notícias</span>
-                        <span className="mobile-nav-disabled">Equipa</span>
-                    </nav>
-                    <div className="mobile-header-actions">
-                        <button className="btn btn-outline">Entrar</button>
-                        <button className="btn btn-solid">Registar</button>
-                    </div>
+            <div className={`dropdown ${activeMenu === "mobile" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    <button className="dropdown-link" onClick={() => toggleMenu("socios")}>Sócios</button>
+                    <button className="dropdown-link" onClick={() => toggleMenu("conta")}>Conta</button>
+                    <span className="dropdown-disabled">Patrocinios</span>
+                    <span className="dropdown-disabled">Equipas</span>
+                </nav>
+                <div className="dropdown-actions">
+                    <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
+                    <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
                 </div>
-            )}
+            </div>
+            
+
+            {/* Sócios Dropdown Menu */}
+            <div className={`dropdown ${activeMenu === "socios" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    <a href="#" className="dropdown-link">Perfil de Sócio</a>
+                    <a href="#" className="dropdown-link">Lista de Sócios</a>
+                    <span className="dropdown-disabled">Cotas</span>
+                    <span className="dropdown-disabled">Tornar se Sócio</span>
+                </nav>
+            </div>
+    
+
+            {/* Conta Dropdown Menu */}
+            <div className={`dropdown ${activeMenu === "conta" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    <a href="#" className="dropdown-link">Perfil</a>
+                    <span className="dropdown-disabled">Informações</span>
+                    <span className="dropdown-disabled">Pagamentos</span>
+                </nav>
+            </div>
         </header>
     );
 }
