@@ -46,7 +46,7 @@ const SignIn: React.FC = () => {
     const [isFormButtonDisabled, setIsFormButtonDisabled] = React.useState(true);
     const navigate = useNavigate();
     
-    useRedirectIfAuthenticated(!!username, '/Home');
+    useRedirectIfAuthenticated(!!username, '/');
     
     useEffect(() => {
         if (successMsg) {

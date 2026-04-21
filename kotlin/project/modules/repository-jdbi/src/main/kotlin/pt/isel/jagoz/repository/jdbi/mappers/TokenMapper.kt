@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.toKotlinInstant
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.domain.user.Token
@@ -15,7 +15,7 @@ class TokenMapper : RowMapper<Token> {
         Token(
             tokenValidationInfo = TokenValidationInfo(rs.getString("token_validation")),
             userId = rs.getLong("user_id"),
-            createdAt = Instant.parse(rs.getString("created_at").replace(" ", "T")),
-            lastUsedAt = Instant.parse(rs.getString("last_used_at").replace(" ", "T")),
+            createdAt = rs.getTimestamp("created_at").toInstant().toKotlinInstant(),
+            lastUsedAt = rs.getTimestamp("last_used_at").toInstant().toKotlinInstant(),
         )
 }
