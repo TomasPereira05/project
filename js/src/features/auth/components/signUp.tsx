@@ -5,7 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
 import {StatusBox} from "../../../shared/components/MessageFormBox";
 import Form from "../../../shared/components/Form";
-import {LOGO_SRC} from "../../../shared/config/config";
+import {LOGO_SRC, HERO_IMG_SRC} from "../../../shared/config/config";
 import { ArrowLeft } from "lucide-react";
 
 type State = {
@@ -142,12 +142,17 @@ const SignUp: React.FC = () => {
 
             </div>
             </div>
-
+            <div
+                className="auth-bg"
+                style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
+                />
+            <div className="auth-bg-overlay" />
+            
             {/* CENTER CONTENT */}
             <div className="auth-center">
 
             <div className="auth-card">
-
+                <div className="auth-card-inner">
                 <Form
                     title="Register to Jagoz"
                     fields={fields}
@@ -159,7 +164,7 @@ const SignUp: React.FC = () => {
                     {/* Status Box */}
                     {message && type === "error" && <StatusBox type="error" message={message} />}
                 </Form>
-
+                </div>
             </div>
             </div>
         </div>

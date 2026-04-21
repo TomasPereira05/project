@@ -6,7 +6,7 @@ import { api } from '../api';
 import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
 import {InfoBox, StatusBox} from "../../../shared/components/MessageFormBox";
 import Form from "../../../shared/components/Form";
-import {LOGO_SRC} from "../../../shared/config/config";
+import {LOGO_SRC,HERO_IMG_SRC} from "../../../shared/config/config";
 import { ArrowLeft } from "lucide-react";
 
 interface State {
@@ -102,8 +102,7 @@ const SignIn: React.FC = () => {
     ];
 
     return (
-        <div className="auth-page">
-
+        <div className="auth-page">  
             {/* TOPBAR */}
             <div className="auth-topbar">
             <div className="auth-topbar-inner">
@@ -122,33 +121,38 @@ const SignIn: React.FC = () => {
 
             </div>
             </div>
+            <div
+                className="auth-bg"
+                style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
+            />
+            <div className="auth-bg-overlay" />
 
             {/* CENTER CONTENT */}
             <div className="auth-center">
-
+                
             <div className="auth-card">
+                <div className="auth-card-inner">
+                    <Form
+                    title="Sign in"
+                    fields={fields}
+                    onSubmit={handleLogin}
+                    logoSrc={LOGO_SRC}
+                    submitLabel="Entrar"
+                    disabled={isFormButtonDisabled}
+                    >
+                    {message && (type === "error" || type === "success") && (
+                        <StatusBox type={type} message={message} />
+                    )}
 
-                <Form
-                title="Sign in"
-                fields={fields}
-                onSubmit={handleLogin}
-                logoSrc={LOGO_SRC}
-                submitLabel="Entrar"
-                disabled={isFormButtonDisabled}
-                >
-                {message && (type === "error" || type === "success") && (
-                    <StatusBox type={type} message={message} />
-                )}
-
-                <InfoBox 
-                message="Não tem conta?"
-                action={{
-                        label: "Registe-se aqui",
-                        onClick: () => navigate("/register")
-                    }}
-                 />
-                </Form>
-
+                    <InfoBox 
+                    message="Não tem conta?"
+                    action={{
+                            label: "Registe-se aqui",
+                            onClick: () => navigate("/register")
+                        }}
+                    />
+                    </Form>
+                </div>
             </div>
             </div>
         </div>
