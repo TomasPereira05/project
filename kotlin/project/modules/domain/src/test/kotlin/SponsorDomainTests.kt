@@ -1,6 +1,14 @@
 package pt.isel.jagoz.sponsor
 
-import pt.isel.jagoz.utils.Either
+import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
+import pt.isel.jagoz.domain.sponsor.PubOption
+import pt.isel.jagoz.domain.sponsor.Sponsor
+import pt.isel.jagoz.domain.sponsor.SponsorDomain
+import pt.isel.jagoz.domain.sponsor.SponsorType
+import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
+import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

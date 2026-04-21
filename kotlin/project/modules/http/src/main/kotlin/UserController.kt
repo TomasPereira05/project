@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.user.AuthenticatedUserOutputModel
 import pt.isel.jagoz.http.model.user.CreateUserRequest
 import pt.isel.jagoz.http.model.user.LoginRequest
@@ -20,8 +22,6 @@ import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.UserService
 import pt.isel.jagoz.service.UserServiceError
-import pt.isel.jagoz.user.AuthenticatedUser
-import pt.isel.jagoz.utils.handle
 import java.time.Duration
 
 @RestController

@@ -1,7 +1,7 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.jagoz.payment.Charge
+import pt.isel.jagoz.domain.payment.Charge
 import pt.isel.jagoz.repository.ChargeRepository
 
 class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {

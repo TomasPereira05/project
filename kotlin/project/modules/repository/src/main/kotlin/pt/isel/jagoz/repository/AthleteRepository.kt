@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository
 
-import pt.isel.jagoz.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.Athlete
 
 interface AthleteRepository {
     fun findById(id: Long): Athlete?

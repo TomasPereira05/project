@@ -2,13 +2,13 @@ package pt.isel.jagoz.repository.jdbi.mappers
 
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
-import pt.isel.jagoz.sponsor.EquipmentPlacement
-import pt.isel.jagoz.sponsor.OtherSport
-import pt.isel.jagoz.sponsor.PubOption
-import pt.isel.jagoz.sponsor.SponsorType
-import pt.isel.jagoz.sponsor.Sponsorship
-import pt.isel.jagoz.sponsor.SponsorshipStatus
-import pt.isel.jagoz.sponsor.TeamCategory
+import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
+import pt.isel.jagoz.domain.sponsor.OtherSport
+import pt.isel.jagoz.domain.sponsor.PubOption
+import pt.isel.jagoz.domain.sponsor.SponsorType
+import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
+import pt.isel.jagoz.domain.sponsor.TeamCategory
 import java.sql.ResultSet
 
 class SponsorshipMapper : RowMapper<Sponsorship> {

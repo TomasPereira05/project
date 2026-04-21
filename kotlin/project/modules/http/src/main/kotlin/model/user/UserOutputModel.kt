@@ -1,7 +1,7 @@
 package pt.isel.jagoz.http.model.user
 
-import pt.isel.jagoz.user.Role
-import pt.isel.jagoz.user.User
+import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.User
 
 data class UserOutputModel(
     val userId: Long,

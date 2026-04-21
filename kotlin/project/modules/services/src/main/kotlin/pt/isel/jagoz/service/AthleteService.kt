@@ -2,15 +2,16 @@ package pt.isel.jagoz.service
 
 import jakarta.inject.Named
 import org.slf4j.LoggerFactory
-import pt.isel.jagoz.athlete.Athlete
-import pt.isel.jagoz.athlete.AthleteDomain
-import pt.isel.jagoz.athlete.AthleteError
+import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.AthleteDomain
+import pt.isel.jagoz.domain.athlete.AthleteError
+import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.utils.Either
+import pt.isel.jagoz.domain.utils.ValidationError
+import pt.isel.jagoz.domain.utils.failure
+import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
-import pt.isel.jagoz.sponsor.TeamCategory
-import pt.isel.jagoz.utils.Either
-import pt.isel.jagoz.utils.failure
-import pt.isel.jagoz.utils.success
 
 typealias AthleteResult = Either<AthleteError, Athlete>
 
@@ -29,7 +30,7 @@ class AthleteService(
         return transactionManager.run { tx ->
             val validation = athleteDomain.validateForCreation(athlete)
             if (validation is Either.Left) {
-                return@run failure(AthleteError.ValidationError(validation.value.toString()))
+                return@run failure(AthleteError.ValidationError(validationErrorMessage(validation.value)))
             }
 
             val athleteId = tx.athleteRepository.save(athlete)
@@ -49,17 +50,16 @@ class AthleteService(
         return transactionManager.run { tx ->
             val athlete =
                 tx.athleteRepository.findByMemberId(memberId)
-                    ?: return@run failure(AthleteError.DomainError("Athlete not found for memberId=$memberId"))
+                    ?: return@run failure(AthleteError.NotFound("memberId", memberId))
 
             success(athlete)
         }
     }
 
-    fun getAllActiveAthletes(): List<Athlete> {
-        return transactionManager.run { tx ->
+    fun getAllActiveAthletes(): List<Athlete> =
+        transactionManager.run { tx ->
             tx.athleteRepository.findAllActive()
         }
-    }
 
     fun changeTeamCategory(
         athleteId: Long,
@@ -72,10 +72,11 @@ class AthleteService(
             if (athleteRes is Either.Left) return@run athleteRes
 
             val athlete = (athleteRes as Either.Right).value
-            val updatedRes = athleteDomain.changeTeamCategory(athlete, newCategory)
+            when (val updatedRes = athleteDomain.changeTeamCategory(athlete, newCategory)) {
+                is Either.Left -> {
+                    updatedRes
+                }
 
-            when (updatedRes) {
-                is Either.Left -> updatedRes
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -93,10 +94,11 @@ class AthleteService(
             if (athleteRes is Either.Left) return@run athleteRes
 
             val athlete = (athleteRes as Either.Right).value
-            val updatedRes = athleteDomain.markInactive(athlete)
+            when (val updatedRes = athleteDomain.markInactive(athlete)) {
+                is Either.Left -> {
+                    updatedRes
+                }
 
-            when (updatedRes) {
-                is Either.Left -> updatedRes
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -114,10 +116,11 @@ class AthleteService(
             if (athleteRes is Either.Left) return@run athleteRes
 
             val athlete = (athleteRes as Either.Right).value
-            val updatedRes = athleteDomain.reactivate(athlete)
+            when (val updatedRes = athleteDomain.reactivate(athlete)) {
+                is Either.Left -> {
+                    updatedRes
+                }
 
-            when (updatedRes) {
-                is Either.Left -> updatedRes
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -140,10 +143,11 @@ class AthleteService(
             if (athleteRes is Either.Left) return@run athleteRes
 
             val athlete = (athleteRes as Either.Right).value
-            val updatedRes = athleteDomain.updateSchoolInfo(athlete, school, schoolYear, schoolClass)
+            when (val updatedRes = athleteDomain.updateSchoolInfo(athlete, school, schoolYear, schoolClass)) {
+                is Either.Left -> {
+                    updatedRes
+                }
 
-            when (updatedRes) {
-                is Either.Left -> updatedRes
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -159,8 +163,14 @@ class AthleteService(
     ): AthleteResult {
         val athlete =
             tx.athleteRepository.findById(athleteId)
-                ?: return failure(AthleteError.DomainError("Athlete not found: athleteId=$athleteId"))
+                ?: return failure(AthleteError.NotFound("athleteId", athleteId))
 
         return success(athlete)
     }
+
+    private fun validationErrorMessage(error: ValidationError): String =
+        when (error) {
+            is ValidationError.FieldError -> "${error.field} ${error.message}"
+            is ValidationError.GlobalError -> error.message
+        }
 }

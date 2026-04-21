@@ -3,12 +3,16 @@ package pt.isel.jagoz.repository.jdbi
 import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin
-import pt.isel.jagoz.athlete.Athlete
-import pt.isel.jagoz.event.Event
-import pt.isel.jagoz.event.Ticket
-import pt.isel.jagoz.member.Member
-import pt.isel.jagoz.payment.Charge
-import pt.isel.jagoz.payment.Payment
+import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.event.Event
+import pt.isel.jagoz.domain.event.Ticket
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.payment.Charge
+import pt.isel.jagoz.domain.payment.Payment
+import pt.isel.jagoz.domain.sponsor.Sponsor
+import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.user.Token
+import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
@@ -19,10 +23,6 @@ import pt.isel.jagoz.repository.jdbi.mappers.SponsorshipMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TicketMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TokenMapper
 import pt.isel.jagoz.repository.jdbi.mappers.UserMapper
-import pt.isel.jagoz.sponsor.Sponsor
-import pt.isel.jagoz.sponsor.Sponsorship
-import pt.isel.jagoz.user.Token
-import pt.isel.jagoz.user.User
 
 fun Jdbi.configureWithAppRequirements(): Jdbi {
     installPlugin(KotlinPlugin())

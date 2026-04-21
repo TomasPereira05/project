@@ -6,8 +6,8 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
-import pt.isel.jagoz.user.Sha256TokenEncoder
-import pt.isel.jagoz.user.UserDomainConfig
+import pt.isel.jagoz.domain.user.Sha256TokenEncoder
+import pt.isel.jagoz.domain.user.UserDomainConfig
 import kotlin.time.Duration.Companion.hours
 
 @Configuration

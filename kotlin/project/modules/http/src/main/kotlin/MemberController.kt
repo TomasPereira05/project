@@ -10,15 +10,15 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.model.member.CategoryRequest
 import pt.isel.jagoz.http.model.member.ReactivationRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
-import pt.isel.jagoz.member.Member
-import pt.isel.jagoz.member.MemberError
 import pt.isel.jagoz.service.MemberService
-import pt.isel.jagoz.utils.handle
 
 @RestController
 class MemberController(
@@ -27,18 +27,11 @@ class MemberController(
     @GetMapping(Uris.Members.GET_BY_ID)
     fun getMemberById(
         @PathVariable memberId: Long,
-    ): ResponseEntity<*> {
-        return memberService.getMemberById(memberId).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.getMemberById(memberId).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
 
     @GetMapping(Uris.Members.GET_MEMBERS)
     fun getAllMembers(): ResponseEntity<List<Member>> {
@@ -55,18 +48,11 @@ class MemberController(
     @PostMapping(Uris.Members.CREATE_MEMBER)
     fun createMember(
         @RequestBody member: Member,
-    ): ResponseEntity<*> {
-        return memberService.createMember(member).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                    is MemberError.AlreadyExists -> Problem.MemberAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.createMember(member).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
 
     @PutMapping(Uris.Members.UPDATE_MEMBER)
     fun updateMemberContact(
@@ -78,128 +64,85 @@ class MemberController(
         @RequestParam city: String,
         @RequestParam(required = false) homePhone: String?,
         @RequestParam(required = false) billingLocation: String?,
-    ): ResponseEntity<*> {
-        return memberService.updateMemberContact(
-            memberId,
-            email,
-            phone,
-            address,
-            postalCode,
-            city,
-            homePhone,
-            billingLocation,
-        ).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
-            onSuccess = { res -> ResponseEntity.ok(res) },
-        )
-    }
+    ): ResponseEntity<*> =
+        memberService
+            .updateMemberContact(
+                memberId,
+                email,
+                phone,
+                address,
+                postalCode,
+                city,
+                homePhone,
+                billingLocation,
+            ).handle(
+                onFailure = { error -> handleMemberError(error) },
+                onSuccess = { res -> ResponseEntity.ok(res) },
+            )
 
     @DeleteMapping(Uris.Members.DELETE_MEMBER)
     fun deactivateMember(
         @PathVariable memberId: Long,
-    ): ResponseEntity<*> {
-        return memberService.deactivateMember(memberId).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.InvalidTransition ->
-                        Problem.InvalidTransition(
-                            error.from.toString(),
-                            error.attempted,
-                        ).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.deactivateMember(memberId).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
 
     @PutMapping(Uris.Members.APPROVE_MEMBER)
     fun approveMember(
         @PathVariable memberId: Long,
         @RequestBody approvalRequest: ApprovalRequest,
-    ): ResponseEntity<*> {
-        return memberService.approveMember(memberId, approvalRequest.approvalDate).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.InvalidTransition ->
-                        Problem.InvalidTransition(
-                            error.from.toString(),
-                            error.attempted,
-                        ).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.approveMember(memberId, approvalRequest.approvalDate).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
 
     @PutMapping(Uris.Members.REJECT_MEMBER)
     fun rejectMember(
         @PathVariable memberId: Long,
-    ): ResponseEntity<*> {
-        return memberService.rejectMember(memberId).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.InvalidTransition ->
-                        Problem.InvalidTransition(
-                            error.from.toString(),
-                            error.attempted,
-                        ).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.rejectMember(memberId).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
 
     @PutMapping(Uris.Members.REACTIVATE_MEMBER)
     fun reactivateMember(
         @PathVariable memberId: Long,
         @RequestBody reactivationRequest: ReactivationRequest,
-    ): ResponseEntity<*> {
-        return memberService.reactivateMember(memberId, reactivationRequest.reactivationDate).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.InvalidTransition ->
-                        Problem.InvalidTransition(
-                            error.from.toString(),
-                            error.attempted,
-                        ).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.reactivateMember(memberId, reactivationRequest.reactivationDate).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
 
     @PutMapping(Uris.Members.CHANGE_CATEGORY)
     fun changeMemberCategory(
         @PathVariable memberId: Long,
         @RequestBody categoryRequest: CategoryRequest,
-    ): ResponseEntity<*> {
-        return memberService.changeMemberCategory(memberId, categoryRequest.category).handle(
-            onFailure = { error ->
-                when (error) {
-                    is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
-                    is MemberError.InvalidOperation ->
-                        Problem.InvalidOperation(
-                            error.operation,
-                            error.reason,
-                        ).response(HttpStatus.BAD_REQUEST)
-                    else -> ResponseEntity.internalServerError().build()
-                }
-            },
+    ): ResponseEntity<*> =
+        memberService.changeMemberCategory(memberId, categoryRequest.category).handle(
+            onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res) },
         )
-    }
+
+    private fun handleMemberError(error: MemberError): ResponseEntity<Any> =
+        when (error) {
+            is MemberError.NotFound -> Problem.MemberNotFound.response(HttpStatus.NOT_FOUND)
+            is MemberError.AlreadyExists -> Problem.MemberAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
+            is MemberError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+            is MemberError.InvalidTransition ->
+                Problem
+                    .InvalidTransition(
+                        error.from.toString(),
+                        error.attempted,
+                    ).response(HttpStatus.BAD_REQUEST)
+            is MemberError.InvalidOperation -> Problem.InvalidOperation(error.operation, error.reason).response(HttpStatus.BAD_REQUEST)
+            is MemberError.Conflict -> Problem.ValidationError(error.message).response(HttpStatus.CONFLICT)
+            is MemberError.Unauthorized -> Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
+            is MemberError.Forbidden -> Problem.Unauthorized(error.message).response(HttpStatus.FORBIDDEN)
+            is MemberError.DomainError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+        }
 }

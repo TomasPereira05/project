@@ -1,7 +1,7 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
-import pt.isel.jagoz.event.Event
+import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.repository.EventRepository
 
 class JdbiEventRepository(private val handle: Handle) : EventRepository {

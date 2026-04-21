@@ -3,6 +3,12 @@ package pt.isel.jagoz.user
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.springframework.security.crypto.password.PasswordEncoder
+import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.Sha256TokenEncoder
+import pt.isel.jagoz.domain.user.User
+import pt.isel.jagoz.domain.user.UserDomain
+import pt.isel.jagoz.domain.user.UserDomainConfig
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
