@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
 import {LOGO_SRC} from "../../../shared/config/config";
 
-export function Footer() {
+export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">

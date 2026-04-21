@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import Home from "./features/home/components/Home";
 import { SignIn, SignUp } from "./features/auth";
 import { 
   CreateMembers, 
@@ -9,6 +8,7 @@ import {
   UpdateMember 
 } from "./features/Members";
 import { AuthProvider } from "./shared/components/AuthRequire";
+import { Home } from "./features/home";
 
 const router = createBrowserRouter([
   {
