@@ -1,135 +1,68 @@
-.footer-section {
-    background-color: #001D4A;
-    color: white;
-    padding-top: 2rem;
-    padding-bottom: 0.5rem;
-}
+@layer components {
 
-.footer-container {
-    max-width: 80rem; 
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
+  /* FOOTER */
+  .footer {
+    @apply bg-[#001D4A] text-white pt-8 pb-2;
+  }
 
-@media (min-width: 640px) {
-    .footer-container {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-    }
-}
+  .footer-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ml-4;
+  }
 
-@media (min-width: 1024px) {
-    .footer-container {
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
-}
+  .footer-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-8;
+  }
 
-.footer-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem; 
-}
+  /* LOGO */
+  .footer-logo-row {
+    @apply flex items-center gap-3 mb-4;
+  }
 
-@media (min-width: 768px) {
-    .footer-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
+  .footer-logo-box {
+    @apply flex items-center justify-center;
+  }
 
-.footer-logo-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem; 
-    margin-bottom: 1rem; 
-}
+  .footer-logo-icon {
+    @apply h-12 w-auto object-contain;
+  }
 
-.footer-logo-box {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  .footer-logo-title {
+    @apply font-heading text-xl tracking-tight;
+  }
 
-.footer-logo-icon {
-  height: 48px;
-  width: auto;
-  object-fit: contain;
-}
+  .footer-logo-subtitle {
+    @apply text-[10px] text-white/60 uppercase tracking-[0.15em];
+  }
 
-.footer-logo-title {
-    font-family: "Oswald", sans-serif;
-    font-size: 1.25rem; 
-    letter-spacing: -0.025em; 
-}
+  .footer-tagline {
+    @apply text-sm text-white/70 flex items-center gap-2;
+  }
 
-.footer-logo-subtitle {
-    font-size: 0.625rem; 
-    color: rgba(255, 255, 255, 0.6); 
-    letter-spacing: 0.15em; 
-    text-transform: uppercase;
-}
+  /* HEADINGS */
+  .footer-heading {
+    @apply font-heading text-lg uppercase tracking-wider mb-4;
+  }
 
-.footer-tagline {
-    font-size: 0.875rem; 
-    color: rgba(255, 255, 255, 0.7); 
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
+  /* CONTACT */
+  .footer-contact-list {
+    @apply flex flex-col gap-1 text-sm text-white/70;
+  }
 
-.footer-heading {
-    font-family: "Oswald", sans-serif;
-    font-size: 1.125rem; 
-    text-transform: uppercase;
-    letter-spacing: 0.05em; 
-    margin-bottom: 1rem;
-}
+  /* SOCIALS */
+  .footer-socials {
+    @apply flex gap-4;
+  }
 
-.footer-contact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    font-size: 0.875rem; 
-    color: rgba(255, 255, 255, 0.7);
-}
+  .footer-social-link {
+    @apply w-10 h-10 bg-white/10 flex items-center justify-center transition-colors text-white no-underline hover:bg-primary;
+  }
 
-.footer-contact-list p {
-    margin: 0;
-}
+  .footer-social-text {
+    @apply text-sm font-bold;
+  }
 
-.footer-socials {
-    display: flex;
-    gap: 1rem; 
-}
-
-.footer-social-link {
-    width: 2.5rem; 
-    height: 2.5rem; 
-    background-color: rgba(255, 255, 255, 0.1); 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 150ms ease;
-    text-decoration: none;
-    color: white;
-}
-
-.footer-social-link:hover {
-    background-color: #004F98;
-}
-
-.footer-social-link span {
-    font-size: 0.875rem;
-    font-weight: 700;
-}
-
-.footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    text-align: center;
-    font-size: 0.75rem; 
-    color: rgba(255, 255, 255, 0.5); 
+  /* BOTTOM */
+  .footer-bottom {
+    @apply border-t border-white/10 mt-6 pt-6 text-center text-xs text-white/50;
+  }
 }

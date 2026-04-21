@@ -1,14 +1,13 @@
 import * as React from 'react';
 import {useEffect, useReducer} from 'react';
-import '../styles/Form.css';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../../shared/hooks/useAuth";
 import { api } from '../api';
 import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
 import {InfoBox, StatusBox} from "../../../shared/components/MessageFormBox";
 import Form from "../../../shared/components/Form";
-import {LOGO_SRC} from "../../../shared/config/config";
-
+import {LOGO_SRC,HERO_IMG_SRC} from "../../../shared/config/config";
+import { ArrowLeft } from "lucide-react";
 
 interface State {
     username: string;
@@ -35,7 +34,6 @@ const reducer = (state: State, action: Action): State => {
     }
 };
 
-
 const SignIn: React.FC = () => {
     const location = useLocation();
     const {message: successMsg, username: prefilledUsername} = location.state || {};
@@ -46,8 +44,9 @@ const SignIn: React.FC = () => {
     const {message, type, setError, setSuccess, clearMessage, handleError} = useStatusHandler();
     const {username, setAuth} = useAuth();
     const [isFormButtonDisabled, setIsFormButtonDisabled] = React.useState(true);
-
-    useRedirectIfAuthenticated(!!username, '/Home');
+    const navigate = useNavigate();
+    
+    useRedirectIfAuthenticated(!!username, '/');
     
     useEffect(() => {
         if (successMsg) {
@@ -102,27 +101,62 @@ const SignIn: React.FC = () => {
         },
     ];
 
-    const infoMessage =
-        "You can only register an account after you get invited by someone. Learn more about this here.";
-
     return (
-        <Form
-            title="Sign in to Jagoz"
-            fields={fields}
-            onSubmit={handleLogin}
-            logoSrc={LOGO_SRC}
-            submitLabel="Sign In"
-            disabled = {isFormButtonDisabled}
-        >
-            {/* Status Box (Error or Success) */}
-            {message && (type === "error" || type === "success") && (
-                <StatusBox type={type} message={message} />
-            )}
+        <div className="auth-page">  
+            {/* TOPBAR */}
+            <div className="auth-topbar">
+            <div className="auth-topbar-inner">
 
-            {/* Info Box */}
-            <InfoBox message={infoMessage} />
-        </Form>
-    );
+                <a href="/" className="auth-logo">
+                <img src={LOGO_SRC} alt="logo" className="h-9 w-auto" />
+                <span className="auth-logo-text">ERICEIRENSE</span>
+                </a>
+
+                <button
+                onClick={() => window.history.back()}
+                className="auth-back-btn"
+                >
+                <ArrowLeft className="h-4 w-4" /> Voltar
+                </button>
+
+            </div>
+            </div>
+            <div
+                className="auth-bg"
+                style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
+            />
+            <div className="auth-bg-overlay" />
+
+            {/* CENTER CONTENT */}
+            <div className="auth-center">
+                
+            <div className="auth-card">
+                <div className="auth-card-inner">
+                    <Form
+                    title="Sign in"
+                    fields={fields}
+                    onSubmit={handleLogin}
+                    logoSrc={LOGO_SRC}
+                    submitLabel="Entrar"
+                    disabled={isFormButtonDisabled}
+                    >
+                    {message && (type === "error" || type === "success") && (
+                        <StatusBox type={type} message={message} />
+                    )}
+
+                    <InfoBox 
+                    message="Não tem conta?"
+                    action={{
+                            label: "Registe-se aqui",
+                            onClick: () => navigate("/register")
+                        }}
+                    />
+                    </Form>
+                </div>
+            </div>
+            </div>
+        </div>
+        );
 };
 
 export default SignIn;

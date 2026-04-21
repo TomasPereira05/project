@@ -1,27 +1,66 @@
-.form-page {
-    @apply min-h-screen bg-background flex items-center justify-center p-4 transition-colors;
-}
+@layer components {
 
-/* Login form */
-.form-card {
-    @apply bg-surface shadow-md rounded-lg p-6 w-full max-w-md transition-colors;
-}
+  /* PAGE WRAPPER */
+  .auth-page {
+    @apply min-h-screen relative overflow-hidden flex flex-col;
+  }
 
-.form-title {
-    @apply text-4xl font-medium text-text-primary text-center mb-8;
-}
+  /* TOPBAR */
+  .auth-topbar {
+    @apply w-full bg-white border-b border-border/50 shadow-sm;
+  }
 
-/* Label styling for form inputs */
-.form-label {
-    @apply block text-sm font-medium text-primary mb-1;
-}
+  .auth-topbar-inner {
+    @apply max-w-6xl mx-auto flex items-center justify-between px-4 py-3;
+  }
 
-/* Input field styling */
-.form-input {
-    @apply w-full px-4 py-2 border border-border bg-surface text-text-primary rounded-md focus:ring-primary focus:border-primary placeholder-text-secondary;
-}
+  .auth-logo {
+    @apply flex items-center gap-3 hover:opacity-80 transition;
+  }
 
-.form-button {
-    @apply w-full bg-primary text-white py-3 px-4 rounded-md font-semibold text-lg;
-    @apply hover:opacity-90 focus:outline-none focus:ring focus:ring-offset-2 focus:ring-primary transition-all duration-200;
+  .auth-logo-text {
+    @apply font-heading text-primary text-lg tracking-tight;
+  }
+
+  .auth-back-btn {
+    @apply text-sm font-semibold uppercase tracking-wide text-slate-600 hover:text-primary transition flex items-center gap-1;
+  }
+
+  /* CENTER */
+  .auth-center {
+    @apply flex-1 flex items-center justify-center px-4 py-10;
+  }
+
+  .auth-card {
+    @apply w-full max-w-md ;
+  }
+
+  .auth-card-inner {
+  @apply bg-gray-400/30 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl p-6;
+  }
+  
+  .form-title {
+    @apply font-heading text-accent text-4xl tracking-tight text-center;
+  }
+
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+
+  .form-button {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+  }
+
+  .auth-bg {
+    @apply absolute inset-0 bg-cover bg-center bg-no-repeat z-0;
+  }
+
+  .auth-bg-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10;
+  }
+
+  .auth-topbar,
+  .auth-center {
+    @apply relative z-20;
+  }
 }

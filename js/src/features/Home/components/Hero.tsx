@@ -1,8 +1,7 @@
 import { ChevronDown } from "lucide-react";
-import "../styles/Hero.css";
 import {HERO_IMG_SRC} from "../../../shared/config/config";
 
-export function Hero() {
+export default function Hero() {
   return (
     <section className="hero-section">
       <div 

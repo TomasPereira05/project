@@ -1,242 +1,80 @@
-.hero-section {
-    position: relative;
-    min-height: 60vh;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-}
+@layer components {
+    /* HERO SECTION */
+    .hero-section {
+    @apply relative min-h-[60vh] flex items-center overflow-hidden;
+    }
 
-.hero-bg {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+    /* BACKGROUND */
+    .hero-bg {
+    @apply absolute inset-0 bg-cover bg-center bg-no-repeat;
+    }
 
-.hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to right, rgba(0, 29, 74, 0.9), rgba(0, 79, 152, 0.7), transparent);
-}
+    /* OVERLAY */
+    .hero-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent;
+    }
 
-.hero-content {
-    position: relative;
-    z-index: 10;
-    max-width: 80rem;
-    margin-left: 0;
-    margin-right: auto;
-}
-
-@media (min-width: 640px) {
+    /* CONTENT */
     .hero-content {
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
+    @apply relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-[15%] lg:py-24;
     }
-}
 
-@media (min-width: 1024px) {
-    .hero-content {
-        padding-left: 15%;
-        padding-right: 2rem;
-        padding-top: 6rem;
-        padding-bottom: 6rem;
+    .hero-text-container {
+    @apply max-w-3xl;
     }
-}
 
-.hero-text-container {
-    max-width: 48rem; /* max-w-3xl */
-}
+    /* LOCATION BADGE */
+    .location-badge {
+    @apply inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm animate-fadeInUp;
+    }
 
-.location-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background-color: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    animation: fadeInUp 1s ease-out forwards;
-}
+    .location-dot {
+    @apply w-2 h-2 bg-accent rounded-full animate-pulse;
+    }
 
-.location-dot {
-    width: 0.5rem;
-    height: 0.5rem;
-    background-color: #FACC15;
-    border-radius: 9999px;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
+    .location-text {
+    @apply text-xs font-semibold tracking-[0.2em] uppercase text-white/80;
+    }
 
-.location-text {
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.hero-title {
-    font-family: "Oswald", sans-serif;
-    font-size: 3rem; 
-    line-height: 1;
-    color: white;
-    letter-spacing: -0.025em;
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-    animation: fadeInUp 1s ease-out forwards;
-    animation-delay: 100ms;
-    opacity: 0;
-}
-
-@media (min-width: 640px) {
+    /* TITLE */
     .hero-title {
-        font-size: 3.75rem; 
+    @apply font-heading text-5xl sm:text-6xl lg:text-7xl xl:text-8xl text-white uppercase tracking-tight mb-4 opacity-0 animate-fadeInUp delay-100;
     }
-}
 
-@media (min-width: 1024px) {
-    .hero-title {
-        font-size: 4.5rem; 
-    }
-}
-
-@media (min-width: 1280px) {
-    .hero-title {
-        font-size: 6rem;
-    }
-}
-
-.hero-subtitle {
-    font-size: 1.125rem;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 300;
-    margin-bottom: 0.5rem;
-    animation: fadeInUp 1s ease-out forwards;
-    animation-delay: 200ms;
-    opacity: 0;
-}
-
-@media (min-width: 640px) {
+    /* SUBTITLE */
     .hero-subtitle {
-        font-size: 1.25rem;
+    @apply text-lg sm:text-xl lg:text-2xl text-white/90 font-light mb-2 opacity-0 animate-fadeInUp delay-200;
     }
-}
 
-@media (min-width: 1024px) {
-    .hero-subtitle {
-        font-size: 1.5rem;
+    /* TAGLINE */
+    .hero-tagline-container {
+    @apply flex items-center gap-4 mb-8 opacity-0 animate-fadeInUp delay-300;
     }
-}
 
-.hero-tagline-container {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    animation: fadeInUp 1s ease-out forwards;
-    animation-delay: 300ms;
-    opacity: 0;
-}
+    .hero-line {
+    @apply h-px w-12 bg-accent;
+    }
 
-.hero-line {
-    height: 1px;
-    width: 3rem;
-    background-color: #FACC15;
-}
-
-.hero-tagline {
-    font-family: "Oswald", sans-serif;
-    font-size: 1.25rem;
-    color: #FACC15;
-    letter-spacing: 0.05em; 
-    text-transform: uppercase;
-}
-
-@media (min-width: 640px) {
     .hero-tagline {
-        font-size: 1.5rem;
+    @apply font-heading text-xl sm:text-2xl lg:text-3xl text-accent uppercase tracking-wide;
     }
-}
 
-@media (min-width: 1024px) {
-    .hero-tagline {
-        font-size: 1.875rem;
-    }
-}
-
-.hero-desc {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    max-width: 36rem;
-    line-height: 1.625;
-    animation: fadeInUp 1s ease-out forwards;
-    animation-delay: 400ms;
-    opacity: 0;
-}
-
-@media (min-width: 640px) {
+    /* DESCRIPTION */
     .hero-desc {
-        font-size: 1.125rem;
+    @apply text-base sm:text-lg text-white/70 max-w-xl leading-relaxed opacity-0 animate-fadeInUp delay-400;
     }
-}
 
-.hero-scroll-btn {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    color: rgba(255, 255, 255, 0.6);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: color 150ms ease;
-    animation: bounce 1s infinite;
-}
-
-.hero-scroll-btn:hover {
-    color: white;
-}
-
-.hero-scroll-btn svg {
-    width: 2rem;
-    height: 2rem;
-}
-
-.hero-gradient-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 6rem;
-    background: linear-gradient(to top, #F8FAFC, transparent);
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+    /* SCROLL BUTTON */
+    .hero-scroll-btn {
+    @apply absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white animate-bounce;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
+    .hero-scroll-btn svg {
+    @apply w-8 h-8;
     }
-    50% {
-        opacity: .5;
-    }
-}
 
-@keyframes bounce {
-    0%, 100% {
-        transform: translate(-50%, -25%);
-        animation-timing-function: cubic-bezier(0.8,0,1,1);
-    }
-    50% {
-        transform: translate(-50%, 0);
-        animation-timing-function: cubic-bezier(0,0,0.2,1);
+    /* BOTTOM GRADIENT */
+    .hero-gradient-bottom {
+    @apply absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent;
     }
 }

@@ -1,8 +1,7 @@
 import { ArrowRight, Calendar } from "lucide-react";
-import { news } from "../NewsItemHolders";
-import "../styles/NewsGrid.css";
+import { news } from "..";
 
-export function NewsGrid() {
+export default function NewsGrid() {
   return (
     <section id="news-section" data-testid="news-section" className="news-section">
       <div className="news-container">
