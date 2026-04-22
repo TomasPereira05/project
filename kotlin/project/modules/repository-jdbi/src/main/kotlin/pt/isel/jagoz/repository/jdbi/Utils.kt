@@ -17,6 +17,7 @@ import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
+import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
 import pt.isel.jagoz.repository.jdbi.mappers.MemberMapper
 import pt.isel.jagoz.repository.jdbi.mappers.PaymentMapper
@@ -31,6 +32,8 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     installPlugin(PostgresPlugin())
 
     registerColumnMapper(Instant::class.java, InstantMapper())
+
+    registerArgument(InstantArgumentFactory())
 
     registerRowMapper(Athlete::class.java, AthleteMapper())
     registerRowMapper(Charge::class.java, ChargeMapper())
