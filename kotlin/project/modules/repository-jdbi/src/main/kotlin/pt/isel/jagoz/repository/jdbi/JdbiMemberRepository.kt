@@ -52,17 +52,17 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
                 monthly_quota, billing_location, registration_date, approval_date, 
                 privacy_accepted, coms_accepted
             ) VALUES (
-                :memberNumber, :completeName, CAST(:birthDate AS DATE), :email, :phone, :homePhone, 
+                :memberNumber, :completeName, :birthDate, :email, :phone, :homePhone, 
                 :address, :postalCode, :city, CAST(:category AS member_category), 
                 CAST(:status AS member_status), :formerMember, :monthlyQuota, 
-                :billingLocation, CAST(:registrationDate AS DATE), CAST(:approvalDate AS DATE), 
+                :billingLocation, :registrationDate, :approvalDate, 
                 :privacyAccepted, :comsAccepted
             )
             """,
         )
             .bind("memberNumber", if (member.memberNumber > 0) member.memberNumber else null)
             .bind("completeName", member.completeName)
-            .bind("birthDate", member.birthDate.toString())
+            .bind("birthDate", member.birthDate)
             .bind("email", member.email)
             .bind("phone", member.phone)
             .bind("homePhone", member.homePhone)
@@ -74,8 +74,8 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .bind("formerMember", member.formerMember)
             .bind("monthlyQuota", member.membershipQuota)
             .bind("billingLocation", member.billingLocation)
-            .bind("registrationDate", member.registrationDate.toString())
-            .bind("approvalDate", member.approvalDate?.toString())
+            .bind("registrationDate", member.registrationDate)
+            .bind("approvalDate", member.approvalDate)
             .bind("privacyAccepted", member.privacyAccepted)
             .bind("comsAccepted", member.comsAccepted)
             .executeAndReturnGeneratedKeys()
@@ -89,7 +89,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             UPDATE member SET 
                 member_number = :memberNumber,
                 complete_name = :completeName,
-                birth_date = CAST(:birthDate AS DATE),
+                birth_date = :birthDate,
                 email = :email,
                 phone = :phone,
                 home_phone = :homePhone,
@@ -101,8 +101,8 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
                 former_member = :formerMember,
                 monthly_quota = :monthlyQuota,
                 billing_location = :billingLocation,
-                registration_date = CAST(:registrationDate AS DATE),
-                approval_date = CAST(:approvalDate AS DATE),
+                registration_date = :registrationDate,
+                approval_date = :approvalDate,
                 privacy_accepted = :privacyAccepted,
                 coms_accepted = :comsAccepted
             WHERE member_id = :id
@@ -111,7 +111,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .bind("id", member.memberId)
             .bind("memberNumber", if (member.memberNumber > 0) member.memberNumber else null)
             .bind("completeName", member.completeName)
-            .bind("birthDate", member.birthDate.toString())
+            .bind("birthDate", member.birthDate)
             .bind("email", member.email)
             .bind("phone", member.phone)
             .bind("homePhone", member.homePhone)
@@ -123,8 +123,8 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .bind("formerMember", member.formerMember)
             .bind("monthlyQuota", member.membershipQuota)
             .bind("billingLocation", member.billingLocation)
-            .bind("registrationDate", member.registrationDate.toString())
-            .bind("approvalDate", member.approvalDate?.toString())
+            .bind("registrationDate", member.registrationDate)
+            .bind("approvalDate", member.approvalDate)
             .bind("privacyAccepted", member.privacyAccepted)
             .bind("comsAccepted", member.comsAccepted)
             .execute()

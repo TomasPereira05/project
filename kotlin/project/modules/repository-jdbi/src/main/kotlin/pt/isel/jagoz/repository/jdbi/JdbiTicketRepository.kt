@@ -34,7 +34,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
         return handle.createUpdate(
             """
             INSERT INTO ticket (member_id, buyer_email, buyer_name, event_id, price, qr_code, used, used_at)
-            VALUES (:memberId, :buyerEmail, :buyerName, :eventId, :price, :qrCode, :used, CAST(:usedAt AS TIMESTAMP))
+            VALUES (:memberId, :buyerEmail, :buyerName, :eventId, :price, :qrCode, :used, :usedAt)
             """,
         )
             .bind("memberId", ticket.memberId)
@@ -44,7 +44,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
             .bind("price", ticket.price)
             .bind("qrCode", ticket.qrCode)
             .bind("used", ticket.used)
-            .bind("usedAt", ticket.usedAt?.toString()) // ISO format works for timestamp
+            .bind("usedAt", ticket.usedAt)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
@@ -58,12 +58,12 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
             """
             UPDATE ticket SET 
                 used = true, 
-                used_at = CAST(:usedAt AS TIMESTAMP)
+                used_at = :usedAt
             WHERE ticket_id = :id AND used = false
             """,
         )
             .bind("id", ticketId)
-            .bind("usedAt", usedAt.toString())
+            .bind("usedAt", usedAt)
             .execute() > 0
     }
 }
