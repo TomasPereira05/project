@@ -87,13 +87,13 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         handle.createUpdate(
             """
             INSERT INTO user_token (token_validation, user_id, created_at, last_used_at)
-            VALUES (:validation, :userId, CAST(:createdAt AS TIMESTAMP), CAST(:lastUsedAt AS TIMESTAMP))
+            VALUES (:validation, :userId, :createdAt, :lastUsedAt)
             """,
         )
             .bind("validation", token.tokenValidationInfo.validationInfo)
             .bind("userId", token.userId)
-            .bind("createdAt", token.createdAt.toString())
-            .bind("lastUsedAt", token.lastUsedAt.toString())
+            .bind("createdAt", token.createdAt)
+            .bind("lastUsedAt", token.lastUsedAt)
             .execute()
     }
 
@@ -122,8 +122,8 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         token: Token,
         now: Instant,
     ) {
-        handle.createUpdate("UPDATE user_token SET last_used_at = CAST(:now AS TIMESTAMP) WHERE token_validation = :validation")
-            .bind("now", now.toString())
+        handle.createUpdate("UPDATE user_token SET last_used_at = :now WHERE token_validation = :validation")
+            .bind("now", now)
             .bind("validation", token.tokenValidationInfo.validationInfo)
             .execute()
     }
