@@ -1,13 +1,18 @@
 import { useState, useRef, useEffect } from "react";
+import { Menu, User } from "lucide-react";
 import {LOGO_SRC} from "../config/config"
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import { TEAM_CATEGORIES, labelForCategory } from "../../features/Athletes";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Header() {
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
     const navigate = useNavigate();
     const ref = useRef<HTMLDivElement>(null);
+    const { username, clearAuth } = useAuth();
+    const isAuthenticated = Boolean(username);
 
-    type MenuType = "mobile" | "socios" | "conta" | null;
+    type MenuType = "mobile" | "socios" | "conta" | "equipas" | "user" | null;
 
     const toggleMenu = (menu: Exclude<MenuType, null>) => {
         setActiveMenu((prev) => (prev === menu ? null : menu));
@@ -25,6 +30,16 @@ export default function Header() {
         navigate('/register')
     };
 
+    const handleLogout = () => {
+        clearAuth();
+        closeMenus();
+        navigate('/');
+    };
+
+    const otherSports = ["Patinagem", "Voleibol", "Futebol Praia", "Golf"];
+
+    const userIcon = <User size={20} aria-hidden="true" />;
+
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -39,30 +54,37 @@ export default function Header() {
         <header className="header" ref={ref}>
             <div className="container-custom">
                 <div className="header-inner">
-                    <div className="logo">
+                    <Link to="/" className="logo" onClick={closeMenus}>
                         <img src={LOGO_SRC} alt="Logo" className="logo-box" />
                         <div>
                             <h1 className="header-title">ERICEIRENSE</h1>
                             <p className="header-subtitle">Grupo Desportivo União Ericeirense</p>
                         </div>
-                    </div>
+                    </Link>
                     <nav className="nav">
-                        <a className="nav-link">Início</a>
                         <button className="nav-link" onClick={() => toggleMenu("socios")}>Sócios</button>
                         <button className="nav-link" onClick={() => toggleMenu("conta")}>Conta</button>
                         <span className="nav-disabled">Patrocinios</span>
-                        <span className="nav-disabled">Equipas</span>
+                        <button className="nav-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                     </nav>
                     <div className="header-actions">
-                        <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
-                        <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                        {isAuthenticated ? (
+                            <button
+                                className="header-user-btn"
+                                onClick={() => toggleMenu("user")}
+                                aria-label="Conta de utilizador"
+                            >
+                                {userIcon}
+                            </button>
+                        ) : (
+                            <>
+                                <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
+                                <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                            </>
+                        )}
                     </div>
                     <button className="mobile-menu-btn" aria-label="Menu" onClick={() => toggleMenu("mobile")}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M4 12h16"></path>
-                            <path d="M4 18h16"></path>
-                            <path d="M4 6h16"></path>
-                        </svg>
+                        <Menu size={24} aria-hidden="true" />
                     </button>
                 </div>
             </div>
@@ -73,11 +95,23 @@ export default function Header() {
                     <button className="dropdown-link" onClick={() => toggleMenu("socios")}>Sócios</button>
                     <button className="dropdown-link" onClick={() => toggleMenu("conta")}>Conta</button>
                     <span className="dropdown-disabled">Patrocinios</span>
-                    <span className="dropdown-disabled">Equipas</span>
+                    <button className="dropdown-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                 </nav>
                 <div className="dropdown-actions">
-                    <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
-                    <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                    {isAuthenticated ? (
+                        <button
+                            className="header-user-btn"
+                            onClick={() => toggleMenu("user")}
+                            aria-label="Conta de utilizador"
+                        >
+                            {userIcon}
+                        </button>
+                    ) : (
+                        <>
+                            <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
+                            <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                        </>
+                    )}
                 </div>
             </div>
             
@@ -99,6 +133,41 @@ export default function Header() {
                     <a href="#" className="dropdown-link">Perfil</a>
                     <span className="dropdown-disabled">Informações</span>
                     <span className="dropdown-disabled">Pagamentos</span>
+                </nav>
+            </div>
+
+            {/* User Dropdown Menu (visivel apenas quando autenticado) */}
+            <div className={`dropdown ${activeMenu === "user" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    <span className="dropdown-disabled">Olá, {username}</span>
+                    <a href="#" className="dropdown-link">Perfil</a>
+                    <button className="dropdown-link" onClick={handleLogout}>Sair</button>
+                </nav>
+            </div>
+
+            {/* Equipas Dropdown Menu */}
+            <div className={`dropdown ${activeMenu === "equipas" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    {TEAM_CATEGORIES.map((category) => (
+                        <Link
+                            key={category}
+                            to={`/athletes/category/${category}`}
+                            className="dropdown-link"
+                            onClick={closeMenus}
+                        >
+                            {labelForCategory(category)}
+                        </Link>
+                    ))}
+                    {otherSports.map((sport) => (
+                        <span key={sport} className="dropdown-disabled">{sport} (em breve)</span>
+                    ))}
+                    <Link
+                        to="/athletes/register"
+                        className="dropdown-link"
+                        onClick={closeMenus}
+                    >
+                        Inscrição de atletas
+                    </Link>
                 </nav>
             </div>
         </header>
