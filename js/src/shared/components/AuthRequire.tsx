@@ -7,7 +7,9 @@ import { api } from "../../features/auth";
 type AuthContextType = {
     id?: number;
     username?: string;
-    setAuth: (auth: { id?: number; username?: string }) => void;
+    role?: string;
+    activeMemberId?: number;
+    setAuth: (auth: { id?: number; username?: string; role?: string; activeMemberId?: number }) => void;
     clearAuth: () => void;
 };
 
@@ -16,25 +18,30 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [auth, setAuthState] = useState<{ id?: number; username?: string }>({});
+    const [auth, setAuthState] = useState<{ id?: number; username?: string; role?: string; activeMemberId?: number }>({});
 
     useEffect(() => {
         api.auth.getMe().then(data => {
             if (data) {
-                setAuthState({id: data.id, username: data.username});
+                setAuthState({
+                    id: data.id, 
+                    username: data.username,
+                    role: data.role,
+                    activeMemberId: data.activeMemberId
+                });
             } else {
                 setAuthState({});
             }
         });
     }, []);
 
-    const setAuth = (authData: { id?: number; username?: string }) => {
+    const setAuth = (authData: { id?: number; username?: string; role?: string; activeMemberId?: number }) => {
         setAuthState(authData);
     };
 
     const clearAuth = () => {
         if (auth.id) {
-            api.auth.logout(auth.id).catch(e => console.error("Logout failed", e));
+            api.auth.logout().catch(e => console.error("Logout failed", e));
         }
         setAuthState({});
     }
@@ -44,6 +51,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
             value={{
                 id: auth.id,
                 username: auth.username,
+                role: auth.role,
+                activeMemberId: auth.activeMemberId,
                 setAuth,
                 clearAuth,
             }}

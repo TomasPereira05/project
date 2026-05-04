@@ -34,6 +34,7 @@ export type MemberFormValues = {
   postalCode: string;
   city: string;
   category: MemberCategory;
+  membershipQuotaEuros: string;
   formerMember: boolean;
   billingLocation: string;
   privacyAccepted: boolean;

@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import {LOGO_SRC} from "../config/config"
-import {useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Header() {
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
     const navigate = useNavigate();
+    const { role, activeMemberId, id, clearAuth } = useAuth();
     const ref = useRef<HTMLDivElement>(null);
 
     type MenuType = "mobile" | "socios" | "conta" | null;
@@ -23,6 +25,13 @@ export default function Header() {
 
     const handleRegisterClick = () => {
         navigate('/register')
+    };
+
+    const handleLogoutClick = () => {
+        if (clearAuth) {
+            clearAuth();
+        }
+        navigate('/');
     };
 
     useEffect(() => {
@@ -54,8 +63,14 @@ export default function Header() {
                         <span className="nav-disabled">Equipas</span>
                     </nav>
                     <div className="header-actions">
-                        <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
-                        <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                        {id ? (
+                            <button className="btn btn-outline" onClick={handleLogoutClick}>Sair</button>
+                        ) : (
+                            <>
+                                <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
+                                <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                            </>
+                        )}
                     </div>
                     <button className="mobile-menu-btn" aria-label="Menu" onClick={() => toggleMenu("mobile")}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -76,8 +91,14 @@ export default function Header() {
                     <span className="dropdown-disabled">Equipas</span>
                 </nav>
                 <div className="dropdown-actions">
-                    <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
-                    <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                    {id ? (
+                        <button className="btn btn-outline w-full" onClick={handleLogoutClick}>Sair</button>
+                    ) : (
+                        <>
+                            <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
+                            <button className="btn btn-solid" onClick={handleRegisterClick}>Registar</button>
+                        </>
+                    )}
                 </div>
             </div>
             
@@ -85,10 +106,16 @@ export default function Header() {
             {/* Sócios Dropdown Menu */}
             <div className={`dropdown ${activeMenu === "socios" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
-                    <a href="#" className="dropdown-link">Perfil de Sócio</a>
-                    <a href="#" className="dropdown-link">Lista de Sócios</a>
+                    {activeMemberId ? (
+                        <Link to={`/members/${activeMemberId}`} className="dropdown-link" onClick={closeMenus}>Perfil de Sócio</Link>
+                    ) : (
+                        <span className="dropdown-disabled">Perfil de Sócio</span>
+                    )}
+                    {(role === "ADMIN" || role === "SECRETARIA") && (
+                        <Link to="/members" className="dropdown-link" onClick={closeMenus}>Lista de Sócios</Link>
+                    )}
                     <span className="dropdown-disabled">Cotas</span>
-                    <span className="dropdown-disabled">Tornar se Sócio</span>
+                    <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>Tornar-se Sócio</Link>
                 </nav>
             </div>
     

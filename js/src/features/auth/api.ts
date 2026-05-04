@@ -33,6 +33,7 @@ export const api = {
       const data = await request<{
         userId: number;
         username: string;
+        role: string;
         activeMemberId: number | null;
         token: string;
       }>("/users/login", {
@@ -42,6 +43,7 @@ export const api = {
       return {
         id: data.userId,
         username: data.username,
+        role: data.role,
         activeMemberId: data.activeMemberId,
         token: data.token,
       };
@@ -72,6 +74,8 @@ export const api = {
         return {
           id: data.userId, 
           username: data.username,
+          role: data.role,
+          activeMemberId: data.activeMemberId
         };
       } catch (error) {
         return null;

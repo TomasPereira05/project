@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import "../styles/Members.css";
 import {
+  centsFromEuroInput,
   createMember,
   defaultMemberFormValues,
   type MemberFormValues,
@@ -30,6 +30,20 @@ export default function CreateMembers() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!values.privacyAccepted) {
+      setErrorMessage("Tem de aceitar o consentimento de privacidade para submeter.");
+      return;
+    }
+
+    if (values.category !== "ATLETA_SOCIO") {
+      const quotaInCents = centsFromEuroInput(values.membershipQuotaEuros);
+      if (!Number.isFinite(quotaInCents) || quotaInCents < 150) {
+        setErrorMessage("A quota mensal minima e 1,50 EUR.");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -37,22 +51,22 @@ export default function CreateMembers() {
     try {
       const created = await createMember(values);
       setSuccessMessage(
-        `Pedido submetido com sucesso. Foi atribuido o numero #${created.memberNumber}.`,
+        `Pedido submetido com sucesso. Foi atribuído o número #${created.memberNumber}.`,
       );
       setValues(defaultMemberFormValues());
     } catch {
-      setErrorMessage("Nao foi possivel submeter o pedido de socio.");
+      setErrorMessage("Não foi possível submeter o pedido de sócio.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="members-page">
-      <div className="members-shell">
+    <main className="min-h-screen bg-background py-10 flex justify-center items-center">
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <MemberForm
-          title="Criar novo socio"
-          description="Formulario de candidatura com os dados necessarios para avaliacao por parte do clube."
+          title="Criar novo sócio"
+          description="Formulário de candidatura com os dados necessários para avaliação por parte do clube."
           values={values}
           onChange={handleChange}
           onSubmit={handleSubmit}

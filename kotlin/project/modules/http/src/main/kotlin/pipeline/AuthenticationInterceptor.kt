@@ -31,8 +31,8 @@ class AuthenticationInterceptor(
                     user = authorizationHeaderProcessor.processAuthorizationHeaderValue("Bearer ${it.value}")
                 }
             }
-
             return if (user == null) {
+                logger.info("Unauthorized request to ${request.requestURI} with method ${request.method}")
                 response.status = 401
                 response.addHeader(NAME_WWW_AUTHENTICATE_HEADER, RequestTokenProcessor.SCHEME)
                 false

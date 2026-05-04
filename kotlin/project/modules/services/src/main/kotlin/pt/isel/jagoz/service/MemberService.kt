@@ -7,6 +7,7 @@ import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberDomain
 import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.user.UserDomain
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success

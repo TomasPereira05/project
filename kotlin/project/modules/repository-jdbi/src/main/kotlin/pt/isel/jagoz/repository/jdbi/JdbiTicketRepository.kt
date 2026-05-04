@@ -7,7 +7,7 @@ import pt.isel.jagoz.repository.TicketRepository
 
 class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun findById(id: Long): Ticket? {
-        return handle.createQuery("SELECT * FROM ticket WHERE ticket_id = :id")
+        return handle.createQuery("SELECT * FROM jagoz.ticket WHERE ticket_id = :id")
             .bind("id", id)
             .mapTo(Ticket::class.java)
             .findOne()
@@ -15,7 +15,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     }
 
     override fun findByQrCode(qrCode: String): Ticket? {
-        return handle.createQuery("SELECT * FROM ticket WHERE qr_code = :qrCode")
+        return handle.createQuery("SELECT * FROM jagoz.ticket WHERE qr_code = :qrCode")
             .bind("qrCode", qrCode)
             .mapTo(Ticket::class.java)
             .findOne()
@@ -23,7 +23,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     }
 
     override fun findByEventId(eventId: Long): List<Ticket> {
-        return handle.createQuery("SELECT * FROM ticket WHERE event_id = :eventId")
+        return handle.createQuery("SELECT * FROM jagoz.ticket WHERE event_id = :eventId")
             .bind("eventId", eventId)
             .mapTo(Ticket::class.java)
             .list()
@@ -32,8 +32,8 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun save(ticket: Ticket): Long {
         return handle.createUpdate(
             """
-            INSERT INTO ticket (member_id, buyer_email, buyer_name, event_id, price, qr_code, used, used_at)
-            VALUES (:memberId, :buyerEmail, :buyerName, :eventId, :price, :qrCode, :used, CAST(:usedAt AS TIMESTAMP))
+            INSERT INTO jagoz.ticket (member_id, buyer_email, buyer_name, event_id, price, qr_code, used, used_at)
+            VALUES (:memberId, :buyerEmail, :buyerName, :eventId, :price, :qrCode, :used, CAST(:usedAt AS TIMESTAMPTZ))
             """,
         )
             .bind("memberId", ticket.memberId)
@@ -55,9 +55,9 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     ): Boolean {
         return handle.createUpdate(
             """
-            UPDATE ticket SET 
+            UPDATE jagoz.ticket SET 
                 used = true, 
-                used_at = CAST(:usedAt AS TIMESTAMP)
+                used_at = CAST(:usedAt AS TIMESTAMPTZ)
             WHERE ticket_id = :id AND used = false
             """,
         )

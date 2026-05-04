@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../shared/config/config";
 import type { Member, MemberFormValues } from "./types";
+import { centsFromEuroInput } from "./utils";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -28,7 +29,10 @@ export function fetchMember(memberId: number) {
 
 export function createMember(values: MemberFormValues) {
   const today = new Date().toISOString().slice(0, 10);
-  const membershipQuota = values.category === "ATLETA_SOCIO" ? 0 : 150;
+  const membershipQuota =
+    values.category === "ATLETA_SOCIO"
+      ? 0
+      : centsFromEuroInput(values.membershipQuotaEuros);
 
   return request<Member>("/members/create", {
     method: "POST",

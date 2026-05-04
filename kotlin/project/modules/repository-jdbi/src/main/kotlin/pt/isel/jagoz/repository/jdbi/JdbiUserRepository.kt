@@ -14,8 +14,8 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun save(user: User): Long {
         return handle.createUpdate(
             """
-            INSERT INTO users (email, username, password_validation, role, active_member_id)
-            VALUES (:email, :username, :passwordValidation, CAST(:role AS user_role), :activeMemberId)
+            INSERT INTO jagoz.users (email, username, password_validation, role, active_member_id)
+            VALUES (:email, :username, :passwordValidation, CAST(:role AS jagoz.user_role), :activeMemberId)
             """,
         )
             .bind("email", user.email)
@@ -32,32 +32,32 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         userId: Long,
         newPassword: PasswordValidationInfo,
     ) {
-        handle.createUpdate("UPDATE users SET password_validation = :pw WHERE user_id = :id")
+        handle.createUpdate("UPDATE jagoz.users SET password_validation = :pw WHERE user_id = :id")
             .bind("pw", newPassword.validationInfo)
             .bind("id", userId)
             .execute()
     }
 
     override fun findById(id: Long): User? {
-        return handle.createQuery("SELECT * FROM users WHERE user_id = :id")
+        return handle.createQuery("SELECT * FROM jagoz.users WHERE user_id = :id")
             .bind("id", id)
-            .mapTo(User::class.java)
+            .map(UserMapper())
             .findOne()
             .orElse(null)
     }
 
     override fun findByUsername(username: String): User? {
-        return handle.createQuery("SELECT * FROM users WHERE username = :username")
+        return handle.createQuery("SELECT * FROM jagoz.users WHERE username = :username")
             .bind("username", username)
-            .mapTo(User::class.java)
+            .map(UserMapper())
             .findOne()
             .orElse(null)
     }
 
     override fun findByEmail(email: String): User? {
-        return handle.createQuery("SELECT * FROM users WHERE email = :email")
+        return handle.createQuery("SELECT * FROM jagoz.users WHERE email = :email")
             .bind("email", email)
-            .mapTo(User::class.java)
+            .map(UserMapper())
             .findOne()
             .orElse(null)
     }
@@ -65,7 +65,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun update(user: User) {
         handle.createUpdate(
             """
-            UPDATE users SET 
+            UPDATE jagoz.users SET 
                 email = :email, 
                 username = :username, 
                 password_validation = :passwordValidation, 
@@ -86,8 +86,8 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun createToken(token: Token) {
         handle.createUpdate(
             """
-            INSERT INTO user_token (token_validation, user_id, created_at, last_used_at)
-            VALUES (:validation, :userId, CAST(:createdAt AS TIMESTAMP), CAST(:lastUsedAt AS TIMESTAMP))
+            INSERT INTO jagoz.user_token (token_validation, user_id, created_at, last_used_at)
+            VALUES (:validation, :userId, CAST(:createdAt AS TIMESTAMPTZ), CAST(:lastUsedAt AS TIMESTAMPTZ))
             """,
         )
             .bind("validation", token.tokenValidationInfo.validationInfo)
@@ -102,8 +102,8 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
             handle.createQuery(
                 """
             SELECT u.*, t.token_validation, t.created_at, t.last_used_at 
-            FROM users u
-            JOIN user_token t ON u.user_id = t.user_id
+            FROM jagoz.users u
+            JOIN jagoz.user_token t ON u.user_id = t.user_id
             WHERE t.token_validation = :validation
             """,
             )
@@ -122,14 +122,14 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         token: Token,
         now: Instant,
     ) {
-        handle.createUpdate("UPDATE user_token SET last_used_at = CAST(:now AS TIMESTAMP) WHERE token_validation = :validation")
+        handle.createUpdate("UPDATE jagoz.user_token SET last_used_at = CAST(:now AS TIMESTAMPTZ) WHERE token_validation = :validation")
             .bind("now", now.toString())
             .bind("validation", token.tokenValidationInfo.validationInfo)
             .execute()
     }
 
     override fun removeTokenByValidation(validation: TokenValidationInfo): Int {
-        return handle.createUpdate("DELETE FROM user_token WHERE token_validation = :validation")
+        return handle.createUpdate("DELETE FROM jagoz.user_token WHERE token_validation = :validation")
             .bind("validation", validation.validationInfo)
             .execute()
     }

@@ -9,7 +9,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
         return handle.createQuery(
             """
             SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
-            FROM athlete a
+            FROM jagoz.athlete a
             JOIN member m ON m.member_id = a.member_id
             WHERE a.athlete_id = :id
             """.trimIndent(),
@@ -24,7 +24,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
         return handle.createQuery(
             """
             SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
-            FROM athlete a
+            FROM jagoz.athlete a
             JOIN member m ON m.member_id = a.member_id
             WHERE a.member_id = :memberId
             """.trimIndent(),
@@ -39,7 +39,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
         return handle.createQuery(
             """
             SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
-            FROM athlete a
+            FROM jagoz.athlete a
             JOIN member m ON m.member_id = a.member_id
             WHERE a.active = true
             """.trimIndent(),
@@ -51,12 +51,12 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
     override fun save(athlete: Athlete): Long {
         return handle.createUpdate(
             """
-            INSERT INTO athlete (
+            INSERT INTO jagoz.athlete (
                 member_id, nationality, niss, nif, numero_utente, bi, bi_expiration_date,
                 school, school_year, school_class, last_club, season, team_category, active
             ) VALUES (
                 :memberId, :nationality, :niss, :nif, :numeroUtente, :bi, CAST(:biExpirationDate AS DATE),
-                :school, :schoolYear, :schoolClass, :lastClub, :season, CAST(:teamCategory AS team_category), :active
+                :school, :schoolYear, :schoolClass, :lastClub, :season, CAST(:teamCategory AS jagoz.team_category), :active
             )
             """,
         )
@@ -82,7 +82,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
     override fun update(athlete: Athlete) {
         handle.createUpdate(
             """
-            UPDATE athlete SET 
+            UPDATE jagoz.athlete SET 
                 member_id = :memberId,
                 nationality = :nationality,
                 niss = :niss,
@@ -95,7 +95,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
                 school_class = :schoolClass,
                 last_club = :lastClub,
                 season = :season,
-                team_category = CAST(:teamCategory AS team_category),
+                team_category = CAST(:teamCategory AS jagoz.team_category),
                 active = :active
             WHERE athlete_id = :id
             """,

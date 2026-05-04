@@ -10,17 +10,21 @@ class RequestTokenProcessor(
     val usersService: UserService,
 ) {
     fun processAuthorizationHeaderValue(authorizationValue: String?): AuthenticatedUser? {
-        if (authorizationValue == null) {
+        val normalized = authorizationValue?.trim()
+        if (normalized.isNullOrBlank()) {
             return null
         }
-        val parts = authorizationValue.trim().split(" ")
-        if (parts.size != 2) {
-            return null
-        }
-        if (parts[0].lowercase() != SCHEME) {
-            return null
-        }
-        return usersService.getUserByToken(parts[1])?.toAuthenticatedUser(parts[1])
+
+        val token =
+            if (normalized.startsWith("$SCHEME ", ignoreCase = true)) {
+                normalized.substringAfter(' ').trim()
+            } else {
+                normalized
+            }
+
+        if (token.isBlank()) return null
+
+        return usersService.getUserByToken(token)?.toAuthenticatedUser(token)
     }
 
     companion object {

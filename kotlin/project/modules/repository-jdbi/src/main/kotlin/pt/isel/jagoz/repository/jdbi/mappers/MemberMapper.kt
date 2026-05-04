@@ -29,7 +29,7 @@ class MemberMapper : RowMapper<Member> {
             category = MemberCategory.valueOf(rs.getString("category")),
             formerMember = rs.getBoolean("former_member"),
             status = MemberStatus.valueOf(rs.getString("status")),
-            membershipQuota = rs.getInt("monthly_quota"),
+            membershipQuota = rs.getInt("membership_quota"),
             billingLocation = rs.getString("billing_location"),
             registrationDate = LocalDate.parse(rs.getString("registration_date")),
             approvalDate = rs.getString("approval_date")?.let(LocalDate::parse),

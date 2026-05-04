@@ -11,7 +11,7 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
             c.*,
             u_c.user_id as cu_user_id, u_c.email as cu_email, u_c.username as cu_username, u_c.password_validation as cu_password_validation, u_c.role as cu_role, u_c.active_member_id as cu_active_member_id,
             u_ch.user_id as ch_user_id, u_ch.email as ch_email, u_ch.username as ch_username, u_ch.password_validation as ch_password_validation, u_ch.role as ch_role, u_ch.active_member_id as ch_active_member_id
-        FROM charge c
+        FROM jagoz.charge c
         JOIN users u_c ON c.creation_user_id = u_c.user_id
         LEFT JOIN users u_ch ON c.charged_user_id = u_ch.user_id
         """.trimIndent()
@@ -47,7 +47,7 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
         season: String,
         month: Int,
     ): Boolean {
-        return handle.createQuery("SELECT COUNT(*) FROM charge WHERE member_id = :memberId AND season = :season AND month = :month")
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.charge WHERE member_id = :memberId AND season = :season AND month = :month")
             .bind("memberId", memberId)
             .bind("season", season)
             .bind("month", month)
@@ -58,8 +58,8 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
     override fun save(charge: Charge): Long {
         return handle.createUpdate(
             """
-            INSERT INTO charge (type, member_id, sponsorship_id, value, status, season, month, created_at, creation_user_id, charged_user_id, paid_at)
-            VALUES (CAST(:type AS charge_type), :memberId, :sponsorshipId, :value, CAST(:status AS charge_status), :season, :month, CAST(:createdAt AS DATE), :creationUserId, :chargedUserId, CAST(:paidAt AS DATE))
+            INSERT INTO jagoz.charge (type, member_id, sponsorship_id, value, status, season, month, created_at, creation_user_id, charged_user_id, paid_at)
+            VALUES (CAST(:type AS jagoz.charge_type), :memberId, :sponsorshipId, :value, CAST(:status AS jagoz.charge_status), :season, :month, CAST(:createdAt AS DATE), :creationUserId, :chargedUserId, CAST(:paidAt AS DATE))
             """,
         )
             .bind("type", charge.type.name)
@@ -81,12 +81,12 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
     override fun update(charge: Charge) {
         handle.createUpdate(
             """
-            UPDATE charge SET
-                type = CAST(:type AS charge_type),
+            UPDATE jagoz.charge SET
+                type = CAST(:type AS jagoz.charge_type),
                 member_id = :memberId,
                 sponsorship_id = :sponsorshipId,
                 value = :value,
-                status = CAST(:status AS charge_status),
+                status = CAST(:status AS jagoz.charge_status),
                 season = :season,
                 month = :month,
                 created_at = CAST(:createdAt AS DATE),

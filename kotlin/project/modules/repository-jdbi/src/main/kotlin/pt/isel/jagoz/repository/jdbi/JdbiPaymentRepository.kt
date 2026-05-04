@@ -6,7 +6,7 @@ import pt.isel.jagoz.repository.PaymentRepository
 
 class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
     override fun findByChargeId(chargeId: Long): List<Payment> {
-        return handle.createQuery("SELECT * FROM payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
+        return handle.createQuery("SELECT * FROM jagoz.payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
             .bind("chargeId", chargeId)
             .mapTo(Payment::class.java)
             .list()
@@ -15,8 +15,8 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
     override fun save(payment: Payment): Long {
         return handle.createUpdate(
             """
-            INSERT INTO payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
-            VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS payment_status), CAST(:createdAt AS TIMESTAMP), CAST(:confirmedAt AS TIMESTAMP))
+            INSERT INTO jagoz.payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
+            VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS jagoz.payment_status), CAST(:createdAt AS TIMESTAMPTZ), CAST(:confirmedAt AS TIMESTAMPTZ))
             """,
         )
             .bind("chargeId", payment.chargeId)
@@ -34,14 +34,14 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
     override fun update(payment: Payment) {
         handle.createUpdate(
             """
-            UPDATE payment SET 
+            UPDATE jagoz.payment SET 
                 charge_id = :chargeId,
                 amount = :amount,
                 provider = :provider,
                 provider_ref = :providerRef,
-                status = CAST(:status AS payment_status),
-                created_at = CAST(:createdAt AS TIMESTAMP),
-                confirmed_at = CAST(:confirmedAt AS TIMESTAMP)
+                status = CAST(:status AS jagoz.payment_status),
+                created_at = CAST(:createdAt AS TIMESTAMPTZ),
+                confirmed_at = CAST(:confirmedAt AS TIMESTAMPTZ)
             WHERE payment_id = :id
             """,
         )

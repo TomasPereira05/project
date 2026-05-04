@@ -6,7 +6,7 @@ import pt.isel.jagoz.repository.SponsorshipRepository
 
 class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipRepository {
     override fun findById(id: Long): Sponsorship? {
-        return handle.createQuery("SELECT * FROM sponsorship WHERE sponsorship_id = :id")
+        return handle.createQuery("SELECT * FROM jagoz.sponsorship WHERE sponsorship_id = :id")
             .bind("id", id)
             .mapTo(Sponsorship::class.java)
             .findOne()
@@ -14,7 +14,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     }
 
     override fun findBySponsorId(sponsorId: Long): List<Sponsorship> {
-        return handle.createQuery("SELECT * FROM sponsorship WHERE sponsor_id = :sponsorId")
+        return handle.createQuery("SELECT * FROM jagoz.sponsorship WHERE sponsor_id = :sponsorId")
             .bind("sponsorId", sponsorId)
             .mapTo(Sponsorship::class.java)
             .list()
@@ -23,9 +23,9 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     override fun save(sponsorship: Sponsorship): Long {
         return handle.createUpdate(
             """
-            INSERT INTO sponsorship (sponsor_id, season, status, type, price, pub_option, team_category, placement, sport)
-            VALUES (:sponsorId, :season, CAST(:status AS sponsorship_status), CAST(:type AS sponsor_type), :price, 
-                    CAST(:pubOption AS pub_option), CAST(:teamCategory AS team_category), CAST(:placement AS equipment_placement), CAST(:sport AS other_sport))
+            INSERT INTO jagozsponsorship (sponsor_id, season, status, type, price, pub_option, team_category, placement, sport)
+            VALUES (:sponsorId, :season, CAST(:status AS jagoz.sponsorship_status), CAST(:type AS jagoz.sponsor_type), :price, 
+                    CAST(:pubOption AS jagoz.pub_option), CAST(:teamCategory AS jagoz.team_category), CAST(:placement AS jagoz.equipment_placement), CAST(:sport AS jagoz.other_sport))
             """,
         )
             .bind("sponsorId", sponsorship.sponsorId)
@@ -45,16 +45,16 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     override fun update(sponsorship: Sponsorship) {
         handle.createUpdate(
             """
-            UPDATE sponsorship SET
+            UPDATE jagoz.sponsorship SET
                 sponsor_id = :sponsorId,
                 season = :season,
-                status = CAST(:status AS sponsorship_status),
-                type = CAST(:type AS sponsor_type),
+                status = CAST(:status AS jagoz.sponsorship_status),
+                type = CAST(:type AS jagoz.sponsor_type),
                 price = :price,
-                pub_option = CAST(:pubOption AS pub_option),
-                team_category = CAST(:teamCategory AS team_category),
-                placement = CAST(:placement AS equipment_placement),
-                sport = CAST(:sport AS other_sport)
+                pub_option = CAST(:pubOption AS jagoz.pub_option),
+                team_category = CAST(:teamCategory AS jagoz.team_category),
+                placement = CAST(:placement AS jagoz.equipment_placement),
+                sport = CAST(:sport AS jagoz.other_sport)
             WHERE sponsorship_id = :id
             """,
         )

@@ -7,6 +7,17 @@ export function eurosFromCents(valueInCents: number) {
   }).format(valueInCents / 100);
 }
 
+export function centsFromEuroInput(value: string) {
+  const normalized = value.replace(",", ".").trim();
+  const parsed = Number(normalized);
+
+  if (!Number.isFinite(parsed)) {
+    return NaN;
+  }
+
+  return Math.round(parsed * 100);
+}
+
 export function formatDate(value: string | null) {
   if (!value) return "Por definir";
 
@@ -37,6 +48,10 @@ export function defaultMemberFormValues(member?: Member): MemberFormValues {
     postalCode: member?.postalCode ?? "",
     city: member?.city ?? "",
     category: member?.category ?? "SOCIO",
+    membershipQuotaEuros:
+      member && member.membershipQuota > 0
+        ? (member.membershipQuota / 100).toFixed(2)
+        : "1.50",
     formerMember: member?.formerMember ?? false,
     billingLocation: member?.billingLocation ?? "",
     privacyAccepted: member?.privacyAccepted ?? false,
