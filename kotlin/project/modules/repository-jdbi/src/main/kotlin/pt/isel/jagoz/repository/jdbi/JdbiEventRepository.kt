@@ -6,7 +6,7 @@ import pt.isel.jagoz.repository.EventRepository
 
 class JdbiEventRepository(private val handle: Handle) : EventRepository {
     override fun findById(id: Long): Event? {
-        return handle.createQuery("SELECT * FROM event WHERE event_id = :id")
+        return handle.createQuery("SELECT * FROM jagoz.event WHERE event_id = :id")
             .bind("id", id)
             .mapTo(Event::class.java)
             .findOne()
@@ -14,7 +14,7 @@ class JdbiEventRepository(private val handle: Handle) : EventRepository {
     }
 
     override fun findAll(): List<Event> {
-        return handle.createQuery("SELECT * FROM event ORDER BY date DESC")
+        return handle.createQuery("SELECT * FROM jagoz.event ORDER BY date DESC")
             .mapTo(Event::class.java)
             .list()
     }
@@ -22,7 +22,7 @@ class JdbiEventRepository(private val handle: Handle) : EventRepository {
     override fun save(event: Event): Long {
         return handle.createUpdate(
             """
-            INSERT INTO event (name, description, date, location)
+            INSERT INTO jagoz.event (name, description, date, location)
             VALUES (:name, :description, CAST(:date AS DATE), :location)
             """,
         )

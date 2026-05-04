@@ -15,7 +15,7 @@ import {
   UpdateAthlete,
 } from "./features/Athletes";
 import { AuthProvider } from "./shared/components/AuthRequire";
-import { Home } from "./features/Home";
+import { Home } from "./features/home";
 
 const router = createBrowserRouter([
   {

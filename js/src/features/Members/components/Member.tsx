@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle } from "lucide-react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import "../styles/Members.css";
+import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar } from "lucide-react";
+import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
 import {
   approveMember,
   buildPaymentHistory,
   eurosFromCents,
   fetchMember,
-  formatDate,
   getDebtSummary,
   getInitials,
-  getViewerMode,
   rejectMember,
   type Member,
 } from "..";
+import { formatDate } from "../../../shared/utils";
+import { useAuth } from "../../../shared/hooks/useAuth";
+import Header from "../../../shared/components/header";
 
 function statusText(status: Member["status"]) {
   switch (status) {
@@ -28,15 +28,31 @@ function statusText(status: Member["status"]) {
   }
 }
 
+function statusColor(status: Member["status"]) {
+  switch (status) {
+    case "ATIVO":
+      return "bg-green-100 text-green-800 border-green-200";
+    case "PENDENTE":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    case "INATIVO":
+      return "bg-gray-100 text-gray-800 border-gray-200";
+    case "REJEITADO":
+      return "bg-red-100 text-red-800 border-red-200";
+  }
+}
+
 export default function MemberPage() {
   const { memberId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const viewer = getViewerMode(location.search);
+  const { role, activeMemberId } = useAuth();
+
   const [member, setMember] = useState<Member | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const isAdmin = role === "ADMIN" || role === "SECRETARIA";
+  const isSelf = activeMemberId === Number(memberId);
 
   useEffect(() => {
     let ignore = false;
@@ -52,7 +68,7 @@ export default function MemberPage() {
         }
       } catch {
         if (!ignore) {
-          setErrorMessage("Nao foi possivel carregar a ficha do socio.");
+          setErrorMessage("Não foi possível carregar a ficha do sócio.");
         }
       } finally {
         if (!ignore) {
@@ -61,14 +77,14 @@ export default function MemberPage() {
       }
     }
 
-    if (memberId) {
+    if (memberId && (isAdmin || isSelf)) {
       loadMember();
     }
 
     return () => {
       ignore = true;
     };
-  }, [memberId]);
+  }, [memberId, isAdmin, isSelf]);
 
   const paymentHistory = useMemo(
     () => (member ? buildPaymentHistory(member) : []),
@@ -82,10 +98,10 @@ export default function MemberPage() {
     try {
       const updated = await approveMember(member.memberId);
       setMember(updated);
-      setFeedback("Socio aprovado com sucesso.");
+      setFeedback("Sócio aprovado com sucesso.");
       setErrorMessage("");
     } catch {
-      setErrorMessage("Nao foi possivel aprovar este socio.");
+      setErrorMessage("Não foi possível aprovar este sócio.");
     }
   }
 
@@ -95,33 +111,48 @@ export default function MemberPage() {
     try {
       const updated = await rejectMember(member.memberId);
       setMember(updated);
-      setFeedback("Socio rejeitado com sucesso.");
+      setFeedback("Sócio rejeitado com sucesso.");
       setErrorMessage("");
     } catch {
-      setErrorMessage("Nao foi possivel rejeitar este socio.");
+      setErrorMessage("Não foi possível rejeitar este sócio.");
     }
+  }
+
+  // RBAC logic
+  if (!isAdmin && !isSelf) {
+    return <Navigate to="/" replace />;
   }
 
   if (isLoading) {
     return (
-      <main className="members-page">
-        <div className="members-shell">
-          <p>A carregar ficha do socio...</p>
-        </div>
-      </main>
+      <>
+        <Header />
+        <main className="member-page flex justify-center items-center">
+          <div className="flex flex-col items-center gap-3 text-text-secondary">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p className="font-medium animate-pulse">A carregar ficha do sócio...</p>
+          </div>
+        </main>
+      </>
     );
   }
 
   if (errorMessage && !member) {
     return (
-      <main className="members-page">
-        <div className="members-shell">
-          <div className="feedback-message is-error">{errorMessage}</div>
-          <Link className="secondary-button" to="/members?viewer=admin">
-            Voltar
-          </Link>
-        </div>
-      </main>
+      <>
+        <Header />
+        <main className="member-page">
+          <div className="member-detail-container">
+            <div className="member-alert-error">
+                {errorMessage}
+            </div>
+            <button onClick={() => window.history.back()} className="member-btn-back">
+              <ArrowLeft size={16} />
+              Voltar
+            </button>
+          </div>
+        </main>
+      </>
     );
   }
 
@@ -129,246 +160,243 @@ export default function MemberPage() {
     return null;
   }
 
-  const isAdmin = viewer === "admin";
-  const isSelf = viewer === "self";
-
   return (
-    <main className="members-page">
-      <div className="members-shell">
-        <div className="member-toolbar">
-          <Link className="ghost-button" to={`/members?viewer=${viewer}`}>
-            Voltar a lista
-          </Link>
-
-          <div className="members-viewer">
-            <span>Ver como:</span>
-            <button
-              className={viewer === "admin" ? "is-active" : "ghost-button"}
-              onClick={() => navigate(`/members/${member.memberId}?viewer=admin`)}
-              type="button"
-            >
-              Admin
-            </button>
-            <button
-              className={viewer === "self" ? "is-active" : "ghost-button"}
-              onClick={() => navigate(`/members/${member.memberId}?viewer=self`)}
-              type="button"
-            >
-              O proprio socio
-            </button>
-            <button
-              className={viewer === "public" ? "is-active" : "ghost-button"}
-              onClick={() => navigate(`/members/${member.memberId}?viewer=public`)}
-              type="button"
-            >
-              Utilizador normal
-            </button>
-          </div>
+    <>
+      <Header />
+      <main className="member-page">
+      <div className="member-detail-container">
+        
+        {/* TOPBAR */}
+        <div className="flex justify-between items-center mb-6">
+          <button onClick={() => window.history.back()} className="text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+            <ArrowLeft size={18} />
+            Voltar
+          </button>
         </div>
 
-        {feedback ? <div className="feedback-message is-success">{feedback}</div> : null}
-        {errorMessage ? (
-          <div className="feedback-message is-error">{errorMessage}</div>
-        ) : null}
-
-        <section className="member-layout">
-          <header className="member-card-header">
-            <div className="member-public-summary">
-              <div className="member-avatar">{getInitials(member.completeName)}</div>
-              <div>
-                <h1>{member.completeName}</h1>
-                <p className="member-meta">
-                  Numero de socio #{member.memberNumber}
-                </p>
-                <div className="member-badges">
-                  <span className="member-status-chip" data-status={member.status}>
-                    {statusText(member.status)}
-                  </span>
-                  <span className="member-chip">
-                    {member.category === "ATLETA_SOCIO" ? "Atleta socio" : "Socio"}
-                  </span>
-                  <span className="member-chip">{member.city}</span>
-                </div>
-              </div>
+        {feedback && (
+            <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3">
+                <CheckCircle2 size={20} className="text-green-500" />
+                <p className="text-sm font-medium">{feedback}</p>
             </div>
-
-            <div className="member-toolbar">
-              <p>
-                Para utilizadores normais so aparecem os dados revelaveis. Para o
-                proprio socio aparece tambem a componente financeira.
-              </p>
-
-              <div className="members-actions">
-                <Link
-                  className="secondary-button"
-                  to={`/members/${member.memberId}/edit`}
-                >
-                  <PencilLine size={18} />
-                  Atualizar ficha
-                </Link>
-                {isAdmin && member.status === "PENDENTE" ? (
-                  <>
-                    <button className="primary-button" onClick={handleApprove} type="button">
-                      <CheckCircle2 size={18} />
-                      Aprovar
-                    </button>
-                    <button className="danger-button" onClick={handleReject} type="button">
-                      <XCircle size={18} />
-                      Rejeitar
-                    </button>
-                  </>
-                ) : null}
-              </div>
+        )}
+        {errorMessage && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3">
+                <XCircle size={20} className="text-red-500" />
+                <p className="text-sm font-medium">{errorMessage}</p>
             </div>
-          </header>
+        )}
 
-          <section className="page-panel">
-            <div className="member-summary-grid">
-              <div className="member-summary-item">
-                <span>Nome revelavel</span>
-                <strong>{member.completeName}</strong>
-              </div>
-              <div className="member-summary-item">
-                <span>Numero de socio</span>
-                <strong>#{member.memberNumber}</strong>
-              </div>
-              <div className="member-summary-item">
-                <span>Estado</span>
-                <strong>{statusText(member.status)}</strong>
-              </div>
-            </div>
-          </section>
-
-          {isAdmin ? (
-            <section className="page-panel">
-              <div className="member-finance-head">
-                <div>
-                  <h2 className="member-section-title">Informacao de administracao</h2>
-                  <p>
-                    Vista completa com os dados necessarios para avaliacao e
-                    acompanhamento do socio.
-                  </p>
-                </div>
-                <Shield size={20} />
-              </div>
-
-              <div className="member-detail-grid">
-                <div className="member-detail-list">
-                  <span>Email</span>
-                  <strong>{member.email}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Telemovel</span>
-                  <strong>{member.phone}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Telefone de casa</span>
-                  <strong>{member.homePhone || "Nao indicado"}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Morada</span>
-                  <strong>{member.address}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Codigo postal e cidade</span>
-                  <strong>
-                    {member.postalCode} - {member.city}
-                  </strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Local de cobranca</span>
-                  <strong>{member.billingLocation || "Nao definido"}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Data de registo</span>
-                  <strong>{formatDate(member.registrationDate)}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Data de aprovacao</span>
-                  <strong>{formatDate(member.approvalDate)}</strong>
-                </div>
-                <div className="member-detail-list">
-                  <span>Consentimentos</span>
-                  <strong>
-                    Privacidade: {member.privacyAccepted ? "Sim" : "Nao"} -
-                    Comunicacoes: {member.comsAccepted ? "Sim" : "Nao"}
-                  </strong>
-                </div>
-              </div>
-            </section>
-          ) : null}
-
-          {isSelf ? (
-            <>
-              <section className="member-status-banner">
-                <div>
-                  <h2 className="member-section-title">Resumo financeiro</h2>
-                  <p className="support-note">
-                    Valores do backend estao em centimos e aqui sao apresentados
-                    em euros. O historico abaixo usa dados de demonstracao ate
-                    existirem endpoints de cobrancas e pagamentos.
-                  </p>
-                </div>
-                <Wallet size={22} />
-              </section>
-
-              <section className="member-finance-card">
-                <div className="member-finance-grid">
-                  <div className="member-finance-item">
-                    <span>Quota mensal</span>
-                    <strong>{eurosFromCents(member.membershipQuota)}</strong>
-                  </div>
-                  <div className="member-finance-item">
-                    <span>Quotas em atraso</span>
-                    <strong>{debtSummary.pendingCount}</strong>
-                  </div>
-                  <div className="member-finance-item">
-                    <span>Total em divida</span>
-                    <strong>{eurosFromCents(debtSummary.pendingCents)}</strong>
-                  </div>
-                </div>
-
-                {paymentHistory.length === 0 ? (
-                  <div className="empty-card">
-                    <User size={18} />
-                    <p>
-                      Este socio nao tem quotas de socio para apresentar no
-                      historico.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="member-payment-list">
-                    {paymentHistory.map((item) => (
-                      <div
-                        className={`member-payment-row ${
-                          item.status === "PENDING" ? "is-pending" : "is-paid"
-                        }`}
-                        key={item.id}
-                      >
-                        <div>
-                          <strong>{item.label}</strong>
-                          <span>
-                            Epoca {item.season} - vencimento {formatDate(item.dueDate)}
-                          </span>
+        {/* PROFILE HEADER */}
+        <section className="member-card mb-8">
+            <div className="bg-gradient-to-r from-[#001D4A] to-primary h-32"></div>
+            <div className="px-6 sm:px-10 pb-8 relative">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-6 -mt-12 sm:-mt-16 mb-6">
+                    <div className="flex items-end gap-5">
+                        <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full flex items-center justify-center text-3xl sm:text-4xl font-heading text-primary border-4 border-white shadow-md">
+                            {getInitials(member.completeName)}
                         </div>
-
-                        <div>
-                          <strong>{eurosFromCents(item.amountCents)}</strong>
-                          <time>
-                            {item.status === "PAID"
-                              ? `Pago em ${formatDate(item.paidDate)}`
-                              : "Em atraso"}
-                          </time>
+                        <div className="pb-2">
+                            <h1 className="font-heading text-2xl sm:text-3xl text-text-primary uppercase tracking-tight">{member.completeName}</h1>
+                            <p className="text-text-secondary font-medium mt-1">Sócio #{member.memberNumber}</p>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </>
-          ) : null}
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2 pb-2">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${statusColor(member.status)}`}>
+                            {statusText(member.status)}
+                        </span>
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
+                            {member.category === "ATLETA_SOCIO" ? "Atleta Sócio" : "Sócio"}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 text-sm text-text-secondary border-t border-border pt-6 mt-6">
+                     <div className="flex items-center gap-2">
+                         <MapPin size={16} />
+                         <span>{member.city}</span>
+                     </div>
+                     <div className="flex items-center gap-2">
+                         <Calendar size={16} />
+                         <span>Membro desde {formatDate(member.registrationDate)}</span>
+                     </div>
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                    <Link
+                    className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md"
+                    to={`/members/${member.memberId}/edit`}
+                    >
+                    <PencilLine size={18} />
+                    Editar Perfil
+                    </Link>
+                    
+                    {isAdmin && member.status === "PENDENTE" && (
+                    <>
+                        <button className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-green-600 text-white hover:bg-green-700 transition-colors rounded-md" onClick={handleApprove} type="button">
+                        <CheckCircle2 size={18} />
+                        Aprovar
+                        </button>
+                        <button className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-red-600 text-white hover:bg-red-700 transition-colors rounded-md" onClick={handleReject} type="button">
+                        <XCircle size={18} />
+                        Rejeitar
+                        </button>
+                    </>
+                    )}
+                </div>
+            </div>
         </section>
+
+        {/* ADMIN DETAILS SECTION */}
+        {isAdmin && (
+            <section className="member-card mb-8">
+                <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
+                    <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                        <Shield size={20} />
+                    </div>
+                    <div>
+                        <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Informação de Administração</h2>
+                        <p className="text-xs text-text-secondary mt-1">Dados completos para avaliação e acompanhamento do sócio.</p>
+                    </div>
+                </div>
+
+                <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10">
+                        
+                        <div className="space-y-4">
+                            <div className="flex items-start gap-3">
+                                <Mail size={18} className="text-text-secondary mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email</p>
+                                    <p className="font-medium text-text-primary mt-1 break-all">{member.email}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Phone size={18} className="text-text-secondary mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Telemóvel</p>
+                                    <p className="font-medium text-text-primary mt-1">{member.phone}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Building2 size={18} className="text-text-secondary mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Telefone de Casa</p>
+                                    <p className="font-medium text-text-primary mt-1">{member.homePhone || "Não indicado"}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                             <div className="flex items-start gap-3">
+                                <MapPin size={18} className="text-text-secondary mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Morada Completa</p>
+                                    <p className="font-medium text-text-primary mt-1">{member.address}</p>
+                                    <p className="text-sm text-text-secondary mt-0.5">{member.postalCode} - {member.city}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-start gap-3">
+                                <Wallet size={18} className="text-text-secondary mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Local de Cobrança</p>
+                                    <p className="font-medium text-text-primary mt-1">{member.billingLocation || "Não definido"}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-6 border-t border-border grid grid-cols-1 sm:grid-cols-3 gap-6">
+                        <div>
+                            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Aprovação</p>
+                            <p className="font-medium text-text-primary">{member.approvalDate ? formatDate(member.approvalDate) : "Pendente"}</p>
+                        </div>
+                        <div className="col-span-2">
+                             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Consentimentos</p>
+                             <div className="flex gap-4 font-medium text-text-primary">
+                                 <span>Privacidade: <span className={member.privacyAccepted ? "text-green-600" : "text-red-500"}>{member.privacyAccepted ? "Sim" : "Não"}</span></span>
+                                 <span>Comunicações: <span className={member.comsAccepted ? "text-green-600" : "text-red-500"}>{member.comsAccepted ? "Sim" : "Não"}</span></span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        )}
+
+        {/* FINANCE SECTION */}
+        {(isSelf || isAdmin) && (
+            <section className="member-card mb-8">
+                <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                            <Wallet size={20} />
+                        </div>
+                        <div>
+                            <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Resumo Financeiro</h2>
+                            <p className="text-xs text-text-secondary mt-1">Histórico de quotas e estado de pagamentos.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="p-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                        <div className="bg-muted/30 border border-border p-4 rounded-lg text-center">
+                            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2">Quota Mensal</p>
+                            <p className="text-3xl font-heading text-primary tracking-tight">{eurosFromCents(member.membershipQuota)}</p>
+                        </div>
+                        <div className="bg-red-50/50 border border-red-100 p-4 rounded-lg text-center">
+                            <p className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-2">Quotas em Atraso</p>
+                            <p className="text-3xl font-heading text-red-600 tracking-tight">{debtSummary.pendingCount}</p>
+                        </div>
+                        <div className="bg-red-50/50 border border-red-100 p-4 rounded-lg text-center">
+                            <p className="text-xs font-semibold text-red-600 uppercase tracking-wider mb-2">Total em Dívida</p>
+                            <p className="text-3xl font-heading text-red-600 tracking-tight">{eurosFromCents(debtSummary.pendingCents)}</p>
+                        </div>
+                    </div>
+
+                    <h3 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-4 border-b border-border pb-2">Histórico de Pagamentos</h3>
+                    
+                    {paymentHistory.length === 0 ? (
+                        <div className="py-10 text-center flex flex-col items-center justify-center text-text-secondary">
+                            <User size={32} className="mb-3 opacity-20" />
+                            <p className="text-sm font-medium">Este sócio não tem quotas para apresentar no histórico.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {paymentHistory.map((item) => (
+                                <div
+                                    className={`flex justify-between items-center p-4 rounded-lg border ${
+                                        item.status === "PENDING" ? "bg-red-50/30 border-red-100" : "bg-green-50/30 border-green-100"
+                                    }`}
+                                    key={item.id}
+                                >
+                                    <div>
+                                        <p className="font-semibold text-text-primary">{item.label}</p>
+                                        <p className="text-xs text-text-secondary mt-0.5">
+                                            Época {item.season} • Vencimento {formatDate(item.dueDate)}
+                                        </p>
+                                    </div>
+
+                                    <div className="text-right">
+                                        <p className={`font-bold ${item.status === "PENDING" ? "text-red-600" : "text-green-600"}`}>
+                                            {eurosFromCents(item.amountCents)}
+                                        </p>
+                                        <p className="text-xs text-text-secondary mt-0.5">
+                                            {item.status === "PAID"
+                                                ? `Pago em ${formatDate(item.paidDate)}`
+                                                : "Em atraso"}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </section>
+        )}
       </div>
-    </main>
+      </main>
+    </>
   );
 }

@@ -71,7 +71,23 @@ const SignIn: React.FC = () => {
             const data = await api.auth.login(state.username, state.password);
 
             if (data) {
-                setAuth({id: data.id, username: data.username});
+                // Fetch complete user profile (including role and activeMemberId)
+                const me = await api.auth.getMe();
+                if (me) {
+                    setAuth({
+                        id: me.id, 
+                        username: me.username,
+                        role: me.role,
+                        activeMemberId: me.activeMemberId
+                    });
+                } else {
+                    setAuth({
+                        id: data.id, 
+                        username: data.username,
+                        role: data.role,
+                        activeMemberId: data.activeMemberId
+                    });
+                }
             } else {
                 setError("Wrong username or password. Please check your credentials and try again.");
             }

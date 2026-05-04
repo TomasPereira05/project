@@ -1,11 +1,13 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import "../styles/Members.css";
 import {
+  centsFromEuroInput,
   createMember,
   defaultMemberFormValues,
   type MemberFormValues,
 } from "..";
 import { MemberForm } from "./MemberForm";
+import Header from "../../../shared/components/header";
+import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 export default function CreateMembers() {
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
@@ -30,6 +32,20 @@ export default function CreateMembers() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!values.privacyAccepted) {
+      setErrorMessage("Tem de aceitar o consentimento de privacidade para submeter.");
+      return;
+    }
+
+    if (values.category !== "ATLETA_SOCIO") {
+      const quotaInCents = centsFromEuroInput(values.membershipQuotaEuros);
+      if (!Number.isFinite(quotaInCents) || quotaInCents < 150) {
+        setErrorMessage("A quota mensal minima e 1,50 EUR.");
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     setErrorMessage("");
     setSuccessMessage("");
@@ -37,31 +53,40 @@ export default function CreateMembers() {
     try {
       const created = await createMember(values);
       setSuccessMessage(
-        `Pedido submetido com sucesso. Foi atribuido o numero #${created.memberNumber}.`,
+        `Pedido submetido com sucesso. Foi atribuído o número #${created.memberNumber}.`,
       );
       setValues(defaultMemberFormValues());
     } catch {
-      setErrorMessage("Nao foi possivel submeter o pedido de socio.");
+      setErrorMessage("Não foi possível submeter o pedido de sócio.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="members-page">
-      <div className="members-shell">
-        <MemberForm
-          title="Criar novo socio"
-          description="Formulario de candidatura com os dados necessarios para avaliacao por parte do clube."
-          values={values}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          submitLabel="Submeter pedido"
-          isSubmitting={isSubmitting}
-          errorMessage={errorMessage}
-          successMessage={successMessage}
+    <>
+      <Header />
+      <main className="member-form-page">
+        <div
+            className="member-form-bg"
+            style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
         />
-      </div>
-    </main>
+        <div className="member-form-overlay" style={{ position: "fixed" }} />
+        
+        <div className="member-form-container">
+          <MemberForm
+            title="Criar novo sócio"
+            description="Formulário de candidatura com os dados necessários para avaliação por parte do clube."
+            values={values}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            submitLabel="Submeter pedido"
+            isSubmitting={isSubmitting}
+            errorMessage={errorMessage}
+            successMessage={successMessage}
+          />
+        </div>
+      </main>
+    </>
   );
 }

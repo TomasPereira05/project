@@ -1,6 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { useParams } from "react-router-dom";
-import "../styles/Members.css";
+import { useParams, Navigate } from "react-router-dom";
 import {
   defaultMemberFormValues,
   fetchMember,
@@ -9,15 +8,23 @@ import {
   type MemberFormValues,
 } from "..";
 import { MemberForm } from "./MemberForm";
+import { useAuth } from "../../../shared/hooks/useAuth";
+import Header from "../../../shared/components/header";
+import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 export default function UpdateMember() {
   const { memberId } = useParams();
+  const { role, activeMemberId } = useAuth();
+  
   const [member, setMember] = useState<Member | null>(null);
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const isAdmin = role === "ADMIN" || role === "SECRETARIA";
+  const isSelf = activeMemberId === Number(memberId);
 
   useEffect(() => {
     let ignore = false;
@@ -34,7 +41,7 @@ export default function UpdateMember() {
         }
       } catch {
         if (!ignore) {
-          setErrorMessage("Nao foi possivel carregar o socio para atualizacao.");
+          setErrorMessage("Não foi possível carregar o sócio para atualização.");
         }
       } finally {
         if (!ignore) {
@@ -43,14 +50,14 @@ export default function UpdateMember() {
       }
     }
 
-    if (memberId) {
+    if (memberId && (isAdmin || isSelf)) {
       loadMember();
     }
 
     return () => {
       ignore = true;
     };
-  }, [memberId]);
+  }, [memberId, isAdmin, isSelf]);
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -83,34 +90,49 @@ export default function UpdateMember() {
       setMember(updated);
       setSuccessMessage("Dados atualizados com sucesso.");
     } catch {
-      setErrorMessage("Nao foi possivel atualizar esta ficha de socio.");
+      setErrorMessage("Não foi possível atualizar esta ficha de sócio.");
     } finally {
       setIsSubmitting(false);
     }
   }
 
+  // RBAC logic
+  if (!isAdmin && !isSelf) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
-    <main className="members-page">
-      <div className="members-shell">
-        {isLoading ? (
-          <div className="page-panel">
-            <p>A carregar formulario de atualizacao...</p>
-          </div>
-        ) : (
-          <MemberForm
-            title="Atualizar socio"
-            description="O mesmo formulario aparece pre-preenchido para o socio rever e corrigir a sua informacao."
-            values={values}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            submitLabel="Guardar alteracoes"
-            isSubmitting={isSubmitting}
-            errorMessage={errorMessage}
-            successMessage={successMessage}
-            showBackendNotice
-          />
-        )}
-      </div>
-    </main>
+    <>
+      <Header />
+      <main className="member-form-page">
+        <div
+            className="member-form-bg"
+            style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
+        />
+        <div className="member-form-overlay" style={{ position: "fixed" }} />
+        
+        <div className="member-form-container">
+          {isLoading ? (
+            <div className="member-form-loading-container">
+               <div className="member-form-loading-spinner"></div>
+               <p className="member-loading-text">A carregar formulário de atualização...</p>
+            </div>
+          ) : (
+            <MemberForm
+              title="Atualizar sócio"
+              description="O formulário aparece pré-preenchido para o sócio rever e corrigir a sua informação."
+              values={values}
+              onChange={handleChange}
+              onSubmit={handleSubmit}
+              submitLabel="Guardar alterações"
+              isSubmitting={isSubmitting}
+              errorMessage={errorMessage}
+              successMessage={successMessage}
+              showBackendNotice
+            />
+          )}
+        </div>
+      </main>
+    </>
   );
 }

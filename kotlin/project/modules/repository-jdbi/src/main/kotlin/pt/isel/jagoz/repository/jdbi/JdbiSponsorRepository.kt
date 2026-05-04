@@ -6,7 +6,7 @@ import pt.isel.jagoz.repository.SponsorRepository
 
 class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun findById(id: Long): Sponsor? {
-        return handle.createQuery("SELECT * FROM sponsor WHERE sponsor_id = :id")
+        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE sponsor_id = :id")
             .bind("id", id)
             .mapTo(Sponsor::class.java)
             .findOne()
@@ -14,7 +14,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     }
 
     override fun findByNif(nif: String): Sponsor? {
-        return handle.createQuery("SELECT * FROM sponsor WHERE nif = :nif")
+        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE nif = :nif")
             .bind("nif", nif)
             .mapTo(Sponsor::class.java)
             .findOne()
@@ -22,7 +22,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     }
 
     override fun findAll(): List<Sponsor> {
-        return handle.createQuery("SELECT * FROM sponsor ORDER BY name ASC")
+        return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC")
             .mapTo(Sponsor::class.java)
             .list()
     }
@@ -30,7 +30,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun save(sponsor: Sponsor): Long {
         return handle.createUpdate(
             """
-            INSERT INTO sponsor (name, email, phone, nif)
+            INSERT INTO jagoz.sponsor (name, email, phone, nif)
             VALUES (:name, :email, :phone, :nif)
             """,
         )
@@ -46,7 +46,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun update(sponsor: Sponsor) {
         handle.createUpdate(
             """
-            UPDATE sponsor SET 
+            UPDATE jagoz.sponsor SET 
                 name = :name, 
                 email = :email, 
                 phone = :phone, 

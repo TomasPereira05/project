@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Menu, User } from "lucide-react";
 import {LOGO_SRC} from "../config/config"
-import {Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { TEAM_CATEGORIES, labelForCategory } from "../../features/Athletes";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Header() {
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
     const navigate = useNavigate();
+    const { role, activeMemberId, username, clearAuth } = useAuth();
     const ref = useRef<HTMLDivElement>(null);
-    const { username, clearAuth } = useAuth();
     const isAuthenticated = Boolean(username);
 
     type MenuType = "mobile" | "socios" | "conta" | "equipas" | "user" | null;
@@ -30,8 +30,10 @@ export default function Header() {
         navigate('/register')
     };
 
-    const handleLogout = () => {
-        clearAuth();
+    const handleLogoutClick = () => {
+        if (clearAuth) {
+            clearAuth();
+        }
         closeMenus();
         navigate('/');
     };
@@ -119,10 +121,16 @@ export default function Header() {
             {/* Sócios Dropdown Menu */}
             <div className={`dropdown ${activeMenu === "socios" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
-                    <a href="#" className="dropdown-link">Perfil de Sócio</a>
-                    <a href="#" className="dropdown-link">Lista de Sócios</a>
+                    {activeMemberId ? (
+                        <Link to={`/members/${activeMemberId}`} className="dropdown-link" onClick={closeMenus}>Perfil de Sócio</Link>
+                    ) : (
+                        <span className="dropdown-disabled">Perfil de Sócio</span>
+                    )}
+                    {(role === "ADMIN" || role === "SECRETARIA") && (
+                        <Link to="/members" className="dropdown-link" onClick={closeMenus}>Lista de Sócios</Link>
+                    )}
                     <span className="dropdown-disabled">Cotas</span>
-                    <span className="dropdown-disabled">Tornar se Sócio</span>
+                    <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>Tornar-se Sócio</Link>
                 </nav>
             </div>
     
@@ -141,7 +149,7 @@ export default function Header() {
                 <nav className="dropdown-nav">
                     <span className="dropdown-disabled">Olá, {username}</span>
                     <a href="#" className="dropdown-link">Perfil</a>
-                    <button className="dropdown-link" onClick={handleLogout}>Sair</button>
+                    <button className="dropdown-link" onClick={handleLogoutClick}>Sair</button>
                 </nav>
             </div>
 

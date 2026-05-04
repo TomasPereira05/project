@@ -15,7 +15,9 @@ import pt.isel.jagoz.domain.member.MemberError
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.model.member.CategoryRequest
+import pt.isel.jagoz.http.model.member.MemberOutput
 import pt.isel.jagoz.http.model.member.ReactivationRequest
+import pt.isel.jagoz.http.model.member.tooutput
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.MemberService
@@ -30,18 +32,18 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.getMemberById(memberId).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     @GetMapping(Uris.Members.GET_MEMBERS)
-    fun getAllMembers(): ResponseEntity<List<Member>> {
-        val members = memberService.getAllMembers()
+    fun getAllMembers(): ResponseEntity<List<MemberOutput>> {
+        val members = memberService.getAllMembers().map{it.tooutput()}
         return ResponseEntity.ok(members)
     }
 
     @GetMapping(Uris.Members.GET_ACTIVE_MEMBERS)
-    fun getAllActiveMembers(): ResponseEntity<List<Member>> {
-        val members = memberService.getAllActiveMembers()
+    fun getAllActiveMembers(): ResponseEntity<List<MemberOutput>> {
+        val members = memberService.getAllActiveMembers().map{it.tooutput()}
         return ResponseEntity.ok(members)
     }
 
@@ -51,7 +53,7 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.createMember(member).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     @PutMapping(Uris.Members.UPDATE_MEMBER)
@@ -77,7 +79,7 @@ class MemberController(
                 billingLocation,
             ).handle(
                 onFailure = { error -> handleMemberError(error) },
-                onSuccess = { res -> ResponseEntity.ok(res) },
+                onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
             )
 
     @DeleteMapping(Uris.Members.DELETE_MEMBER)
@@ -86,7 +88,7 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.deactivateMember(memberId).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     @PutMapping(Uris.Members.APPROVE_MEMBER)
@@ -96,7 +98,7 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.approveMember(memberId, approvalRequest.approvalDate).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     @PutMapping(Uris.Members.REJECT_MEMBER)
@@ -105,7 +107,7 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.rejectMember(memberId).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     @PutMapping(Uris.Members.REACTIVATE_MEMBER)
@@ -115,7 +117,7 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.reactivateMember(memberId, reactivationRequest.reactivationDate).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     @PutMapping(Uris.Members.CHANGE_CATEGORY)
@@ -125,7 +127,7 @@ class MemberController(
     ): ResponseEntity<*> =
         memberService.changeMemberCategory(memberId, categoryRequest.category).handle(
             onFailure = { error -> handleMemberError(error) },
-            onSuccess = { res -> ResponseEntity.ok(res) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
 
     private fun handleMemberError(error: MemberError): ResponseEntity<Any> =

@@ -129,17 +129,24 @@ class UserService(
         if (!userDomain.isTokenValidFormat(token)) {
             return null
         }
+
         return transactionManager.run { transaction ->
             val userRepository = transaction.userRepository
 
             val tokenValidationInfo = userDomain.createTokenValidationInformation(token)
+
             val userAndToken = userRepository.getTokenByValidation(tokenValidationInfo)
-            if (userAndToken != null && userDomain.isTokenTimeValid(clock, userAndToken.second)) {
-                userRepository.updateTokenLastUsed(userAndToken.second, clock.now())
-                userAndToken.first
-            } else {
-                null
+
+            if (userAndToken != null) {
+                val isValid = userDomain.isTokenTimeValid(clock, userAndToken.second)
+
+                if (isValid) {
+                    userRepository.updateTokenLastUsed(userAndToken.second, clock.now())
+                    return@run userAndToken.first
+                }
             }
+
+            null
         }
     }
 

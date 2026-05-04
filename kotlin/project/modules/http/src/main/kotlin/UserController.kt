@@ -1,6 +1,7 @@
 package pt.isel.jagoz.http
 
 import jakarta.validation.Valid
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
@@ -93,6 +94,7 @@ class UserController(
     @PostMapping(Uris.Users.LOGIN)
     fun login(
         @RequestBody request: LoginRequest,
+        httpRequest: HttpServletRequest,
     ): ResponseEntity<*> =
         userService.login(request.identifier, request.password).handle(
             onFailure = { error ->
@@ -102,7 +104,7 @@ class UserController(
                 val cookie =
                     ResponseCookie.from("token", res.token)
                         .httpOnly(true)
-                        .secure(true)
+                        .secure(httpRequest.isSecure)
                         .sameSite("Strict")
                         .path("/")
                         .maxAge(Duration.ofHours(24))
@@ -115,6 +117,7 @@ class UserController(
                             res.userId,
                             res.username,
                             res.activeMemberId,
+                            res.role,
                             res.token,
                         ),
                     )
@@ -122,7 +125,10 @@ class UserController(
         )
 
     @PostMapping(Uris.Users.LOGOUT)
-    fun logout(authenticatedUser: AuthenticatedUser): ResponseEntity<*> =
+    fun logout(
+        authenticatedUser: AuthenticatedUser,
+        httpRequest: HttpServletRequest,
+    ): ResponseEntity<*> =
         userService.logout(authenticatedUser.token).handle(
             onFailure = { error ->
                 serviceErrorToProblem(error)
@@ -131,7 +137,7 @@ class UserController(
                 val cookie =
                     ResponseCookie.from("token", "")
                         .httpOnly(true)
-                        .secure(true)
+                        .secure(httpRequest.isSecure)
                         .sameSite("Strict")
                         .path("/")
                         .maxAge(0)

@@ -1,3 +1,20 @@
+drop schema jagoz cascade;
+drop type if exists member_category cascade;
+drop type if exists member_status cascade;
+drop type if exists sponsor_type cascade;
+drop type if exists pub_option cascade;
+drop type if exists team_category cascade;
+drop type if exists equipment_placement cascade;
+drop type if exists other_sport cascade;
+drop type if exists sponsorship_status cascade;
+drop type if exists user_role cascade;
+drop type if exists charge_type cascade;
+drop type if exists charge_status cascade;
+drop type if exists payment_status cascade;
+
+create schema if not exists jagoz;
+set search_path to jagoz;
+
 CREATE TYPE member_category AS ENUM ('SOCIO', 'ATLETA_SOCIO');
 CREATE TYPE member_status AS ENUM ('PENDENTE', 'ATIVO', 'INATIVO', 'REJEITADO');
 
@@ -128,8 +145,8 @@ CREATE TABLE users (
 CREATE TABLE user_token (
     token_validation VARCHAR(255) PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
-    created_at TIMESTAMP NOT NULL,
-    last_used_at TIMESTAMP NOT NULL
+    created_at TIMESTAMPTZ NOT NULL,
+    last_used_at TIMESTAMPTZ NOT NULL
 );
 
 CREATE TABLE event (
@@ -149,7 +166,7 @@ CREATE TABLE ticket (
     price INT NOT NULL,
     qr_code VARCHAR(255) UNIQUE NOT NULL,
     used BOOLEAN NOT NULL DEFAULT false,
-    used_at TIMESTAMP
+    used_at TIMESTAMPTZ
 );
 
 CREATE TABLE charge (
@@ -178,6 +195,6 @@ CREATE TABLE payment (
     provider VARCHAR(50) NOT NULL,
     provider_ref VARCHAR(255),
     status payment_status NOT NULL DEFAULT 'PENDING',
-    created_at TIMESTAMP NOT NULL,
-    confirmed_at TIMESTAMP
+    created_at TIMESTAMPTZ NOT NULL,
+    confirmed_at TIMESTAMPTZ
 );
