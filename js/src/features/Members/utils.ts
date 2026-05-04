@@ -18,16 +18,6 @@ export function centsFromEuroInput(value: string) {
   return Math.round(parsed * 100);
 }
 
-export function formatDate(value: string | null) {
-  if (!value) return "Por definir";
-
-  return new Intl.DateTimeFormat("pt-PT", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
 export function getInitials(name: string) {
   return name
     .split(" ")

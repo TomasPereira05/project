@@ -6,12 +6,12 @@ import {
   buildPaymentHistory,
   eurosFromCents,
   fetchMember,
-  formatDate,
   getDebtSummary,
   getInitials,
   rejectMember,
   type Member,
 } from "..";
+import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 
 function statusText(status: Member["status"]) {
@@ -78,14 +78,12 @@ export default function MemberPage() {
 
     if (memberId && (isAdmin || isSelf)) {
       loadMember();
-    } else if (!isAdmin && !isSelf && !isLoading) {
-       // if we know for sure they shouldn't be here, we could redirect immediately
     }
 
     return () => {
       ignore = true;
     };
-  }, [memberId, isAdmin, isSelf, isLoading]);
+  }, [memberId, isAdmin, isSelf]);
 
   const paymentHistory = useMemo(
     () => (member ? buildPaymentHistory(member) : []),
@@ -303,7 +301,7 @@ export default function MemberPage() {
                     <div className="mt-8 pt-6 border-t border-border grid grid-cols-1 sm:grid-cols-3 gap-6">
                         <div>
                             <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Aprovação</p>
-                            <p className="font-medium text-text-primary">{formatDate(member.approvalDate) || "Pendente"}</p>
+                            <p className="font-medium text-text-primary">{member.approvalDate ? formatDate(member.approvalDate) : "Pendente"}</p>
                         </div>
                         <div className="col-span-2">
                              <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1">Consentimentos</p>

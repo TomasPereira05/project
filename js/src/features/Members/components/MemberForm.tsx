@@ -1,5 +1,4 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ShieldAlert } from "lucide-react";
 import type { MemberFormValues } from "..";
 
@@ -53,14 +52,6 @@ export function MemberForm({
           Voltar
         </button>
       </div>
-
-      {showBackendNotice && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm">
-          O backend atual permite atualizar contactos e categoria. Os restantes
-          campos aparecem aqui para manter o mesmo formulário e facilitar a
-          avaliação da experiência.
-        </div>
-      )}
 
       {errorMessage && (
         <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3">

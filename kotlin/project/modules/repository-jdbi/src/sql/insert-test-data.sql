@@ -5,7 +5,7 @@
 -- =========================
 -- MEMBERS
 -- =========================
-INSERT INTO member (
+INSERT INTO jagoz.member (
     member_number, complete_name, birth_date, email, phone, home_phone,
     address, postal_code, city, category, status, former_member,
     membership_quota, billing_location, registration_date, approval_date,
@@ -54,7 +54,7 @@ INSERT INTO member (
 -- =========================
 -- ATHLETES (member_id refers to the rows inserted above, in order 3..7)
 -- =========================
-INSERT INTO athlete (
+INSERT INTO jagoz.athlete (
     member_id, nationality, niss, nif, numero_utente, bi, bi_expiration_date,
     school, school_year, school_class, last_club, season, team_category, active
 ) VALUES
@@ -78,7 +78,7 @@ INSERT INTO athlete (
 -- =========================
 -- GUARDIANS (apenas para atletas menores)
 -- =========================
-INSERT INTO guardian (
+INSERT INTO jagoz.guardian (
     athlete_id, member_id, name, kinship, email, phone, work, has_family_in_club
 ) VALUES
     -- Tiago (athlete 1) -> pai

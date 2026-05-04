@@ -3,9 +3,9 @@ import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Users, Shield, Shie
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import {
   fetchMembers,
-  formatDate,
   type Member,
 } from "..";
+import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 
 const PAGE_SIZE = 8;

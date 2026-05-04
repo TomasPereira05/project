@@ -8,9 +8,8 @@ import { useAuth } from "../hooks/useAuth";
 export default function Header() {
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
     const navigate = useNavigate();
-    const { role, activeMemberId, id, clearAuth } = useAuth();
+    const { role, activeMemberId, username, clearAuth } = useAuth();
     const ref = useRef<HTMLDivElement>(null);
-    const { username, clearAuth } = useAuth();
     const isAuthenticated = Boolean(username);
 
     type MenuType = "mobile" | "socios" | "conta" | "equipas" | "user" | null;
@@ -71,8 +70,14 @@ export default function Header() {
                         <button className="nav-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                     </nav>
                     <div className="header-actions">
-                        {id ? (
-                            <button className="btn btn-outline" onClick={handleLogoutClick}>Sair</button>
+                        {isAuthenticated ? (
+                            <button
+                                className="header-user-btn"
+                                onClick={() => toggleMenu("user")}
+                                aria-label="Conta de utilizador"
+                            >
+                                {userIcon}
+                            </button>
                         ) : (
                             <>
                                 <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
@@ -95,8 +100,14 @@ export default function Header() {
                     <button className="dropdown-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                 </nav>
                 <div className="dropdown-actions">
-                    {id ? (
-                        <button className="btn btn-outline w-full" onClick={handleLogoutClick}>Sair</button>
+                    {isAuthenticated ? (
+                        <button
+                            className="header-user-btn"
+                            onClick={() => toggleMenu("user")}
+                            aria-label="Conta de utilizador"
+                        >
+                            {userIcon}
+                        </button>
                     ) : (
                         <>
                             <button className="btn btn-outline" onClick={handleLoginClick}>Entrar</button>
