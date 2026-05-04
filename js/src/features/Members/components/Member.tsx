@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar } from "lucide-react";
-import { Link, useNavigate, useParams, Navigate } from "react-router-dom";
+import { Link, useParams, Navigate } from "react-router-dom";
 import {
   approveMember,
   buildPaymentHistory,
@@ -13,8 +13,6 @@ import {
 } from "..";
 import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import Header from "../../../shared/components/Header";
-import Footer from "../../../shared/components/Footer";
 
 function statusText(status: Member["status"]) {
   switch (status) {
@@ -44,7 +42,6 @@ function statusColor(status: Member["status"]) {
 
 export default function MemberPage() {
   const { memberId } = useParams();
-  const navigate = useNavigate();
   const { role, activeMemberId } = useAuth();
 
   const [member, setMember] = useState<Member | null>(null);
@@ -127,7 +124,6 @@ export default function MemberPage() {
   if (isLoading) {
     return (
       <>
-        <Header />
         <main className="member-page flex justify-center items-center">
           <div className="flex flex-col items-center gap-3 text-text-secondary">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -141,7 +137,6 @@ export default function MemberPage() {
   if (errorMessage && !member) {
     return (
       <>
-        <Header />
         <main className="member-page">
           <div className="member-detail-container">
             <div className="member-alert-error">

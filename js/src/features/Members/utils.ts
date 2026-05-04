@@ -63,6 +63,12 @@ export function buildPaymentHistory(member: Member): PaymentHistoryItem[] {
     "Abril",
     "Maio",
     "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
 
   return monthLabels.map((month, index) => {

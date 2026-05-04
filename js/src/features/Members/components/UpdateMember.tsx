@@ -9,8 +9,6 @@ import {
 } from "..";
 import { MemberForm } from "./MemberForm";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import Header from "../../../shared/components/Header";
-import Footer from "../../../shared/components/Footer";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 export default function UpdateMember() {

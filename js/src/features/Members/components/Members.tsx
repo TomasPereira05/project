@@ -1,14 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Users, ShieldAlert} from "lucide-react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import {
   fetchMembers,
   type Member,
 } from "..";
 import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import Header from "../../../shared/components/Header";
-import Footer from "../../../shared/components/Footer";
+
 const PAGE_SIZE = 8;
 
 function statusLabel(status: Member["status"]) {
@@ -42,7 +41,6 @@ function categoryLabel(category: Member["category"]) {
 }
 
 export default function Members() {
-  const navigate = useNavigate();
   const { role, activeMemberId } = useAuth();
   
   const [members, setMembers] = useState<Member[]>([]);
