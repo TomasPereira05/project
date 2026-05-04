@@ -5,6 +5,7 @@
 @import "./features/home/styles/StandingTable.css";
 @import "./features/auth/styles/Form.css";
 @import "./shared/styles/FormBox.css";
+@import "./features/Athletes/styles/Athletes.css";
 
 @tailwind base;
 @tailwind components;

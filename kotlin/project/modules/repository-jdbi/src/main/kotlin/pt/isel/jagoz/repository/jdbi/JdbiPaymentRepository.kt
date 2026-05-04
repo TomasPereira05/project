@@ -15,8 +15,8 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
     override fun save(payment: Payment): Long {
         return handle.createUpdate(
             """
-            INSERT INTO jagoz.payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
-            VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS jagoz.payment_status), CAST(:createdAt AS TIMESTAMPTZ), CAST(:confirmedAt AS TIMESTAMPTZ))
+            INSERT INTO payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
+            VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS payment_status), :createdAt, :confirmedAt)
             """,
         )
             .bind("chargeId", payment.chargeId)
@@ -24,8 +24,8 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
             .bind("provider", payment.provider)
             .bind("providerRef", payment.providerRef)
             .bind("status", payment.status.name)
-            .bind("createdAt", payment.createdAt.toString())
-            .bind("confirmedAt", payment.confirmedAt?.toString())
+            .bind("createdAt", payment.createdAt)
+            .bind("confirmedAt", payment.confirmedAt)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
@@ -39,9 +39,9 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
                 amount = :amount,
                 provider = :provider,
                 provider_ref = :providerRef,
-                status = CAST(:status AS jagoz.payment_status),
-                created_at = CAST(:createdAt AS TIMESTAMPTZ),
-                confirmed_at = CAST(:confirmedAt AS TIMESTAMPTZ)
+                status = CAST(:status AS payment_status),
+                created_at = :createdAt,
+                confirmed_at = :confirmedAt
             WHERE payment_id = :id
             """,
         )
@@ -51,8 +51,8 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
             .bind("provider", payment.provider)
             .bind("providerRef", payment.providerRef)
             .bind("status", payment.status.name)
-            .bind("createdAt", payment.createdAt.toString())
-            .bind("confirmedAt", payment.confirmedAt?.toString())
+            .bind("createdAt", payment.createdAt)
+            .bind("confirmedAt", payment.confirmedAt)
             .execute()
     }
 }

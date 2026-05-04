@@ -1,14 +1,21 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createRoot } from "react-dom/client";
 import { SignIn, SignUp } from "./features/auth";
-import { 
-  CreateMembers, 
-  MemberPage, 
-  Members, 
-  UpdateMember 
+import {
+  CreateMembers,
+  MemberPage,
+  Members,
+  UpdateMember,
 } from "./features/Members";
+import {
+  Athletes,
+  AthleteByTeamCategory,
+  AthletePage,
+  AthleteRegister,
+  UpdateAthlete,
+} from "./features/Athletes";
 import { AuthProvider } from "./shared/components/AuthRequire";
-import { Home } from "./features/home";
+import { Home } from "./features/Home";
 
 const router = createBrowserRouter([
   {
@@ -17,11 +24,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <SignIn />
+    element: <SignIn />,
   },
   {
     path: "/register",
-    element: <SignUp />
+    element: <SignUp />,
   },
   {
     path: "/members",
@@ -38,6 +45,26 @@ const router = createBrowserRouter([
   {
     path: "/members/:memberId/edit",
     element: <UpdateMember />,
+  },
+  {
+    path: "/athletes",
+    element: <Athletes />,
+  },
+  {
+    path: "/athletes/register",
+    element: <AthleteRegister />,
+  },
+  {
+    path: "/athletes/category/:teamCategory",
+    element: <AthleteByTeamCategory />,
+  },
+  {
+    path: "/athletes/:athleteId",
+    element: <AthletePage />,
+  },
+  {
+    path: "/athletes/:athleteId/edit",
+    element: <UpdateAthlete />,
   },
 ]);
 
