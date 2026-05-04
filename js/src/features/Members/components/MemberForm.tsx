@@ -40,28 +40,28 @@ export function MemberForm({
   }, [values.privacyAccepted]);
 
   return (
-    <div className="bg-white border border-border shadow-sm rounded-xl overflow-hidden p-6 sm:p-10">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b border-border">
+    <div className="member-card-padded">
+      <div className="member-card-header">
         <div>
-          <h2 className="font-heading text-2xl text-text-primary uppercase tracking-tight">{title}</h2>
-          <p className="text-text-secondary mt-1 text-sm">{description}</p>
+          <h2 className="member-title">{title}</h2>
+          <p className="member-desc">{description}</p>
         </div>
 
-        <button onClick={() => window.history.back()} className="text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide">
+        <button onClick={() => window.history.back()} className="member-btn-back">
           <ArrowLeft size={18} />
           Voltar
         </button>
       </div>
 
       {errorMessage && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3">
+        <div className="member-alert-error">
             <ShieldAlert size={20} className="text-red-500" />
             <p className="text-sm font-medium">{errorMessage}</p>
         </div>
       )}
 
       {successMessage && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3">
+        <div className="member-alert-success">
             <CheckCircle2 size={20} className="text-green-500" />
             <p className="text-sm font-medium">{successMessage}</p>
         </div>
@@ -69,10 +69,10 @@ export function MemberForm({
 
       <form onSubmit={onSubmit} className="space-y-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Nome completo</label>
+          <div className="member-input-group">
+            <label className="member-label">Nome completo</label>
             <input
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="member-input"
               name="completeName"
               value={values.completeName}
               onChange={onChange}
@@ -81,11 +81,11 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Data de nascimento</label>
+          <div className="member-input-group">
+            <label className="member-label">Data de nascimento</label>
             <input
               type="date"
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="member-input"
               name="birthDate"
               value={values.birthDate}
               onChange={onChange}
@@ -94,11 +94,11 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Email</label>
+          <div className="member-input-group">
+            <label className="member-label">Email</label>
             <input
               type="email"
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="email"
               value={values.email}
               onChange={onChange}
@@ -106,10 +106,10 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Telemóvel</label>
+          <div className="member-input-group">
+            <label className="member-label">Telemóvel</label>
             <input
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="phone"
               value={values.phone}
               onChange={onChange}
@@ -117,20 +117,20 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Telefone de casa</label>
+          <div className="member-input-group">
+            <label className="member-label">Telefone de casa</label>
             <input
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="homePhone"
               value={values.homePhone}
               onChange={onChange}
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Categoria</label>
+          <div className="member-input-group">
+            <label className="member-label">Categoria</label>
             <select 
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="category" 
               value={values.category} 
               onChange={onChange}
@@ -140,15 +140,15 @@ export function MemberForm({
             </select>
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">
+          <div className="member-input-group">
+            <label className="member-label">
               Quota mensal (EUR)
             </label>
             <input
               type="number"
               min={1.5}
               step={0.01}
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              className="member-input"
               name="membershipQuotaEuros"
               value={values.category === "ATLETA_SOCIO" ? "0.00" : values.membershipQuotaEuros}
               onChange={onChange}
@@ -160,10 +160,10 @@ export function MemberForm({
             </p>
           </div>
 
-          <div className="flex flex-col gap-1.5 md:col-span-2">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Morada</label>
+          <div className="member-input-group md:col-span-2">
+            <label className="member-label">Morada</label>
             <input
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="address"
               value={values.address}
               onChange={onChange}
@@ -171,10 +171,10 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Código postal</label>
+          <div className="member-input-group">
+            <label className="member-label">Código postal</label>
             <input
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="postalCode"
               value={values.postalCode}
               onChange={onChange}
@@ -182,10 +182,10 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Cidade</label>
+          <div className="member-input-group">
+            <label className="member-label">Cidade</label>
             <input 
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="city" 
               value={values.city} 
               onChange={onChange} 
@@ -193,10 +193,10 @@ export function MemberForm({
             />
           </div>
 
-          <div className="flex flex-col gap-1.5 md:col-span-2">
-            <label className="text-sm font-semibold text-text-primary uppercase tracking-wider">Local de cobrança</label>
+          <div className="member-input-group md:col-span-2">
+            <label className="member-label">Local de cobrança</label>
             <input
-              className="h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              className="member-input"
               name="billingLocation"
               value={values.billingLocation}
               onChange={onChange}
@@ -206,11 +206,11 @@ export function MemberForm({
         </div>
 
         <div className="space-y-4 pt-4 border-t border-border">
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="member-checkbox-group group">
             <div className="mt-1">
                 <input
                     type="checkbox"
-                    className="w-4 h-4 text-primary bg-muted border-border rounded focus:ring-primary focus:ring-2"
+                    className="member-checkbox"
                     name="formerMember"
                     checked={values.formerMember}
                     onChange={onChange}
@@ -240,11 +240,11 @@ export function MemberForm({
               </p>
             </div>
 
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="member-checkbox-group group">
             <div className="mt-1">
                 <input
                     type="checkbox"
-                    className="w-4 h-4 text-primary bg-muted border-border rounded focus:ring-primary focus:ring-2"
+                    className="member-checkbox"
                     name="privacyAccepted"
                     checked={values.privacyAccepted}
                     onChange={onChange}
@@ -260,11 +260,11 @@ export function MemberForm({
             </div>
             </label>
 
-            <label className="flex items-start gap-3 cursor-pointer group">
+            <label className="member-checkbox-group group">
             <div className="mt-1">
                 <input
                     type="checkbox"
-                    className="w-4 h-4 text-primary bg-muted border-border rounded focus:ring-primary focus:ring-2"
+                    className="member-checkbox"
                     name="comsAccepted"
                     checked={values.comsAccepted}
                     onChange={onChange}
@@ -279,7 +279,7 @@ export function MemberForm({
 
         <div className="pt-6 border-t border-border">
           <button 
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-12 px-8 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md disabled:opacity-70 disabled:cursor-not-allowed" 
+            className="member-btn-primary" 
             type="submit" 
             disabled={isSubmitting}
           >

@@ -6,6 +6,7 @@
 @import "./features/auth/styles/Form.css";
 @import "./shared/styles/FormBox.css";
 @import "./features/Athletes/styles/Athletes.css";
+@import "./features/Members/styles/Members.css";
 
 @tailwind base;
 @tailwind components;

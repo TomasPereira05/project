@@ -118,18 +118,18 @@ export default function Members() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="member-page">
+      <div className="member-container">
         
         {/* TOPBAR */}
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <header className="member-header-container">
           <div>
             <div className="flex items-center gap-2 text-primary font-semibold tracking-wider text-sm mb-1 uppercase">
               <Users size={18} />
               <span>Administração</span>
             </div>
-            <h1 className="font-heading text-3xl md:text-4xl text-text-primary uppercase tracking-tight">Lista de Sócios</h1>
-            <p className="text-text-secondary text-sm mt-2 max-w-2xl">
+            <h1 className="member-page-title">Lista de Sócios</h1>
+            <p className="member-page-desc max-w-2xl">
               Gerencie os sócios do clube. Aprove ou rejeite pedidos pendentes e consulte o estado de cada membro.
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function Members() {
           <div className="flex gap-3">
             <Link 
               to="/members/create" 
-              className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-5 border-2 border-primary bg-primary text-white shadow-sm hover:bg-primary-hover transition-colors rounded-md"
+              className="member-btn-primary shadow-sm h-10 px-5"
             >
               <Plus size={18} />
               Novo Sócio
@@ -147,7 +147,7 @@ export default function Members() {
 
         {/* ALERTS */}
         {errorMessage && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3">
+            <div className="member-alert-error">
                 <ShieldAlert size={20} className="text-red-500" />
                 <p className="text-sm font-medium">{errorMessage}</p>
             </div>
@@ -207,49 +207,49 @@ export default function Members() {
 
 
         {/* LIST */}
-        <section className="bg-white border border-border shadow-sm rounded-lg overflow-hidden">
+        <section className="member-table-wrapper">
           {isLoading ? (
-            <div className="p-10 text-center text-text-secondary flex flex-col items-center gap-3">
-                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-sm font-medium animate-pulse">A carregar sócios...</p>
+            <div className="member-loading-container py-10">
+                <div className="member-loading-spinner"></div>
+                <p className="member-loading-text">A carregar sócios...</p>
             </div>
           ) : !errorMessage && (
             <>
               <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left border-collapse min-w-[800px]">
+                  <table className="member-table min-w-[800px]">
                       <thead className="bg-muted text-text-secondary uppercase text-xs font-semibold tracking-wider border-b border-border">
                           <tr>
-                              <th className="px-6 py-4">Nº</th>
-                              <th className="px-6 py-4">Nome</th>
-                              <th className="px-6 py-4">Categoria</th>
-                              <th className="px-6 py-4">Estado</th>
-                              <th className="px-6 py-4">Registo / Cidade</th>
-                              <th className="px-6 py-4 text-right">Ações</th>
+                              <th className="member-th">Nº</th>
+                              <th className="member-th">Nome</th>
+                              <th className="member-th">Categoria</th>
+                              <th className="member-th">Estado</th>
+                              <th className="member-th">Registo / Cidade</th>
+                              <th className="member-th text-right">Ações</th>
                           </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
                           {paginatedMembers.map((member) => (
-                              <tr className="hover:bg-muted/30 transition-colors group" key={member.memberId}>
-                                  <td className="px-6 py-4 font-bold text-primary">#{member.memberNumber}</td>
-                                  <td className="px-6 py-4">
+                              <tr className="member-tr group" key={member.memberId}>
+                                  <td className="member-td font-bold text-primary">#{member.memberNumber}</td>
+                                  <td className="member-td">
                                       <div className="font-semibold text-text-primary">{member.completeName}</div>
                                       <div className="text-xs text-text-secondary truncate max-w-[200px]">{member.email}</div>
                                   </td>
-                                  <td className="px-6 py-4">
-                                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                                  <td className="member-td">
+                                      <span className="member-category-badge">
                                           {categoryLabel(member.category)}
                                       </span>
                                   </td>
-                                  <td className="px-6 py-4">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${statusColor(member.status)}`}>
+                                  <td className="member-td">
+                                      <span className={`member-status-badge ${statusColor(member.status)}`}>
                                           {statusLabel(member.status)}
                                       </span>
                                   </td>
-                                  <td className="px-6 py-4">
+                                  <td className="member-td">
                                       <div className="text-text-primary">{formatDate(member.registrationDate)}</div>
                                       <div className="text-xs text-text-secondary">{member.city}</div>
                                   </td>
-                                  <td className="px-6 py-4 text-right">
+                                  <td className="member-td text-right">
                                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                           <Link
                                               to={`/members/${member.memberId}/edit`}
@@ -259,7 +259,7 @@ export default function Members() {
                                           </Link>
                                           <Link
                                               to={`/members/${member.memberId}`}
-                                              className="text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors px-3 py-1.5 rounded"
+                                              className="member-action-btn"
                                           >
                                               Ver
                                           </Link>

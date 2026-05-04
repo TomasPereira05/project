@@ -66,14 +66,14 @@ export default function CreateMembers() {
   return (
     <>
       <Header />
-      <main className="relative min-h-screen flex flex-col py-10">
+      <main className="member-form-page">
         <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+            className="member-form-bg"
             style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10" style={{ position: "fixed" }} />
+        <div className="member-form-overlay" style={{ position: "fixed" }} />
         
-        <div className="relative z-20 flex-1 flex justify-center items-center w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="member-form-container">
           <MemberForm
             title="Criar novo sócio"
             description="Formulário de candidatura com os dados necessários para avaliação por parte do clube."

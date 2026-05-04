@@ -127,7 +127,7 @@ export default function MemberPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background py-10 flex justify-center items-center">
+        <main className="member-page flex justify-center items-center">
           <div className="flex flex-col items-center gap-3 text-text-secondary">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             <p className="font-medium animate-pulse">A carregar ficha do sócio...</p>
@@ -141,12 +141,12 @@ export default function MemberPage() {
     return (
       <>
         <Header />
-        <main className="min-h-screen bg-background py-10">
-          <div className="max-w-4xl mx-auto px-4">
-            <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-md mb-6">
+        <main className="member-page">
+          <div className="member-detail-container">
+            <div className="member-alert-error">
                 {errorMessage}
             </div>
-            <button onClick={() => window.history.back()} className="text-primary font-semibold hover:underline flex items-center gap-2">
+            <button onClick={() => window.history.back()} className="member-btn-back">
               <ArrowLeft size={16} />
               Voltar
             </button>
@@ -163,8 +163,8 @@ export default function MemberPage() {
   return (
     <>
       <Header />
-      <main className="min-h-screen bg-background py-10">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="member-page">
+      <div className="member-detail-container">
         
         {/* TOPBAR */}
         <div className="flex justify-between items-center mb-6">
@@ -188,7 +188,7 @@ export default function MemberPage() {
         )}
 
         {/* PROFILE HEADER */}
-        <section className="bg-white border border-border shadow-sm rounded-xl overflow-hidden mb-8">
+        <section className="member-card mb-8">
             <div className="bg-gradient-to-r from-[#001D4A] to-primary h-32"></div>
             <div className="px-6 sm:px-10 pb-8 relative">
                 <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-6 -mt-12 sm:-mt-16 mb-6">
@@ -250,7 +250,7 @@ export default function MemberPage() {
 
         {/* ADMIN DETAILS SECTION */}
         {isAdmin && (
-            <section className="bg-white border border-border shadow-sm rounded-xl overflow-hidden mb-8">
+            <section className="member-card mb-8">
                 <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
                     <div className="p-2 bg-primary/10 text-primary rounded-lg">
                         <Shield size={20} />
@@ -326,7 +326,7 @@ export default function MemberPage() {
 
         {/* FINANCE SECTION */}
         {(isSelf || isAdmin) && (
-            <section className="bg-white border border-border shadow-sm rounded-xl overflow-hidden mb-8">
+            <section className="member-card mb-8">
                 <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-primary/10 text-primary rounded-lg">

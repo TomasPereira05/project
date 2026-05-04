@@ -104,18 +104,18 @@ export default function UpdateMember() {
   return (
     <>
       <Header />
-      <main className="relative min-h-screen flex flex-col py-10">
+      <main className="member-form-page">
         <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+            className="member-form-bg"
             style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10" style={{ position: "fixed" }} />
+        <div className="member-form-overlay" style={{ position: "fixed" }} />
         
-        <div className="relative z-20 flex-1 flex justify-center items-center w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="member-form-container">
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-white gap-3">
-               <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-               <p className="font-medium animate-pulse">A carregar formulário de atualização...</p>
+            <div className="member-form-loading-container">
+               <div className="member-form-loading-spinner"></div>
+               <p className="member-loading-text">A carregar formulário de atualização...</p>
             </div>
           ) : (
             <MemberForm
