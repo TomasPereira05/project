@@ -6,6 +6,8 @@ import {
   type MemberFormValues,
 } from "..";
 import { MemberForm } from "./MemberForm";
+import Header from "../../../shared/components/header";
+import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 export default function CreateMembers() {
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
@@ -62,20 +64,29 @@ export default function CreateMembers() {
   }
 
   return (
-    <main className="min-h-screen bg-background py-10 flex justify-center items-center">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <MemberForm
-          title="Criar novo sócio"
-          description="Formulário de candidatura com os dados necessários para avaliação por parte do clube."
-          values={values}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          submitLabel="Submeter pedido"
-          isSubmitting={isSubmitting}
-          errorMessage={errorMessage}
-          successMessage={successMessage}
+    <>
+      <Header />
+      <main className="relative min-h-screen flex flex-col py-10">
+        <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+            style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
         />
-      </div>
-    </main>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10" style={{ position: "fixed" }} />
+        
+        <div className="relative z-20 flex-1 flex justify-center items-center w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <MemberForm
+            title="Criar novo sócio"
+            description="Formulário de candidatura com os dados necessários para avaliação por parte do clube."
+            values={values}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            submitLabel="Submeter pedido"
+            isSubmitting={isSubmitting}
+            errorMessage={errorMessage}
+            successMessage={successMessage}
+          />
+        </div>
+      </main>
+    </>
   );
 }

@@ -9,6 +9,8 @@ import {
 } from "..";
 import { MemberForm } from "./MemberForm";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import Header from "../../../shared/components/header";
+import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 export default function UpdateMember() {
   const { memberId } = useParams();
@@ -100,28 +102,37 @@ export default function UpdateMember() {
   }
 
   return (
-    <main className="min-h-screen bg-background py-10 flex justify-center items-center">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-text-secondary gap-3">
-             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-             <p className="font-medium animate-pulse">A carregar formulário de atualização...</p>
-          </div>
-        ) : (
-          <MemberForm
-            title="Atualizar sócio"
-            description="O formulário aparece pré-preenchido para o sócio rever e corrigir a sua informação."
-            values={values}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            submitLabel="Guardar alterações"
-            isSubmitting={isSubmitting}
-            errorMessage={errorMessage}
-            successMessage={successMessage}
-            showBackendNotice
-          />
-        )}
-      </div>
-    </main>
+    <>
+      <Header />
+      <main className="relative min-h-screen flex flex-col py-10">
+        <div
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+            style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10" style={{ position: "fixed" }} />
+        
+        <div className="relative z-20 flex-1 flex justify-center items-center w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20 text-white gap-3">
+               <div className="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+               <p className="font-medium animate-pulse">A carregar formulário de atualização...</p>
+            </div>
+          ) : (
+            <MemberForm
+              title="Atualizar sócio"
+              description="O formulário aparece pré-preenchido para o sócio rever e corrigir a sua informação."
+              values={values}
+              onChange={handleChange}
+              onSubmit={handleSubmit}
+              submitLabel="Guardar alterações"
+              isSubmitting={isSubmitting}
+              errorMessage={errorMessage}
+              successMessage={successMessage}
+              showBackendNotice
+            />
+          )}
+        </div>
+      </main>
+    </>
   );
 }

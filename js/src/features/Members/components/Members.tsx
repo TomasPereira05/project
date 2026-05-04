@@ -7,6 +7,7 @@ import {
 } from "..";
 import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import Header from "../../../shared/components/header";
 
 const PAGE_SIZE = 8;
 
@@ -115,7 +116,9 @@ export default function Members() {
 
 
   return (
-    <main className="min-h-screen bg-background py-10">
+    <>
+      <Header />
+      <main className="min-h-screen bg-background py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* TOPBAR */}
@@ -301,7 +304,8 @@ export default function Members() {
           )}
         </section>
       </div>
-    </main>
+      </main>
+    </>
   );
 }
 

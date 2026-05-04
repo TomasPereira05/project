@@ -13,6 +13,7 @@ import {
 } from "..";
 import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import Header from "../../../shared/components/header";
 
 function statusText(status: Member["status"]) {
   switch (status) {
@@ -124,28 +125,34 @@ export default function MemberPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-background py-10 flex justify-center items-center">
-        <div className="flex flex-col items-center gap-3 text-text-secondary">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-          <p className="font-medium animate-pulse">A carregar ficha do sócio...</p>
-        </div>
-      </main>
+      <>
+        <Header />
+        <main className="min-h-screen bg-background py-10 flex justify-center items-center">
+          <div className="flex flex-col items-center gap-3 text-text-secondary">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <p className="font-medium animate-pulse">A carregar ficha do sócio...</p>
+          </div>
+        </main>
+      </>
     );
   }
 
   if (errorMessage && !member) {
     return (
-      <main className="min-h-screen bg-background py-10">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-md mb-6">
-              {errorMessage}
+      <>
+        <Header />
+        <main className="min-h-screen bg-background py-10">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-md mb-6">
+                {errorMessage}
+            </div>
+            <button onClick={() => window.history.back()} className="text-primary font-semibold hover:underline flex items-center gap-2">
+              <ArrowLeft size={16} />
+              Voltar
+            </button>
           </div>
-          <button onClick={() => window.history.back()} className="text-primary font-semibold hover:underline flex items-center gap-2">
-            <ArrowLeft size={16} />
-            Voltar
-          </button>
-        </div>
-      </main>
+        </main>
+      </>
     );
   }
 
@@ -154,7 +161,9 @@ export default function MemberPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background py-10">
+    <>
+      <Header />
+      <main className="min-h-screen bg-background py-10">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* TOPBAR */}
@@ -387,6 +396,7 @@ export default function MemberPage() {
             </section>
         )}
       </div>
-    </main>
+      </main>
+    </>
   );
 }
