@@ -32,7 +32,7 @@ class JdbiTicketRepository(private val handle: Handle) : TicketRepository {
     override fun save(ticket: Ticket): Long {
         return handle.createUpdate(
             """
-            INSERT INTO ticket (member_id, buyer_email, buyer_name, event_id, price, qr_code, used, used_at)
+            INSERT INTO jagoz.ticket (member_id, buyer_email, buyer_name, event_id, price, qr_code, used, used_at)
             VALUES (:memberId, :buyerEmail, :buyerName, :eventId, :price, :qrCode, :used, :usedAt)
             """,
         )

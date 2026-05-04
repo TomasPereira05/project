@@ -15,8 +15,8 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
     override fun save(payment: Payment): Long {
         return handle.createUpdate(
             """
-            INSERT INTO payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
-            VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS payment_status), :createdAt, :confirmedAt)
+            INSERT INTO jagoz.payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
+            VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS jagoz.payment_status), :createdAt, :confirmedAt)
             """,
         )
             .bind("chargeId", payment.chargeId)
@@ -39,7 +39,7 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
                 amount = :amount,
                 provider = :provider,
                 provider_ref = :providerRef,
-                status = CAST(:status AS payment_status),
+                status = CAST(:status AS jagoz.payment_status),
                 created_at = :createdAt,
                 confirmed_at = :confirmedAt
             WHERE payment_id = :id

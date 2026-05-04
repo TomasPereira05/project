@@ -52,8 +52,8 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
                 privacy_accepted, coms_accepted
             ) VALUES (
                 :memberNumber, :completeName, :birthDate, :email, :phone, :homePhone, 
-                :address, :postalCode, :city, CAST(:category AS member_category), 
-                CAST(:status AS member_status), :formerMember, :monthlyQuota, 
+                :address, :postalCode, :city, CAST(:category AS jagoz.member_category), 
+                CAST(:status AS jagoz.member_status), :formerMember, :membership_quota, 
                 :billingLocation, :registrationDate, :approvalDate, 
                 :privacyAccepted, :comsAccepted
             )

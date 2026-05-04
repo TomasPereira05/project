@@ -86,7 +86,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun createToken(token: Token) {
         handle.createUpdate(
             """
-            INSERT INTO user_token (token_validation, user_id, created_at, last_used_at)
+            INSERT INTO jagoz.user_token (token_validation, user_id, created_at, last_used_at)
             VALUES (:validation, :userId, :createdAt, :lastUsedAt)
             """,
         )
@@ -122,7 +122,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         token: Token,
         now: Instant,
     ) {
-        handle.createUpdate("UPDATE user_token SET last_used_at = :now WHERE token_validation = :validation")
+        handle.createUpdate("UPDATE jagoz.user_token SET last_used_at = :now WHERE token_validation = :validation")
             .bind("now", now)
             .bind("validation", token.tokenValidationInfo.validationInfo)
             .execute()
