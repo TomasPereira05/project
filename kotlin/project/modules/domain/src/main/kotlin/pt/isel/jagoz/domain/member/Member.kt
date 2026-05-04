@@ -21,6 +21,7 @@ data class Member(
     val postalCode: String,
     val city: String,
     // SOCIO ou ATLETA_SOCIO
+    val nif: String,
     val category: MemberCategory,
     val formerMember: Boolean,
     // PENDENTE, ATIVO, INATIVO, REJEITADO

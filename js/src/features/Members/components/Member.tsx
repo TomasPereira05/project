@@ -286,6 +286,13 @@ export default function MemberPage() {
                                     <p className="font-medium text-text-primary mt-1">{member.homePhone || "Não indicado"}</p>
                                 </div>
                             </div>
+                            <div className="flex items-start gap-3">
+                                <Building2 size={18} className="text-text-secondary mt-0.5" />
+                                <div>
+                                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">NIF</p>
+                                    <p className="font-medium text-text-primary mt-1">{member.nif || "Não indicado"}</p>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="space-y-4">

@@ -59,6 +59,7 @@ CREATE TABLE member (
     address          VARCHAR(255) NOT NULL,
     postal_code      VARCHAR(20) NOT NULL,
     city             VARCHAR(255) NOT NULL,
+    nif              VARCHAR(50) UNIQUE,
     category         member_category NOT NULL,
     status           member_status NOT NULL DEFAULT 'PENDENTE',
     former_member    BOOLEAN NOT NULL,

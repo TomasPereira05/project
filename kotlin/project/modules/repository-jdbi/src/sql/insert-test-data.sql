@@ -7,47 +7,47 @@
 -- =========================
 INSERT INTO jagoz.member (
     member_number, complete_name, birth_date, email, phone, home_phone,
-    address, postal_code, city, category, status, former_member,
+    address, postal_code, city,nif, category, status, former_member,
     membership_quota, billing_location, registration_date, approval_date,
     privacy_accepted, coms_accepted
 ) VALUES
     -- 1: SOCIO ativo (sem atleta)
     (1001, 'João Silva', '1985-03-12', 'joao.silva@example.pt', '912345001', NULL,
-     'Rua das Flores 12', '2655-001', 'Ericeira', 'SOCIO', 'ATIVO', false,
+     'Rua das Flores 12', '2655-001', 'Ericeira','111111111','SOCIO', 'ATIVO', false,
      150, NULL, '2024-09-01', '2024-09-05', true, true),
     -- 2: SOCIO ativo (sem atleta)
     (1002, 'Ana Costa', '1990-07-22', 'ana.costa@example.pt', '912345002', NULL,
-     'Avenida da Liberdade 88', '2640-002', 'Mafra', 'SOCIO', 'ATIVO', false,
+     'Avenida da Liberdade 88', '2640-002', 'Mafra','111111112', 'SOCIO', 'ATIVO', false,
      150, NULL, '2024-10-15', '2024-10-20', true, false),
 
     -- 3: ATLETA_SOCIO (Tiago, INICIADOS)
     (1003, 'Tiago Rocha', '2010-05-18', 'tiago.rocha@example.pt', '912345003', '261860003',
-     'Travessa do Mar 5', '2655-101', 'Ericeira', 'ATLETA_SOCIO', 'ATIVO', false,
+     'Travessa do Mar 5', '2655-101', 'Ericeira','111111113',  'ATLETA_SOCIO', 'ATIVO', false,
      0, NULL, '2024-08-20', '2024-08-25', true, true),
     -- 4: ATLETA_SOCIO (Mariana, JUNIORES)
     (1004, 'Mariana Santos', '2007-11-03', 'mariana.santos@example.pt', '912345004', NULL,
-     'Rua do Sol 23', '2640-104', 'Mafra', 'ATLETA_SOCIO', 'ATIVO', false,
+     'Rua do Sol 23', '2640-104', 'Mafra', '111111114', 'ATLETA_SOCIO', 'ATIVO', false,
      0, NULL, '2024-09-10', '2024-09-12', true, true),
     -- 5: ATLETA_SOCIO (Rui, SENIORES)
     (1005, 'Rui Mendes', '1997-02-14', 'rui.mendes@example.pt', '912345005', NULL,
-     'Praceta das Hortênsias 7', '1000-105', 'Lisboa', 'ATLETA_SOCIO', 'ATIVO', true,
+     'Praceta das Hortênsias 7', '1000-105', 'Lisboa', '111111115', 'ATLETA_SOCIO', 'ATIVO', true,
      0, NULL, '2023-08-15', '2023-08-18', true, true),
     -- 6: ATLETA_SOCIO (Sofia, BENJAMINS_10)
     (1006, 'Sofia Carvalho', '2013-09-30', 'sofia.carvalho@example.pt', '912345006', '261860006',
-     'Rua dos Pescadores 14', '2655-201', 'Ericeira', 'ATLETA_SOCIO', 'ATIVO', false,
+     'Rua dos Pescadores 14', '2655-201', 'Ericeira','111111116',  'ATLETA_SOCIO', 'ATIVO', false,
      0, NULL, '2024-09-05', '2024-09-08', true, true),
     -- 7: ATLETA_SOCIO (Diogo, VETERANOS)
     (1007, 'Diogo Pereira', '1985-06-25', 'diogo.pereira@example.pt', '912345007', NULL,
-     'Avenida 25 de Abril 102', '2640-207', 'Mafra', 'ATLETA_SOCIO', 'ATIVO', false,
+     'Avenida 25 de Abril 102', '2640-207', 'Mafra','111111117',  'ATLETA_SOCIO', 'ATIVO', false,
      0, NULL, '2024-09-01', '2024-09-04', true, true),
 
     -- 8: PENDENTE (admin pode aprovar)
     (NULL, 'Rita Lopes', '1995-12-08', 'rita.lopes@example.pt', '912345008', NULL,
-     'Rua dos Lírios 3', '1500-008', 'Lisboa', 'SOCIO', 'PENDENTE', false,
+     'Rua dos Lírios 3', '1500-008', 'Lisboa','111111118',  'SOCIO', 'PENDENTE', false,
      150, NULL, '2026-04-25', NULL, true, false),
     -- 9: PENDENTE (admin pode aprovar)
     (NULL, 'Carlos Marques', '1988-04-17', 'carlos.marques@example.pt', '912345009', NULL,
-     'Travessa do Castelo 9', '2710-009', 'Sintra', 'SOCIO', 'PENDENTE', false,
+     'Travessa do Castelo 9', '2710-009', 'Sintra','111111119',  'SOCIO', 'PENDENTE', false,
      150, NULL, '2026-04-28', NULL, true, true);
 
 

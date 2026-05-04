@@ -37,6 +37,7 @@ export function defaultMemberFormValues(member?: Member): MemberFormValues {
     address: member?.address ?? "",
     postalCode: member?.postalCode ?? "",
     city: member?.city ?? "",
+    nif: member?.nif ?? "",
     category: member?.category ?? "SOCIO",
     membershipQuotaEuros:
       member && member.membershipQuota > 0

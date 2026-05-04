@@ -270,6 +270,7 @@ class MemberDomain {
         ValidationUtils.requireNotBlank(member.completeName, "completeName")?.let { return it }
         ValidationUtils.requireNotBlank(member.email, "email")?.let { return it }
         ValidationUtils.requireNotBlank(member.phone, "phone")?.let { return it }
+        ValidationUtils.requireNotBlank(member.nif, "nif")?.let { return it }
         ValidationUtils.requireNotBlank(member.address, "address")?.let { return it }
         ValidationUtils.requireNotBlank(member.postalCode, "postalCode")?.let { return it }
         ValidationUtils.requireNotBlank(member.city, "city")?.let { return it }
@@ -283,6 +284,7 @@ class MemberDomain {
      * failing [ValidationError] or null if all patterns match.
      */
     private fun requireRegexInMember(member: Member): ValidationError? {
+        ValidationUtils.requireRegex(member.nif, ValidationPatterns.NIF, "nif", "must be 9 digits")?.let { return it }
         ValidationUtils.requireRegex(member.email, ValidationPatterns.EMAIL, "email", "must be a valid address")?.let { return it }
         ValidationUtils.requireRegex(member.phone, ValidationPatterns.PHONE, "phone", "must be 7 to 15 digits")?.let { return it }
         ValidationUtils.requireRegex(

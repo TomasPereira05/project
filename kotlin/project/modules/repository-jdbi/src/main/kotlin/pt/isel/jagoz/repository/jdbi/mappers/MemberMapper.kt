@@ -26,6 +26,7 @@ class MemberMapper : RowMapper<Member> {
             address = rs.getString("address"),
             postalCode = rs.getString("postal_code"),
             city = rs.getString("city"),
+            nif = rs.getString("nif"),
             category = MemberCategory.valueOf(rs.getString("category")),
             formerMember = rs.getBoolean("former_member"),
             status = MemberStatus.valueOf(rs.getString("status")),

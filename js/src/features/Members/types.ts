@@ -13,6 +13,7 @@ export type Member = {
   address: string;
   postalCode: string;
   city: string;
+  nif: string;
   category: MemberCategory;
   formerMember: boolean;
   status: MemberStatus;
@@ -33,6 +34,7 @@ export type MemberFormValues = {
   address: string;
   postalCode: string;
   city: string;
+  nif: string;
   category: MemberCategory;
   membershipQuotaEuros: string;
   formerMember: boolean;

@@ -47,12 +47,12 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             """
             INSERT INTO jagoz.member (
                 member_number, complete_name, birth_date, email, phone, home_phone, 
-                address, postal_code, city, category, status, former_member, 
+                address, postal_code, city, nif, category, status, former_member, 
                 membership_quota, billing_location, registration_date, approval_date, 
                 privacy_accepted, coms_accepted
             ) VALUES (
                 :memberNumber, :completeName, :birthDate, :email, :phone, :homePhone, 
-                :address, :postalCode, :city, CAST(:category AS jagoz.member_category), 
+                :address, :postalCode, :city,:nif, CAST(:category AS jagoz.member_category), 
                 CAST(:status AS jagoz.member_status), :formerMember, :membership_quota, 
                 :billingLocation, :registrationDate, :approvalDate, 
                 :privacyAccepted, :comsAccepted
@@ -68,6 +68,7 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .bind("address", member.address)
             .bind("postalCode", member.postalCode)
             .bind("city", member.city)
+            .bind("nif", member.nif)
             .bind("category", member.category.name)
             .bind("status", member.status.name)
             .bind("formerMember", member.formerMember)

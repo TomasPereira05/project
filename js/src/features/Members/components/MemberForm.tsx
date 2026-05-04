@@ -29,7 +29,6 @@ export function MemberForm({
   errorMessage,
   successMessage,
   readonlyIdentity = false,
-  showBackendNotice = false,
 }: MemberFormProps) {
   const [hasReadPrivacyText, setHasReadPrivacyText] = useState(values.privacyAccepted);
 
@@ -127,6 +126,16 @@ export function MemberForm({
             />
           </div>
 
+          <div className="member-input-group">
+            <label className="member-label">NIFF</label>
+            <input
+              className="member-input"
+              name="nif"
+              value={values.nif}
+              onChange={onChange}
+            />
+          </div>
+          
           <div className="member-input-group">
             <label className="member-label">Categoria</label>
             <select 

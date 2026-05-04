@@ -47,6 +47,7 @@ export function createMember(values: MemberFormValues) {
       address: values.address,
       postalCode: values.postalCode,
       city: values.city,
+      nif: values.niff,
       category: values.category,
       formerMember: values.formerMember,
       status: "PENDENTE",
