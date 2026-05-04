@@ -1,11 +1,16 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Navigate } from "react-router-dom";
 import { createRoot } from "react-dom/client";
-import { SignIn, SignUp } from "./features/auth";
+import {
+  SignIn,
+  SignUp,
+  AuthLayout
+} from "./features/auth";
 import {
   CreateMembers,
   MemberPage,
   Members,
   UpdateMember,
+  MembersLayout,
 } from "./features/Members";
 import {
   Athletes,
@@ -14,7 +19,8 @@ import {
   AthleteRegister,
   UpdateAthlete,
 } from "./features/Athletes";
-import { AuthProvider } from "./shared/components/AuthRequire";
+import { AuthProvider } from "./shared/context/AuthContextProvider";
+import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
 
 const router = createBrowserRouter([
@@ -23,28 +29,60 @@ const router = createBrowserRouter([
     element: <Home />,
   },
   {
-    path: "/login",
-    element: <SignIn />,
-  },
-  {
-    path: "/register",
-    element: <SignUp />,
+    path: "/auth",
+    element: <AuthLayout />,
+    children: [
+      { 
+        index: true, 
+        element: <Navigate to="login" replace /> 
+      },
+      {
+        path: "login",
+        element: <SignIn />,
+      },
+      {
+        path: "register",
+        element: <SignUp />,
+      },
+    ]
   },
   {
     path: "/members",
-    element: <Members />,
-  },
-  {
-    path: "/members/create",
-    element: <CreateMembers />,
-  },
-  {
-    path: "/members/:memberId",
-    element: <MemberPage />,
-  },
-  {
-    path: "/members/:memberId/edit",
-    element: <UpdateMember />,
+    element:
+    <AuthRequire>
+      <MembersLayout />
+    </AuthRequire>,
+    children: [
+      { 
+        index: true, 
+        element: <Navigate to="/" replace /> 
+      },
+      {
+        path: "create",
+        element: <CreateMembers />,
+      },
+      {
+        path: ":memberId",
+        element: 
+        <Require allowAdmin allowMember>
+          <MemberPage />
+        </Require>,
+      },
+      {
+        path: ":memberId/edit",
+        element: 
+        <Require allowAdmin allowMember>
+          <UpdateMember />
+        </Require>,
+      },
+      {
+        path: "list",
+        element: 
+        <Require allowAdmin>
+          <Members />
+        </Require>,
+      },
+    ]
   },
   {
     path: "/athletes",

@@ -50,6 +50,7 @@ CREATE TYPE sponsorship_status AS ENUM ('SUBMETIDO', 'APROVADO', 'PAGO', 'ATIVO'
 
 CREATE TABLE member (
     member_id        SERIAL PRIMARY KEY,
+    user_id          INT UNIQUE,
     member_number    INT UNIQUE,
     complete_name    VARCHAR(255) NOT NULL,
     birth_date       DATE NOT NULL,

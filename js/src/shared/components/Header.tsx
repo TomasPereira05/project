@@ -23,11 +23,11 @@ export default function Header() {
     };
 
     const handleLoginClick = () => {
-        navigate('/login')
+        navigate('/auth/login')
     };
 
     const handleRegisterClick = () => {
-        navigate('/register')
+        navigate('/auth/register')
     };
 
     const handleLogoutClick = () => {
@@ -127,7 +127,7 @@ export default function Header() {
                         <span className="dropdown-disabled">Perfil de Sócio</span>
                     )}
                     {(role === "ADMIN" || role === "SECRETARIA") && (
-                        <Link to="/members" className="dropdown-link" onClick={closeMenus}>Lista de Sócios</Link>
+                        <Link to="/members/list" className="dropdown-link" onClick={closeMenus}>Lista de Sócios</Link>
                     )}
                     <span className="dropdown-disabled">Cotas</span>
                     <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>Tornar-se Sócio</Link>

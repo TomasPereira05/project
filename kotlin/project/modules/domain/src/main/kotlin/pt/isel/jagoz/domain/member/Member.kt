@@ -10,6 +10,7 @@ import kotlinx.datetime.LocalDate
  */
 data class Member(
     val memberId: Long,
+    val userId: Long?,
     // NÃºmero sequencial Ãºnico (1, 2, 3...)
     val memberNumber: Int,
     val completeName: String,

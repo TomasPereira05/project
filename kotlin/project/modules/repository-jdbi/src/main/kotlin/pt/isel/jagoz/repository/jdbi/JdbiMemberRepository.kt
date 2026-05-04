@@ -46,19 +46,20 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
         return handle.createUpdate(
             """
             INSERT INTO jagoz.member (
-                member_number, complete_name, birth_date, email, phone, home_phone, 
+                user_id, member_number, complete_name, birth_date, email, phone, home_phone, 
                 address, postal_code, city, nif, category, status, former_member, 
                 membership_quota, billing_location, registration_date, approval_date, 
                 privacy_accepted, coms_accepted
             ) VALUES (
-                :memberNumber, :completeName, :birthDate, :email, :phone, :homePhone, 
+                :userId, :memberNumber, :completeName, :birthDate, :email, :phone, :homePhone, 
                 :address, :postalCode, :city,:nif, CAST(:category AS jagoz.member_category), 
-                CAST(:status AS jagoz.member_status), :formerMember, :membership_quota, 
+                CAST(:status AS jagoz.member_status), :formerMember, :membershipQuota, 
                 :billingLocation, :registrationDate, :approvalDate, 
                 :privacyAccepted, :comsAccepted
             )
             """,
         )
+            .bind("userId", member.userId)
             .bind("memberNumber", if (member.memberNumber > 0) member.memberNumber else null)
             .bind("completeName", member.completeName)
             .bind("birthDate", member.birthDate)

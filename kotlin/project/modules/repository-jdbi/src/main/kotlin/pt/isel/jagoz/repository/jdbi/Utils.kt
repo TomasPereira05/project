@@ -19,6 +19,7 @@ import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
 import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
+import pt.isel.jagoz.repository.jdbi.mappers.LocalDateArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.MemberMapper
 import pt.isel.jagoz.repository.jdbi.mappers.PaymentMapper
 import pt.isel.jagoz.repository.jdbi.mappers.SponsorMapper
@@ -34,6 +35,7 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerColumnMapper(Instant::class.java, InstantMapper())
 
     registerArgument(InstantArgumentFactory())
+    registerArgument(LocalDateArgumentFactory())
 
     registerRowMapper(Athlete::class.java, AthleteMapper())
     registerRowMapper(Charge::class.java, ChargeMapper())

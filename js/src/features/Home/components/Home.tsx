@@ -1,9 +1,9 @@
 import Header from "../../../shared/components/Header";
+import Footer from "../../../shared/components/Footer";
 import {
   Hero,
   NewsGrid,
   StandingsTable,
-  Footer
 } from ".."
 
 export default function Home() {

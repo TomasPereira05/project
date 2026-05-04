@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Users, Shield, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Users, ShieldAlert} from "lucide-react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import {
   fetchMembers,
@@ -7,8 +7,8 @@ import {
 } from "..";
 import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import Header from "../../../shared/components/header";
-
+import Header from "../../../shared/components/Header";
+import Footer from "../../../shared/components/Footer";
 const PAGE_SIZE = 8;
 
 function statusLabel(status: Member["status"]) {
@@ -117,7 +117,6 @@ export default function Members() {
 
   return (
     <>
-      <Header />
       <main className="member-page">
       <div className="member-container">
         
