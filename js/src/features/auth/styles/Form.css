@@ -11,7 +11,7 @@
   }
 
   .auth-topbar-inner {
-    @apply max-w-6xl mx-auto flex items-center justify-between px-4 py-3;
+    @apply mx-auto flex items-center justify-between px-4 py-3;
   }
 
   .auth-logo {

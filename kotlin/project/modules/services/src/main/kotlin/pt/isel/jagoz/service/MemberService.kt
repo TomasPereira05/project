@@ -58,6 +58,11 @@ class MemberService(
             val memberId = transaction.memberRepository.save(memberToSave)
             val savedMember = memberToSave.copy(memberId = memberId)
 
+            if(member.userId != null) {
+                val user = transaction.userRepository.findById(member.userId!!)
+                transaction.userRepository.update(user!!.copy(activeMemberId = savedMember.memberId))
+            }
+
             LOG.info("Successfully created member with ID: $memberId and number: $memberNumber")
             success(savedMember)
         }

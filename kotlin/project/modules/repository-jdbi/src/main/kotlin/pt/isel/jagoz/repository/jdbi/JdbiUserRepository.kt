@@ -69,7 +69,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
                 email = :email, 
                 username = :username, 
                 password_validation = :passwordValidation, 
-                role = CAST(:role AS user_role), 
+                role = CAST(:role AS jagoz.user_role), 
                 active_member_id = :activeMemberId
             WHERE user_id = :id
             """,

@@ -1,4 +1,4 @@
-import type { Member, MemberFormValues, ViewerMode, PaymentHistoryItem } from "./types";
+import type { Member, MemberFormValues, PaymentHistoryItem } from "./types";
 
 export function eurosFromCents(valueInCents: number) {
   return new Intl.NumberFormat("pt-PT", {
@@ -48,17 +48,6 @@ export function defaultMemberFormValues(member?: Member): MemberFormValues {
     privacyAccepted: member?.privacyAccepted ?? false,
     comsAccepted: member?.comsAccepted ?? false,
   };
-}
-
-export function getViewerMode(search: string): ViewerMode {
-  const params = new URLSearchParams(search);
-  const viewer = params.get("viewer");
-
-  if (viewer === "admin" || viewer === "self" || viewer === "public") {
-    return viewer;
-  }
-
-  return "admin";
 }
 
 export function buildPaymentHistory(member: Member): PaymentHistoryItem[] {

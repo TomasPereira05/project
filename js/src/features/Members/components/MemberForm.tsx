@@ -127,7 +127,7 @@ export function MemberForm({
           </div>
 
           <div className="member-input-group">
-            <label className="member-label">NIFF</label>
+            <label className="member-label">NIF</label>
             <input
               className="member-input"
               name="nif"

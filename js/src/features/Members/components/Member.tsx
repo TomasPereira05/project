@@ -13,7 +13,8 @@ import {
 } from "..";
 import { formatDate } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import Header from "../../../shared/components/header";
+import Header from "../../../shared/components/Header";
+import Footer from "../../../shared/components/Footer";
 
 function statusText(status: Member["status"]) {
   switch (status) {
@@ -162,7 +163,6 @@ export default function MemberPage() {
 
   return (
     <>
-      <Header />
       <main className="member-page">
       <div className="member-detail-container">
         

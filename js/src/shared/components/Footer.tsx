@@ -1,7 +1,7 @@
 import { Waves } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
-import {LOGO_SRC} from "../../../shared/config/config";
+import {LOGO_SRC} from "../config/config";
 
 export default function Footer() {
   return (
@@ -16,7 +16,7 @@ export default function Footer() {
               </div>
               <div>
                 <span className="footer-logo-title">ERICEIRENSE</span>
-                <p className="footer-logo-subtitle">Futebol Clube</p>
+                <p className="footer-logo-subtitle">G.D.U.E</p>
               </div>
             </div>
             <p className="footer-tagline">
@@ -29,19 +29,29 @@ export default function Footer() {
             <h4 className="footer-heading">Contacto</h4>
             <div className="footer-contact-list">
               <p>Ericeira, Portugal</p>
-              <p>geral@ericeirense.pt</p>
+              <p>geral@gdue.pt</p>
+              <p>261 022 808/93 069 1921</p>
             </div>
           </div>
 
           <div>
             <h4 className="footer-heading">Redes Sociais</h4>
             <div className="footer-socials">
-              <a href="#" className="footer-social-link" aria-label="Facebook">
+              <a href="https://www.facebook.com/gdueoficial" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Facebook">
                 <FontAwesomeIcon icon={faFacebook} style={{ width: 18, height: 18 }} />
               </a>
-              <a href="#" className="footer-social-link" aria-label="Instagram">
+              <a href="https://www.instagram.com/academia.gduericeirense/" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Instagram">
                 <FontAwesomeIcon icon={faInstagram} style={{ width: 18, height: 18 }} />
               </a>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="footer-heading">Localização</h4>
+            <div className="footer-contact-list">
+              <p>Campo Henrique Tomás Frade</p>
+              <p>Urbanização da Camacha</p>
+              <p>2655-302 Ericeira</p>
             </div>
           </div>
         </div>

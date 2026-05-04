@@ -6,11 +6,11 @@
   }
 
   .footer-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ml-4;
+    @apply mx-auto px-4 sm:px-6 lg:px-8 ml-4;
   }
 
   .footer-grid {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-8;
+    @apply grid grid-cols-1 md:grid-cols-4 gap-8;
   }
 
   /* LOGO */

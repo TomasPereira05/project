@@ -17,6 +17,7 @@ class MemberMapper : RowMapper<Member> {
 
         return Member(
             memberId = rs.getLong("member_id"),
+            userId = rs.getLong("user_id"),
             memberNumber = memberNumber,
             completeName = rs.getString("complete_name"),
             birthDate = LocalDate.parse(rs.getString("birth_date")),

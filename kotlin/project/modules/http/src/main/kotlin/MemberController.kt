@@ -1,5 +1,6 @@
 package pt.isel.jagoz.http
 
+import kotlinx.datetime.toLocalDate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -15,8 +16,10 @@ import pt.isel.jagoz.domain.member.MemberError
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.model.member.CategoryRequest
+import pt.isel.jagoz.http.model.member.MemberCreateInput
 import pt.isel.jagoz.http.model.member.MemberOutput
 import pt.isel.jagoz.http.model.member.ReactivationRequest
+import pt.isel.jagoz.http.model.member.toMember
 import pt.isel.jagoz.http.model.member.tooutput
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
@@ -49,9 +52,9 @@ class MemberController(
 
     @PostMapping(Uris.Members.CREATE_MEMBER)
     fun createMember(
-        @RequestBody member: Member,
+        @RequestBody member: MemberCreateInput,
     ): ResponseEntity<*> =
-        memberService.createMember(member).handle(
+        memberService.createMember(member.toMember()).handle(
             onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
@@ -96,7 +99,7 @@ class MemberController(
         @PathVariable memberId: Long,
         @RequestBody approvalRequest: ApprovalRequest,
     ): ResponseEntity<*> =
-        memberService.approveMember(memberId, approvalRequest.approvalDate).handle(
+        memberService.approveMember(memberId, approvalRequest.approvalDate.toLocalDate()).handle(
             onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )

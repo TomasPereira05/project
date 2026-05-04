@@ -1,9 +1,9 @@
 export type MemberCategory = "SOCIO" | "ATLETA_SOCIO";
 export type MemberStatus = "PENDENTE" | "ATIVO" | "INATIVO" | "REJEITADO";
-export type ViewerMode = "admin" | "self" | "public";
 
 export type Member = {
   memberId: number;
+  userId: number;
   memberNumber: number;
   completeName: string;
   birthDate: string;

@@ -27,7 +27,7 @@ export function fetchMember(memberId: number) {
   return request<Member>(`/members/${memberId}`);
 }
 
-export function createMember(values: MemberFormValues) {
+export function createMember(values: MemberFormValues, userId: number | null) {
   const today = new Date().toISOString().slice(0, 10);
   const membershipQuota =
     values.category === "ATLETA_SOCIO"
@@ -38,6 +38,7 @@ export function createMember(values: MemberFormValues) {
     method: "POST",
     body: JSON.stringify({
       memberId: 0,
+      userId: userId,
       memberNumber: 0,
       completeName: values.completeName,
       birthDate: values.birthDate,
@@ -47,7 +48,7 @@ export function createMember(values: MemberFormValues) {
       address: values.address,
       postalCode: values.postalCode,
       city: values.city,
-      nif: values.niff,
+      nif: values.nif,
       category: values.category,
       formerMember: values.formerMember,
       status: "PENDENTE",

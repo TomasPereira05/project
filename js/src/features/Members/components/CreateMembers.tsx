@@ -6,14 +6,17 @@ import {
   type MemberFormValues,
 } from "..";
 import { MemberForm } from "./MemberForm";
-import Header from "../../../shared/components/header";
+import Header from "../../../shared/components/Header";
+import Footer from "../../../shared/components/Footer";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
+import { useAuth } from "../../../shared/hooks/useAuth";
 
 export default function CreateMembers() {
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const { id, role } = useAuth();
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -51,7 +54,8 @@ export default function CreateMembers() {
     setSuccessMessage("");
 
     try {
-      const created = await createMember(values);
+      const userId = (role === "ADMIN" ? null : id ?? null);
+      const created = await createMember(values, userId);
       setSuccessMessage(
         `Pedido submetido com sucesso. Foi atribuído o número #${created.memberNumber}.`,
       );
@@ -65,13 +69,12 @@ export default function CreateMembers() {
 
   return (
     <>
-      <Header />
       <main className="member-form-page">
         <div
             className="member-form-bg"
-            style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
+            style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
         />
-        <div className="member-form-overlay" style={{ position: "fixed" }} />
+        <div className="member-form-overlay" />
         
         <div className="member-form-container">
           <MemberForm
