@@ -12,7 +12,7 @@ export default function Header() {
     const ref = useRef<HTMLDivElement>(null);
     const isAuthenticated = Boolean(username);
 
-    type MenuType = "mobile" | "socios" | "conta" | "equipas" | "user" | null;
+    type MenuType = "mobile" | "socios" | "equipas" | "user" | null;
 
     const toggleMenu = (menu: Exclude<MenuType, null>) => {
         setActiveMenu((prev) => (prev === menu ? null : menu));
@@ -65,7 +65,6 @@ export default function Header() {
                     </Link>
                     <nav className="nav">
                         <button className="nav-link" onClick={() => toggleMenu("socios")}>Sócios</button>
-                        <button className="nav-link" onClick={() => toggleMenu("conta")}>Conta</button>
                         <span className="nav-disabled">Patrocinios</span>
                         <button className="nav-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                     </nav>
@@ -95,7 +94,6 @@ export default function Header() {
             <div className={`dropdown ${activeMenu === "mobile" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
                     <button className="dropdown-link" onClick={() => toggleMenu("socios")}>Sócios</button>
-                    <button className="dropdown-link" onClick={() => toggleMenu("conta")}>Conta</button>
                     <span className="dropdown-disabled">Patrocinios</span>
                     <button className="dropdown-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                 </nav>
@@ -126,21 +124,10 @@ export default function Header() {
                     ) : (
                         <span className="dropdown-disabled">Perfil de Sócio</span>
                     )}
-                    {(role === "ADMIN" || role === "SECRETARIA") && (
+                    {role === "ADMIN" && (
                         <Link to="/members/list" className="dropdown-link" onClick={closeMenus}>Lista de Sócios</Link>
                     )}
-                    <span className="dropdown-disabled">Cotas</span>
                     <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>Tornar-se Sócio</Link>
-                </nav>
-            </div>
-    
-
-            {/* Conta Dropdown Menu */}
-            <div className={`dropdown ${activeMenu === "conta" ? "dropdown-visible" : "dropdown-hidden"}`}>
-                <nav className="dropdown-nav">
-                    <a href="#" className="dropdown-link">Perfil</a>
-                    <span className="dropdown-disabled">Informações</span>
-                    <span className="dropdown-disabled">Pagamentos</span>
                 </nav>
             </div>
 
