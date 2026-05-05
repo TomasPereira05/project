@@ -1,0 +1,341 @@
+@layer components {
+  .sponsor-page {
+    @apply min-h-screen bg-background py-10;
+  }
+
+  .sponsor-shell {
+    @apply mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8;
+  }
+
+  .sponsor-hero {
+    @apply grid gap-6 overflow-hidden rounded-[28px] border border-slate-200 bg-gradient-to-br from-[#00254f] via-primary to-secondary p-8 text-white shadow-card lg:grid-cols-[1.8fr_0.9fr];
+  }
+
+  .sponsor-hero-copy {
+    @apply max-w-3xl;
+  }
+
+  .sponsor-kicker {
+    @apply mb-3 inline-flex rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em];
+  }
+
+  .sponsor-title {
+    @apply font-heading text-5xl uppercase leading-none tracking-tight;
+  }
+
+  .sponsor-description {
+    @apply mt-4 max-w-2xl text-sm text-slate-100 sm:text-base;
+  }
+
+  .sponsor-highlight-card {
+    @apply flex flex-col justify-end rounded-[24px] border border-white/15 bg-white/10 p-6 backdrop-blur;
+  }
+
+  .sponsor-highlight-icon {
+    @apply mb-6 h-8 w-8 text-accent;
+  }
+
+  .sponsor-highlight-label {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-slate-100;
+  }
+
+  .sponsor-highlight-value {
+    @apply mt-2 font-heading text-4xl leading-none;
+  }
+
+  .sponsor-highlight-meta {
+    @apply mt-2 text-sm text-slate-100;
+  }
+
+  .sponsor-hero-actions {
+    @apply mt-6 flex flex-wrap gap-3;
+  }
+
+  .sponsor-page-header {
+    @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .sponsor-info-grid {
+    @apply grid gap-5 md:grid-cols-3;
+  }
+
+  .sponsor-info-card {
+    @apply rounded-2xl border border-border bg-white p-6 shadow-soft;
+  }
+
+  .sponsor-info-card h2 {
+    @apply font-heading text-2xl uppercase tracking-tight text-text-primary;
+  }
+
+  .sponsor-info-card p {
+    @apply mt-2 text-sm leading-6 text-text-secondary;
+  }
+
+  .sponsor-option-grid {
+    @apply grid gap-4;
+  }
+
+  .sponsor-option-card {
+    @apply flex items-start justify-between gap-4 rounded-2xl border border-border bg-slate-50/70 p-5 text-left transition hover:border-primary/40 hover:bg-white;
+  }
+
+  .sponsor-option-card.is-selected {
+    @apply border-primary bg-primary/5;
+  }
+
+  .sponsor-option-card h3 {
+    @apply mt-3 text-lg font-semibold text-text-primary;
+  }
+
+  .sponsor-option-card p {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  .sponsor-option-card strong {
+    @apply whitespace-nowrap font-heading text-2xl text-primary;
+  }
+
+  .sponsor-feedback {
+    @apply flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium shadow-soft;
+  }
+
+  .sponsor-feedback-error {
+    @apply border-red-200 bg-red-50 text-red-700;
+  }
+
+  .sponsor-feedback-success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .sponsor-stat-grid {
+    @apply grid gap-4 md:grid-cols-3;
+  }
+
+  .sponsor-stat-card {
+    @apply rounded-2xl border border-border bg-white p-5 shadow-soft;
+  }
+
+  .sponsor-stat-icon {
+    @apply mb-4 h-7 w-7 text-primary;
+  }
+
+  .sponsor-stat-label {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary;
+  }
+
+  .sponsor-stat-value {
+    @apply mt-2 block font-heading text-4xl leading-none text-text-primary;
+  }
+
+  .sponsor-grid {
+    @apply grid gap-6 xl:grid-cols-[1fr_1.1fr];
+  }
+
+  .sponsor-panel {
+    @apply rounded-[24px] border border-border bg-white p-6 shadow-soft;
+  }
+
+  .sponsor-loading-panel {
+    @apply flex min-h-[220px] items-center justify-center text-text-secondary;
+  }
+
+  .sponsor-panel-header {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .sponsor-section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-secondary;
+  }
+
+  .sponsor-panel-title {
+    @apply font-heading text-3xl uppercase tracking-tight text-text-primary;
+  }
+
+  .sponsor-muted-text {
+    @apply text-sm text-text-secondary;
+  }
+
+  .sponsor-price-pill {
+    @apply inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary;
+  }
+
+  .sponsor-form-grid {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .sponsor-field {
+    @apply flex flex-col gap-2 text-sm font-semibold text-text-primary;
+  }
+
+  .sponsor-field-span {
+    @apply md:col-span-2;
+  }
+
+  .sponsor-input {
+    @apply h-11 rounded-xl border border-border bg-muted/40 px-3 text-sm font-normal text-text-primary outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10;
+  }
+
+  .sponsor-input-price {
+    @apply min-w-[104px];
+  }
+
+  .sponsor-form-actions {
+    @apply flex flex-wrap items-center gap-3 pt-2;
+  }
+
+  .sponsor-button-primary {
+    @apply inline-flex items-center justify-center rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover;
+  }
+
+  .sponsor-button-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-primary hover:text-primary;
+  }
+
+  .sponsor-button-ghost {
+    @apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-text-secondary transition hover:bg-muted hover:text-text-primary;
+  }
+
+  .sponsor-link-button {
+    @apply text-sm font-semibold text-primary hover:text-primary-hover;
+  }
+
+  .sponsor-list {
+    @apply mt-6 flex max-h-[420px] flex-col gap-3 overflow-y-auto pr-1;
+  }
+
+  .sponsor-list-item {
+    @apply flex w-full items-center justify-between rounded-2xl border border-border bg-slate-50/70 p-4 text-left transition hover:border-primary/40 hover:bg-white;
+  }
+
+  .sponsor-list-item.is-active {
+    @apply border-primary bg-primary/5;
+  }
+
+  .sponsor-list-item strong {
+    @apply text-base text-text-primary;
+  }
+
+  .sponsor-list-item p {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  .sponsor-list-actions {
+    @apply flex flex-col items-end gap-2 text-xs text-text-secondary;
+  }
+
+  .sponsor-contract-list {
+    @apply mt-6 flex flex-col gap-4;
+  }
+
+  .sponsor-empty-card {
+    @apply rounded-2xl border border-dashed border-border bg-muted/40 px-5 py-6 text-sm text-text-secondary;
+  }
+
+  .sponsor-contract-card {
+    @apply rounded-2xl border border-border bg-slate-50/60 p-4;
+  }
+
+  .sponsor-contract-main {
+    @apply flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between;
+  }
+
+  .sponsor-contract-topline {
+    @apply flex items-center gap-3;
+  }
+
+  .sponsor-contract-target {
+    @apply mt-2 text-sm font-medium text-text-primary;
+  }
+
+  .sponsor-contract-meta {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  .sponsor-contract-actions {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .sponsor-badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em];
+  }
+
+  .sponsor-badge-pending {
+    @apply border-amber-200 bg-amber-50 text-amber-700;
+  }
+
+  .sponsor-badge-approved {
+    @apply border-sky-200 bg-sky-50 text-sky-700;
+  }
+
+  .sponsor-badge-paid {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .sponsor-badge-cancelled {
+    @apply border-slate-200 bg-slate-100 text-slate-600;
+  }
+
+  .sponsor-catalog-grid {
+    @apply grid gap-5 xl:grid-cols-2;
+  }
+
+  .sponsor-catalog-section {
+    @apply rounded-2xl border border-border bg-slate-50/40 p-5;
+  }
+
+  .sponsor-catalog-headline h3 {
+    @apply font-heading text-2xl uppercase tracking-tight text-text-primary;
+  }
+
+  .sponsor-catalog-headline p {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  .sponsor-inline-form {
+    @apply mt-4 grid gap-3 md:grid-cols-[0.8fr_1.4fr_auto];
+  }
+
+  .sponsor-catalog-list {
+    @apply mt-4 flex flex-col gap-3;
+  }
+
+  .sponsor-catalog-row {
+    @apply flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 md:flex-row md:items-center;
+  }
+
+  .sponsor-catalog-reorder {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-text-secondary;
+  }
+
+  .sponsor-catalog-fields {
+    @apply grid flex-1 gap-3 md:grid-cols-2;
+  }
+
+  .sponsor-catalog-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .sponsor-price-editor {
+    @apply flex items-center gap-2;
+  }
+
+  .sponsor-team-price-panel {
+    @apply mt-8 rounded-2xl border border-border bg-slate-50/50 p-5;
+  }
+
+  .sponsor-price-grid {
+    @apply mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .sponsor-price-card {
+    @apply rounded-2xl border border-border bg-white p-4;
+  }
+
+  .sponsor-price-card strong {
+    @apply text-sm text-text-primary;
+  }
+
+  .sponsor-price-card p {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+}

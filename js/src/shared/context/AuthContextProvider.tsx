@@ -5,7 +5,7 @@ import type { AuthContextType } from "../types/AuthContextType";
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
-    const [auth, setAuthState] = useState<{ id?: number; username?: string; role?: string; activeMemberId?: number }>({});
+    const [auth, setAuthState] = useState<{ id?: number; username?: string; role?: string; activeMemberId?: number | null }>({});
 
     useEffect(() => {
         api.auth.getMe().then(data => {
@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({children}) => {
         });
     }, []);
 
-    const setAuth = (authData: { id?: number; username?: string; role?: string; activeMemberId?: number }) => {
+    const setAuth = (authData: { id?: number; username?: string; role?: string; activeMemberId?: number | null }) => {
         setAuthState(authData);
     };
 
