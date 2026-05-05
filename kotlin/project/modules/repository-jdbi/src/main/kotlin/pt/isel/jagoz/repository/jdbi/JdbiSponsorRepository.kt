@@ -43,6 +43,28 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .one()
     }
 
+    override fun updateContact(
+        id: Long,
+        name: String,
+        email: String,
+        phone: String,
+        nif: String
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteById(id: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override fun existsById(id: Long): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun existsByNif(nif: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override fun update(sponsor: Sponsor) {
         handle.createUpdate(
             """

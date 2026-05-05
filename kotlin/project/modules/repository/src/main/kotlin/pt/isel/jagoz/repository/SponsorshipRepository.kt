@@ -1,6 +1,7 @@
 package pt.isel.jagoz.repository
 
 import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
 
 interface SponsorshipRepository {
     fun findById(id: Long): Sponsorship?
@@ -9,5 +10,11 @@ interface SponsorshipRepository {
 
     fun save(sponsorship: Sponsorship): Long
 
+    fun updateStatus(id: Long, status: SponsorshipStatus)
+
     fun update(sponsorship: Sponsorship)
+
+    fun deleteById(id: Long)
+
+    fun existsById(id: Long): Boolean
 }

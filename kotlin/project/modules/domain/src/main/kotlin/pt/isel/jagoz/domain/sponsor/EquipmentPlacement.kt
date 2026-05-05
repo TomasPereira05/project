@@ -1,8 +1,9 @@
 package pt.isel.jagoz.domain.sponsor
 
-enum class EquipmentPlacement {
-    FRENTE,
-    COSTAS,
-    MANGA,
-    CALCAO,
-}
+data class EquipmentPlacement(
+    val equipmentId: Long,
+    val code: String,
+    val label: String,
+    val active: Boolean,
+    val sortOrder: Int?
+)

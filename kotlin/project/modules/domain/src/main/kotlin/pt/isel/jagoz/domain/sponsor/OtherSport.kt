@@ -1,8 +1,9 @@
 package pt.isel.jagoz.domain.sponsor
 
-enum class OtherSport {
-    PATINAGEM,
-    VOLEIBOL,
-    FUTEBOL_PRAIA,
-    GOLF,
-}
+data class OtherSport(
+    val sportId: Long,
+    val code: String,
+    val label: String,
+    val active: Boolean,
+    val sortOrder: Int?
+)

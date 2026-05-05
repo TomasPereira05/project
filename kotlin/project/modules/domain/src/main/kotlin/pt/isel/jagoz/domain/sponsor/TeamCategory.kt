@@ -1,22 +1,10 @@
 package pt.isel.jagoz.domain.sponsor
 
-enum class TeamCategory {
-    // Seniores / Veteranos
-    SENIORES,
-    VETERANOS,
+data class TeamCategory(
+    val teamId: Long,
+    val code: String,
+    val label: String,
+    val active: Boolean,
+    val sortOrder: Int?
+)
 
-    // Fut11 Masculino
-    JUNIORES,
-    JUVENIS,
-    INICIADOS,
-
-    // Fut7/9 Masculino
-    BENJAMINS_10,
-    BENJAMINS_9,
-    TRAQUINAS,
-    PETIZES,
-
-    // Feminino
-    FEMININO_FUT11,
-    FEMININO_FUT7_9,
-}
