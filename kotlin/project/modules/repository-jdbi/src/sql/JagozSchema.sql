@@ -20,32 +20,6 @@ CREATE TYPE member_status AS ENUM ('PENDENTE', 'ATIVO', 'INATIVO', 'REJEITADO');
 
 CREATE TYPE sponsor_type AS ENUM ('PUB', 'TEAM', 'OTHER');
 
-CREATE TYPE pub_option AS ENUM (
-    'LONA_3X0_8',
-    'LONA_5X2_3',
-    'OUTDOOR_2_8X1_3',
-    'OUTDOOR_3_8X1_3',
-    'OUTDOOR_3_8X1_8'
-);
-
-CREATE TYPE team_category AS ENUM (
-    'SENIORES',
-    'VETERANOS',
-    'JUNIORES',
-    'JUVENIS',
-    'INICIADOS',
-    'BENJAMINS_10',
-    'BENJAMINS_9',
-    'TRAQUINAS',
-    'PETIZES',
-    'FEMININO_FUT11',
-    'FEMININO_FUT7_9'
-);
-
-CREATE TYPE equipment_placement AS ENUM ('FRENTE', 'COSTAS', 'MANGA', 'CALCAO');
-
-CREATE TYPE other_sport AS ENUM ('PATINAGEM', 'VOLEIBOL', 'FUTEBOL_PRAIA', 'GOLF');
-
 CREATE TYPE sponsorship_status AS ENUM ('SUBMETIDO', 'APROVADO', 'PAGO', 'ATIVO', 'CANCELADO');
 
 CREATE TABLE member (
@@ -72,7 +46,13 @@ CREATE TABLE member (
     coms_accepted    BOOLEAN NOT NULL
 );
 
-
+CREATE TABLE team_category (
+    team_category_id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    label TEXT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    sort_order INT NOT NULL DEFAULT 0
+);
 
 CREATE TABLE athlete (
     athlete_id       SERIAL PRIMARY KEY,
@@ -88,7 +68,7 @@ CREATE TABLE athlete (
     school_class     VARCHAR(50),
     last_club        VARCHAR(255),
     season           VARCHAR(50),
-    team_category    team_category NOT NULL,
+    team_category_id INT REFERENCES team_category(team_category_id),
     active           BOOLEAN NOT NULL DEFAULT true
 );
 
@@ -104,6 +84,49 @@ CREATE TABLE guardian (
     has_family_in_club BOOLEAN NOT NULL
 );
 
+CREATE TABLE other_sport (
+    sport_id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    label TEXT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE equipment_placement (
+    placement_id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    label TEXT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE pub_option (
+    pub_option_id SERIAL PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    label TEXT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    sort_order INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE pub_option_price (
+    pub_option_id INT PRIMARY KEY REFERENCES pub_option(pub_option_id),
+    price INT NOT NULL
+);
+
+CREATE TABLE team_sponsorship_price (
+    id SERIAL PRIMARY KEY,
+    team_category_id INT NOT NULL REFERENCES team_category(team_category_id),
+    placement_id INT NOT NULL REFERENCES equipment_placement(placement_id),
+    price INT NOT NULL,
+
+    UNIQUE (team_category_id, placement_id)
+);
+
+CREATE TABLE other_sport_price (
+    sport_id INT PRIMARY KEY REFERENCES other_sport(sport_id),
+    price INT NOT NULL
+);
+
 CREATE TABLE sponsor (
     sponsor_id  SERIAL PRIMARY KEY,
     name        VARCHAR(255) NOT NULL,
@@ -114,19 +137,51 @@ CREATE TABLE sponsor (
 
 CREATE TABLE sponsorship (
     sponsorship_id SERIAL PRIMARY KEY,
-    sponsor_id     INT                NOT NULL REFERENCES sponsor(sponsor_id) ON DELETE CASCADE,
-    season         VARCHAR(9)         NOT NULL,
-    status         sponsorship_status NOT NULL DEFAULT 'SUBMETIDO',
-    type           sponsor_type       NOT NULL,
-    price          INT                NOT NULL,
-    pub_option     pub_option,
-    team_category  team_category,
-    placement      equipment_placement,
-    sport          other_sport,
+    sponsor_id INT NOT NULL REFERENCES sponsor(sponsor_id) ON DELETE CASCADE,
+
+    season VARCHAR(9) NOT NULL,
+    status sponsorship_status NOT NULL DEFAULT 'SUBMETIDO',
+    type sponsor_type NOT NULL,
+
+    team_price_id INT REFERENCES team_sponsorship_price(id),
+    pub_price_id INT REFERENCES pub_option_price(pub_option_id),
+    sport_price_id INT REFERENCES other_sport_price(sport_id),
+
+    pub_option_id INT REFERENCES pub_option(pub_option_id),
+    team_category_id INT REFERENCES team_category(team_category_id),
+    placement_id INT REFERENCES equipment_placement(placement_id),
+    sport_id INT REFERENCES other_sport(sport_id),
+
     CONSTRAINT chk_sponsorship_type CHECK (
-        (type = 'PUB' AND pub_option IS NOT NULL AND team_category IS NULL AND placement IS NULL AND sport IS NULL) OR
-        (type = 'TEAM' AND team_category IS NOT NULL AND placement IS NOT NULL AND pub_option IS NULL AND sport IS NULL) OR
-        (type = 'OTHER' AND sport IS NOT NULL AND pub_option IS NULL AND team_category IS NULL AND placement IS NULL)
+        (type = 'PUB'
+        AND pub_option_id IS NOT NULL
+        AND team_category_id IS NULL
+        AND placement_id IS NULL
+        AND sport_id IS NULL
+        AND pub_price_id IS NOT NULL
+        AND team_price_id IS NULL
+        AND sport_price_id IS NULL
+        )
+        OR
+        (type = 'TEAM'
+        AND team_category_id IS NOT NULL
+        AND placement_id IS NOT NULL
+        AND pub_option_id IS NULL
+        AND sport_id IS NULL
+        AND team_price_id IS NOT NULL
+        AND pub_price_id IS NULL
+        AND sport_price_id IS NULL
+        )
+        OR
+        (type = 'OTHER'
+        AND sport_id IS NOT NULL
+        AND pub_option_id IS NULL
+        AND team_category_id IS NULL
+        AND placement_id IS NULL
+        AND sport_price_id IS NOT NULL
+        AND pub_price_id IS NULL
+        AND team_price_id IS NULL
+        )
     )
 );
 
