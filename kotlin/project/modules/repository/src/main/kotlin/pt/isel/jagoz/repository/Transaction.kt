@@ -30,4 +30,10 @@ interface Transaction {
     val pubOptionRepository: PubOptionRepository
 
     val teamCategoryRepository: TeamCategoryRepository
+
+    val pubOptionPriceRepository: PubOptionPriceRepository
+
+    val otherSportPriceRepository: OtherSportPriceRepository
+
+    val teamSponsorshipPriceRepository: TeamSponsorshipPriceRepository
 }

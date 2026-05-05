@@ -1,0 +1,91 @@
+package pt.isel.jagoz.http
+
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RestController
+import pt.isel.jagoz.domain.sponsor.SponsorError
+import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.utils.handle
+import pt.isel.jagoz.http.utils.Problem
+import pt.isel.jagoz.http.utils.Uris
+import pt.isel.jagoz.service.SponsorshipService
+
+@RestController
+class SponsorshipController(
+    private val sponsorshipService: SponsorshipService,
+) {
+    @PostMapping(Uris.Sponsorships.CREATE)
+    fun createSponsorship(
+        @RequestBody sponsorship: Sponsorship,
+    ): ResponseEntity<*> =
+        sponsorshipService.createSponsorship(sponsorship).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
+        )
+
+    @GetMapping(Uris.Sponsorships.GET_BY_ID)
+    fun getSponsorshipById(
+        @PathVariable sponsorshipId: Long,
+    ): ResponseEntity<*> =
+        sponsorshipService.getSponsorshipById(sponsorshipId).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    @GetMapping(Uris.Sponsorships.GET_BY_SPONSOR)
+    fun getSponsorshipsBySponsorId(
+        @PathVariable sponsorId: Long,
+    ): ResponseEntity<*> =
+        sponsorshipService.getSponsorshipsBySponsorId(sponsorId).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    @PutMapping(Uris.Sponsorships.APPROVE)
+    fun approveSponsorship(
+        @PathVariable sponsorshipId: Long,
+    ): ResponseEntity<*> =
+        sponsorshipService.approveSponsorship(sponsorshipId).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    @PutMapping(Uris.Sponsorships.MARK_PAID)
+    fun markSponsorshipPaid(
+        @PathVariable sponsorshipId: Long,
+    ): ResponseEntity<*> =
+        sponsorshipService.markSponsorshipPaid(sponsorshipId).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    @PutMapping(Uris.Sponsorships.CANCEL)
+    fun cancelSponsorship(
+        @PathVariable sponsorshipId: Long,
+    ): ResponseEntity<*> =
+        sponsorshipService.cancelSponsorship(sponsorshipId).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    private fun handleSponsorError(error: SponsorError): ResponseEntity<Any> =
+        when (error) {
+            is SponsorError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+            is SponsorError.InvalidTransition -> Problem.InvalidTransition(error.from.toString(), error.attempted).response(HttpStatus.BAD_REQUEST)
+            is SponsorError.DomainError ->
+                when {
+                    error.message.contains("sponsorship", ignoreCase = true) && error.message.contains("not found", ignoreCase = true) ->
+                        Problem.SponsorshipNotFound(error.message).response(HttpStatus.NOT_FOUND)
+                    error.message.contains("sponsor", ignoreCase = true) && error.message.contains("not found", ignoreCase = true) ->
+                        Problem.SponsorNotFound(error.message).response(HttpStatus.NOT_FOUND)
+                    error.message.contains("not found", ignoreCase = true) ->
+                        Problem.ValidationError(error.message).response(HttpStatus.NOT_FOUND)
+                    else -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+                }
+        }
+}

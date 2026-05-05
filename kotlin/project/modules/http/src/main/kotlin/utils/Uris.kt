@@ -49,4 +49,45 @@ object Uris {
 
         fun byId(userId: Long): URI = UriTemplate(GET_BY_ID).expand(userId)
     }
+
+    object Sponsors {
+        const val GET_ALL = "$PREFIX/sponsors"
+        const val GET_BY_ID = "$PREFIX/sponsors/{sponsorId}"
+        const val CREATE = "$PREFIX/sponsors"
+        const val UPDATE = "$PREFIX/sponsors/{sponsorId}"
+    }
+
+    object Sponsorships {
+        const val CREATE = "$PREFIX/sponsorships"
+        const val GET_BY_ID = "$PREFIX/sponsorships/{sponsorshipId}"
+        const val GET_BY_SPONSOR = "$PREFIX/sponsors/{sponsorId}/sponsorships"
+        const val APPROVE = "$PREFIX/sponsorships/{sponsorshipId}/approve"
+        const val MARK_PAID = "$PREFIX/sponsorships/{sponsorshipId}/paid"
+        const val CANCEL = "$PREFIX/sponsorships/{sponsorshipId}/cancel"
+    }
+
+    object SponsorshipCatalog {
+        const val PUB_OPTIONS_ACTIVE = "$PREFIX/sponsorship-catalog/pub-options/active"
+        const val PUB_OPTIONS = "$PREFIX/sponsorship-catalog/pub-options"
+        const val PUB_OPTION_BY_ID = "$PREFIX/sponsorship-catalog/pub-options/{pubOptionId}"
+        const val PUB_OPTIONS_REORDER = "$PREFIX/sponsorship-catalog/pub-options/reorder"
+        const val PUB_OPTION_PRICES = "$PREFIX/sponsorship-catalog/pub-option-prices"
+
+        const val TEAM_CATEGORIES_ACTIVE = "$PREFIX/sponsorship-catalog/team-categories/active"
+        const val TEAM_CATEGORIES = "$PREFIX/sponsorship-catalog/team-categories"
+        const val TEAM_CATEGORY_BY_ID = "$PREFIX/sponsorship-catalog/team-categories/{teamCategoryId}"
+        const val TEAM_CATEGORIES_REORDER = "$PREFIX/sponsorship-catalog/team-categories/reorder"
+        const val TEAM_PRICES = "$PREFIX/sponsorship-catalog/team-prices"
+
+        const val EQUIPMENT_PLACEMENTS_ACTIVE = "$PREFIX/sponsorship-catalog/equipment-placements/active"
+        const val EQUIPMENT_PLACEMENTS = "$PREFIX/sponsorship-catalog/equipment-placements"
+        const val EQUIPMENT_PLACEMENT_BY_ID = "$PREFIX/sponsorship-catalog/equipment-placements/{placementId}"
+        const val EQUIPMENT_PLACEMENTS_REORDER = "$PREFIX/sponsorship-catalog/equipment-placements/reorder"
+
+        const val OTHER_SPORTS_ACTIVE = "$PREFIX/sponsorship-catalog/other-sports/active"
+        const val OTHER_SPORTS = "$PREFIX/sponsorship-catalog/other-sports"
+        const val OTHER_SPORT_BY_ID = "$PREFIX/sponsorship-catalog/other-sports/{sportId}"
+        const val OTHER_SPORTS_REORDER = "$PREFIX/sponsorship-catalog/other-sports/reorder"
+        const val OTHER_SPORT_PRICES = "$PREFIX/sponsorship-catalog/other-sport-prices"
+    }
 }

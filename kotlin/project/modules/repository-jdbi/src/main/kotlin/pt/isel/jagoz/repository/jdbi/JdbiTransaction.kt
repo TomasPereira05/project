@@ -5,12 +5,19 @@ import pt.isel.jagoz.repository.AthleteRepository
 import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.MemberRepository
+import pt.isel.jagoz.repository.OtherSportPriceRepository
 import pt.isel.jagoz.repository.PaymentRepository
+import pt.isel.jagoz.repository.PubOptionPriceRepository
 import pt.isel.jagoz.repository.SponsorRepository
 import pt.isel.jagoz.repository.SponsorshipRepository
+import pt.isel.jagoz.repository.TeamSponsorshipPriceRepository
 import pt.isel.jagoz.repository.TicketRepository
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.UserRepository
+import pt.isel.jagoz.repository.EquipmentPlacementRepository
+import pt.isel.jagoz.repository.OtherSportRepository
+import pt.isel.jagoz.repository.PubOptionRepository
+import pt.isel.jagoz.repository.TeamCategoryRepository
 
 class JdbiTransaction(private val handle: Handle) : Transaction {
     override val memberRepository: MemberRepository = JdbiMemberRepository(handle)
@@ -22,4 +29,11 @@ class JdbiTransaction(private val handle: Handle) : Transaction {
     override val paymentRepository: PaymentRepository = JdbiPaymentRepository(handle)
     override val sponsorRepository: SponsorRepository = JdbiSponsorRepository(handle)
     override val sponsorshipRepository: SponsorshipRepository = JdbiSponsorshipRepository(handle)
+    override val equipmentPlacementRepository: EquipmentPlacementRepository = JdbiEquipmentPlacementRepository(handle)
+    override val otherSportRepository: OtherSportRepository = JdbiOtherSportRepository(handle)
+    override val pubOptionRepository: PubOptionRepository = JdbiPubOptionRepository(handle)
+    override val teamCategoryRepository: TeamCategoryRepository = JdbiTeamCategoryRepository(handle)
+    override val pubOptionPriceRepository: PubOptionPriceRepository = JdbiPubOptionPriceRepository(handle)
+    override val otherSportPriceRepository: OtherSportPriceRepository = JdbiOtherSportPriceRepository(handle)
+    override val teamSponsorshipPriceRepository: TeamSponsorshipPriceRepository = JdbiTeamSponsorshipPriceRepository(handle)
 }

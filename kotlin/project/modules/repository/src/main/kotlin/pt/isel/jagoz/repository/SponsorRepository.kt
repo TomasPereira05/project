@@ -11,6 +11,8 @@ interface SponsorRepository {
 
     fun save(sponsor: Sponsor): Long
 
+    fun update(sponsor: Sponsor)
+
     fun updateContact(
         id: Long,
         name: String,

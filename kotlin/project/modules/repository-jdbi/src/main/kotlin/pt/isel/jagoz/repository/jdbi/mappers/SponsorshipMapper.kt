@@ -23,6 +23,9 @@ class SponsorshipMapper : RowMapper<Sponsorship> {
             status = SponsorshipStatus.valueOf(rs.getString("status")),
             type = SponsorType.valueOf(rs.getString("type")),
             price = rs.getInt("price"),
+            teamPriceId = rs.getObject("team_price_id") as Long?,
+            pubPriceId = rs.getObject("pub_price_id") as Long?,
+            sportPriceId = rs.getObject("sport_price_id") as Long?,
 
             pubOptionId = rs.getObject("pub_option_id") as Long?,
             teamCategoryId = rs.getObject("team_category_id") as Long?,

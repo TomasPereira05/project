@@ -50,19 +50,42 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
         phone: String,
         nif: String
     ) {
-        TODO("Not yet implemented")
+        handle.createUpdate(
+            """
+            UPDATE jagoz.sponsor
+            SET name = :name,
+                email = :email,
+                phone = :phone,
+                nif = :nif
+            WHERE sponsor_id = :id
+            """,
+        )
+            .bind("id", id)
+            .bind("name", name)
+            .bind("email", email)
+            .bind("phone", phone)
+            .bind("nif", nif)
+            .execute()
     }
 
     override fun deleteById(id: Long) {
-        TODO("Not yet implemented")
+        handle.createUpdate("DELETE FROM jagoz.sponsor WHERE sponsor_id = :id")
+            .bind("id", id)
+            .execute()
     }
 
     override fun existsById(id: Long): Boolean {
-        TODO("Not yet implemented")
+        return handle.createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE sponsor_id = :id)")
+            .bind("id", id)
+            .mapTo(Boolean::class.java)
+            .one()
     }
 
     override fun existsByNif(nif: String): Boolean {
-        TODO("Not yet implemented")
+        return handle.createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE nif = :nif)")
+            .bind("nif", nif)
+            .mapTo(Boolean::class.java)
+            .one()
     }
 
     override fun update(sponsor: Sponsor) {
