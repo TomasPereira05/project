@@ -50,6 +50,14 @@ sealed class Problem(typeUri: URI) {
         val description = "Recurso associado ao utilizador nao encontrado."
     }
 
+    data class SponsorNotFound(val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/sponsor-not-found")) {
+        val description = "Sponsor nao encontrado."
+    }
+
+    data class SponsorshipNotFound(val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/sponsorship-not-found")) {
+        val description = "Sponsorship nao encontrado."
+    }
+
     data class Unauthorized(val message: String) : Problem(URI("${PROBLEM_URI_PATH}/unauthorized")) {
         val description = "Autenticacao invalida ou em falta."
     }

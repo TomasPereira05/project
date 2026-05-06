@@ -19,6 +19,13 @@ import {
   AthleteRegister,
   UpdateAthlete,
 } from "./features/Athletes";
+import {
+  SponsorApprovals,
+  SponsorCreate,
+  SponsorSettings,
+  Sponsors,
+  SponsorsLayout,
+} from "./features/sponsors";
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
@@ -103,6 +110,36 @@ const router = createBrowserRouter([
   {
     path: "/athletes/:athleteId/edit",
     element: <UpdateAthlete />,
+  },
+  {
+    path: "/sponsors",
+    element: <SponsorsLayout />,
+    children: [
+      {
+        index: true,
+        element: <Sponsors />,
+      },
+      {
+        path: "create",
+        element: <SponsorCreate />,
+      },
+      {
+        path: "settings",
+        element: (
+          <AuthRequire>
+            <SponsorSettings />
+          </AuthRequire>
+        ),
+      },
+      {
+        path: "approvals",
+        element: (
+          <AuthRequire>
+            <SponsorApprovals />
+          </AuthRequire>
+        ),
+      },
+    ],
   },
 ]);
 

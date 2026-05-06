@@ -43,6 +43,51 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .one()
     }
 
+    override fun updateContact(
+        id: Long,
+        name: String,
+        email: String,
+        phone: String,
+        nif: String
+    ) {
+        handle.createUpdate(
+            """
+            UPDATE jagoz.sponsor
+            SET name = :name,
+                email = :email,
+                phone = :phone,
+                nif = :nif
+            WHERE sponsor_id = :id
+            """,
+        )
+            .bind("id", id)
+            .bind("name", name)
+            .bind("email", email)
+            .bind("phone", phone)
+            .bind("nif", nif)
+            .execute()
+    }
+
+    override fun deleteById(id: Long) {
+        handle.createUpdate("DELETE FROM jagoz.sponsor WHERE sponsor_id = :id")
+            .bind("id", id)
+            .execute()
+    }
+
+    override fun existsById(id: Long): Boolean {
+        return handle.createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE sponsor_id = :id)")
+            .bind("id", id)
+            .mapTo(Boolean::class.java)
+            .one()
+    }
+
+    override fun existsByNif(nif: String): Boolean {
+        return handle.createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE nif = :nif)")
+            .bind("nif", nif)
+            .mapTo(Boolean::class.java)
+            .one()
+    }
+
     override fun update(sponsor: Sponsor) {
         handle.createUpdate(
             """

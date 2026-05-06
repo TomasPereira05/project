@@ -15,6 +15,14 @@ class AthleteMapper : RowMapper<Athlete> {
         // These fields exist in the domain but are not yet persisted in the current schema.
         // To keep the domain strict (non-null), we provide explicit placeholders.
         val notAvailable = "N/A"
+        val teamCategory =
+            TeamCategory(
+                teamId = rs.getLong("team_category_id"),
+                code = rs.getString("team_category_code"),
+                label = rs.getString("team_category_label"),
+                active = rs.getBoolean("team_category_active"),
+                sortOrder = (rs.getObject("team_category_sort_order") as? Number)?.toInt(),
+            )
 
         return Athlete(
             athleteId = rs.getLong("athlete_id"),
@@ -38,7 +46,7 @@ class AthleteMapper : RowMapper<Athlete> {
             schoolClass = rs.getString("school_class"),
             lastClub = rs.getString("last_club"),
             season = rs.getString("season"),
-            teamCategory = TeamCategory.valueOf(rs.getString("team_category")),
+            teamCategory = teamCategory,
             active = rs.getBoolean("active"),
             privacyAccepted = rs.getBoolean("privacy_accepted"),
             comsAccepted = rs.getBoolean("coms_accepted"),

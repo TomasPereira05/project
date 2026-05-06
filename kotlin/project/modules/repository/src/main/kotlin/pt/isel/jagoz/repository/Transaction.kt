@@ -22,4 +22,18 @@ interface Transaction {
     val sponsorRepository: SponsorRepository
 
     val sponsorshipRepository: SponsorshipRepository
+
+    val equipmentPlacementRepository: EquipmentPlacementRepository
+
+    val otherSportRepository: OtherSportRepository
+
+    val pubOptionRepository: PubOptionRepository
+
+    val teamCategoryRepository: TeamCategoryRepository
+
+    val pubOptionPriceRepository: PubOptionPriceRepository
+
+    val otherSportPriceRepository: OtherSportPriceRepository
+
+    val teamSponsorshipPriceRepository: TeamSponsorshipPriceRepository
 }

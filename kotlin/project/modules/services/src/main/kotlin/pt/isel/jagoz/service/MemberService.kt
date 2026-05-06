@@ -7,7 +7,6 @@ import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberDomain
 import pt.isel.jagoz.domain.member.MemberError
-import pt.isel.jagoz.domain.user.UserDomain
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -58,7 +57,7 @@ class MemberService(
             val memberId = transaction.memberRepository.save(memberToSave)
             val savedMember = memberToSave.copy(memberId = memberId)
 
-            if(member.userId != null) {
+            if (member.userId != null) {
                 val user = transaction.userRepository.findById(member.userId!!)
                 transaction.userRepository.update(user!!.copy(activeMemberId = savedMember.memberId))
             }

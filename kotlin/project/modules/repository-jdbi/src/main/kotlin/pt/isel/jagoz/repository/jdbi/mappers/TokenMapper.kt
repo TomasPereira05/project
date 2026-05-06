@@ -1,7 +1,6 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
 import kotlinx.datetime.Instant
-import kotlinx.datetime.toKotlinInstant
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.domain.user.Token

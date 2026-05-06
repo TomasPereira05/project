@@ -23,9 +23,13 @@ class SponsorshipMapper : RowMapper<Sponsorship> {
             status = SponsorshipStatus.valueOf(rs.getString("status")),
             type = SponsorType.valueOf(rs.getString("type")),
             price = rs.getInt("price"),
-            pubOption = rs.getString("pub_option")?.let(PubOption::valueOf),
-            teamCategory = rs.getString("team_category")?.let(TeamCategory::valueOf),
-            placement = rs.getString("placement")?.let(EquipmentPlacement::valueOf),
-            sport = rs.getString("sport")?.let(OtherSport::valueOf),
+            teamPriceId = rs.getObject("team_price_id") as Long?,
+            pubPriceId = rs.getObject("pub_price_id") as Long?,
+            sportPriceId = rs.getObject("sport_price_id") as Long?,
+
+            pubOptionId = rs.getObject("pub_option_id") as Long?,
+            teamCategoryId = rs.getObject("team_category_id") as Long?,
+            placementId = rs.getObject("placement_id") as Long?,
+            sportId = rs.getObject("sport_id") as Long?,
         )
 }

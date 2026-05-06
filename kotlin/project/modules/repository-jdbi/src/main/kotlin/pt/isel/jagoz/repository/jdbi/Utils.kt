@@ -14,16 +14,24 @@ import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.User
+import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
+import pt.isel.jagoz.domain.sponsor.OtherSport
+import pt.isel.jagoz.domain.sponsor.PubOption
+import pt.isel.jagoz.domain.sponsor.TeamCategory
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
+import pt.isel.jagoz.repository.jdbi.mappers.EquipmentPlacementMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
 import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
 import pt.isel.jagoz.repository.jdbi.mappers.LocalDateArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.MemberMapper
+import pt.isel.jagoz.repository.jdbi.mappers.OtherSportMapper
 import pt.isel.jagoz.repository.jdbi.mappers.PaymentMapper
+import pt.isel.jagoz.repository.jdbi.mappers.PubOptionMapper
 import pt.isel.jagoz.repository.jdbi.mappers.SponsorMapper
 import pt.isel.jagoz.repository.jdbi.mappers.SponsorshipMapper
+import pt.isel.jagoz.repository.jdbi.mappers.TeamCategoryMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TicketMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TokenMapper
 import pt.isel.jagoz.repository.jdbi.mappers.UserMapper
@@ -47,6 +55,10 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerRowMapper(Ticket::class.java, TicketMapper())
     registerRowMapper(Token::class.java, TokenMapper())
     registerRowMapper(User::class.java, UserMapper())
+    registerRowMapper(EquipmentPlacement::class.java, EquipmentPlacementMapper())
+    registerRowMapper(OtherSport::class.java, OtherSportMapper())
+    registerRowMapper(TeamCategory::class.java, TeamCategoryMapper())
+    registerRowMapper(PubOption::class.java, PubOptionMapper())
 
     return this
 }
