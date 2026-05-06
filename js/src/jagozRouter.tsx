@@ -97,7 +97,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/athletes/register",
-    element: <AthleteRegister />,
+    element: (
+      <AuthRequire>
+        <AthleteRegister />
+      </AuthRequire>
+    ),
   },
   {
     path: "/athletes/category/:teamCategory",
