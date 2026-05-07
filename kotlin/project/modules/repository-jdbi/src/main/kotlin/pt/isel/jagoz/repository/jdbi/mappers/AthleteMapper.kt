@@ -18,6 +18,7 @@ class AthleteMapper : RowMapper<Athlete> {
         val teamCategory =
             TeamCategory(
                 teamId = rs.getLong("team_category_id"),
+                teamGroupId = rs.getLong("team_group_id"),
                 code = rs.getString("team_category_code"),
                 label = rs.getString("team_category_label"),
                 active = rs.getBoolean("team_category_active"),

@@ -34,7 +34,7 @@ class JdbiTeamCategoryPriceOverrideRepository(private val handle: Handle) : Team
         return handle.createQuery(
             """
         SELECT team_category_id, placement_id, price
-        FROM jagoz.team_group_price
+        FROM jagoz.team_category_price_override
         ORDER BY team_category_id, placement_id
         """,
         )

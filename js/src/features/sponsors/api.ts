@@ -11,7 +11,9 @@ import type {
   Sponsorship,
   SponsorshipFormValues,
   TeamCategory,
-  TeamSponsorshipPrice,
+  TeamCategoryPriceOverride,
+  TeamGroup,
+  TeamGroupPrice,
 } from "./types";
 import { centsFromEuroInput } from "./utils";
 
@@ -190,14 +192,19 @@ export function upsertPubOptionPrice(pubOptionId: number, euroValue: string) {
 }
 
 export function fetchTeamCategories() {
-  return request<TeamCategory[]>("/sponsorship-catalog/team-categories/active");
+  return request<TeamCategory[]>("/teams/categories/active");
 }
 
-export function createTeamCategory(payload: { code: string; label: string; sortOrder: number }) {
-  return request<TeamCategory>("/sponsorship-catalog/team-categories", {
+export function fetchTeamGroups() {
+  return request<TeamGroup[]>("/teams/groups/active");
+}
+
+export function createTeamCategory(payload: { teamGroupId: number; code: string; label: string; sortOrder: number }) {
+  return request<TeamCategory>("/teams/categories", {
     method: "POST",
     body: JSON.stringify({
       teamId: 0,
+      teamGroupId: payload.teamGroupId,
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: true,
@@ -208,12 +215,13 @@ export function createTeamCategory(payload: { code: string; label: string; sortO
 
 export function updateTeamCategory(
   teamId: number,
-  payload: { code: string; label: string; active: boolean; sortOrder: number | null },
+  payload: { teamGroupId: number; code: string; label: string; active: boolean; sortOrder: number | null },
 ) {
-  return request<TeamCategory>(`/sponsorship-catalog/team-categories/${teamId}`, {
+  return request<TeamCategory>(`/teams/categories/${teamId}`, {
     method: "PUT",
     body: JSON.stringify({
       teamId,
+      teamGroupId: payload.teamGroupId,
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: payload.active,
@@ -223,24 +231,39 @@ export function updateTeamCategory(
 }
 
 export function deactivateTeamCategory(teamId: number) {
-  return request<void>(`/sponsorship-catalog/team-categories/${teamId}`, {
+  return request<void>(`/teams/categories/${teamId}`, {
     method: "DELETE",
   });
 }
 
 export function reorderTeamCategories(ids: number[]) {
-  return request<TeamCategory[]>("/sponsorship-catalog/team-categories/reorder", {
+  return request<TeamCategory[]>("/teams/categories/reorder", {
     method: "PUT",
     body: JSON.stringify({ ids }),
   });
 }
 
-export function fetchTeamSponsorshipPrices() {
-  return request<TeamSponsorshipPrice[]>("/sponsorship-catalog/team-prices");
+export function fetchTeamGroupSponsorshipPrices() {
+  return request<TeamGroupPrice[]>("/teams/groups-prices");
 }
 
-export function upsertTeamSponsorshipPrice(teamCategoryId: number, placementId: number, euroValue: string) {
-  return request<TeamSponsorshipPrice>("/sponsorship-catalog/team-prices", {
+export function upsertTeamGroupSponsorshipPrice(teamGroupId: number, placementId: number, euroValue: string) {
+  return request<TeamGroupPrice>("/teams/groups-prices", {
+    method: "PUT",
+    body: JSON.stringify({
+      teamGroupId,
+      placementId,
+      price: centsFromEuroInput(euroValue),
+    }),
+  });
+}
+
+export function fetchTeamCategoryPriceOverrides() {
+  return request<TeamCategoryPriceOverride[]>("/teams/category-overrides");
+}
+
+export function upsertTeamCategoryPriceOverride(teamCategoryId: number, placementId: number, euroValue: string) {
+  return request<TeamCategoryPriceOverride>("/teams/category-overrides", {
     method: "PUT",
     body: JSON.stringify({
       teamCategoryId,
@@ -359,29 +382,35 @@ export function upsertOtherSportPrice(sportId: number, euroValue: string) {
 export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
   const [
     pubOptions,
+    teamGroups,
     teamCategories,
     equipmentPlacements,
     otherSports,
     pubOptionPrices,
-    teamSponsorshipPrices,
+    teamGroupPrices,
+    teamCategoryPriceOverrides,
     otherSportPrices,
   ] = await Promise.all([
     fetchPubOptions(),
+    fetchTeamGroups(),
     fetchTeamCategories(),
     fetchEquipmentPlacements(),
     fetchOtherSports(),
     fetchPubOptionPrices(),
-    fetchTeamSponsorshipPrices(),
+    fetchTeamGroupSponsorshipPrices(),
+    fetchTeamCategoryPriceOverrides(),
     fetchOtherSportPrices(),
   ]);
 
   return {
     pubOptions,
+    teamGroups,
     teamCategories,
     equipmentPlacements,
     otherSports,
     pubOptionPrices,
-    teamSponsorshipPrices,
+    teamGroupPrices,
+    teamCategoryPriceOverrides,
     otherSportPrices,
   };
 }

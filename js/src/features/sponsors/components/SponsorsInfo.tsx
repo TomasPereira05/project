@@ -3,16 +3,18 @@ import { ArrowRight, Settings, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { fetchCatalogSnapshot } from "..";
 import type { CatalogSnapshot } from "..";
-import { compareBySortOrder, formatCurrency } from "..";
+import { compareBySortOrder, formatCurrency, resolveTeamSponsorshipPrice } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 
 const emptyCatalogs: CatalogSnapshot = {
   pubOptions: [],
+  teamGroups: [],
   teamCategories: [],
   equipmentPlacements: [],
   otherSports: [],
   pubOptionPrices: [],
-  teamSponsorshipPrices: [],
+  teamGroupPrices: [],
+  teamCategoryPriceOverrides: [],
   otherSportPrices: [],
 };
 
@@ -36,6 +38,7 @@ export default function SponsorsInfo() {
           setCatalogs({
             ...response,
             pubOptions: [...response.pubOptions].sort(compareBySortOrder),
+            teamGroups: [...response.teamGroups].sort(compareBySortOrder),
             teamCategories: [...response.teamCategories].sort(compareBySortOrder),
             equipmentPlacements: [...response.equipmentPlacements].sort(compareBySortOrder),
             otherSports: [...response.otherSports].sort(compareBySortOrder),
@@ -84,20 +87,45 @@ export default function SponsorsInfo() {
     [catalogs],
   );
 
+  const teamColumns = useMemo(() => {
+    const publicGroupCodes = new Set(["FUT11", "FUT9", "FUT7"]);
+    const groupColumns = catalogs.teamGroups
+      .filter((group) => publicGroupCodes.has(group.code.toUpperCase()))
+      .filter((group) => catalogs.teamGroupPrices.some((price) => price.teamGroupId === group.teamGroupId))
+      .map((group) => ({
+        id: `group-${group.teamGroupId}`,
+        label: group.code.toUpperCase() === "FUT9" || group.code.toUpperCase() === "FUT7" ? "Fut 7/9" : group.label,
+        resolvePrice: (placementId: number) =>
+          catalogs.teamGroupPrices.find(
+            (entry) => entry.teamGroupId === group.teamGroupId && entry.placementId === placementId,
+          )?.price ?? null,
+      }));
+
+    const overrideColumns = catalogs.teamCategories
+      .filter((team) =>
+        catalogs.teamCategoryPriceOverrides.some((override) => override.teamCategoryId === team.teamId),
+      )
+      .map((team) => ({
+        id: `team-${team.teamId}`,
+        label: team.label,
+        resolvePrice: (placementId: number) =>
+          resolveTeamSponsorshipPrice(team.teamId, team.teamGroupId, placementId, catalogs),
+      }));
+
+    return [...overrideColumns, ...groupColumns];
+  }, [catalogs]);
+
   const teamMatrix = useMemo(
     () =>
       catalogs.equipmentPlacements.map((placement) => ({
         placement,
-        values: catalogs.teamCategories.map((team) => ({
-          teamId: team.teamId,
-          label: team.label,
-          price:
-            catalogs.teamSponsorshipPrices.find(
-              (entry) => entry.teamCategoryId === team.teamId && entry.placementId === placement.equipmentId,
-            )?.price ?? null,
+        values: teamColumns.map((column) => ({
+          id: column.id,
+          label: column.label,
+          price: column.resolvePrice(placement.equipmentId),
         })),
       })),
-    [catalogs],
+    [catalogs.equipmentPlacements, teamColumns],
   );
 
   return (
@@ -208,9 +236,9 @@ export default function SponsorsInfo() {
           <article className="sponsor-brochure-card sponsor-brochure-table-card">
             <div className="sponsor-table-headline">
               <h3>Tabela Equipa</h3>
-              <span>{isLoading ? "A carregar..." : `${catalogs.teamCategories.length} equipas`}</span>
+              <span>{isLoading ? "A carregar..." : `${teamColumns.length} opcoes`}</span>
             </div>
-            {catalogs.teamCategories.length === 0 || catalogs.equipmentPlacements.length === 0 ? (
+            {teamColumns.length === 0 || catalogs.equipmentPlacements.length === 0 ? (
               <div className="sponsor-empty-card">Sem combinacoes de equipa configuradas.</div>
             ) : (
               <div className="sponsor-table-wrapper">
@@ -218,8 +246,8 @@ export default function SponsorsInfo() {
                   <thead>
                     <tr>
                       <th>Equipamento</th>
-                      {catalogs.teamCategories.map((team) => (
-                        <th key={team.teamId}>{team.label}</th>
+                      {teamColumns.map((column) => (
+                        <th key={column.id}>{column.label}</th>
                       ))}
                     </tr>
                   </thead>
@@ -228,7 +256,7 @@ export default function SponsorsInfo() {
                       <tr key={row.placement.equipmentId}>
                         <td>{row.placement.label}</td>
                         {row.values.map((value) => (
-                          <td key={`${row.placement.equipmentId}-${value.teamId}`}>
+                          <td key={`${row.placement.equipmentId}-${value.id}`}>
                             {value.price == null ? "-" : formatCurrency(value.price)}
                           </td>
                         ))}

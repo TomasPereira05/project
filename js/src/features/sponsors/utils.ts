@@ -4,7 +4,9 @@ import type {
   PubOption,
   SponsorshipStatus,
   SponsorType,
+  TeamCategoryPriceOverride,
   TeamCategory,
+  TeamGroupPrice,
 } from "./types";
 
 export function centsFromEuroInput(value: string) {
@@ -89,6 +91,26 @@ export function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
   const [moved] = next.splice(fromIndex, 1);
   next.splice(toIndex, 0, moved);
   return next;
+}
+
+export function resolveTeamSponsorshipPrice(
+  teamCategoryId: number,
+  teamGroupId: number,
+  placementId: number,
+  prices: {
+    teamGroupPrices: TeamGroupPrice[];
+    teamCategoryPriceOverrides: TeamCategoryPriceOverride[];
+  },
+) {
+  return (
+    prices.teamCategoryPriceOverrides.find(
+      (entry) => entry.teamCategoryId === teamCategoryId && entry.placementId === placementId,
+    )?.price ??
+    prices.teamGroupPrices.find(
+      (entry) => entry.teamGroupId === teamGroupId && entry.placementId === placementId,
+    )?.price ??
+    null
+  );
 }
 
 export function resolveSponsorshipTarget(

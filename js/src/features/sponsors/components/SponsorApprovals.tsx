@@ -53,8 +53,8 @@ export default function SponsorApprovals() {
   const orderedItems = useMemo(
     () =>
       [...items].sort((first, second) => {
-        if (first.sponsorship.status === "PENDING" && second.sponsorship.status !== "PENDING") return -1;
-        if (first.sponsorship.status !== "PENDING" && second.sponsorship.status === "PENDING") return 1;
+        if (first.sponsorship.status === "SUBMETIDO" && second.sponsorship.status !== "SUBMETIDO") return -1;
+        if (first.sponsorship.status !== "SUBMETIDO" && second.sponsorship.status === "SUBMETIDO") return 1;
         return second.sponsorship.sponsorshipId - first.sponsorship.sponsorshipId;
       }),
     [items],
@@ -130,17 +130,17 @@ export default function SponsorApprovals() {
                       </p>
                     </div>
                     <div className="sponsor-contract-actions">
-                      {sponsorship.status === "PENDING" ? (
+                      {sponsorship.status === "SUBMETIDO" ? (
                         <button className="sponsor-button-primary" onClick={() => void runAction(sponsorship.sponsorshipId, "approve")} type="button">
                           Aprovar
                         </button>
                       ) : null}
-                      {sponsorship.status === "APPROVED" ? (
+                      {sponsorship.status === "APROVADO" ? (
                         <button className="sponsor-button-secondary" onClick={() => void runAction(sponsorship.sponsorshipId, "paid")} type="button">
                           Marcar pago
                         </button>
                       ) : null}
-                      {sponsorship.status !== "CANCELLED" && sponsorship.status !== "PAID" ? (
+                      {sponsorship.status !== "CANCELADO" && sponsorship.status !== "PAGO" ? (
                         <button className="sponsor-button-ghost" onClick={() => void runAction(sponsorship.sponsorshipId, "cancel")} type="button">
                           Cancelar
                         </button>
