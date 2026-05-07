@@ -49,26 +49,30 @@ export function sponsorTypeLabel(type: SponsorType) {
 
 export function sponsorshipStatusLabel(status: SponsorshipStatus) {
   switch (status) {
-    case "PENDING":
-      return "Pending";
-    case "APPROVED":
-      return "Approved";
-    case "PAID":
-      return "Paid";
-    case "CANCELLED":
-      return "Cancelled";
+    case "SUBMETIDO":
+      return "Submetido";
+    case "APROVADO":
+      return "Aprovado";
+    case "PAGO":
+      return "Pago";
+    case "ATIVO":
+      return "Ativo";
+    case "CANCELADO":
+      return "Cancelado";
   }
 }
 
 export function sponsorshipStatusClass(status: SponsorshipStatus) {
   switch (status) {
-    case "PENDING":
+    case "SUBMETIDO":
       return "sponsor-badge sponsor-badge-pending";
-    case "APPROVED":
+    case "APROVADO":
       return "sponsor-badge sponsor-badge-approved";
-    case "PAID":
+    case "PAGO":
       return "sponsor-badge sponsor-badge-paid";
-    case "CANCELLED":
+    case "ATIVO":
+      return "sponsor-badge sponsor-badge-paid";
+    case "CANCELADO":
       return "sponsor-badge sponsor-badge-cancelled";
   }
 }

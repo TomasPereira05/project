@@ -46,8 +46,17 @@ CREATE TABLE member (
     coms_accepted    BOOLEAN NOT NULL
 );
 
+CREATE TABLE team_group (
+    team_group_id SERIAL PRIMARY KEY,
+    code TEXT UNIQUE NOT NULL,
+    label TEXT NOT NULL,
+    active BOOLEAN DEFAULT TRUE,
+    sort_order INT
+);
+
 CREATE TABLE team_category (
     team_category_id SERIAL PRIMARY KEY,
+    team_group_id INT NOT NULL REFERENCES team_group(team_group_id),
     code VARCHAR(50) UNIQUE NOT NULL,
     label TEXT NOT NULL,
     active BOOLEAN DEFAULT TRUE,
@@ -113,7 +122,16 @@ CREATE TABLE pub_option_price (
     price INT NOT NULL
 );
 
-CREATE TABLE team_sponsorship_price (
+CREATE TABLE team_group_price (
+    id SERIAL PRIMARY KEY,
+    team_group_id INT NOT NULL REFERENCES team_group(team_group_id),
+    placement_id INT NOT NULL REFERENCES equipment_placement(placement_id),
+    price INT NOT NULL,
+
+    UNIQUE (team_group_id, placement_id)
+);
+
+CREATE TABLE team_category_price_override (
     id SERIAL PRIMARY KEY,
     team_category_id INT NOT NULL REFERENCES team_category(team_category_id),
     placement_id INT NOT NULL REFERENCES equipment_placement(placement_id),
@@ -143,10 +161,6 @@ CREATE TABLE sponsorship (
     status sponsorship_status NOT NULL DEFAULT 'SUBMETIDO',
     type sponsor_type NOT NULL,
 
-    team_price_id INT REFERENCES team_sponsorship_price(id),
-    pub_price_id INT REFERENCES pub_option_price(pub_option_id),
-    sport_price_id INT REFERENCES other_sport_price(sport_id),
-
     pub_option_id INT REFERENCES pub_option(pub_option_id),
     team_category_id INT REFERENCES team_category(team_category_id),
     placement_id INT REFERENCES equipment_placement(placement_id),
@@ -158,9 +172,6 @@ CREATE TABLE sponsorship (
         AND team_category_id IS NULL
         AND placement_id IS NULL
         AND sport_id IS NULL
-        AND pub_price_id IS NOT NULL
-        AND team_price_id IS NULL
-        AND sport_price_id IS NULL
         )
         OR
         (type = 'TEAM'
@@ -168,9 +179,6 @@ CREATE TABLE sponsorship (
         AND placement_id IS NOT NULL
         AND pub_option_id IS NULL
         AND sport_id IS NULL
-        AND team_price_id IS NOT NULL
-        AND pub_price_id IS NULL
-        AND sport_price_id IS NULL
         )
         OR
         (type = 'OTHER'
@@ -178,9 +186,6 @@ CREATE TABLE sponsorship (
         AND pub_option_id IS NULL
         AND team_category_id IS NULL
         AND placement_id IS NULL
-        AND sport_price_id IS NOT NULL
-        AND pub_price_id IS NULL
-        AND team_price_id IS NULL
         )
     )
 );

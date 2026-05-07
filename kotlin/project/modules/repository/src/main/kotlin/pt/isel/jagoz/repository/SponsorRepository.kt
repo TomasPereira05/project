@@ -18,7 +18,7 @@ interface SponsorRepository {
         name: String,
         email: String,
         phone: String,
-        nif: String
+        nif: String,
     )
 
     fun deleteById(id: Long)
@@ -26,5 +26,4 @@ interface SponsorRepository {
     fun existsById(id: Long): Boolean
 
     fun existsByNif(nif: String): Boolean
-
 }

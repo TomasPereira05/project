@@ -9,7 +9,7 @@ export type Sponsor = {
 };
 
 export type SponsorType = "PUB" | "TEAM" | "OTHER";
-export type SponsorshipStatus = "PENDING" | "APPROVED" | "PAID" | "CANCELLED";
+export type SponsorshipStatus = "SUBMETIDO" | "APROVADO" | "PAGO" | "ATIVO" |"CANCELADO";
 
 export type Sponsorship = {
   sponsorshipId: number;

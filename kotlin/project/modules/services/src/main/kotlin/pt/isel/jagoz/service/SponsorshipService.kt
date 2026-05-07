@@ -57,8 +57,7 @@ class SponsorshipService(
     fun approveSponsorship(sponsorshipId: Long): SponsorshipResult =
         transitionSponsorship(sponsorshipId) { sponsorDomain.approveSponsorship(it) }
 
-    fun markSponsorshipPaid(sponsorshipId: Long): SponsorshipResult =
-        transitionSponsorship(sponsorshipId) { sponsorDomain.markPaid(it) }
+    fun markSponsorshipPaid(sponsorshipId: Long): SponsorshipResult = transitionSponsorship(sponsorshipId) { sponsorDomain.markPaid(it) }
 
     fun cancelSponsorship(sponsorshipId: Long): SponsorshipResult =
         transitionSponsorship(sponsorshipId) { sponsorDomain.cancelSponsorship(it) }
@@ -100,9 +99,6 @@ class SponsorshipService(
                 success(
                     sponsorship.copy(
                         price = price.price,
-                        pubPriceId = price.pubOptionId,
-                        teamPriceId = null,
-                        sportPriceId = null,
                     ),
                 )
             }
@@ -111,29 +107,35 @@ class SponsorshipService(
                 val teamCategoryId =
                     sponsorship.teamCategoryId
                         ?: return failure(SponsorError.ValidationError("teamCategoryId required for TEAM"))
+
                 val placementId =
                     sponsorship.placementId
                         ?: return failure(SponsorError.ValidationError("placementId required for TEAM"))
-                if (transaction.teamCategoryRepository.findById(teamCategoryId) == null) {
-                    return failure(SponsorError.DomainError("Team category $teamCategoryId not found"))
-                }
-                if (transaction.equipmentPlacementRepository.findById(placementId) == null) {
-                    return failure(SponsorError.DomainError("Placement $placementId not found"))
-                }
+
+                val category =
+                    transaction.teamCategoryRepository.findById(teamCategoryId)
+                        ?: return failure(SponsorError.DomainError("Team category $teamCategoryId not found"))
+
+                val placement =
+                    transaction.equipmentPlacementRepository.findById(placementId)
+                        ?: return failure(SponsorError.DomainError("Placement $placementId not found"))
+
+                val groupId = category.teamGroupId
+
                 val price =
-                    transaction.teamSponsorshipPriceRepository.findByTeamCategoryAndPlacement(teamCategoryId, placementId)
+                    transaction.teamCategoryPriceOverrideRepository
+                        .find(teamCategoryId, placementId)?.price
+                        ?: transaction.teamGroupPriceRepository
+                            .find(groupId, placementId)?.price
                         ?: return failure(
                             SponsorError.DomainError(
-                                "Price not configured for teamCategory $teamCategoryId and placement $placementId",
+                                "No price configured for group $groupId or category $teamCategoryId and placement $placementId",
                             ),
                         )
 
                 success(
                     sponsorship.copy(
-                        price = price.price,
-                        teamPriceId = price.id,
-                        pubPriceId = null,
-                        sportPriceId = null,
+                        price = price,
                     ),
                 )
             }
@@ -152,9 +154,6 @@ class SponsorshipService(
                 success(
                     sponsorship.copy(
                         price = price.price,
-                        sportPriceId = price.sportId,
-                        pubPriceId = null,
-                        teamPriceId = null,
                     ),
                 )
             }

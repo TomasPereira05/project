@@ -4,14 +4,14 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 
-class JdbiEquipmentPlacementRepository(private val handle: Handle): EquipmentPlacementRepository {
+class JdbiEquipmentPlacementRepository(private val handle: Handle) : EquipmentPlacementRepository {
     override fun findAll(): List<EquipmentPlacement> {
         return handle.createQuery(
             """
         SELECT *
         FROM jagoz.equipment_placement
         ORDER BY sort_order ASC NULLS LAST
-        """
+        """,
         )
             .mapTo(EquipmentPlacement::class.java)
             .list()
@@ -24,7 +24,7 @@ class JdbiEquipmentPlacementRepository(private val handle: Handle): EquipmentPla
             FROM jagoz.equipment_placement
             WHERE active = true
             ORDER BY placement_id
-            """
+            """,
         )
             .mapTo(EquipmentPlacement::class.java)
             .list()
@@ -36,7 +36,7 @@ class JdbiEquipmentPlacementRepository(private val handle: Handle): EquipmentPla
             SELECT *
             FROM jagoz.equipment_placement
             WHERE placement_id = :id
-            """
+            """,
         )
             .bind("id", id)
             .mapTo(EquipmentPlacement::class.java)
@@ -49,7 +49,7 @@ class JdbiEquipmentPlacementRepository(private val handle: Handle): EquipmentPla
             """
         INSERT INTO jagoz.equipment_placement (code, label, active, sort_order)
         VALUES (:code, :label, :active, :sortOrder)
-        """
+        """,
         )
             .bind("code", ep.code)
             .bind("label", ep.label)
@@ -69,7 +69,7 @@ class JdbiEquipmentPlacementRepository(private val handle: Handle): EquipmentPla
             active = :active,
             sort_order = :sortOrder
         WHERE placement_id = :id
-        """
+        """,
         )
             .bind("id", ep.equipmentId)
             .bind("code", ep.code)
@@ -85,7 +85,7 @@ class JdbiEquipmentPlacementRepository(private val handle: Handle): EquipmentPla
         UPDATE jagoz.equipment_placement
         SET active = false
         WHERE placement_id = :id
-        """
+        """,
         )
             .bind("id", id)
             .execute()

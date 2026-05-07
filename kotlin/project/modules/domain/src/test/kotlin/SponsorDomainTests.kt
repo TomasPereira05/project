@@ -7,7 +7,7 @@ import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorType
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
-import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals

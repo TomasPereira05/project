@@ -39,21 +39,49 @@ INSERT INTO jagoz.pub_option (
 -- =========================
 -- TEAM CATEGORIES
 -- =========================
-INSERT INTO jagoz.team_category (
+INSERT INTO jagoz.team_group (
     code, label, sort_order
 ) VALUES
-    ('SENIORES', 'Seniores', 1),
-    ('VETERANOS', 'Veteranos', 2),
-    ('JUNIORES', 'Juniores', 3),
-    ('JUVENIS', 'Juvenis', 4),
-    ('INICIADOS', 'Iniciados', 5),
-    ('BENJAMINS_10', 'Benjamins (10)', 6),
-    ('BENJAMINS_9', 'Benjamins (9)', 7),
-    ('TRAQUINAS', 'Traquinas', 8),
-    ('PETIZES', 'Petizes', 9),
-    ('FEMININO_FUT11', 'Feminino Futebol 11', 10),
-    ('FEMININO_FUT7_9', 'Feminino Futebol 7/9', 11);
+    ('FUT11', 'Fut 11', 1),
+    ('FUT9', 'Fut 9', 2),
+    ('FUT7', 'Fut 7', 3),
+    ('OUTROS', 'Outros', 4);
 
+INSERT INTO jagoz.team_category (
+    team_group_id, code, label, sort_order
+) VALUES
+    (1,'SENIORES', 'Seniores',1),
+    (1,'VETERANOS', 'Veteranos',2),
+    (1,'JUNIORES', 'Juniores',3),
+    (1,'JUVENIS', 'Juvenis',4),
+    (2,'INICIADOS', 'Iniciados',5),
+    (3,'BENJAMINS_10', 'Benjamins (10)',6),
+    (3,'BENJAMINS_9', 'Benjamins (9)',7),
+    (4,'TRAQUINAS', 'Traquinas',8),
+    (4,'PETIZES', 'Petizes',9),
+    (4,'FEMININO_FUT11', 'Feminino Futebol 11',10),
+    (4,'FEMININO_FUT7_9', 'Feminino Futebol 7/9',11);
+
+INSERT INTO jagoz.team_group_price (
+    team_group_id, placement_id, price
+) VALUES
+    (1, 1, 70000),
+    (1, 2, 90000),
+    (1, 3, 35000),
+    (1, 4, 35000),
+
+    (2, 1, 45000),
+    (2, 2, 65000),
+    (2, 3, 35000),
+    (2, 4, 35000);
+
+INSERT INTO jagoz.team_category_price_override (
+    team_category_id, placement_id, price
+) VALUES
+(1, 1, 200000),
+(1, 2, 350000),
+(1, 3, 35000),
+(1, 4, 35000);
 
 INSERT INTO jagoz.pub_option_price (pub_option_id, price)
 SELECT pub_option_id,
@@ -65,21 +93,6 @@ SELECT pub_option_id,
            WHEN 'OUTDOOR_3_8X1_8' THEN 150000
            END
 FROM jagoz.pub_option;
-
-INSERT INTO jagoz.team_sponsorship_price (team_category_id, placement_id, price)
-VALUES
-    (1, 1, 200000), -- SENIORES COSTAS
-    (1, 2, 350000), -- SENIORES FRENTE
-    (1, 3, 35000), -- SENIORES MANGA
-    (1, 4, 35000), -- SENIORES CALÇÃO
-    (3, 1, 70000), -- JUNIORES COSTAS
-    (3, 2, 90000), -- JUNIORES FRENTE
-    (3, 3, 35000), -- JUNIORES MANGA
-    (3, 4, 35000), -- JUNIORES CALÇÃO
-    (6, 1, 45000), -- BENJAMINS_10 COSTAS
-    (6, 2, 65000), -- BENJAMINS_10 FRENTE
-    (6, 3, 35000), -- BENJAMINS_10 MANGA
-    (6, 4, 35000); -- BENJAMINS_10 CALÇÃO
 
 INSERT INTO jagoz.other_sport_price (sport_id, price)
 SELECT sport_id,

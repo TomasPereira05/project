@@ -7,8 +7,6 @@ import pt.isel.jagoz.domain.sponsor.OtherSportPrice
 import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.PubOptionPrice
 import pt.isel.jagoz.domain.sponsor.SponsorError
-import pt.isel.jagoz.domain.sponsor.TeamCategory
-import pt.isel.jagoz.domain.sponsor.TeamSponsorshipPrice
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager
@@ -17,26 +15,18 @@ import pt.isel.jagoz.repository.TransactionManager
 class SponsorshipCatalogService(
     private val transactionManager: TransactionManager,
 ) {
-    fun getActivePubOptions(): List<PubOption> =
-        transactionManager.run { transaction -> transaction.pubOptionRepository.findActive() }
-
-    fun getActiveTeamCategories(): List<TeamCategory> =
-        transactionManager.run { transaction -> transaction.teamCategoryRepository.findActive() }
+    fun getActivePubOptions(): List<PubOption> = transactionManager.run { transaction -> transaction.pubOptionRepository.findActive() }
 
     fun getActiveEquipmentPlacements(): List<EquipmentPlacement> =
         transactionManager.run { transaction -> transaction.equipmentPlacementRepository.findActive() }
 
-    fun getActiveOtherSports(): List<OtherSport> =
-        transactionManager.run { transaction -> transaction.otherSportRepository.findActive() }
+    fun getActiveOtherSports(): List<OtherSport> = transactionManager.run { transaction -> transaction.otherSportRepository.findActive() }
 
     fun getPubOptionPrices(): List<PubOptionPrice> =
         transactionManager.run { transaction -> transaction.pubOptionPriceRepository.findAll() }
 
     fun getOtherSportPrices(): List<OtherSportPrice> =
         transactionManager.run { transaction -> transaction.otherSportPriceRepository.findAll() }
-
-    fun getTeamSponsorshipPrices(): List<TeamSponsorshipPrice> =
-        transactionManager.run { transaction -> transaction.teamSponsorshipPriceRepository.findAll() }
 
     fun createPubOption(pubOption: PubOption) =
         transactionManager.run { transaction ->
@@ -73,46 +63,6 @@ class SponsorshipCatalogService(
                 pubOptionIdsInOrder.mapIndexed { index, id ->
                     val updated = byId.getValue(id).copy(sortOrder = index)
                     transaction.pubOptionRepository.update(updated)
-                    updated
-                }
-            success(reordered)
-        }
-
-    fun createTeamCategory(teamCategory: TeamCategory) =
-        transactionManager.run { transaction ->
-            val id = transaction.teamCategoryRepository.save(teamCategory)
-            success(teamCategory.copy(teamId = id))
-        }
-
-    fun updateTeamCategory(teamCategory: TeamCategory) =
-        transactionManager.run { transaction ->
-            if (transaction.teamCategoryRepository.findById(teamCategory.teamId) == null) {
-                return@run failure(SponsorError.DomainError("Team category ${teamCategory.teamId} not found"))
-            }
-            transaction.teamCategoryRepository.update(teamCategory)
-            success(teamCategory)
-        }
-
-    fun deactivateTeamCategory(teamCategoryId: Long) =
-        transactionManager.run { transaction ->
-            if (transaction.teamCategoryRepository.findById(teamCategoryId) == null) {
-                return@run failure(SponsorError.DomainError("Team category $teamCategoryId not found"))
-            }
-            transaction.teamCategoryRepository.deactivate(teamCategoryId)
-            success(Unit)
-        }
-
-    fun reorderTeamCategories(teamCategoryIdsInOrder: List<Long>) =
-        transactionManager.run { transaction ->
-            val all = transaction.teamCategoryRepository.findAll()
-            val byId = all.associateBy { it.teamId }
-            if (all.size != teamCategoryIdsInOrder.size || teamCategoryIdsInOrder.any { it !in byId }) {
-                return@run failure(SponsorError.ValidationError("teamCategoryIdsInOrder must include every team category exactly once"))
-            }
-            val reordered =
-                teamCategoryIdsInOrder.mapIndexed { index, id ->
-                    val updated = byId.getValue(id).copy(sortOrder = index)
-                    transaction.teamCategoryRepository.update(updated)
                     updated
                 }
             success(reordered)
@@ -223,33 +173,6 @@ class SponsorshipCatalogService(
 
         val model = OtherSportPrice(sportId, price)
         transaction.otherSportPriceRepository.upsert(model)
-        success(model)
-    }
-
-    fun upsertTeamSponsorshipPrice(
-        teamCategoryId: Long,
-        placementId: Long,
-        price: Int,
-    ) = transactionManager.run { transaction ->
-        if (price < 0) return@run failure(SponsorError.ValidationError("price cannot be negative"))
-        if (transaction.teamCategoryRepository.findById(teamCategoryId) == null) {
-            return@run failure(SponsorError.DomainError("Team category $teamCategoryId not found"))
-        }
-        if (transaction.equipmentPlacementRepository.findById(placementId) == null) {
-            return@run failure(SponsorError.DomainError("Placement $placementId not found"))
-        }
-
-        val existing = transaction.teamSponsorshipPriceRepository.findByTeamCategoryAndPlacement(teamCategoryId, placementId)
-        val model =
-            if (existing == null) {
-                val id = transaction.teamSponsorshipPriceRepository.save(TeamSponsorshipPrice(0, teamCategoryId, placementId, price))
-                TeamSponsorshipPrice(id, teamCategoryId, placementId, price)
-            } else {
-                val updated = existing.copy(price = price)
-                transaction.teamSponsorshipPriceRepository.update(updated)
-                updated
-            }
-
         success(model)
     }
 }

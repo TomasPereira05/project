@@ -73,12 +73,6 @@ object Uris {
         const val PUB_OPTIONS_REORDER = "$PREFIX/sponsorship-catalog/pub-options/reorder"
         const val PUB_OPTION_PRICES = "$PREFIX/sponsorship-catalog/pub-option-prices"
 
-        const val TEAM_CATEGORIES_ACTIVE = "$PREFIX/sponsorship-catalog/team-categories/active"
-        const val TEAM_CATEGORIES = "$PREFIX/sponsorship-catalog/team-categories"
-        const val TEAM_CATEGORY_BY_ID = "$PREFIX/sponsorship-catalog/team-categories/{teamCategoryId}"
-        const val TEAM_CATEGORIES_REORDER = "$PREFIX/sponsorship-catalog/team-categories/reorder"
-        const val TEAM_PRICES = "$PREFIX/sponsorship-catalog/team-prices"
-
         const val EQUIPMENT_PLACEMENTS_ACTIVE = "$PREFIX/sponsorship-catalog/equipment-placements/active"
         const val EQUIPMENT_PLACEMENTS = "$PREFIX/sponsorship-catalog/equipment-placements"
         const val EQUIPMENT_PLACEMENT_BY_ID = "$PREFIX/sponsorship-catalog/equipment-placements/{placementId}"
@@ -89,5 +83,17 @@ object Uris {
         const val OTHER_SPORT_BY_ID = "$PREFIX/sponsorship-catalog/other-sports/{sportId}"
         const val OTHER_SPORTS_REORDER = "$PREFIX/sponsorship-catalog/other-sports/reorder"
         const val OTHER_SPORT_PRICES = "$PREFIX/sponsorship-catalog/other-sport-prices"
+    }
+
+    object Team {
+        const val GROUPS_ACTIVE = "$PREFIX/teams/groups/active"
+        const val GROUPS = "$PREFIX/teams/groups"
+        const val GROUP_PRICES = "$PREFIX/teams/groups-prices"
+
+        const val CATEGORY_OVERRIDES = "$PREFIX/teams/category-overrides"
+        const val CATEGORIES_ACTIVE = "$PREFIX/teams/categories/active"
+        const val CATEGORIES = "$PREFIX/teams/categories"
+        const val CATEGORY_BY_ID = "$PREFIX/teams/categories/{categoryId}"
+        const val CATEGORIES_REORDER = "$PREFIX/teams/categories/reorder"
     }
 }

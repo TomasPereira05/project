@@ -71,7 +71,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             :placementId,
             :sportId
         )
-        """
+        """,
         )
             .bind("sponsorId", sponsorship.sponsorId)
             .bind("season", sponsorship.season)
@@ -84,13 +84,15 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .bind("teamCategoryId", sponsorship.teamCategoryId)
             .bind("placementId", sponsorship.placementId)
             .bind("sportId", sponsorship.sportId)
-
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
     }
 
-    override fun updateStatus(id: Long, status: SponsorshipStatus) {
+    override fun updateStatus(
+        id: Long,
+        status: SponsorshipStatus,
+    ) {
         handle.createUpdate(
             """
             UPDATE jagoz.sponsorship
@@ -119,7 +121,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             placement_id = :placementId,
             sport_id = :sportId
         WHERE sponsorship_id = :id
-        """
+        """,
         )
             .bind("id", sponsorship.sponsorshipId)
             .bind("sponsorId", sponsorship.sponsorId)
@@ -133,7 +135,6 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .bind("teamCategoryId", sponsorship.teamCategoryId)
             .bind("placementId", sponsorship.placementId)
             .bind("sportId", sponsorship.sportId)
-
             .execute()
     }
 
