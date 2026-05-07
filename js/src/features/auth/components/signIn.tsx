@@ -73,14 +73,15 @@ const SignIn: React.FC = () => {
                 const me = await api.auth.getMe();
                 if (me) {
                     setAuth({
-                        id: me.id, 
+                        id: me.id,
+                        email: me.email,
                         username: me.username,
                         role: me.role,
                         activeMemberId: me.activeMemberId
                     });
                 } else {
                     setAuth({
-                        id: data.id, 
+                        id: data.id,
                         username: data.username,
                         role: data.role,
                         activeMemberId: data.activeMemberId
