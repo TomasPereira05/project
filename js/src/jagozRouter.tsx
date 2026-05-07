@@ -29,11 +29,20 @@ import {
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
+import { UserPage } from "./features/User";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/profile",
+    element: (
+      <AuthRequire>
+        <UserPage />
+      </AuthRequire>
+    ),
   },
   {
     path: "/auth",
@@ -97,7 +106,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/athletes/register",
-    element: <AthleteRegister />,
+    element: (
+      <AuthRequire>
+        <AthleteRegister />
+      </AuthRequire>
+    ),
   },
   {
     path: "/athletes/category/:teamCategory",

@@ -5,7 +5,7 @@ import { TEAM_CATEGORIES, labelForCategory } from "../../features/Athletes";
 import { LOGO_SRC } from "../config/config";
 import { useAuth } from "../hooks/useAuth";
 
-type MenuType = "mobile" | "socios" | "equipas" | "user" | "patrocinios" | null;
+type MenuType = "mobile" | "socios" | "equipas" | "outras-modalidades" | "user" | "patrocinios" | null;
 
 export default function Header() {
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
@@ -68,6 +68,7 @@ export default function Header() {
                         <button className="nav-link" onClick={() => toggleMenu("socios")}>Socios</button>
                         <button className="nav-link" onClick={() => toggleMenu("patrocinios")}>Patrocinios</button>
                         <button className="nav-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
+                        <button className="nav-link" onClick={() => toggleMenu("outras-modalidades")}>Outras Modalidades</button>
                     </nav>
 
                     <div className="header-actions">
@@ -98,6 +99,7 @@ export default function Header() {
                     <button className="dropdown-link" onClick={() => toggleMenu("socios")}>Socios</button>
                     <button className="dropdown-link" onClick={() => toggleMenu("patrocinios")}>Patrocinios</button>
                     <button className="dropdown-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
+                    <button className="dropdown-link" onClick={() => toggleMenu("outras-modalidades")}>Outras Modalidades</button>
                 </nav>
                 <div className="dropdown-actions">
                     {isAuthenticated ? (
@@ -147,7 +149,7 @@ export default function Header() {
             <div className={`dropdown ${activeMenu === "user" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
                     <span className="dropdown-disabled">Ola, {username}</span>
-                    <a href="#" className="dropdown-link">Perfil</a>
+                    <Link to="/profile" className="dropdown-link" onClick={closeMenus}>Perfil</Link>
                     <button className="dropdown-link" onClick={handleLogoutClick}>Sair</button>
                 </nav>
             </div>
@@ -164,16 +166,21 @@ export default function Header() {
                             {labelForCategory(category)}
                         </Link>
                     ))}
-                    {otherSports.map((sport) => (
-                        <span key={sport} className="dropdown-disabled">{sport} (em breve)</span>
-                    ))}
                     <Link
                         to="/athletes/register"
                         className="dropdown-link"
                         onClick={closeMenus}
                     >
-                        Inscricao de atletas
+                        Tornar-se Atleta
                     </Link>
+                </nav>
+            </div>
+
+            <div className={`dropdown ${activeMenu === "outras-modalidades" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    {otherSports.map((sport) => (
+                        <span key={sport} className="dropdown-disabled">{sport} (em breve)</span>
+                    ))}
                 </nav>
             </div>
         </header>
