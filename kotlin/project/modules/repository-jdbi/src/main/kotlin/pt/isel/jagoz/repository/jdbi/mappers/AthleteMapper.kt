@@ -4,7 +4,7 @@ import kotlinx.datetime.LocalDate
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.domain.athlete.Athlete
-import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategory
 import java.sql.ResultSet
 
 class AthleteMapper : RowMapper<Athlete> {
@@ -18,6 +18,7 @@ class AthleteMapper : RowMapper<Athlete> {
         val teamCategory =
             TeamCategory(
                 teamId = rs.getLong("team_category_id"),
+                teamGroupId = rs.getLong("team_group_id"),
                 code = rs.getString("team_category_code"),
                 label = rs.getString("team_category_label"),
                 active = rs.getBoolean("team_category_active"),

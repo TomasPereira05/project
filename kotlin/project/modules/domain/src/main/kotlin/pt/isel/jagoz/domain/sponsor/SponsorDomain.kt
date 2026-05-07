@@ -38,7 +38,6 @@ sealed class SponsorError {
  */
 @Component
 class SponsorDomain {
-
     fun cancelSponsorship(s: Sponsorship): Either<SponsorError, Sponsorship> {
         if (s.status == SponsorshipStatus.CANCELADO) {
             return failure(SponsorError.DomainError("already cancelled"))
@@ -50,7 +49,7 @@ class SponsorDomain {
     fun approveSponsorship(s: Sponsorship): Either<SponsorError, Sponsorship> {
         if (s.status != SponsorshipStatus.SUBMETIDO) {
             return failure(
-                SponsorError.InvalidTransition(s.status, "approve")
+                SponsorError.InvalidTransition(s.status, "approve"),
             )
         }
 
@@ -66,7 +65,7 @@ class SponsorDomain {
     fun markPaid(s: Sponsorship): Either<SponsorError, Sponsorship> {
         if (s.status != SponsorshipStatus.APROVADO) {
             return failure(
-                SponsorError.InvalidTransition(s.status, "markPaid")
+                SponsorError.InvalidTransition(s.status, "markPaid"),
             )
         }
 
@@ -80,7 +79,6 @@ class SponsorDomain {
         phone: String,
         nif: String,
     ): Either<SponsorError, Sponsor> {
-
         ValidationUtils.requireNotBlank(name, "name")?.let {
             return failure(it.toSponsorError())
         }
@@ -93,7 +91,7 @@ class SponsorDomain {
             email,
             ValidationPatterns.EMAIL,
             "email",
-            "invalid email format"
+            "invalid email format",
         )?.let {
             return failure(it.toSponsorError())
         }
@@ -110,7 +108,7 @@ class SponsorDomain {
             nif,
             ValidationPatterns.NIF,
             "nif",
-            "invalid nif format"
+            "invalid nif format",
         )?.let {
             return failure(it.toSponsorError())
         }
@@ -120,8 +118,8 @@ class SponsorDomain {
                 name = name,
                 email = email,
                 phone = phone,
-                nif = nif
-            )
+                nif = nif,
+            ),
         )
     }
 
@@ -131,26 +129,35 @@ class SponsorDomain {
         ValidationUtils.requireCondition(
             s.price >= 0,
             "price",
-            "cannot be negative"
+            "cannot be negative",
         )?.let { return it }
 
         return when (s.type) {
             SponsorType.PUB -> {
-                if (s.pubOptionId == null)
-                    ValidationError.FieldError("pubOptionId", "required for PUB")
-                else null
+                firstError(
+                    ValidationUtils.requireNotNull(s.pubOptionId, "pubOptionId", "required for PUB type"),
+                    ValidationUtils.requireNull(s.teamCategoryId, "teamCategoryId", "must be null for PUB type"),
+                    ValidationUtils.requireNull(s.placementId, "placementId", "must be null for PUB type"),
+                    ValidationUtils.requireNull(s.sportId, "sportId", "must be null for PUB type"),
+                )
             }
 
             SponsorType.TEAM -> {
-                if (s.teamCategoryId == null || s.placementId == null)
-                    ValidationError.GlobalError("teamCategoryId and placementId required for TEAM")
-                else null
+                firstError(
+                    ValidationUtils.requireNull(s.pubOptionId, "pubOptionId", "required for PUB type"),
+                    ValidationUtils.requireNotNull(s.teamCategoryId, "teamCategoryId", "must be null for PUB type"),
+                    ValidationUtils.requireNotNull(s.placementId, "placementId", "must be null for PUB type"),
+                    ValidationUtils.requireNull(s.sportId, "sportId", "must be null for PUB type"),
+                )
             }
 
             SponsorType.OTHER -> {
-                if (s.sportId == null)
-                    ValidationError.FieldError("sportId", "required for OTHER")
-                else null
+                firstError(
+                    ValidationUtils.requireNull(s.pubOptionId, "pubOptionId", "required for PUB type"),
+                    ValidationUtils.requireNull(s.teamCategoryId, "teamCategoryId", "must be null for PUB type"),
+                    ValidationUtils.requireNull(s.placementId, "placementId", "must be null for PUB type"),
+                    ValidationUtils.requireNotNull(s.sportId, "sportId", "must be null for PUB type"),
+                )
             }
         }
     }
@@ -162,4 +169,6 @@ class SponsorDomain {
             is ValidationError.GlobalError ->
                 SponsorError.ValidationError(message)
         }
+
+    private fun firstError(vararg validations: ValidationError?): ValidationError? = validations.firstOrNull { it != null }
 }

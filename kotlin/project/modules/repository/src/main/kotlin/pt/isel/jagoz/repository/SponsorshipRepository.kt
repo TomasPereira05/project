@@ -10,7 +10,10 @@ interface SponsorshipRepository {
 
     fun save(sponsorship: Sponsorship): Long
 
-    fun updateStatus(id: Long, status: SponsorshipStatus)
+    fun updateStatus(
+        id: Long,
+        status: SponsorshipStatus,
+    )
 
     fun update(sponsorship: Sponsorship)
 

@@ -5,5 +5,5 @@ data class PubOption(
     val code: String,
     val label: String,
     val active: Boolean,
-    val sortOrder: Int?
+    val sortOrder: Int?,
 )

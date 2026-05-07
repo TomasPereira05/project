@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository
 
-import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategory
 
 interface TeamCategoryRepository {
     fun findAll(): List<TeamCategory>

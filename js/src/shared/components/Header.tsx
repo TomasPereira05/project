@@ -5,7 +5,7 @@ import { TEAM_CATEGORIES, labelForCategory } from "../../features/Athletes";
 import { LOGO_SRC } from "../config/config";
 import { useAuth } from "../hooks/useAuth";
 
-type MenuType = "mobile" | "socios" | "equipas" | "user" | null;
+type MenuType = "mobile" | "socios" | "equipas" | "user" | "patrocinios" | null;
 
 export default function Header() {
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
@@ -66,7 +66,7 @@ export default function Header() {
 
                     <nav className="nav">
                         <button className="nav-link" onClick={() => toggleMenu("socios")}>Socios</button>
-                        <Link to="/sponsors" className="nav-link" onClick={closeMenus}>Patrocinios</Link>
+                        <button className="nav-link" onClick={() => toggleMenu("patrocinios")}>Patrocinios</button>
                         <button className="nav-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                     </nav>
 
@@ -96,7 +96,7 @@ export default function Header() {
             <div className={`dropdown ${activeMenu === "mobile" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
                     <button className="dropdown-link" onClick={() => toggleMenu("socios")}>Socios</button>
-                    <Link to="/sponsors" className="dropdown-link" onClick={closeMenus}>Patrocinios</Link>
+                    <button className="dropdown-link" onClick={() => toggleMenu("patrocinios")}>Patrocinios</button>
                     <button className="dropdown-link" onClick={() => toggleMenu("equipas")}>Equipas</button>
                 </nav>
                 <div className="dropdown-actions">
@@ -128,6 +128,19 @@ export default function Header() {
                         <Link to="/members/list" className="dropdown-link" onClick={closeMenus}>Lista de Socios</Link>
                     )}
                     <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>Tornar-se Socio</Link>
+                </nav>
+            </div>
+
+            <div className={`dropdown ${activeMenu === "patrocinios" ? "dropdown-visible" : "dropdown-hidden"}`}>
+                <nav className="dropdown-nav">
+                    <Link to="/sponsors/info" className="dropdown-link" onClick={closeMenus}>Informação</Link>
+                    {role === "ADMIN" && (
+                        <Link to="/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>Aprovações</Link>
+                    )}
+                    {role === "ADMIN" && (
+                        <Link to="/sponsors/settings" className="dropdown-link" onClick={closeMenus}>Configurações</Link>
+                    )}
+                    <Link to="/sponsors/create" className="dropdown-link" onClick={closeMenus}>Tornar-se Patrocinador</Link>
                 </nav>
             </div>
 

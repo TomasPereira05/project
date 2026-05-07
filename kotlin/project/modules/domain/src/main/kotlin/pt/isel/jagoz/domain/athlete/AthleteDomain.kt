@@ -2,7 +2,7 @@ package pt.isel.jagoz.domain.athlete
 
 import kotlinx.datetime.LocalDate
 import org.springframework.stereotype.Component
-import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.ValidationError
 import pt.isel.jagoz.domain.utils.ValidationPatterns

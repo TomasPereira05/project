@@ -119,19 +119,28 @@ const router = createBrowserRouter([
     path: "/sponsors",
     element: <SponsorsLayout />,
     children: [
+      { 
+        index: true, 
+        element: <Navigate to="/" replace /> 
+      },
       {
-        index: true,
+        path: "info",
         element: <Sponsors />,
       },
       {
         path: "create",
-        element: <SponsorCreate />,
+        element: 
+        <AuthRequire>
+          <SponsorCreate />
+        </AuthRequire>,
       },
       {
         path: "settings",
         element: (
           <AuthRequire>
-            <SponsorSettings />
+            <Require allowAdmin>
+              <SponsorSettings />
+            </Require>
           </AuthRequire>
         ),
       },
@@ -139,7 +148,9 @@ const router = createBrowserRouter([
         path: "approvals",
         element: (
           <AuthRequire>
-            <SponsorApprovals />
+            <Require allowAdmin>
+              <SponsorApprovals />
+            </Require>
           </AuthRequire>
         ),
       },
