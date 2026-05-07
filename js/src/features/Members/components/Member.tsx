@@ -191,7 +191,7 @@ export default function MemberPage() {
                         <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full flex items-center justify-center text-3xl sm:text-4xl font-heading text-primary border-4 border-white shadow-md">
                             {getInitials(member.completeName)}
                         </div>
-                        <div className="pb-2">
+                        <div className="pb-2 mt-16 sm:mt-20">
                             <h1 className="font-heading text-2xl sm:text-3xl text-text-primary uppercase tracking-tight">{member.completeName}</h1>
                             <p className="text-text-secondary font-medium mt-1">Sócio #{member.memberNumber}</p>
                         </div>

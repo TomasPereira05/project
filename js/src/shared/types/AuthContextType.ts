@@ -1,8 +1,12 @@
-export type AuthContextType = {
+export type AuthState = {
     id?: number;
+    email?: string;
     username?: string;
     role?: string;
     activeMemberId?: number | null;
-    setAuth: (auth: { id?: number; username?: string; role?: string; activeMemberId?: number | null }) => void;
+};
+
+export type AuthContextType = AuthState & {
+    setAuth: (auth: AuthState) => void;
     clearAuth: () => void;
 };
