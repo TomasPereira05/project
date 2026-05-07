@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
 import { createSponsor, createSponsorship, fetchCatalogSnapshot } from "..";
 import type { CatalogSnapshot, SponsorFormValues, SponsorshipFormValues } from "..";
-import { compareBySortOrder, formatCurrency } from "..";
+import { compareBySortOrder, formatCurrency, resolveTeamSponsorshipPrice } from "..";
 
 const initialSponsorForm: SponsorFormValues = {
   name: "",
@@ -25,11 +25,13 @@ const initialSponsorshipForm: SponsorshipFormValues = {
 export default function SponsorCreate() {
   const [catalogs, setCatalogs] = useState<CatalogSnapshot>({
     pubOptions: [],
+    teamGroups: [],
     teamCategories: [],
     equipmentPlacements: [],
     otherSports: [],
     pubOptionPrices: [],
-    teamSponsorshipPrices: [],
+    teamGroupPrices: [],
+    teamCategoryPriceOverrides: [],
     otherSportPrices: [],
   });
   const [sponsorForm, setSponsorForm] = useState<SponsorFormValues>(initialSponsorForm);
@@ -50,6 +52,7 @@ export default function SponsorCreate() {
           setCatalogs({
             ...response,
             pubOptions: [...response.pubOptions].sort(compareBySortOrder),
+            teamGroups: [...response.teamGroups].sort(compareBySortOrder),
             teamCategories: [...response.teamCategories].sort(compareBySortOrder),
             equipmentPlacements: [...response.equipmentPlacements].sort(compareBySortOrder),
             otherSports: [...response.otherSports].sort(compareBySortOrder),
@@ -91,10 +94,7 @@ export default function SponsorCreate() {
           type: "TEAM" as const,
           title: `${team.label} / ${placement.label}`,
           description: `${team.code} · ${placement.code}`,
-          price:
-            catalogs.teamSponsorshipPrices.find(
-              (price) => price.teamCategoryId === team.teamId && price.placementId === placement.equipmentId,
-            )?.price ?? null,
+          price: resolveTeamSponsorshipPrice(team.teamId, team.teamGroupId, placement.equipmentId, catalogs),
           teamCategoryId: team.teamId,
           placementId: placement.equipmentId,
         }))

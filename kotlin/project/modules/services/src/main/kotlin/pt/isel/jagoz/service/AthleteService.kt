@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.AthleteDomain
 import pt.isel.jagoz.domain.athlete.AthleteError
-import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.ValidationError
 import pt.isel.jagoz.domain.utils.failure

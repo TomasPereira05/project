@@ -71,6 +71,75 @@
     @apply mt-2 text-sm leading-6 text-text-secondary;
   }
 
+  .sponsor-brochure-grid {
+    @apply grid gap-5 xl:grid-cols-[0.8fr_1.4fr];
+  }
+
+  .sponsor-brochure-grid-wide {
+    @apply xl:grid-cols-[0.7fr_1.5fr];
+  }
+
+  .sponsor-brochure-card {
+    @apply rounded-[24px] border border-border bg-white p-6 shadow-soft;
+  }
+
+  .sponsor-brochure-copy {
+    @apply bg-gradient-to-br from-[#0f3b73] via-primary to-secondary text-white;
+  }
+
+  .sponsor-brochure-copy h2 {
+    @apply font-heading text-3xl uppercase tracking-tight;
+  }
+
+  .sponsor-brochure-list {
+    @apply mt-4 flex flex-col gap-3 text-sm leading-6 text-slate-100;
+  }
+
+  .sponsor-brochure-list li {
+    @apply relative pl-5;
+  }
+
+  .sponsor-brochure-list li::before {
+    content: "•";
+    @apply absolute left-0 text-accent;
+  }
+
+  .sponsor-brochure-table-card {
+    @apply overflow-hidden;
+  }
+
+  .sponsor-table-headline {
+    @apply mb-4 flex items-center justify-between gap-4;
+  }
+
+  .sponsor-table-headline h3 {
+    @apply font-heading text-3xl uppercase tracking-tight text-text-primary;
+  }
+
+  .sponsor-table-headline span {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary;
+  }
+
+  .sponsor-table-wrapper {
+    @apply overflow-x-auto rounded-2xl border border-border;
+  }
+
+  .sponsor-table {
+    @apply min-w-full border-collapse bg-white text-left text-sm;
+  }
+
+  .sponsor-table thead {
+    @apply bg-slate-100;
+  }
+
+  .sponsor-table th {
+    @apply px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary;
+  }
+
+  .sponsor-table td {
+    @apply border-t border-border px-4 py-3 text-text-primary;
+  }
+
   .sponsor-option-grid {
     @apply grid gap-4;
   }

@@ -13,12 +13,11 @@ import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
 import pt.isel.jagoz.domain.sponsor.OtherSport
 import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.SponsorError
-import pt.isel.jagoz.domain.sponsor.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.sponsor.OtherSportPriceRequest
 import pt.isel.jagoz.http.model.sponsor.PubOptionPriceRequest
 import pt.isel.jagoz.http.model.sponsor.ReorderRequest
-import pt.isel.jagoz.http.model.sponsor.TeamSponsorshipPriceRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.SponsorshipCatalogService
@@ -67,50 +66,6 @@ class SponsorshipCatalogController(
     @PutMapping(Uris.SponsorshipCatalog.PUB_OPTION_PRICES)
     fun upsertPubOptionPrice(@RequestBody request: PubOptionPriceRequest): ResponseEntity<*> =
         catalogService.upsertPubOptionPrice(request.pubOptionId, request.price).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
-
-    @GetMapping(Uris.SponsorshipCatalog.TEAM_CATEGORIES_ACTIVE)
-    fun getActiveTeamCategories() = ResponseEntity.ok(catalogService.getActiveTeamCategories())
-
-    @PostMapping(Uris.SponsorshipCatalog.TEAM_CATEGORIES)
-    fun createTeamCategory(@RequestBody teamCategory: TeamCategory): ResponseEntity<*> =
-        catalogService.createTeamCategory(teamCategory).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
-        )
-
-    @PutMapping(Uris.SponsorshipCatalog.TEAM_CATEGORY_BY_ID)
-    fun updateTeamCategory(
-        @PathVariable teamCategoryId: Long,
-        @RequestBody teamCategory: TeamCategory,
-    ): ResponseEntity<*> =
-        catalogService.updateTeamCategory(teamCategory.copy(teamId = teamCategoryId)).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
-
-    @DeleteMapping(Uris.SponsorshipCatalog.TEAM_CATEGORY_BY_ID)
-    fun deactivateTeamCategory(@PathVariable teamCategoryId: Long): ResponseEntity<*> =
-        catalogService.deactivateTeamCategory(teamCategoryId).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.noContent().build() },
-        )
-
-    @PutMapping(Uris.SponsorshipCatalog.TEAM_CATEGORIES_REORDER)
-    fun reorderTeamCategories(@RequestBody request: ReorderRequest): ResponseEntity<*> =
-        catalogService.reorderTeamCategories(request.ids).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
-
-    @GetMapping(Uris.SponsorshipCatalog.TEAM_PRICES)
-    fun getTeamSponsorshipPrices() = ResponseEntity.ok(catalogService.getTeamSponsorshipPrices())
-
-    @PutMapping(Uris.SponsorshipCatalog.TEAM_PRICES)
-    fun upsertTeamPrice(@RequestBody request: TeamSponsorshipPriceRequest): ResponseEntity<*> =
-        catalogService.upsertTeamSponsorshipPrice(request.teamCategoryId, request.placementId, request.price).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )

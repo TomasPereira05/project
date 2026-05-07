@@ -48,7 +48,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
         name: String,
         email: String,
         phone: String,
-        nif: String
+        nif: String,
     ) {
         handle.createUpdate(
             """

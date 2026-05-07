@@ -9,7 +9,7 @@ export type Sponsor = {
 };
 
 export type SponsorType = "PUB" | "TEAM" | "OTHER";
-export type SponsorshipStatus = "PENDING" | "APPROVED" | "PAID" | "CANCELLED";
+export type SponsorshipStatus = "SUBMETIDO" | "APROVADO" | "PAGO" | "ATIVO" |"CANCELADO";
 
 export type Sponsorship = {
   sponsorshipId: number;
@@ -37,6 +37,15 @@ export type PubOption = {
 
 export type TeamCategory = {
   teamId: number;
+  teamGroupId: number;
+  code: string;
+  label: string;
+  active: boolean;
+  sortOrder: number | null;
+};
+
+export type TeamGroup = {
+  teamGroupId: number;
   code: string;
   label: string;
   active: boolean;
@@ -64,8 +73,13 @@ export type PubOptionPrice = {
   price: number;
 };
 
-export type TeamSponsorshipPrice = {
-  id: number;
+export type TeamGroupPrice = {
+  teamGroupId: number;
+  placementId: number;
+  price: number;
+};
+
+export type TeamCategoryPriceOverride = {
   teamCategoryId: number;
   placementId: number;
   price: number;
@@ -78,11 +92,13 @@ export type OtherSportPrice = {
 
 export type CatalogSnapshot = {
   pubOptions: PubOption[];
+  teamGroups: TeamGroup[];
   teamCategories: TeamCategory[];
   equipmentPlacements: EquipmentPlacement[];
   otherSports: OtherSport[];
   pubOptionPrices: PubOptionPrice[];
-  teamSponsorshipPrices: TeamSponsorshipPrice[];
+  teamGroupPrices: TeamGroupPrice[];
+  teamCategoryPriceOverrides: TeamCategoryPriceOverride[];
   otherSportPrices: OtherSportPrice[];
 };
 

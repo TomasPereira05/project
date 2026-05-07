@@ -83,4 +83,26 @@ object ValidationUtils {
         }
         return null
     }
+
+    fun requireNotNull(
+        value: Any?,
+        field: String,
+        message: String,
+    ): ValidationError? {
+        if (value == null) {
+            return ValidationError.FieldError(field, message)
+        }
+        return null
+    }
+
+    fun requireNull(
+        value: Any?,
+        field: String,
+        message: String,
+    ): ValidationError? {
+        if (value != null) {
+            return ValidationError.FieldError(field, message)
+        }
+        return null
+    }
 }

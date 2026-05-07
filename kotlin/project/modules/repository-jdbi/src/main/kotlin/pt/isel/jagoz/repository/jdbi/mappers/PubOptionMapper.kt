@@ -6,7 +6,10 @@ import pt.isel.jagoz.domain.sponsor.PubOption
 import java.sql.ResultSet
 
 class PubOptionMapper : RowMapper<PubOption> {
-    override fun map(rs: ResultSet, ctx: StatementContext): PubOption =
+    override fun map(
+        rs: ResultSet,
+        ctx: StatementContext,
+    ): PubOption =
         PubOption(
             pubId = rs.getLong("pub_option_id"),
             code = rs.getString("code"),

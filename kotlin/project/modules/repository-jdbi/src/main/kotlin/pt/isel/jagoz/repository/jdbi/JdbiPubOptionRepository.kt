@@ -11,7 +11,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
         SELECT *
         FROM jagoz.pub_option
         ORDER BY sort_order ASC
-        """
+        """,
         )
             .mapTo(PubOption::class.java)
             .list()
@@ -24,7 +24,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
         FROM jagoz.pub_option
         WHERE active = true
         ORDER BY sort_order ASC
-        """
+        """,
         )
             .mapTo(PubOption::class.java)
             .list()
@@ -36,7 +36,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
         SELECT *
         FROM jagoz.pub_option
         WHERE pub_option_id = :id
-        """
+        """,
         )
             .bind("id", id)
             .mapTo(PubOption::class.java)
@@ -49,7 +49,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             """
         INSERT INTO jagoz.pub_option (code, label, active, sort_order)
         VALUES (:code, :label, :active, :sortOrder)
-        """
+        """,
         )
             .bind("code", po.code)
             .bind("label", po.label)
@@ -69,7 +69,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             active = :active,
             sort_order = :sortOrder
         WHERE pub_option_id = :id
-        """
+        """,
         )
             .bind("id", po.pubId)
             .bind("code", po.code)
@@ -85,7 +85,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
         UPDATE jagoz.pub_option
         SET active = false
         WHERE pub_option_id = :id
-        """
+        """,
         )
             .bind("id", id)
             .execute()

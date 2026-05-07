@@ -35,5 +35,9 @@ interface Transaction {
 
     val otherSportPriceRepository: OtherSportPriceRepository
 
-    val teamSponsorshipPriceRepository: TeamSponsorshipPriceRepository
+    val teamCategoryPriceOverrideRepository: TeamCategoryPriceOverrideRepository
+
+    val teamGroupPriceRepository: TeamGroupPriceRepository
+
+    val teamGroupRepository: TeamGroupRepository
 }
