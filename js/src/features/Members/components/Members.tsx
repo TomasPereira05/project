@@ -26,13 +26,13 @@ function statusLabel(status: Member["status"]) {
 function statusColor(status: Member["status"]) {
   switch (status) {
     case "ATIVO":
-      return "bg-green-100 text-green-800 border-green-200";
+      return "member-status-active";
     case "PENDENTE":
-      return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      return "member-status-pending";
     case "INATIVO":
-      return "bg-gray-100 text-gray-800 border-gray-200";
+      return "member-status-inactive";
     case "REJEITADO":
-      return "bg-red-100 text-red-800 border-red-200";
+      return "member-status-rejected";
   }
 }
 
@@ -121,20 +121,20 @@ export default function Members() {
         {/* TOPBAR */}
         <header className="member-header-container">
           <div>
-            <div className="flex items-center gap-2 text-primary font-semibold tracking-wider text-sm mb-1 uppercase">
+            <div className="member-kicker">
               <Users size={18} />
               <span>Administração</span>
             </div>
             <h1 className="member-page-title">Lista de Sócios</h1>
-            <p className="member-page-desc max-w-2xl">
+            <p className="member-page-desc">
               Gerencie os sócios do clube. Aprove ou rejeite pedidos pendentes e consulte o estado de cada membro.
             </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="member-header-actions">
             <Link 
               to="/members/create" 
-              className="member-btn-primary shadow-sm h-10 px-5"
+              className="member-primary-link-compact"
             >
               <Plus size={18} />
               Novo Sócio
@@ -145,51 +145,51 @@ export default function Members() {
         {/* ALERTS */}
         {errorMessage && (
             <div className="member-alert-error">
-                <ShieldAlert size={20} className="text-red-500" />
-                <p className="text-sm font-medium">{errorMessage}</p>
+                <ShieldAlert size={20} className="member-alert-icon-error" />
+                <p className="member-alert-text">{errorMessage}</p>
             </div>
         )}
 
         {/* PENDING AREA */}
-        <section className="mb-8 bg-white border border-border shadow-sm rounded-lg overflow-hidden">
+        <section className="member-pending-card">
             <button
-                className="w-full flex items-center justify-between p-5 hover:bg-muted/50 transition-colors focus:outline-none"
+                className="member-pending-toggle"
                 onClick={() => setPendingOpen((current) => !current)}
                 type="button"
             >
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-100 text-yellow-700 rounded-full">
+                <div className="member-pending-summary">
+                    <div className="member-pending-icon">
                         <Bell size={20} />
                     </div>
-                    <span className="font-semibold text-text-primary text-lg">Pedidos Pendentes</span>
-                    <span className="bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    <span className="member-pending-title">Pedidos Pendentes</span>
+                    <span className="member-pending-count">
                         {pendingMembers.length}
                     </span>
                 </div>
-                <ChevronDown size={20} className={`text-text-secondary transition-transform duration-300 ${pendingOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown size={20} className={`member-pending-chevron ${pendingOpen ? "member-pending-chevron-open" : ""}`} />
             </button>
 
             {pendingOpen && (
-                <div className="border-t border-border bg-gray-50/50 p-5">
+                <div className="member-pending-panel">
                     {pendingMembers.length === 0 ? (
-                        <p className="text-text-secondary text-sm italic">Sem pedidos pendentes neste momento.</p>
+                        <p className="member-pending-empty">Sem pedidos pendentes neste momento.</p>
                     ) : (
-                        <div className="flex flex-col gap-3">
+                        <div className="member-pending-list">
                             {pendingMembers.map((member) => (
-                                <div className="bg-white border border-border p-4 rounded-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm" key={member.memberId}>
+                                <div className="member-pending-item" key={member.memberId}>
                                     <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-bold text-primary">#{member.memberNumber}</span>
-                                            <span className="font-semibold text-text-primary">{member.completeName}</span>
+                                        <div className="member-pending-item-head">
+                                            <span className="member-pending-number">#{member.memberNumber}</span>
+                                            <span className="member-pagination-strong">{member.completeName}</span>
                                         </div>
-                                        <div className="text-xs text-text-secondary flex items-center gap-2">
+                                        <div className="member-pending-meta">
                                             <span>Registo em {formatDate(member.registrationDate)}</span>
                                             <span>•</span>
                                             <span>{member.city}</span>
                                         </div>
                                     </div>
                                     <Link
-                                        className="inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide h-8 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors rounded-md"
+                                        className="member-btn-evaluate"
                                         to={`/members/${member.memberId}`}
                                     >
                                         Avaliar Pedido
@@ -206,31 +206,31 @@ export default function Members() {
         {/* LIST */}
         <section className="member-table-wrapper">
           {isLoading ? (
-            <div className="member-loading-container py-10">
+            <div className="member-table-loading">
                 <div className="member-loading-spinner"></div>
                 <p className="member-loading-text">A carregar sócios...</p>
             </div>
           ) : !errorMessage && (
             <>
-              <div className="overflow-x-auto">
-                  <table className="member-table min-w-[800px]">
-                      <thead className="bg-muted text-text-secondary uppercase text-xs font-semibold tracking-wider border-b border-border">
+              <div className="member-table-scroll">
+                  <table className="member-table-wide">
+                      <thead className="member-table-head">
                           <tr>
                               <th className="member-th">Nº</th>
                               <th className="member-th">Nome</th>
                               <th className="member-th">Categoria</th>
                               <th className="member-th">Estado</th>
                               <th className="member-th">Registo / Cidade</th>
-                              <th className="member-th text-right">Ações</th>
+                              <th className="member-th-right">Ações</th>
                           </tr>
                       </thead>
-                      <tbody className="divide-y divide-border">
+                      <tbody className="member-table-body">
                           {paginatedMembers.map((member) => (
-                              <tr className="member-tr group" key={member.memberId}>
-                                  <td className="member-td font-bold text-primary">#{member.memberNumber}</td>
+                              <tr className="member-tr-interactive" key={member.memberId}>
+                                  <td className="member-td-number">#{member.memberNumber}</td>
                                   <td className="member-td">
-                                      <div className="font-semibold text-text-primary">{member.completeName}</div>
-                                      <div className="text-xs text-text-secondary truncate max-w-[200px]">{member.email}</div>
+                                      <div className="member-pagination-strong">{member.completeName}</div>
+                                      <div className="member-cell-email">{member.email}</div>
                                   </td>
                                   <td className="member-td">
                                       <span className="member-category-badge">
@@ -243,14 +243,14 @@ export default function Members() {
                                       </span>
                                   </td>
                                   <td className="member-td">
-                                      <div className="text-text-primary">{formatDate(member.registrationDate)}</div>
-                                      <div className="text-xs text-text-secondary">{member.city}</div>
+                                      <div className="member-cell-primary">{formatDate(member.registrationDate)}</div>
+                                      <div className="member-helper-text">{member.city}</div>
                                   </td>
-                                  <td className="member-td text-right">
-                                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <td className="member-td-right">
+                                      <div className="member-row-actions">
                                           <Link
                                               to={`/members/${member.memberId}/edit`}
-                                              className="text-xs font-medium text-text-secondary hover:text-primary transition-colors px-2 py-1"
+                                              className="member-btn-table-edit"
                                           >
                                               Editar
                                           </Link>
@@ -269,24 +269,24 @@ export default function Members() {
               </div>
 
               {/* PAGINATION */}
-              <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-gray-50/50">
-                <p className="text-sm text-text-secondary">
-                  A mostrar <span className="font-semibold text-text-primary">{(page - 1) * PAGE_SIZE + 1}</span> até <span className="font-semibold text-text-primary">{Math.min(page * PAGE_SIZE, members.length)}</span> de <span className="font-semibold text-text-primary">{members.length}</span> sócios
+              <div className="member-pagination">
+                <p className="member-pagination-text">
+                  A mostrar <span className="member-pagination-strong">{(page - 1) * PAGE_SIZE + 1}</span> até <span className="member-pagination-strong">{Math.min(page * PAGE_SIZE, members.length)}</span> de <span className="member-pagination-strong">{members.length}</span> sócios
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="member-pagination-controls">
                   <button
-                    className="inline-flex items-center justify-center p-2 rounded-md border border-border bg-white text-text-secondary hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="member-icon-btn"
                     disabled={page === 1}
                     onClick={() => setPage((current) => Math.max(1, current - 1))}
                     type="button"
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <span className="text-sm font-medium text-text-primary px-2">
+                  <span className="member-pagination-current">
                     {page} / {totalPages}
                   </span>
                   <button
-                    className="inline-flex items-center justify-center p-2 rounded-md border border-border bg-white text-text-secondary hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="member-icon-btn"
                     disabled={page === totalPages}
                     onClick={() =>
                       setPage((current) => Math.min(totalPages, current + 1))
@@ -305,4 +305,5 @@ export default function Members() {
     </>
   );
 }
+
 

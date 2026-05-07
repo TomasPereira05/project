@@ -18,9 +18,6 @@ export type Sponsorship = {
   status: SponsorshipStatus;
   type: SponsorType;
   price: number;
-  teamPriceId: number | null;
-  pubPriceId: number | null;
-  sportPriceId: number | null;
   pubOptionId: number | null;
   teamCategoryId: number | null;
   placementId: number | null;

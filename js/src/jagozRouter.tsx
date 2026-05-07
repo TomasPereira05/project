@@ -23,7 +23,7 @@ import {
   SponsorApprovals,
   SponsorCreate,
   SponsorSettings,
-  Sponsors,
+  SponsorsInfo,
   SponsorsLayout,
 } from "./features/sponsors";
 import { AuthProvider } from "./shared/context/AuthContextProvider";
@@ -134,7 +134,7 @@ const router = createBrowserRouter([
       },
       {
         path: "info",
-        element: <Sponsors />,
+        element: <SponsorsInfo />,
       },
       {
         path: "create",

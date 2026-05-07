@@ -160,6 +160,7 @@ CREATE TABLE sponsorship (
     season VARCHAR(9) NOT NULL,
     status sponsorship_status NOT NULL DEFAULT 'SUBMETIDO',
     type sponsor_type NOT NULL,
+    price INT NOT NULL,
 
     pub_option_id INT REFERENCES pub_option(pub_option_id),
     team_category_id INT REFERENCES team_category(team_category_id),

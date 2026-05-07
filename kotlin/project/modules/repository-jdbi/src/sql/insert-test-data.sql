@@ -51,16 +51,20 @@ INSERT INTO jagoz.team_category (
     team_group_id, code, label, sort_order
 ) VALUES
     (1,'SENIORES', 'Seniores',1),
-    (1,'VETERANOS', 'Veteranos',2),
+    (4,'VETERANOS', 'Veteranos',2),
     (1,'JUNIORES', 'Juniores',3),
-    (1,'JUVENIS', 'Juvenis',4),
-    (2,'INICIADOS', 'Iniciados',5),
-    (3,'BENJAMINS_10', 'Benjamins (10)',6),
-    (3,'BENJAMINS_9', 'Benjamins (9)',7),
-    (4,'TRAQUINAS', 'Traquinas',8),
-    (4,'PETIZES', 'Petizes',9),
-    (4,'FEMININO_FUT11', 'Feminino Futebol 11',10),
-    (4,'FEMININO_FUT7_9', 'Feminino Futebol 7/9',11);
+    (1,'JUVENISA', 'Juvenis A',4),
+    (1,'JUVENISB', 'Juvenis B',5),
+    (1,'INICIADOSC', 'Iniciados C',6),
+    (1,'INICIADOSC1', 'Iniciados C1',7),
+    (2,'INFANTISA', 'INFANTIS A',8),
+    (2,'INFANTISB', 'INFANTIS B',9),
+    (3,'BENJAMINS_10', 'Benjamins (10)',10),
+    (3,'BENJAMINS_9', 'Benjamins (9)',11),
+    (4,'TRAQUINAS', 'Traquinas',12),
+    (4,'PETIZES', 'Petizes',13),
+    (4,'FEMININO_FUT11', 'Feminino Futebol 11',14),
+    (4,'FEMININO_FUT7_9', 'Feminino Futebol 7/9',15);
 
 INSERT INTO jagoz.team_group_price (
     team_group_id, placement_id, price
@@ -73,7 +77,12 @@ INSERT INTO jagoz.team_group_price (
     (2, 1, 45000),
     (2, 2, 65000),
     (2, 3, 35000),
-    (2, 4, 35000);
+    (2, 4, 35000),
+
+    (3, 1, 45000),
+    (3, 2, 65000),
+    (3, 3, 35000),
+    (3, 4, 35000);
 
 INSERT INTO jagoz.team_category_price_override (
     team_category_id, placement_id, price

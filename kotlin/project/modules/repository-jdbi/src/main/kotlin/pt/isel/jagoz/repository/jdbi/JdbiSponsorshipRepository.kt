@@ -9,12 +9,8 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     override fun findById(id: Long): Sponsorship? {
         return handle.createQuery(
             """
-            SELECT s.*,
-                   COALESCE(tsp.price, pop.price, osp.price) AS price
+            SELECT s.*
             FROM jagoz.sponsorship s
-            LEFT JOIN jagoz.team_sponsorship_price tsp ON tsp.id = s.team_price_id
-            LEFT JOIN jagoz.pub_option_price pop ON pop.pub_option_id = s.pub_price_id
-            LEFT JOIN jagoz.other_sport_price osp ON osp.sport_id = s.sport_price_id
             WHERE s.sponsorship_id = :id
             """,
         )
@@ -27,12 +23,8 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
     override fun findBySponsorId(sponsorId: Long): List<Sponsorship> {
         return handle.createQuery(
             """
-            SELECT s.*,
-                   COALESCE(tsp.price, pop.price, osp.price) AS price
+            SELECT s.*
             FROM jagoz.sponsorship s
-            LEFT JOIN jagoz.team_sponsorship_price tsp ON tsp.id = s.team_price_id
-            LEFT JOIN jagoz.pub_option_price pop ON pop.pub_option_id = s.pub_price_id
-            LEFT JOIN jagoz.other_sport_price osp ON osp.sport_id = s.sport_price_id
             WHERE s.sponsor_id = :sponsorId
             ORDER BY s.sponsorship_id DESC
             """,
@@ -50,9 +42,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             season,
             status,
             type,
-            team_price_id,
-            pub_price_id,
-            sport_price_id,
+            price,
             pub_option_id,
             team_category_id,
             placement_id,
@@ -63,9 +53,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             :season,
             CAST(:status AS jagoz.sponsorship_status),
             CAST(:type AS jagoz.sponsor_type),
-            :teamPriceId,
-            :pubPriceId,
-            :sportPriceId,
+            :price,
             :pubOptionId,
             :teamCategoryId,
             :placementId,
@@ -77,6 +65,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .bind("season", sponsorship.season)
             .bind("status", sponsorship.status.name)
             .bind("type", sponsorship.type.name)
+            .bind("price", sponsorship.price)
             .bind("pubOptionId", sponsorship.pubOptionId)
             .bind("teamCategoryId", sponsorship.teamCategoryId)
             .bind("placementId", sponsorship.placementId)
@@ -110,9 +99,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             season = :season,
             status = CAST(:status AS jagoz.sponsorship_status),
             type = CAST(:type AS jagoz.sponsor_type),
-            team_price_id = :teamPriceId,
-            pub_price_id = :pubPriceId,
-            sport_price_id = :sportPriceId,
+            price = :price,
             pub_option_id = :pubOptionId,
             team_category_id = :teamCategoryId,
             placement_id = :placementId,
@@ -125,6 +112,7 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .bind("season", sponsorship.season)
             .bind("status", sponsorship.status.name)
             .bind("type", sponsorship.type.name)
+            .bind("price", sponsorship.price)
             .bind("pubOptionId", sponsorship.pubOptionId)
             .bind("teamCategoryId", sponsorship.teamCategoryId)
             .bind("placementId", sponsorship.placementId)

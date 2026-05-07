@@ -3,8 +3,9 @@ import { ArrowRight, Settings, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { fetchCatalogSnapshot } from "..";
 import type { CatalogSnapshot } from "..";
-import { compareBySortOrder, formatCurrency, resolveTeamSponsorshipPrice } from "..";
+import { compareBySortOrder, resolveTeamSponsorshipPrice } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { formatCurrency } from "../../../shared/utils";
 
 const emptyCatalogs: CatalogSnapshot = {
   pubOptions: [],
@@ -94,7 +95,7 @@ export default function SponsorsInfo() {
       .filter((group) => catalogs.teamGroupPrices.some((price) => price.teamGroupId === group.teamGroupId))
       .map((group) => ({
         id: `group-${group.teamGroupId}`,
-        label: group.code.toUpperCase() === "FUT9" || group.code.toUpperCase() === "FUT7" ? "Fut 7/9" : group.label,
+        label: group.label,
         resolvePrice: (placementId: number) =>
           catalogs.teamGroupPrices.find(
             (entry) => entry.teamGroupId === group.teamGroupId && entry.placementId === placementId,

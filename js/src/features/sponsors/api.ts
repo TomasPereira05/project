@@ -15,7 +15,7 @@ import type {
   TeamGroup,
   TeamGroupPrice,
 } from "./types";
-import { centsFromEuroInput } from "./utils";
+import { centsFromEuroInput } from "../../shared/utils";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
