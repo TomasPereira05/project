@@ -11,7 +11,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
             SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
                    , tc.team_category_id, tc.code AS team_category_code, tc.label AS team_category_label, tc.active AS team_category_active, tc.sort_order AS team_category_sort_order
             FROM jagoz.athlete a
-            JOIN member m ON m.member_id = a.member_id
+            JOIN jagoz.member m ON m.member_id = a.member_id
             LEFT JOIN jagoz.team_category tc ON tc.team_category_id = a.team_category_id
             WHERE a.athlete_id = :id
             """.trimIndent(),
@@ -28,7 +28,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
             SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
                    , tc.team_category_id, tc.code AS team_category_code, tc.label AS team_category_label, tc.active AS team_category_active, tc.sort_order AS team_category_sort_order
             FROM jagoz.athlete a
-            JOIN member m ON m.member_id = a.member_id
+            JOIN jagoz.member m ON m.member_id = a.member_id
             LEFT JOIN jagoz.team_category tc ON tc.team_category_id = a.team_category_id
             WHERE a.member_id = :memberId
             """.trimIndent(),
@@ -45,7 +45,7 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
             SELECT a.*, m.birth_date, m.email, m.phone, m.postal_code, m.address, m.city, m.privacy_accepted, m.coms_accepted
                    , tc.team_category_id, tc.team_group_id, tc.code AS team_category_code, tc.label AS team_category_label, tc.active AS team_category_active, tc.sort_order AS team_category_sort_order
             FROM jagoz.athlete a
-            JOIN member m ON m.member_id = a.member_id
+            JOIN jagoz.member m ON m.member_id = a.member_id
             LEFT JOIN jagoz.team_category tc ON tc.team_category_id = a.team_category_id
             WHERE a.active = true
             """.trimIndent(),
