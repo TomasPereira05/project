@@ -95,7 +95,7 @@ export default function SponsorsInfo() {
       .filter((group) => catalogs.teamGroupPrices.some((price) => price.teamGroupId === group.teamGroupId))
       .map((group) => ({
         id: `group-${group.teamGroupId}`,
-        label: group.code.toUpperCase() === "FUT9" || group.code.toUpperCase() === "FUT7" ? "Fut 7/9" : group.label,
+        label: group.label,
         resolvePrice: (placementId: number) =>
           catalogs.teamGroupPrices.find(
             (entry) => entry.teamGroupId === group.teamGroupId && entry.placementId === placementId,

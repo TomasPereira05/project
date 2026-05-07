@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ShieldAlert } from "lucide-react";
+import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
 import { createSponsor, createSponsorship, fetchCatalogSnapshot } from "..";
 import type { CatalogSnapshot, SponsorFormValues, SponsorshipFormValues } from "..";
 import { compareBySortOrder, resolveTeamSponsorshipPrice } from "..";
@@ -40,6 +40,7 @@ export default function SponsorCreate() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [teamIndex, setTeamIndex] = useState(0);
 
   useEffect(() => {
     let ignore = false;
@@ -76,45 +77,69 @@ export default function SponsorCreate() {
     };
   }, []);
 
-  const availableOptions = useMemo(() => {
-    const pubCards = catalogs.pubOptions
-      .map((item) => ({
-        key: `PUB-${item.pubId}`,
-        type: "PUB" as const,
-        title: item.label,
-        description: item.code,
-        price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === item.pubId)?.price ?? null,
-        pubOptionId: item.pubId,
-      }))
-      .filter((item) => item.price != null);
-
-    const teamCards = catalogs.teamCategories.flatMap((team) =>
-      catalogs.equipmentPlacements
-        .map((placement) => ({
-          key: `TEAM-${team.teamId}-${placement.equipmentId}`,
-          type: "TEAM" as const,
-          title: `${team.label} / ${placement.label}`,
-          description: `${team.code} · ${placement.code}`,
-          price: resolveTeamSponsorshipPrice(team.teamId, team.teamGroupId, placement.equipmentId, catalogs),
-          teamCategoryId: team.teamId,
-          placementId: placement.equipmentId,
+  const pubCards = useMemo(
+    () =>
+      catalogs.pubOptions
+        .map((item) => ({
+          key: `PUB-${item.pubId}`,
+          type: "PUB" as const,
+          title: item.label,
+          description: item.label,
+          price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === item.pubId)?.price ?? null,
+          pubOptionId: item.pubId,
         }))
         .filter((item) => item.price != null),
-    );
+    [catalogs.pubOptionPrices, catalogs.pubOptions],
+  );
 
-    const otherCards = catalogs.otherSports
-      .map((item) => ({
-        key: `OTHER-${item.sportId}`,
-        type: "OTHER" as const,
-        title: item.label,
-        description: item.code,
-        price: catalogs.otherSportPrices.find((price) => price.sportId === item.sportId)?.price ?? null,
-        sportId: item.sportId,
-      }))
-      .filter((item) => item.price != null);
+  const teamOptionGroups = useMemo(
+    () =>
+      catalogs.teamCategories
+        .map((team) => ({
+          team,
+          options: catalogs.equipmentPlacements
+            .map((placement) => ({
+              key: `TEAM-${team.teamId}-${placement.equipmentId}`,
+              type: "TEAM" as const,
+              title: placement.label,
+              description: `${team.label} / ${placement.label}`,
+              price: resolveTeamSponsorshipPrice(team.teamId, team.teamGroupId, placement.equipmentId, catalogs),
+              teamCategoryId: team.teamId,
+              placementId: placement.equipmentId,
+            }))
+            .filter((item) => item.price != null),
+        }))
+        .filter((group) => group.options.length > 0),
+    [catalogs],
+  );
 
-    return [...pubCards, ...teamCards, ...otherCards];
-  }, [catalogs]);
+  const otherCards = useMemo(
+    () =>
+      catalogs.otherSports
+        .map((item) => ({
+          key: `OTHER-${item.sportId}`,
+          type: "OTHER" as const,
+          title: item.label,
+          description: item.label,
+          price: catalogs.otherSportPrices.find((price) => price.sportId === item.sportId)?.price ?? null,
+          sportId: item.sportId,
+        }))
+        .filter((item) => item.price != null),
+    [catalogs.otherSportPrices, catalogs.otherSports],
+  );
+
+  const availableOptions = useMemo(
+    () => [...pubCards, ...teamOptionGroups.flatMap((group) => group.options), ...otherCards],
+    [otherCards, pubCards, teamOptionGroups],
+  );
+
+  const currentTeamGroup = teamOptionGroups[teamIndex] ?? null;
+
+  useEffect(() => {
+    if (teamIndex >= teamOptionGroups.length) {
+      setTeamIndex(Math.max(0, teamOptionGroups.length - 1));
+    }
+  }, [teamIndex, teamOptionGroups.length]);
 
   const selectedCard = useMemo(
     () =>
@@ -191,6 +216,25 @@ export default function SponsorCreate() {
     }
   }
 
+  function changeSponsorType(type: SponsorshipFormValues["type"]) {
+    setSelection((current) => ({
+      ...current,
+      type,
+      pubOptionId: "",
+      teamCategoryId: "",
+      placementId: "",
+      sportId: "",
+    }));
+  }
+
+  function showPreviousTeam() {
+    setTeamIndex((current) => (teamOptionGroups.length === 0 ? 0 : (current - 1 + teamOptionGroups.length) % teamOptionGroups.length));
+  }
+
+  function showNextTeam() {
+    setTeamIndex((current) => (teamOptionGroups.length === 0 ? 0 : (current + 1) % teamOptionGroups.length));
+  }
+
   return (
     <main className="sponsor-page">
       <div className="sponsor-shell">
@@ -262,26 +306,89 @@ export default function SponsorCreate() {
               </div>
             </div>
 
+            <div className="sponsor-type-tabs">
+              <button
+                className={`sponsor-type-tab ${selection.type === "PUB" ? "is-selected" : ""}`}
+                onClick={() => changeSponsorType("PUB")}
+                type="button"
+              >
+                Publicidade
+              </button>
+              <button
+                className={`sponsor-type-tab ${selection.type === "TEAM" ? "is-selected" : ""}`}
+                onClick={() => changeSponsorType("TEAM")}
+                type="button"
+              >
+                Equipas
+              </button>
+              <button
+                className={`sponsor-type-tab ${selection.type === "OTHER" ? "is-selected" : ""}`}
+                onClick={() => changeSponsorType("OTHER")}
+                type="button"
+              >
+                Outros
+              </button>
+            </div>
+
             {isLoading ? (
               <div className="sponsor-empty-card">A carregar opcoes...</div>
             ) : availableOptions.length === 0 ? (
               <div className="sponsor-empty-card">Nao existem opcoes com preco ativo neste momento.</div>
+            ) : selection.type === "PUB" ? (
+              pubCards.length === 0 ? (
+                <div className="sponsor-empty-card">Nao existem opcoes de publicidade com preco ativo.</div>
+              ) : (
+                <div className="sponsor-option-grid">
+                  {pubCards.map((option) => (
+                    <SponsorOptionButton
+                      isSelected={selectedCard?.key === option.key}
+                      key={option.key}
+                      option={option}
+                      onSelect={() => selectOption(option)}
+                    />
+                  ))}
+                </div>
+              )
+            ) : selection.type === "TEAM" ? (
+              !currentTeamGroup ? (
+                <div className="sponsor-empty-card">Nao existem opcoes de equipa com preco ativo.</div>
+              ) : (
+                <div className="sponsor-team-picker">
+                  <div className="sponsor-team-picker-head">
+                    <button className="sponsor-icon-button" onClick={showPreviousTeam} type="button" aria-label="Equipa anterior">
+                      <ChevronLeft size={18} />
+                    </button>
+                    <div>
+                      <p className="sponsor-section-eyebrow">Equipa {teamIndex + 1} de {teamOptionGroups.length}</p>
+                      <h3>{currentTeamGroup.team.label}</h3>
+                    </div>
+                    <button className="sponsor-icon-button" onClick={showNextTeam} type="button" aria-label="Equipa seguinte">
+                      <ChevronRight size={18} />
+                    </button>
+                  </div>
+                  <div className="sponsor-option-grid">
+                    {currentTeamGroup.options.map((option) => (
+                      <SponsorOptionButton
+                        isSelected={selectedCard?.key === option.key}
+                        key={option.key}
+                        option={option}
+                        onSelect={() => selectOption(option)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            ) : otherCards.length === 0 ? (
+              <div className="sponsor-empty-card">Nao existem outras opcoes com preco ativo.</div>
             ) : (
               <div className="sponsor-option-grid">
-                {availableOptions.map((option) => (
-                  <button
-                    className={`sponsor-option-card ${selectedCard?.key === option.key ? "is-selected" : ""}`}
+                {otherCards.map((option) => (
+                  <SponsorOptionButton
+                    isSelected={selectedCard?.key === option.key}
                     key={option.key}
-                    onClick={() => selectOption(option)}
-                    type="button"
-                  >
-                    <div>
-                      <span className="sponsor-badge sponsor-badge-approved">{option.type}</span>
-                      <h3>{option.title}</h3>
-                      <p>{option.description}</p>
-                    </div>
-                    <strong>{option.price == null ? "-" : formatCurrency(option.price)}</strong>
-                  </button>
+                    option={option}
+                    onSelect={() => selectOption(option)}
+                  />
                 ))}
               </div>
             )}
@@ -289,5 +396,35 @@ export default function SponsorCreate() {
         </section>
       </div>
     </main>
+  );
+}
+
+function SponsorOptionButton({
+  option,
+  isSelected,
+  onSelect,
+}: {
+  option: {
+    type: "PUB" | "TEAM" | "OTHER";
+    title: string;
+    description: string;
+    price: number | null;
+  };
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      className={`sponsor-option-card ${isSelected ? "is-selected" : ""}`}
+      onClick={onSelect}
+      type="button"
+    >
+      <div>
+        <span className="sponsor-badge sponsor-badge-approved">{option.type}</span>
+        <h3>{option.title}</h3>
+        <p>{option.description}</p>
+      </div>
+      <strong>{option.price == null ? "-" : formatCurrency(option.price)}</strong>
+    </button>
   );
 }
