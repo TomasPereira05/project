@@ -54,20 +54,20 @@ export function MemberForm({
 
       {errorMessage && (
         <div className="member-alert-error">
-            <ShieldAlert size={20} className="text-red-500" />
-            <p className="text-sm font-medium">{errorMessage}</p>
+            <ShieldAlert size={20} className="member-alert-icon-error" />
+            <p className="member-alert-text">{errorMessage}</p>
         </div>
       )}
 
       {successMessage && (
         <div className="member-alert-success">
-            <CheckCircle2 size={20} className="text-green-500" />
-            <p className="text-sm font-medium">{successMessage}</p>
+            <CheckCircle2 size={20} className="member-alert-icon-success" />
+            <p className="member-alert-text">{successMessage}</p>
         </div>
       )}
 
-      <form onSubmit={onSubmit} className="space-y-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <form onSubmit={onSubmit} className="member-form-stack">
+        <div className="member-form-grid">
           <div className="member-input-group">
             <label className="member-label">Nome completo</label>
             <input
@@ -164,12 +164,12 @@ export function MemberForm({
               disabled={values.category === "ATLETA_SOCIO"}
               required={values.category !== "ATLETA_SOCIO"}
             />
-            <p className="text-xs text-text-secondary">
+            <p className="member-helper-text">
               Valor minimo para socio: 1,50 EUR. O backend recebe este valor em centimos.
             </p>
           </div>
 
-          <div className="member-input-group md:col-span-2">
+          <div className="member-input-group-span">
             <label className="member-label">Morada</label>
             <input
               className="member-input"
@@ -202,7 +202,7 @@ export function MemberForm({
             />
           </div>
 
-          <div className="member-input-group md:col-span-2">
+          <div className="member-input-group-span">
             <label className="member-label">Local de cobrança</label>
             <input
               className="member-input"
@@ -214,9 +214,9 @@ export function MemberForm({
           </div>
         </div>
 
-        <div className="space-y-4 pt-4 border-t border-border">
-            <label className="member-checkbox-group group">
-            <div className="mt-1">
+        <div className="member-form-section">
+            <label className="member-checkbox-row">
+            <div className="member-checkbox-offset">
                 <input
                     type="checkbox"
                     className="member-checkbox"
@@ -226,31 +226,31 @@ export function MemberForm({
                 />
             </div>
             <div>
-                <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">Já foi sócio anteriormente</span>
-                <p className="text-xs text-text-secondary mt-0.5">
+                <span className="member-checkbox-title">Já foi sócio anteriormente</span>
+                <p className="member-helper-text-spaced">
                 Ajuda a secretaria a perceber se a inscrição é nova ou uma reentrada.
                 </p>
             </div>
             </label>
 
-            <div className="p-3 rounded-md border border-border bg-muted/30">
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <p className="text-sm font-bold text-text-primary">Texto de privacidade obrigatorio</p>
+            <div className="member-privacy-box">
+              <div className="member-privacy-head">
+                <p className="member-privacy-title">Texto de privacidade obrigatorio</p>
                 <button
                   type="button"
-                  className="text-xs font-semibold uppercase tracking-wide text-primary hover:text-primary-hover"
+                  className="member-link-action"
                   onClick={() => setHasReadPrivacyText(true)}
                 >
                   Li o texto
                 </button>
               </div>
-              <p className="text-xs text-text-secondary leading-relaxed max-h-40 overflow-y-auto pr-1">
+              <p className="member-privacy-text">
                 Os dados pessoais recolhidos neste formulario serao tratados pelo Grupo Desportivo Uniao Ericeirence para efeitos de inscricao como socio do clube, e para envio de comunicacoes relacionadas com a atividade desportiva. Podera exercer, a qualuqer momento o direito de acesso, retificacao, anulacao, oposicao ou eliminacao dos sues dados pessoais, nos casos legalmente admitidos, incluindo a revogacao do consentimento, quando haja lugar. Para tal, devera enviar um pedido ao clube atraves do envio de uma comunicacao. A recolha e processamento dos dados peddoais nao excedera as finalidades acima referidas, que englobam para alem da obrigacao do legal de identificacao do socio o processamento automatico de dados, incluindo a definicao de perfis. O nao fornecimento destes dados inviabiliza a inscricao. Os seus dados pessoais nao serao partilhados com Terceiros, a nao ser mediante o seu consentimento ou do seu representante legal, ou quando exigido por lei ou para responder ao processo legal.
               </p>
             </div>
 
-            <label className="member-checkbox-group group">
-            <div className="mt-1">
+            <label className="member-checkbox-row">
+            <div className="member-checkbox-offset">
                 <input
                     type="checkbox"
                     className="member-checkbox"
@@ -261,16 +261,16 @@ export function MemberForm({
                 />
             </div>
             <div>
-                <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">Consentimento de privacidade</span>
-                <p className="text-xs text-text-secondary mt-0.5">
+                <span className="member-checkbox-title">Consentimento de privacidade</span>
+                <p className="member-helper-text-spaced">
                   Obrigatorio para submissao e avaliacao do pedido.
                   {!hasReadPrivacyText ? " Leia e confirme o texto acima primeiro." : ""}
                 </p>
             </div>
             </label>
 
-            <label className="member-checkbox-group group">
-            <div className="mt-1">
+            <label className="member-checkbox-row">
+            <div className="member-checkbox-offset">
                 <input
                     type="checkbox"
                     className="member-checkbox"
@@ -280,13 +280,13 @@ export function MemberForm({
                 />
             </div>
             <div>
-                <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">Comunicações do clube</span>
-                <p className="text-xs text-text-secondary mt-0.5">Permite receber avisos, eventos e mensagens institucionais.</p>
+                <span className="member-checkbox-title">Comunicações do clube</span>
+                <p className="member-helper-text-spaced">Permite receber avisos, eventos e mensagens institucionais.</p>
             </div>
             </label>
         </div>
 
-        <div className="pt-6 border-t border-border">
+        <div className="member-form-actions">
           <button 
             className="member-btn-primary" 
             type="submit" 

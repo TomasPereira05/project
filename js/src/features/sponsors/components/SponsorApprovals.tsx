@@ -3,8 +3,9 @@ import { Link, Navigate } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
 import { approveSponsorship, cancelSponsorship, fetchAllSponsorships, markSponsorshipPaid } from "..";
 import type { Sponsor, Sponsorship } from "..";
-import { formatCurrency, sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "..";
+import { sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { formatCurrency } from "../../../shared/utils";
 
 type SponsorApprovalItem = {
   sponsor: Sponsor;

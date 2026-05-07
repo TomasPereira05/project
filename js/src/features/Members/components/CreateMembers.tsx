@@ -1,6 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import {
-  centsFromEuroInput,
   createMember,
   defaultMemberFormValues,
   type MemberFormValues,
@@ -8,6 +7,7 @@ import {
 import { MemberForm } from "./MemberForm";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { centsFromEuroInput } from "../../../shared/utils";
 
 export default function CreateMembers() {
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());

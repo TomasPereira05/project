@@ -1,22 +1,5 @@
 import type { Member, MemberFormValues, PaymentHistoryItem } from "./types";
-
-export function eurosFromCents(valueInCents: number) {
-  return new Intl.NumberFormat("pt-PT", {
-    style: "currency",
-    currency: "EUR",
-  }).format(valueInCents / 100);
-}
-
-export function centsFromEuroInput(value: string) {
-  const normalized = value.replace(",", ".").trim();
-  const parsed = Number(normalized);
-
-  if (!Number.isFinite(parsed)) {
-    return NaN;
-  }
-
-  return Math.round(parsed * 100);
-}
+import { euroInputFromCents } from "../../shared/utils";
 
 export function getInitials(name: string) {
   return name
@@ -41,7 +24,7 @@ export function defaultMemberFormValues(member?: Member): MemberFormValues {
     category: member?.category ?? "SOCIO",
     membershipQuotaEuros:
       member && member.membershipQuota > 0
-        ? (member.membershipQuota / 100).toFixed(2)
+        ? euroInputFromCents(member.membershipQuota)
         : "1.50",
     formerMember: member?.formerMember ?? false,
     billingLocation: member?.billingLocation ?? "",

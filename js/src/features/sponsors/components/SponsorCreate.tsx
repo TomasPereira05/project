@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
 import { createSponsor, createSponsorship, fetchCatalogSnapshot } from "..";
 import type { CatalogSnapshot, SponsorFormValues, SponsorshipFormValues } from "..";
-import { compareBySortOrder, formatCurrency, resolveTeamSponsorshipPrice } from "..";
+import { compareBySortOrder, resolveTeamSponsorshipPrice } from "..";
+import { formatCurrency } from "../../../shared/utils";
 
 const initialSponsorForm: SponsorFormValues = {
   name: "",

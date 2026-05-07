@@ -1,0 +1,7 @@
+export function euroInputFromCents(value: number | null | undefined) {
+  if (value == null) {
+    return "";
+  }
+
+  return (value / 100).toFixed(2);
+}

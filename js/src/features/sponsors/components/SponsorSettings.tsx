@@ -25,8 +25,9 @@ import {
   upsertTeamGroupSponsorshipPrice,
 } from "..";
 import type { CatalogSnapshot, EquipmentPlacement, OtherSport, PubOption, TeamCategory, TeamGroup } from "..";
-import { compareBySortOrder, euroInputFromCents, moveItem } from "..";
+import { compareBySortOrder, moveItem } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { euroInputFromCents } from "../../../shared/utils";
 
 type CatalogEditor = { code: string; label: string; teamGroupId?: string };
 type CatalogKind = "pub" | "team" | "placement" | "sport";

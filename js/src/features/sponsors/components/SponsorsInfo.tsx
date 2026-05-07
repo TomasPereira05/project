@@ -3,8 +3,9 @@ import { ArrowRight, Settings, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { fetchCatalogSnapshot } from "..";
 import type { CatalogSnapshot } from "..";
-import { compareBySortOrder, formatCurrency, resolveTeamSponsorshipPrice } from "..";
+import { compareBySortOrder, resolveTeamSponsorshipPrice } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { formatCurrency } from "../../../shared/utils";
 
 const emptyCatalogs: CatalogSnapshot = {
   pubOptions: [],

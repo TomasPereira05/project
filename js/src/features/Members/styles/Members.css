@@ -4,6 +4,10 @@
     @apply min-h-screen bg-background py-10;
   }
 
+  .member-page-centered {
+    @apply member-page flex items-center justify-center;
+  }
+
   .member-container {
     @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
@@ -42,6 +46,46 @@
     @apply flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b border-border;
   }
 
+  .member-topbar {
+    @apply flex items-center justify-between mb-6;
+  }
+
+  .member-section-card {
+    @apply member-card mb-8;
+  }
+
+  .member-section-header {
+    @apply px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3;
+  }
+
+  .member-section-header-between {
+    @apply member-section-header justify-between;
+  }
+
+  .member-section-title {
+    @apply font-heading text-xl text-text-primary uppercase tracking-tight;
+  }
+
+  .member-section-desc {
+    @apply text-xs text-text-secondary mt-1;
+  }
+
+  .member-section-body {
+    @apply p-6;
+  }
+
+  .member-section-icon {
+    @apply p-2 bg-primary/10 text-primary rounded-lg;
+  }
+
+  .member-section-heading-row {
+    @apply flex items-center gap-3;
+  }
+
+  .member-text-right {
+    @apply text-right;
+  }
+
   /* Typography */
   .member-title {
     @apply font-heading text-2xl text-text-primary uppercase tracking-tight;
@@ -51,9 +95,49 @@
     @apply text-text-secondary mt-1 text-sm;
   }
 
+  .member-helper-text {
+    @apply text-xs text-text-secondary;
+  }
+
+  .member-helper-text-spaced {
+    @apply member-helper-text mt-0.5;
+  }
+
+  .member-field-title {
+    @apply text-xs font-semibold text-text-secondary uppercase tracking-wider;
+  }
+
+  .member-field-title-spaced {
+    @apply member-field-title mb-1;
+  }
+
+  .member-field-value {
+    @apply font-medium text-text-primary mt-1;
+  }
+
+  .member-field-value-break {
+    @apply member-field-value break-all;
+  }
+
+  .member-field-value-plain {
+    @apply font-medium text-text-primary;
+  }
+
+  .member-inline-meta {
+    @apply flex flex-wrap gap-4 text-sm text-text-secondary border-t border-border pt-6 mt-6;
+  }
+
+  .member-inline-meta-item {
+    @apply flex items-center gap-2;
+  }
+
   /* Form Elements */
   .member-input-group {
     @apply flex flex-col gap-1.5;
+  }
+
+  .member-input-group-span {
+    @apply member-input-group md:col-span-2;
   }
 
   .member-label {
@@ -67,6 +151,10 @@
   /* Checkbox Styles */
   .member-checkbox-group {
     @apply flex items-start gap-3 cursor-pointer;
+  }
+
+  .member-checkbox-row {
+    @apply member-checkbox-group;
   }
 
   .member-checkbox {
@@ -86,6 +174,30 @@
     @apply text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide;
   }
 
+  .member-btn-primary-sm {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md;
+  }
+
+  .member-btn-approve {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-green-600 text-white hover:bg-green-700 transition-colors rounded-md;
+  }
+
+  .member-btn-reject {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-red-600 text-white hover:bg-red-700 transition-colors rounded-md;
+  }
+
+  .member-btn-evaluate {
+    @apply inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide h-8 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors rounded-md;
+  }
+
+  .member-btn-table-edit {
+    @apply text-xs font-medium text-text-secondary hover:text-primary transition-colors px-2 py-1;
+  }
+
+  .member-icon-btn {
+    @apply inline-flex items-center justify-center p-2 rounded-md border border-border bg-white text-text-secondary hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+
   /* Alert Messages */
   .member-alert-error {
     @apply mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3 text-sm;
@@ -95,10 +207,26 @@
     @apply mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3 text-sm;
   }
 
+  .member-alert-icon-error {
+    @apply text-red-500;
+  }
+
+  .member-alert-icon-success {
+    @apply text-green-500;
+  }
+
+  .member-alert-text {
+    @apply text-sm font-medium;
+  }
+
   /* Status Badges */
   /* Loading States */
   .member-loading-container {
     @apply flex flex-col items-center gap-3 text-text-secondary;
+  }
+
+  .member-table-loading {
+    @apply member-loading-container py-10;
   }
 
   .member-loading-spinner {
@@ -135,13 +263,97 @@
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border;
   }
 
+  .member-status-active {
+    @apply bg-green-100 text-green-800 border-green-200;
+  }
+
+  .member-status-pending {
+    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  }
+
+  .member-status-inactive {
+    @apply bg-gray-100 text-gray-800 border-gray-200;
+  }
+
+  .member-status-rejected {
+    @apply bg-red-100 text-red-800 border-red-200;
+  }
+
   .member-category-badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200;
+  }
+
+  .member-pending-count {
+    @apply bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full;
   }
 
   /* Stat Cards */
   .member-stat-card {
     @apply bg-white border border-border shadow-sm rounded-xl p-6 flex flex-col justify-center items-center;
+  }
+
+  .member-finance-grid {
+    @apply grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8;
+  }
+
+  .member-finance-card {
+    @apply bg-muted/30 border border-border p-4 rounded-lg text-center;
+  }
+
+  .member-finance-card-danger {
+    @apply bg-red-50/50 border border-red-100 p-4 rounded-lg text-center;
+  }
+
+  .member-finance-label {
+    @apply text-xs font-semibold text-text-secondary uppercase tracking-wider mb-2;
+  }
+
+  .member-finance-label-danger {
+    @apply text-xs font-semibold text-red-600 uppercase tracking-wider mb-2;
+  }
+
+  .member-finance-value {
+    @apply text-3xl font-heading text-primary tracking-tight;
+  }
+
+  .member-finance-value-danger {
+    @apply text-3xl font-heading text-red-600 tracking-tight;
+  }
+
+  .member-payment-title {
+    @apply text-sm font-semibold text-text-primary uppercase tracking-wider mb-4 border-b border-border pb-2;
+  }
+
+  .member-empty-history {
+    @apply py-10 text-center flex flex-col items-center justify-center text-text-secondary;
+  }
+
+  .member-empty-history-icon {
+    @apply mb-3 opacity-20;
+  }
+
+  .member-payment-list {
+    @apply space-y-3;
+  }
+
+  .member-payment-row {
+    @apply flex justify-between items-center p-4 rounded-lg border;
+  }
+
+  .member-payment-row-pending {
+    @apply bg-red-50/30 border-red-100;
+  }
+
+  .member-payment-row-paid {
+    @apply bg-green-50/30 border-green-100;
+  }
+
+  .member-payment-label {
+    @apply font-semibold text-text-primary;
+  }
+
+  .member-payment-value {
+    @apply font-bold;
   }
 
   .member-stat-title {
@@ -181,28 +393,264 @@
     @apply text-text-secondary font-medium mt-1;
   }
 
+  .member-profile-name-block {
+    @apply pb-2;
+  }
+
+  .member-profile-badges {
+    @apply flex flex-wrap gap-2 pb-2;
+  }
+
+  .member-profile-actions {
+    @apply mt-8 flex flex-wrap gap-3;
+  }
+
+  .member-admin-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10;
+  }
+
+  .member-admin-column {
+    @apply space-y-4;
+  }
+
+  .member-info-row {
+    @apply flex items-start gap-3;
+  }
+
+  .member-info-icon {
+    @apply text-text-secondary mt-0.5;
+  }
+
+  .member-admin-footer-grid {
+    @apply mt-8 pt-6 border-t border-border grid grid-cols-1 sm:grid-cols-3 gap-6;
+  }
+
+  .member-admin-footer-wide {
+    @apply sm:col-span-2;
+  }
+
+  .member-consent-row {
+    @apply flex gap-4 font-medium text-text-primary;
+  }
+
+  .member-positive-text {
+    @apply text-green-600;
+  }
+
+  .member-negative-text {
+    @apply text-red-500;
+  }
+
   /* Tables */
   .member-table-wrapper {
     @apply bg-white border border-border shadow-sm rounded-xl overflow-hidden mt-8 overflow-x-auto;
+  }
+
+  .member-table-scroll {
+    @apply overflow-x-auto;
   }
 
   .member-table {
     @apply w-full text-left border-collapse;
   }
 
+  .member-table-wide {
+    @apply member-table min-w-[800px];
+  }
+
+  .member-table-head {
+    @apply bg-muted text-text-secondary uppercase text-xs font-semibold tracking-wider border-b border-border;
+  }
+
+  .member-table-body {
+    @apply divide-y divide-border;
+  }
+
   .member-th {
     @apply px-6 py-4 border-b border-border bg-gray-50/50 text-xs font-semibold text-text-secondary uppercase tracking-wider;
+  }
+
+  .member-th-right {
+    @apply member-th text-right;
   }
 
   .member-tr {
     @apply hover:bg-muted/30 transition-colors border-b border-border last:border-0;
   }
 
+  .member-tr-interactive {
+    @apply member-tr;
+  }
+
   .member-td {
     @apply px-6 py-4 text-sm text-text-primary whitespace-nowrap;
   }
 
+  .member-td-number {
+    @apply member-td member-pending-number;
+  }
+
+  .member-td-right {
+    @apply member-td member-text-right;
+  }
+
   .member-action-btn {
     @apply text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors px-3 py-1.5 rounded;
+  }
+
+  .member-row-actions {
+    @apply flex items-center justify-end gap-2 opacity-0 transition-opacity;
+  }
+
+  .member-tr-interactive:hover .member-row-actions {
+    @apply opacity-100;
+  }
+
+  .member-cell-primary {
+    @apply text-text-primary;
+  }
+
+  .member-cell-email {
+    @apply text-xs text-text-secondary truncate max-w-[200px];
+  }
+
+  .member-pagination {
+    @apply flex items-center justify-between px-6 py-4 border-t border-border bg-gray-50/50;
+  }
+
+  .member-pagination-text {
+    @apply text-sm text-text-secondary;
+  }
+
+  .member-pagination-strong {
+    @apply font-semibold text-text-primary;
+  }
+
+  .member-pagination-controls {
+    @apply flex items-center gap-2;
+  }
+
+  .member-pagination-current {
+    @apply text-sm font-medium text-text-primary px-2;
+  }
+
+  .member-kicker {
+    @apply flex items-center gap-2 text-primary font-semibold tracking-wider text-sm mb-1 uppercase;
+  }
+
+  .member-header-actions {
+    @apply flex gap-3;
+  }
+
+  .member-primary-link-compact {
+    @apply member-btn-primary shadow-sm h-10 px-5;
+  }
+
+  .member-pending-card {
+    @apply mb-8 bg-white border border-border shadow-sm rounded-lg overflow-hidden;
+  }
+
+  .member-pending-toggle {
+    @apply w-full flex items-center justify-between p-5 hover:bg-muted/50 transition-colors focus:outline-none;
+  }
+
+  .member-pending-summary {
+    @apply flex items-center gap-3;
+  }
+
+  .member-pending-icon {
+    @apply p-2 bg-yellow-100 text-yellow-700 rounded-full;
+  }
+
+  .member-pending-title {
+    @apply font-semibold text-text-primary text-lg;
+  }
+
+  .member-pending-chevron {
+    @apply text-text-secondary transition-transform duration-300;
+  }
+
+  .member-pending-chevron-open {
+    @apply rotate-180;
+  }
+
+  .member-pending-panel {
+    @apply border-t border-border bg-gray-50/50 p-5;
+  }
+
+  .member-pending-empty {
+    @apply text-text-secondary text-sm italic;
+  }
+
+  .member-pending-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .member-pending-item {
+    @apply bg-white border border-border p-4 rounded-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm;
+  }
+
+  .member-pending-item-head {
+    @apply flex items-center gap-2 mb-1;
+  }
+
+  .member-pending-number {
+    @apply font-bold text-primary;
+  }
+
+  .member-pending-name {
+    @apply font-semibold text-text-primary;
+  }
+
+  .member-pending-meta {
+    @apply text-xs text-text-secondary flex items-center gap-2;
+  }
+
+  .member-form-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+
+  .member-form-stack {
+    @apply space-y-8;
+  }
+
+  .member-form-section {
+    @apply space-y-4 pt-4 border-t border-border;
+  }
+
+  .member-form-actions {
+    @apply pt-6 border-t border-border;
+  }
+
+  .member-checkbox-offset {
+    @apply mt-1;
+  }
+
+  .member-checkbox-title {
+    @apply text-sm font-bold text-text-primary transition-colors;
+  }
+
+  .member-checkbox-row:hover .member-checkbox-title {
+    @apply text-primary;
+  }
+
+  .member-privacy-box {
+    @apply p-3 rounded-md border border-border bg-muted/30;
+  }
+
+  .member-privacy-head {
+    @apply flex items-center justify-between gap-3 mb-2;
+  }
+
+  .member-privacy-title {
+    @apply text-sm font-bold text-text-primary;
+  }
+
+  .member-link-action {
+    @apply text-xs font-semibold uppercase tracking-wide text-primary hover:text-primary-hover;
+  }
+
+  .member-privacy-text {
+    @apply text-xs text-text-secondary leading-relaxed max-h-40 overflow-y-auto pr-1;
   }
 }
