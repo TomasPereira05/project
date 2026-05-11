@@ -24,6 +24,11 @@ export type Sponsorship = {
   sportId: number | null;
 };
 
+export type SponsorshipRow = {
+  sponsor: Sponsor | null;
+  sponsorship: Sponsorship;
+};
+
 export type PubOption = {
   pubId: number;
   code: string;

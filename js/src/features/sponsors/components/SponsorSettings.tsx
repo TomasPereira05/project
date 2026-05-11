@@ -10,7 +10,6 @@ import {
   deactivateOtherSport,
   deactivatePubOption,
   deactivateTeamCategory,
-  fetchCatalogSnapshot,
   reorderEquipmentPlacements,
   reorderOtherSports,
   reorderPubOptions,
@@ -24,64 +23,48 @@ import {
   upsertTeamCategoryPriceOverride,
   upsertTeamGroupSponsorshipPrice,
 } from "..";
-import type { CatalogSnapshot, EquipmentPlacement, OtherSport, PubOption, TeamCategory, TeamGroup } from "..";
-import { compareBySortOrder, moveItem } from "..";
+import type { EquipmentPlacement, OtherSport, PubOption, TeamCategory, TeamGroup } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import { euroInputFromCents } from "../../../shared/utils";
+import { useSponsorCatalogs } from "../hooks";
+import {
+  buildOtherSportPriceDrafts,
+  buildPubPriceDrafts,
+  buildTeamGroupPriceDrafts,
+  buildTeamOverridePriceDrafts,
+  createEmptyCatalogDraft,
+  initialCatalogDrafts,
+  isValidPubCapacity,
+  moveItem,
+  parseCatalogCount,
+  type CatalogEditor,
+  type CatalogKind,
+} from "../utils";
 
-type CatalogEditor = { code: string; label: string; teamGroupId?: string; available?: string; free?: string; occupied?: string };
-type CatalogKind = "pub" | "team" | "placement" | "sport";
 type CatalogItem = PubOption | TeamCategory | EquipmentPlacement | OtherSport;
 
 export default function SponsorSettings() {
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
-  const [catalogs, setCatalogs] = useState<CatalogSnapshot>({
-    pubOptions: [],
-    teamGroups: [],
-    teamCategories: [],
-    equipmentPlacements: [],
-    otherSports: [],
-    pubOptionPrices: [],
-    teamGroupPrices: [],
-    teamCategoryPriceOverrides: [],
-    otherSportPrices: [],
+  const { catalogs, errorMessage: catalogErrorMessage, isLoading, refreshCatalogs } = useSponsorCatalogs({
+    enabled: canManage,
+    errorMessage: "Nao foi possivel carregar a configuracao.",
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [actionErrorMessage, setActionErrorMessage] = useState("");
   const [notice, setNotice] = useState("");
-  const [catalogDrafts, setCatalogDrafts] = useState<Record<CatalogKind, CatalogEditor>>({
-    pub: { code: "", label: "", available: "0", free: "0", occupied: "0" },
-    team: { code: "", label: "" },
-    placement: { code: "", label: "" },
-    sport: { code: "", label: "" },
-  });
+  const [catalogDrafts, setCatalogDrafts] = useState<Record<CatalogKind, CatalogEditor>>(initialCatalogDrafts);
   const [pubPriceDrafts, setPubPriceDrafts] = useState<Record<number, string>>({});
   const [teamPriceDrafts, setTeamPriceDrafts] = useState<Record<string, string>>({});
   const [teamOverrideDrafts, setTeamOverrideDrafts] = useState<Record<string, string>>({});
   const [selectedOverrideTeamId, setSelectedOverrideTeamId] = useState("");
   const [otherSportPriceDrafts, setOtherSportPriceDrafts] = useState<Record<number, string>>({});
   const [dragState, setDragState] = useState<{ kind: CatalogKind; index: number } | null>(null);
+  const displayErrorMessage = actionErrorMessage || catalogErrorMessage;
 
   useEffect(() => {
-    if (!canManage) return;
-    void refreshCatalogs();
-  }, [canManage]);
-
-  useEffect(() => {
-    setPubPriceDrafts(Object.fromEntries(catalogs.pubOptionPrices.map((item) => [item.pubOptionId, euroInputFromCents(item.price)])));
-    setOtherSportPriceDrafts(Object.fromEntries(catalogs.otherSportPrices.map((item) => [item.sportId, euroInputFromCents(item.price)])));
-    setTeamPriceDrafts(
-      Object.fromEntries(catalogs.teamGroupPrices.map((item) => [`${item.teamGroupId}-${item.placementId}`, euroInputFromCents(item.price)])),
-    );
-    setTeamOverrideDrafts(
-      Object.fromEntries(
-        catalogs.teamCategoryPriceOverrides.map((item) => [
-          `${item.teamCategoryId}-${item.placementId}`,
-          euroInputFromCents(item.price),
-        ]),
-      ),
-    );
+    setPubPriceDrafts(buildPubPriceDrafts(catalogs.pubOptionPrices));
+    setOtherSportPriceDrafts(buildOtherSportPriceDrafts(catalogs.otherSportPrices));
+    setTeamPriceDrafts(buildTeamGroupPriceDrafts(catalogs.teamGroupPrices));
+    setTeamOverrideDrafts(buildTeamOverridePriceDrafts(catalogs.teamCategoryPriceOverrides));
   }, [catalogs]);
 
   if (!role) {
@@ -92,33 +75,13 @@ export default function SponsorSettings() {
     return <Navigate to="/sponsors" replace />;
   }
 
-  async function refreshCatalogs() {
-    setIsLoading(true);
-    setErrorMessage("");
-    try {
-      const response = await fetchCatalogSnapshot();
-      setCatalogs({
-          ...response,
-          pubOptions: [...response.pubOptions].sort(compareBySortOrder),
-          teamGroups: [...response.teamGroups].sort(compareBySortOrder),
-          teamCategories: [...response.teamCategories].sort(compareBySortOrder),
-          equipmentPlacements: [...response.equipmentPlacements].sort(compareBySortOrder),
-          otherSports: [...response.otherSports].sort(compareBySortOrder),
-      });
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar a configuracao.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   async function handleCreateCatalog(kind: CatalogKind) {
     const draft = catalogDrafts[kind];
     if (!draft.code.trim() || !draft.label.trim()) {
-      setErrorMessage("Code e label sao obrigatorios.");
+      setActionErrorMessage("Code e label sao obrigatorios.");
       return;
     }
-    setErrorMessage("");
+    setActionErrorMessage("");
     setNotice("");
     try {
       if (kind === "pub") {
@@ -126,7 +89,7 @@ export default function SponsorSettings() {
         const free = parseCatalogCount(draft.free);
         const occupied = parseCatalogCount(draft.occupied);
         if (!isValidPubCapacity(available, free, occupied)) {
-          setErrorMessage("Available, free e occupied devem ser inteiros coerentes.");
+          setActionErrorMessage("Available, free e occupied devem ser inteiros coerentes.");
           return;
         }
         await createPubOption({ code: draft.code, label: draft.label, available, free, occupied, sortOrder: catalogs.pubOptions.length });
@@ -134,7 +97,7 @@ export default function SponsorSettings() {
       else if (kind === "team") {
         const teamGroupId = Number.parseInt(draft.teamGroupId ?? "", 10);
         if (Number.isNaN(teamGroupId)) {
-          setErrorMessage("Escolhe o grupo da equipa.");
+          setActionErrorMessage("Escolhe o grupo da equipa.");
           return;
         }
         await createTeamCategory({ ...draft, teamGroupId, sortOrder: catalogs.teamCategories.length });
@@ -143,17 +106,17 @@ export default function SponsorSettings() {
       else await createOtherSport({ ...draft, sortOrder: catalogs.otherSports.length });
       setCatalogDrafts((current) => ({
         ...current,
-        [kind]: kind === "pub" ? { code: "", label: "", available: "0", free: "0", occupied: "0" } : { code: "", label: "" },
+        [kind]: createEmptyCatalogDraft(kind),
       }));
       setNotice("Opcao criada com sucesso.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a opcao.");
     }
   }
 
   async function handleSaveCatalogItem(kind: CatalogKind, item: CatalogItem) {
-    setErrorMessage("");
+    setActionErrorMessage("");
     setNotice("");
     try {
       if (kind === "pub") await updatePubOption((item as PubOption).pubId, item as PubOption);
@@ -163,12 +126,12 @@ export default function SponsorSettings() {
       setNotice("Opcao atualizada.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a opcao.");
     }
   }
 
   async function handleDeactivateCatalogItem(kind: CatalogKind, id: number) {
-    setErrorMessage("");
+    setActionErrorMessage("");
     setNotice("");
     try {
       if (kind === "pub") await deactivatePubOption(id);
@@ -178,7 +141,7 @@ export default function SponsorSettings() {
       setNotice("Opcao desativada.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel desativar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel desativar a opcao.");
     }
   }
 
@@ -192,7 +155,7 @@ export default function SponsorSettings() {
       setNotice("Ordem atualizada.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar.");
     } finally {
       setDragState(null);
     }
@@ -212,10 +175,10 @@ export default function SponsorSettings() {
           </Link>
         </section>
 
-        {errorMessage ? (
+        {displayErrorMessage ? (
           <div className="sponsor-feedback sponsor-feedback-error">
             <ShieldAlert size={18} />
-            <span>{errorMessage}</span>
+            <span>{displayErrorMessage}</span>
           </div>
         ) : null}
         {notice ? <div className="sponsor-feedback sponsor-feedback-success">{notice}</div> : null}
@@ -438,13 +401,4 @@ function getCatalogItemId(kind: CatalogKind, item: CatalogItem) {
   if (kind === "team") return (item as TeamCategory).teamId;
   if (kind === "placement") return (item as EquipmentPlacement).equipmentId;
   return (item as OtherSport).sportId;
-}
-
-function parseCatalogCount(value: string | undefined) {
-  return Number.parseInt(value ?? "0", 10);
-}
-
-function isValidPubCapacity(available: number, free: number, occupied: number) {
-  return Number.isInteger(available) && Number.isInteger(free) && Number.isInteger(occupied) &&
-    available >= 0 && free >= 0 && occupied >= 0 && free + occupied <= available;
 }

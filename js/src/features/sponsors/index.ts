@@ -1,5 +1,4 @@
 export * from "./types";
-export * from "./utils";
 export * from "./api";
 export { default as SponsorsLayout } from "./components/SponsorsLayout";
 export { default as SponsorsInfo } from "./components/SponsorsInfo";

@@ -1,65 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { ShieldAlert } from "lucide-react";
-import { approveSponsorship, cancelSponsorship, fetchAllSponsorships, markSponsorshipPaid } from "..";
-import type { Sponsor, Sponsorship } from "..";
-import { sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatCurrency } from "../../../shared/utils";
-
-type SponsorApprovalItem = {
-  sponsor: Sponsor;
-  sponsorship: Sponsorship;
-};
+import { useSponsorApprovals } from "../hooks";
+import { orderSponsorApprovalItems, sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "../utils";
 
 export default function SponsorApprovals() {
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
-  const [items, setItems] = useState<SponsorApprovalItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    if (!canManage) {
-      return;
-    }
-
-    let ignore = false;
-
-    async function loadItems() {
-      setIsLoading(true);
-      setErrorMessage("");
-      try {
-        const response = await fetchAllSponsorships();
-        if (!ignore) {
-          setItems(response);
-        }
-      } catch (error) {
-        if (!ignore) {
-          setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar os patrocinios.");
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadItems();
-    return () => {
-      ignore = true;
-    };
-  }, [canManage]);
-
-  const orderedItems = useMemo(
-    () =>
-      [...items].sort((first, second) => {
-        if (first.sponsorship.status === "SUBMETIDO" && second.sponsorship.status !== "SUBMETIDO") return -1;
-        if (first.sponsorship.status !== "SUBMETIDO" && second.sponsorship.status === "SUBMETIDO") return 1;
-        return second.sponsorship.sponsorshipId - first.sponsorship.sponsorshipId;
-      }),
-    [items],
-  );
+  const { errorMessage, isLoading, items, runAction } = useSponsorApprovals(canManage);
+  const orderedItems = useMemo(() => orderSponsorApprovalItems(items), [items]);
 
   if (!role) {
     return <Navigate to="/auth/login" replace />;
@@ -67,22 +18,6 @@ export default function SponsorApprovals() {
 
   if (!canManage) {
     return <Navigate to="/sponsors" replace />;
-  }
-
-  async function runAction(sponsorshipId: number, action: "approve" | "paid" | "cancel") {
-    try {
-      if (action === "approve") {
-        await approveSponsorship(sponsorshipId);
-      } else if (action === "paid") {
-        await markSponsorshipPaid(sponsorshipId);
-      } else {
-        await cancelSponsorship(sponsorshipId);
-      }
-      const response = await fetchAllSponsorships();
-      setItems(response);
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o patrocinio.");
-    }
   }
 
   return (
