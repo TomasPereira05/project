@@ -27,6 +27,22 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return JSON.parse(text) as T;
 }
 
+type PaginatedResponse<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+};
+
+export type UserSummary = {
+  userId: number;
+  email: string;
+  username: string;
+  role: string;
+  activeMemberId: number | null;
+};
+
 export const api = {
   auth: {
     login: async (identifier: string, password: string) => {
@@ -81,5 +97,14 @@ export const api = {
         return null;
       }
     }
+  },
+  users: {
+    list: (page = 1, size = 20) => {
+      const search = new URLSearchParams({
+        page: String(page),
+        size: String(size),
+      });
+      return request<PaginatedResponse<UserSummary>>(`/users?${search.toString()}`);
+    },
   }
 };

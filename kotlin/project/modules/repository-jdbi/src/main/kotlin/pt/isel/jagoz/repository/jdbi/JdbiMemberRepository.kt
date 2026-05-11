@@ -27,6 +27,23 @@ class JdbiMemberRepository(private val handle: Handle) : MemberRepository {
             .list()
     }
 
+    override fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Member> {
+        return handle.createQuery("SELECT * FROM jagoz.member ORDER BY member_number ASC LIMIT :limit OFFSET :offset")
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .mapTo(Member::class.java)
+            .list()
+    }
+
+    override fun countAll(): Long {
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.member")
+            .mapTo(Long::class.java)
+            .one()
+    }
+
     override fun findAllActive(): List<Member> {
         return handle.createQuery("SELECT * FROM jagoz.member WHERE status = 'ATIVO' ORDER BY member_number ASC")
             .mapTo(Member::class.java)

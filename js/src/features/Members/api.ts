@@ -1,6 +1,7 @@
 import { BASE_URL } from "../../shared/config/config";
-import type { Member, MemberFormValues } from "./types";
+import type { Member, MemberFormValues, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
+import { HttpError } from "../../shared/types/HttpError";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -12,15 +13,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Nao foi possivel comunicar com o servidor.");
+    throw await HttpError.fromResponse(response);
   }
 
   return response.json() as Promise<T>;
 }
 
-export function fetchMembers() {
-  return request<Member[]>("/members");
+export function fetchMembers(page = 1, size = 8) {
+  const search = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+  return request<PaginatedResponse<Member>>(`/members?${search.toString()}`);
 }
 
 export function fetchMember(memberId: number) {

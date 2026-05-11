@@ -34,6 +34,23 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .list()
     }
 
+    override fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Sponsor> {
+        return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC LIMIT :limit OFFSET :offset")
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .mapTo(Sponsor::class.java)
+            .list()
+    }
+
+    override fun countAll(): Long {
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.sponsor")
+            .mapTo(Long::class.java)
+            .one()
+    }
+
     override fun save(sponsor: Sponsor): Long {
         return handle.createUpdate(
             """

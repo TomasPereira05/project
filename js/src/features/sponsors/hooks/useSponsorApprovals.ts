@@ -3,9 +3,12 @@ import { approveSponsorship, cancelSponsorship, fetchAllSponsorships, markSponso
 import type { SponsorApprovalItem } from "../utils";
 
 type SponsorApprovalAction = "approve" | "paid" | "cancel";
+const PAGE_SIZE = 8;
 
-export function useSponsorApprovals(canManage: boolean) {
+export function useSponsorApprovals(canManage: boolean, page: number) {
   const [items, setItems] = useState<SponsorApprovalItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -14,14 +17,16 @@ export function useSponsorApprovals(canManage: boolean) {
     setErrorMessage("");
 
     try {
-      const response = await fetchAllSponsorships();
-      setItems(response);
+      const response = await fetchAllSponsorships(page, PAGE_SIZE);
+      setItems(response.items);
+      setTotalItems(response.total);
+      setTotalPages(response.totalPages);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar os patrocinios.");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [page]);
 
   useEffect(() => {
     if (!canManage) {
@@ -52,5 +57,8 @@ export function useSponsorApprovals(canManage: boolean) {
     isLoading,
     items,
     runAction,
+    pageSize: PAGE_SIZE,
+    totalItems,
+    totalPages,
   };
 }

@@ -38,6 +38,7 @@ object Uris {
     }
 
     object Users {
+        const val GET_ALL = "$PREFIX/users"
         const val GET_BY_ID = "$PREFIX/users/{userId}"
         const val GET_BY_EMAIL = "$PREFIX/users/by-email"
         const val GET_BY_USERNAME = "$PREFIX/users/by-username"
@@ -58,6 +59,7 @@ object Uris {
     }
 
     object Sponsorships {
+        const val GET_ALL = "$PREFIX/sponsorships"
         const val CREATE = "$PREFIX/sponsorships"
         const val MY = "$PREFIX/sponsorships/my"
         const val GET_BY_ID = "$PREFIX/sponsorships/{sponsorshipId}"

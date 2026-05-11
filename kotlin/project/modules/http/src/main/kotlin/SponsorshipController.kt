@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.Sponsorship
@@ -29,11 +30,24 @@ class SponsorshipController(
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
 
+    @GetMapping(Uris.Sponsorships.GET_ALL)
+    fun getAllSponsorships(
+        authenticatedUser: AuthenticatedUser,
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "8") size: Int,
+    ): ResponseEntity<*> =
+        sponsorshipService.getAllSponsorshipsWithSponsorsPage(authenticatedUser, page, size).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
     @GetMapping(Uris.Sponsorships.MY)
     fun getMySponsorships(
         authenticatedUser: AuthenticatedUser,
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "8") size: Int,
     ): ResponseEntity<*> =
-        sponsorshipService.getSponsorshipsForUser(authenticatedUser).handle(
+        sponsorshipService.getSponsorshipsForUserPage(authenticatedUser, page, size).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
@@ -52,8 +66,10 @@ class SponsorshipController(
     fun getSponsorshipsBySponsorId(
         @PathVariable sponsorId: Long,
         authenticatedUser: AuthenticatedUser,
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "8") size: Int,
     ): ResponseEntity<*> =
-        sponsorshipService.getSponsorshipsBySponsorIdForUser(sponsorId, authenticatedUser).handle(
+        sponsorshipService.getSponsorshipsBySponsorIdForUserPage(sponsorId, authenticatedUser, page, size).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )

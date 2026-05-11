@@ -20,6 +20,13 @@ interface UserRepository {
 
     fun findByEmail(email: String): User?
 
+    fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<User>
+
+    fun countAll(): Long
+
     fun update(user: User)
 
     // GestÃ£o dos maxTokens talvez possa ser feita no domain ou no service, nÃ£o aqui

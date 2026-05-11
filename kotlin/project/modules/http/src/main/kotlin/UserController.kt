@@ -21,6 +21,7 @@ import pt.isel.jagoz.http.model.user.UserTokenCreateOutputModel
 import pt.isel.jagoz.http.model.user.toOutputModel
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
+import pt.isel.jagoz.service.Page
 import pt.isel.jagoz.service.UserService
 import pt.isel.jagoz.service.UserServiceError
 import java.time.Duration
@@ -55,6 +56,27 @@ class UserController(
             onSuccess = { created ->
                 ResponseEntity.status(HttpStatus.CREATED)
                     .body(created.toOutputModel())
+            },
+        )
+
+    @GetMapping(Uris.Users.GET_ALL)
+    fun getUsers(
+        authenticatedUser: AuthenticatedUser,
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): ResponseEntity<*> =
+        userService.getUsersPage(authenticatedUser, page, size).handle(
+            onFailure = { error -> serviceErrorToProblem(error) },
+            onSuccess = { usersPage ->
+                ResponseEntity.ok(
+                    Page(
+                        items = usersPage.items.map { it.toOutputModel() },
+                        page = usersPage.page,
+                        size = usersPage.size,
+                        total = usersPage.total,
+                        totalPages = usersPage.totalPages,
+                    ),
+                )
             },
         )
 

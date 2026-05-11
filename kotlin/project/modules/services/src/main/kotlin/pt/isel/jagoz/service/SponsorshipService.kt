@@ -13,6 +13,11 @@ import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
 
+data class SponsorshipWithSponsor(
+    val sponsor: pt.isel.jagoz.domain.sponsor.Sponsor,
+    val sponsorship: Sponsorship,
+)
+
 @Named
 class SponsorshipService(
     private val transactionManager: TransactionManager,
@@ -20,8 +25,13 @@ class SponsorshipService(
 ) {
     fun createSponsorship(sponsorship: Sponsorship): SponsorshipResult =
         transactionManager.run { transaction ->
-            if (!transaction.sponsorRepository.existsById(sponsorship.sponsorId)) {
-                return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+            when (val validatedSponsor = sponsorDomain.validateForCreation(sponsor)) {
+                is Either.Left -> return@run validatedSponsor
+                is Either.Right -> Unit
             }
 
             when (val enriched = enrichWithPricing(transaction, sponsorship)) {
@@ -79,6 +89,31 @@ class SponsorshipService(
             success(transaction.sponsorshipRepository.findBySponsorId(sponsorId))
         }
 
+    fun getSponsorshipsBySponsorIdForUserPage(
+        sponsorId: Long,
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<SponsorError, Page<Sponsorship>> =
+        transactionManager.run { transaction ->
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
+
+            if (!canManageSponsorships(authenticatedUser) && !sponsor.email.equals(authenticatedUser.email, ignoreCase = true)) {
+                return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
+            }
+
+            val request = pageRequest(page, size)
+            success(
+                pageOf(
+                    items = transaction.sponsorshipRepository.findPageBySponsorId(sponsorId, request.size, request.offset),
+                    request = request,
+                    total = transaction.sponsorshipRepository.countBySponsorId(sponsorId),
+                ),
+            )
+        }
+
     fun getSponsorshipsBySponsorIdForUser(
         sponsorId: Long,
         authenticatedUser: AuthenticatedUser,
@@ -97,7 +132,7 @@ class SponsorshipService(
 
     fun getSponsorshipsForUser(authenticatedUser: AuthenticatedUser): Either<SponsorError, List<Sponsorship>> =
         transactionManager.run { transaction ->
-            if (authenticatedUser.role == Role.ADMIN) {
+            if (canManageSponsorships(authenticatedUser)) {
                 return@run success(transaction.sponsorshipRepository.findAll())
             }
 
@@ -105,6 +140,69 @@ class SponsorshipService(
             val sponsorships = sponsors.flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
 
             success(sponsorships.sortedByDescending { it.sponsorshipId })
+        }
+
+    fun getSponsorshipsForUserPage(
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<SponsorError, Page<Sponsorship>> =
+        transactionManager.run { transaction ->
+            val request = pageRequest(page, size)
+            if (canManageSponsorships(authenticatedUser)) {
+                return@run success(
+                    pageOf(
+                        items = transaction.sponsorshipRepository.findPage(request.size, request.offset),
+                        request = request,
+                        total = transaction.sponsorshipRepository.countAll(),
+                    ),
+                )
+            }
+
+            val sponsors = transaction.sponsorRepository.findByEmail(authenticatedUser.email)
+            val sponsorships =
+                sponsors
+                    .flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
+                    .sortedByDescending { it.sponsorshipId }
+
+            success(
+                pageOf(
+                    items = sponsorships.drop(request.offset).take(request.size),
+                    request = request,
+                    total = sponsorships.size.toLong(),
+                ),
+            )
+        }
+
+    fun getAllSponsorshipsWithSponsorsPage(
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<SponsorError, Page<SponsorshipWithSponsor>> =
+        transactionManager.run { transaction ->
+            if (!canManageSponsorships(authenticatedUser)) {
+                return@run failure(SponsorError.DomainError("Not authorized"))
+            }
+
+            val request = pageRequest(page, size)
+            val sponsorships = transaction.sponsorshipRepository.findPage(request.size, request.offset)
+            val sponsors =
+                sponsorships
+                    .mapNotNull { sponsorship -> transaction.sponsorRepository.findById(sponsorship.sponsorId) }
+                    .associateBy { it.sponsorId }
+
+            success(
+                pageOf(
+                    items =
+                        sponsorships.mapNotNull { sponsorship ->
+                            sponsors[sponsorship.sponsorId]?.let { sponsor ->
+                                SponsorshipWithSponsor(sponsor, sponsorship)
+                            }
+                        },
+                    request = request,
+                    total = transaction.sponsorshipRepository.countAll(),
+                ),
+            )
         }
 
     fun approveSponsorship(sponsorshipId: Long): SponsorshipResult =
@@ -225,11 +323,14 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         sponsorship: Sponsorship,
     ): Boolean {
-        if (authenticatedUser.role == Role.ADMIN) {
+        if (canManageSponsorships(authenticatedUser)) {
             return true
         }
 
         val sponsor = transaction.sponsorRepository.findById(sponsorship.sponsorId) ?: return false
         return sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
     }
+
+    private fun canManageSponsorships(authenticatedUser: AuthenticatedUser): Boolean =
+        authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA
 }

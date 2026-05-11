@@ -11,6 +11,13 @@ interface SponsorRepository {
 
     fun findAll(): List<Sponsor>
 
+    fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Sponsor>
+
+    fun countAll(): Long
+
     fun save(sponsor: Sponsor): Long
 
     fun update(sponsor: Sponsor)

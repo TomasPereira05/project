@@ -16,12 +16,17 @@ class SponsorService(
 ) {
     fun createSponsor(sponsor: Sponsor): SponsorResult =
         transactionManager.run { transaction ->
-            if (transaction.sponsorRepository.existsByNif(sponsor.nif)) {
-                return@run failure(SponsorError.DomainError("Sponsor with nif ${sponsor.nif} already exists"))
-            }
+            when (val validated = sponsorDomain.validateForCreation(sponsor)) {
+                is Either.Left -> validated
+                is Either.Right -> {
+                    if (transaction.sponsorRepository.existsByNif(validated.value.nif)) {
+                        return@run failure(SponsorError.DomainError("Sponsor with nif ${validated.value.nif} already exists"))
+                    }
 
-            val sponsorId = transaction.sponsorRepository.save(sponsor)
-            success(sponsor.copy(sponsorId = sponsorId))
+                    val sponsorId = transaction.sponsorRepository.save(validated.value)
+                    success(validated.value.copy(sponsorId = sponsorId))
+                }
+            }
         }
 
     fun getSponsorById(sponsorId: Long): SponsorResult =
@@ -37,6 +42,20 @@ class SponsorService(
         transactionManager.run { transaction ->
             transaction.sponsorRepository.findAll()
         }
+
+    fun getSponsorsPage(
+        page: Int,
+        size: Int,
+    ): Page<Sponsor> {
+        val request = pageRequest(page, size)
+        return transactionManager.run { transaction ->
+            pageOf(
+                items = transaction.sponsorRepository.findPage(request.size, request.offset),
+                request = request,
+                total = transaction.sponsorRepository.countAll(),
+            )
+        }
+    }
 
     fun updateSponsor(
         sponsorId: Long,

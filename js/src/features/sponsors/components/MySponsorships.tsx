@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils";
 import { useMySponsorships } from "../hooks";
 import {
@@ -11,8 +12,15 @@ import {
 } from "../utils";
 
 export default function MySponsorships() {
-  const { catalogs, errorMessage, isLoading, items } = useMySponsorships();
+  const [page, setPage] = useState(1);
+  const { catalogs, errorMessage, isLoading, items, pageSize, totalItems, totalPages } = useMySponsorships(page);
   const totals = useMemo(() => calculateMySponsorshipTotals(items), [items]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
 
   return (
     <main className="sponsor-page">
@@ -33,7 +41,7 @@ export default function MySponsorships() {
         <section className="sponsor-stat-grid">
           <div className="sponsor-stat-card">
             <span className="sponsor-stat-label">Total</span>
-            <strong className="sponsor-stat-value">{totals.count}</strong>
+            <strong className="sponsor-stat-value">{totalItems}</strong>
           </div>
           <div className="sponsor-stat-card">
             <span className="sponsor-stat-label">Submetidos</span>
@@ -88,6 +96,33 @@ export default function MySponsorships() {
             </div>
           )}
         </section>
+
+        <div className="member-pagination">
+          <p className="member-pagination-text">
+            A mostrar <span className="member-pagination-strong">{totalItems === 0 ? 0 : (page - 1) * pageSize + 1}</span> ate <span className="member-pagination-strong">{Math.min(page * pageSize, totalItems)}</span> de <span className="member-pagination-strong">{totalItems}</span> patrocinios
+          </p>
+          <div className="member-pagination-controls">
+            <button
+              className="member-icon-btn"
+              disabled={page === 1}
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              type="button"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="member-pagination-current">
+              {page} / {totalPages}
+            </span>
+            <button
+              className="member-icon-btn"
+              disabled={page === totalPages}
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              type="button"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
       </div>
     </main>
   );

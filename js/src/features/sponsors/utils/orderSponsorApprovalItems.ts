@@ -1,9 +1,4 @@
-import type { Sponsor, Sponsorship } from "../types";
-
-export type SponsorApprovalItem = {
-  sponsor: Sponsor;
-  sponsorship: Sponsorship;
-};
+import type { SponsorApprovalItem } from "../types";
 
 export function orderSponsorApprovalItems(items: SponsorApprovalItem[]) {
   return [...items].sort((first, second) => {
