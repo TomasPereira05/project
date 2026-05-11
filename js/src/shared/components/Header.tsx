@@ -136,6 +136,9 @@ export default function Header() {
             <div className={`dropdown ${activeMenu === "patrocinios" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
                     <Link to="/sponsors/info" className="dropdown-link" onClick={closeMenus}>Informação</Link>
+                    {isAuthenticated && (
+                        <Link to="/sponsors/my" className="dropdown-link" onClick={closeMenus}>Meus Patrocinios</Link>
+                    )}
                     {role === "ADMIN" && (
                         <Link to="/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>Aprovações</Link>
                     )}

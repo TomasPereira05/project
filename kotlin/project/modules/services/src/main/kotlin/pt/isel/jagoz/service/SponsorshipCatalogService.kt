@@ -30,6 +30,7 @@ class SponsorshipCatalogService(
 
     fun createPubOption(pubOption: PubOption) =
         transactionManager.run { transaction ->
+            validatePubOptionCapacity(pubOption)?.let { return@run failure(it) }
             val id = transaction.pubOptionRepository.save(pubOption)
             success(pubOption.copy(pubId = id))
         }
@@ -39,6 +40,7 @@ class SponsorshipCatalogService(
             if (transaction.pubOptionRepository.findById(pubOption.pubId) == null) {
                 return@run failure(SponsorError.DomainError("Pub option ${pubOption.pubId} not found"))
             }
+            validatePubOptionCapacity(pubOption)?.let { return@run failure(it) }
             transaction.pubOptionRepository.update(pubOption)
             success(pubOption)
         }
@@ -67,6 +69,18 @@ class SponsorshipCatalogService(
                 }
             success(reordered)
         }
+
+    private fun validatePubOptionCapacity(pubOption: PubOption): SponsorError.ValidationError? {
+        if (pubOption.available < 0 || pubOption.free < 0 || pubOption.occupied < 0) {
+            return SponsorError.ValidationError("available, free and occupied must be non-negative")
+        }
+
+        if (pubOption.free + pubOption.occupied > pubOption.available) {
+            return SponsorError.ValidationError("free plus occupied cannot exceed available")
+        }
+
+        return null
+    }
 
     fun createEquipmentPlacement(placement: EquipmentPlacement) =
         transactionManager.run { transaction ->

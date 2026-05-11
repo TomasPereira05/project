@@ -29,7 +29,7 @@ import { compareBySortOrder, moveItem } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { euroInputFromCents } from "../../../shared/utils";
 
-type CatalogEditor = { code: string; label: string; teamGroupId?: string };
+type CatalogEditor = { code: string; label: string; teamGroupId?: string; available?: string; free?: string; occupied?: string };
 type CatalogKind = "pub" | "team" | "placement" | "sport";
 type CatalogItem = PubOption | TeamCategory | EquipmentPlacement | OtherSport;
 
@@ -51,7 +51,7 @@ export default function SponsorSettings() {
   const [errorMessage, setErrorMessage] = useState("");
   const [notice, setNotice] = useState("");
   const [catalogDrafts, setCatalogDrafts] = useState<Record<CatalogKind, CatalogEditor>>({
-    pub: { code: "", label: "" },
+    pub: { code: "", label: "", available: "0", free: "0", occupied: "0" },
     team: { code: "", label: "" },
     placement: { code: "", label: "" },
     sport: { code: "", label: "" },
@@ -121,7 +121,16 @@ export default function SponsorSettings() {
     setErrorMessage("");
     setNotice("");
     try {
-      if (kind === "pub") await createPubOption({ ...draft, sortOrder: catalogs.pubOptions.length });
+      if (kind === "pub") {
+        const available = parseCatalogCount(draft.available);
+        const free = parseCatalogCount(draft.free);
+        const occupied = parseCatalogCount(draft.occupied);
+        if (!isValidPubCapacity(available, free, occupied)) {
+          setErrorMessage("Available, free e occupied devem ser inteiros coerentes.");
+          return;
+        }
+        await createPubOption({ code: draft.code, label: draft.label, available, free, occupied, sortOrder: catalogs.pubOptions.length });
+      }
       else if (kind === "team") {
         const teamGroupId = Number.parseInt(draft.teamGroupId ?? "", 10);
         if (Number.isNaN(teamGroupId)) {
@@ -132,7 +141,10 @@ export default function SponsorSettings() {
       }
       else if (kind === "placement") await createEquipmentPlacement({ ...draft, sortOrder: catalogs.equipmentPlacements.length });
       else await createOtherSport({ ...draft, sortOrder: catalogs.otherSports.length });
-      setCatalogDrafts((current) => ({ ...current, [kind]: { code: "", label: "" } }));
+      setCatalogDrafts((current) => ({
+        ...current,
+        [kind]: kind === "pub" ? { code: "", label: "", available: "0", free: "0", occupied: "0" } : { code: "", label: "" },
+      }));
       setNotice("Opcao criada com sucesso.");
       await refreshCatalogs();
     } catch (error) {
@@ -332,6 +344,13 @@ function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items,
       <div className="sponsor-inline-form">
         <input className="sponsor-input" placeholder="Code" value={draft.code} onChange={(event) => onDraftChange({ ...draft, code: event.target.value })} />
         <input className="sponsor-input" placeholder="Label" value={draft.label} onChange={(event) => onDraftChange({ ...draft, label: event.target.value })} />
+        {kind === "pub" ? (
+          <>
+            <input className="sponsor-input" inputMode="numeric" placeholder="Available" value={draft.available ?? "0"} onChange={(event) => onDraftChange({ ...draft, available: event.target.value })} />
+            <input className="sponsor-input" inputMode="numeric" placeholder="Free" value={draft.free ?? "0"} onChange={(event) => onDraftChange({ ...draft, free: event.target.value })} />
+            <input className="sponsor-input" inputMode="numeric" placeholder="Occupied" value={draft.occupied ?? "0"} onChange={(event) => onDraftChange({ ...draft, occupied: event.target.value })} />
+          </>
+        ) : null}
         {kind === "team" ? (
           <select className="sponsor-input" value={draft.teamGroupId ?? ""} onChange={(event) => onDraftChange({ ...draft, teamGroupId: event.target.value })}>
             <option value="">Grupo</option>
@@ -357,18 +376,48 @@ function SettingsCatalogRow<T extends CatalogItem>({ item, kind, onSave, onDeact
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(item.code);
   const [label, setLabel] = useState(item.label);
-  useEffect(() => { setCode(item.code); setLabel(item.label); }, [item.code, item.label]);
+  const pubItem = kind === "pub" ? item as PubOption : null;
+  const [available, setAvailable] = useState(String(pubItem?.available ?? 0));
+  const [free, setFree] = useState(String(pubItem?.free ?? 0));
+  const [occupied, setOccupied] = useState(String(pubItem?.occupied ?? 0));
+  useEffect(() => {
+    setCode(item.code);
+    setLabel(item.label);
+    if (pubItem) {
+      setAvailable(String(pubItem.available));
+      setFree(String(pubItem.free));
+      setOccupied(String(pubItem.occupied));
+    }
+  }, [item.code, item.label, pubItem?.available, pubItem?.free, pubItem?.occupied]);
   return (
     <div className="sponsor-catalog-row" draggable onDragStart={onDragStart} onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
       <div className="sponsor-catalog-reorder"><GripVertical size={16} /></div>
       <div className="sponsor-catalog-fields">
         <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
+        {pubItem ? (
+          <>
+            <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={available} onChange={(event) => setAvailable(event.target.value)} />
+            <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={free} onChange={(event) => setFree(event.target.value)} />
+            <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={occupied} onChange={(event) => setOccupied(event.target.value)} />
+          </>
+        ) : null}
       </div>
       <div className="sponsor-catalog-actions">
         {renderExtra ? renderExtra(item) : null}
         <button className="sponsor-button-secondary" onClick={() => { if (isEditing) { setCode(item.code); setLabel(item.label); } setIsEditing((current) => !current); }} type="button">{isEditing ? "Cancel" : "Edit"}</button>
-        {isEditing ? <button className="sponsor-button-primary" onClick={() => { onSave({ ...item, code, label } as T); setIsEditing(false); }} type="button">Save</button> : null}
+        {isEditing ? <button className="sponsor-button-primary" onClick={() => {
+          if (pubItem) {
+            const nextAvailable = parseCatalogCount(available);
+            const nextFree = parseCatalogCount(free);
+            const nextOccupied = parseCatalogCount(occupied);
+            if (!isValidPubCapacity(nextAvailable, nextFree, nextOccupied)) return;
+            onSave({ ...item, code, label, available: nextAvailable, free: nextFree, occupied: nextOccupied } as T);
+          } else {
+            onSave({ ...item, code, label } as T);
+          }
+          setIsEditing(false);
+        }} type="button">Save</button> : null}
         <button className="sponsor-button-ghost" onClick={() => onDeactivate(getCatalogItemId(kind, item))} type="button">Deactivate</button>
       </div>
     </div>
@@ -389,4 +438,13 @@ function getCatalogItemId(kind: CatalogKind, item: CatalogItem) {
   if (kind === "team") return (item as TeamCategory).teamId;
   if (kind === "placement") return (item as EquipmentPlacement).equipmentId;
   return (item as OtherSport).sportId;
+}
+
+function parseCatalogCount(value: string | undefined) {
+  return Number.parseInt(value ?? "0", 10);
+}
+
+function isValidPubCapacity(available: number, free: number, occupied: number) {
+  return Number.isInteger(available) && Number.isInteger(free) && Number.isInteger(occupied) &&
+    available >= 0 && free >= 0 && occupied >= 0 && free + occupied <= available;
 }

@@ -86,9 +86,10 @@ export default function SponsorCreate() {
           title: item.label,
           description: item.label,
           price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === item.pubId)?.price ?? null,
+          free: item.free,
           pubOptionId: item.pubId,
         }))
-        .filter((item) => item.price != null),
+        .filter((item) => item.price != null && item.free > 0),
     [catalogs.pubOptionPrices, catalogs.pubOptions],
   );
 
@@ -409,6 +410,7 @@ function SponsorOptionButton({
     title: string;
     description: string;
     price: number | null;
+    free?: number;
   };
   isSelected: boolean;
   onSelect: () => void;
@@ -422,7 +424,7 @@ function SponsorOptionButton({
       <div>
         <span className="sponsor-badge sponsor-badge-approved">{option.type}</span>
         <h3>{option.title}</h3>
-        <p>{option.description}</p>
+        <p>{option.description}{option.type === "PUB" && option.free != null ? ` · ${option.free} livres` : ""}</p>
       </div>
       <strong>{option.price == null ? "-" : formatCurrency(option.price)}</strong>
     </button>

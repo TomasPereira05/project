@@ -29,6 +29,9 @@ export type PubOption = {
   code: string;
   label: string;
   active: boolean;
+  available: number;
+  free: number;
+  occupied: number;
   sortOrder: number | null;
 };
 

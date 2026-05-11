@@ -6,3 +6,5 @@ export { default as SponsorsInfo } from "./components/SponsorsInfo";
 export { default as SponsorCreate } from "./components/SponsorCreate";
 export { default as SponsorSettings } from "./components/SponsorSettings";
 export { default as SponsorApprovals } from "./components/SponsorApprovals";
+export { default as MySponsorships } from "./components/MySponsorships";
+export { default as SponsorshipDetails } from "./components/SponsorshipDetails";

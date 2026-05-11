@@ -48,6 +48,10 @@ export function fetchSponsors() {
   return request<Sponsor[]>("/sponsors");
 }
 
+export function fetchSponsorById(sponsorId: number) {
+  return request<Sponsor>(`/sponsors/${sponsorId}`);
+}
+
 export function createSponsor(values: SponsorFormValues) {
   return request<Sponsor>("/sponsors", {
     method: "POST",
@@ -76,6 +80,14 @@ export function updateSponsor(sponsorId: number, values: SponsorFormValues) {
 
 export function fetchSponsorshipsBySponsor(sponsorId: number) {
   return request<Sponsorship[]>(`/sponsors/${sponsorId}/sponsorships`);
+}
+
+export function fetchMySponsorships() {
+  return request<Sponsorship[]>("/sponsorships/my");
+}
+
+export function fetchSponsorshipById(sponsorshipId: number) {
+  return request<Sponsorship>(`/sponsorships/${sponsorshipId}`);
 }
 
 export async function fetchAllSponsorships() {
@@ -135,7 +147,7 @@ export function fetchPubOptions() {
   return request<PubOption[]>("/sponsorship-catalog/pub-options/active");
 }
 
-export function createPubOption(payload: { code: string; label: string; sortOrder: number }) {
+export function createPubOption(payload: { code: string; label: string; available: number; free: number; occupied: number; sortOrder: number }) {
   return request<PubOption>("/sponsorship-catalog/pub-options", {
     method: "POST",
     body: JSON.stringify({
@@ -143,6 +155,9 @@ export function createPubOption(payload: { code: string; label: string; sortOrde
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: true,
+      available: payload.available,
+      free: payload.free,
+      occupied: payload.occupied,
       sortOrder: payload.sortOrder,
     }),
   });
@@ -150,7 +165,7 @@ export function createPubOption(payload: { code: string; label: string; sortOrde
 
 export function updatePubOption(
   pubId: number,
-  payload: { code: string; label: string; active: boolean; sortOrder: number | null },
+  payload: { code: string; label: string; active: boolean; available: number; free: number; occupied: number; sortOrder: number | null },
 ) {
   return request<PubOption>(`/sponsorship-catalog/pub-options/${pubId}`, {
     method: "PUT",
@@ -159,6 +174,9 @@ export function updatePubOption(
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: payload.active,
+      available: payload.available,
+      free: payload.free,
+      occupied: payload.occupied,
       sortOrder: payload.sortOrder,
     }),
   });

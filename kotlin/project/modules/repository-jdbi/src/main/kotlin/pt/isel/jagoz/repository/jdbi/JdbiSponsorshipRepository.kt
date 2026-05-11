@@ -34,6 +34,18 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .list()
     }
 
+    override fun findAll(): List<Sponsorship> {
+        return handle.createQuery(
+            """
+            SELECT s.*
+            FROM jagoz.sponsorship s
+            ORDER BY s.sponsorship_id DESC
+            """,
+        )
+            .mapTo(Sponsorship::class.java)
+            .list()
+    }
+
     override fun save(sponsorship: Sponsorship): Long {
         return handle.createUpdate(
             """

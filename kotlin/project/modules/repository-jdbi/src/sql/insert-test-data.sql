@@ -28,13 +28,14 @@ INSERT INTO jagoz.equipment_placement (
 -- PUBLICITY OPTIONS
 -- =========================
 INSERT INTO jagoz.pub_option (
-    code, label, sort_order
+    code, label, available, free, occupied, sort_order
 ) VALUES
-    ('LONA_3X0_8', 'Lona 3x0.8',1),
-    ('LONA_5X2_3', 'Lona 5x2.3',2),
-    ('OUTDOOR_2_8X1_3', 'Outdoor 2.8x1.3',3),
-    ('OUTDOOR_3_8X1_3', 'Outdoor 3.8x1.3',4),
-    ('OUTDOOR_3_8X1_8', 'Outdoor 3.8x1.8',5);
+    ('LONA_3X0_8', 'Lona 3x0.8', 37, 32, 5, 1),
+    ('LONA_5X2_3', 'Lona 5x2.3', 10, 10, 0, 2),
+    ('LONA_3_80X1_3', 'Lona 3.8x1.3', 6, 5, 1, 3),
+    ('OUTDOOR_2_8X1_3', 'Outdoor 2.8x1.3', 12, 10, 2, 4),
+    ('OUTDOOR_3_8X1_3', 'Outdoor 3.8x1.3', 4, 4, 0, 5),
+    ('OUTDOOR_3_8X1_8', 'Outdoor 3.8x1.8', 4, 3, 1, 6);
 
 -- =========================
 -- TEAM CATEGORIES
@@ -97,6 +98,7 @@ SELECT pub_option_id,
        CASE code
            WHEN 'LONA_3X0_8' THEN 30000
            WHEN 'LONA_5X2_3' THEN 75000
+           WHEN 'LONA_3_80X1_3' THEN 60000
            WHEN 'OUTDOOR_2_8X1_3' THEN 120000
            WHEN 'OUTDOOR_3_8X1_3' THEN 135000
            WHEN 'OUTDOOR_3_8X1_8' THEN 150000

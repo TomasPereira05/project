@@ -59,6 +59,7 @@ object Uris {
 
     object Sponsorships {
         const val CREATE = "$PREFIX/sponsorships"
+        const val MY = "$PREFIX/sponsorships/my"
         const val GET_BY_ID = "$PREFIX/sponsorships/{sponsorshipId}"
         const val GET_BY_SPONSOR = "$PREFIX/sponsors/{sponsorId}/sponsorships"
         const val APPROVE = "$PREFIX/sponsorships/{sponsorshipId}/approve"

@@ -21,6 +21,13 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .orElse(null)
     }
 
+    override fun findByEmail(email: String): List<Sponsor> {
+        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE lower(email) = lower(:email) ORDER BY sponsor_id DESC")
+            .bind("email", email)
+            .mapTo(Sponsor::class.java)
+            .list()
+    }
+
     override fun findAll(): List<Sponsor> {
         return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC")
             .mapTo(Sponsor::class.java)

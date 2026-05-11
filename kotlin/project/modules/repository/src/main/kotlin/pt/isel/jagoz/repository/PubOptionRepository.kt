@@ -14,4 +14,8 @@ interface PubOptionRepository {
     fun update(po: PubOption)
 
     fun deactivate(id: Long)
+
+    fun reserve(id: Long): Boolean
+
+    fun release(id: Long)
 }

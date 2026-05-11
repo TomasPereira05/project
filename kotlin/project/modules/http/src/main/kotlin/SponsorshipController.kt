@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
@@ -28,11 +29,21 @@ class SponsorshipController(
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
 
+    @GetMapping(Uris.Sponsorships.MY)
+    fun getMySponsorships(
+        authenticatedUser: AuthenticatedUser,
+    ): ResponseEntity<*> =
+        sponsorshipService.getSponsorshipsForUser(authenticatedUser).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
     @GetMapping(Uris.Sponsorships.GET_BY_ID)
     fun getSponsorshipById(
         @PathVariable sponsorshipId: Long,
+        authenticatedUser: AuthenticatedUser,
     ): ResponseEntity<*> =
-        sponsorshipService.getSponsorshipById(sponsorshipId).handle(
+        sponsorshipService.getSponsorshipByIdForUser(sponsorshipId, authenticatedUser).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
@@ -40,8 +51,9 @@ class SponsorshipController(
     @GetMapping(Uris.Sponsorships.GET_BY_SPONSOR)
     fun getSponsorshipsBySponsorId(
         @PathVariable sponsorId: Long,
+        authenticatedUser: AuthenticatedUser,
     ): ResponseEntity<*> =
-        sponsorshipService.getSponsorshipsBySponsorId(sponsorId).handle(
+        sponsorshipService.getSponsorshipsBySponsorIdForUser(sponsorId, authenticatedUser).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )

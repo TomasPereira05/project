@@ -8,6 +8,8 @@ interface SponsorshipRepository {
 
     fun findBySponsorId(sponsorId: Long): List<Sponsorship>
 
+    fun findAll(): List<Sponsorship>
+
     fun save(sponsorship: Sponsorship): Long
 
     fun updateStatus(

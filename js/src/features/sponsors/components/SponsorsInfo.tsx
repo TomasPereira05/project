@@ -70,6 +70,9 @@ export default function SponsorsInfo() {
           label: option.label,
           code: option.code,
           price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === option.pubId)?.price ?? null,
+          available: option.available,
+          free: option.free,
+          occupied: option.occupied,
         }))
         .filter((row) => row.price != null),
     [catalogs],
@@ -206,6 +209,7 @@ export default function SponsorsInfo() {
                   <thead>
                     <tr>
                       <th>Descritivo</th>
+                      <th>Livre</th>
                       <th>Valor</th>
                     </tr>
                   </thead>
@@ -213,6 +217,7 @@ export default function SponsorsInfo() {
                     {pubRows.map((row) => (
                       <tr key={row.id}>
                         <td>{row.label}</td>
+                        <td>{row.free}</td>
                         <td>{row.price == null ? "-" : formatCurrency(row.price)}</td>
                       </tr>
                     ))}
