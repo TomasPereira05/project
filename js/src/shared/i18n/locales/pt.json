@@ -1,0 +1,96 @@
+{
+  "common": {
+    "soon": "em breve"
+  },
+  "header": {
+    "logoAlt": "Logotipo",
+    "clubSubtitle": "Grupo Desportivo União Ericeirense",
+    "aria": {
+      "menu": "Menu",
+      "userAccount": "Conta de utilizador",
+      "language": "Idioma"
+    },
+    "nav": {
+      "members": "Sócios",
+      "sponsors": "Patrocínios",
+      "teams": "Equipas",
+      "otherSports": "Outras modalidades"
+    },
+    "auth": {
+      "login": "Entrar",
+      "register": "Registar",
+      "logout": "Sair",
+      "hello": "Olá, {{username}}"
+    },
+    "members": {
+      "profile": "Perfil de sócio",
+      "list": "Lista de sócios",
+      "become": "Tornar-se sócio"
+    },
+    "sponsors": {
+      "info": "Informação",
+      "my": "Meus patrocínios",
+      "approvals": "Aprovações",
+      "settings": "Configurações",
+      "become": "Tornar-se patrocinador"
+    },
+    "user": {
+      "profile": "Perfil"
+    },
+    "teams": {
+      "becomeAthlete": "Tornar-se atleta"
+    }
+  },
+  "hero": {
+    "location": "Ericeira, Portugal",
+    "clubName": "Ericeirense",
+    "clubSubtitle": "Grupo Desportivo União Ericeirense",
+    "tagline": "A força do mar, a alma da terra",
+    "description": "Onde o mar é mais azul. Um clube com história, paixão e uma comunidade que vive o futebol com orgulho."
+  },
+  "newsGrid": {
+    "label": "Últimas Atualizações",
+    "title": "Notícias do Clube",
+    "viewAll": "Ver Todas",
+    "placeholderText": "* Conteúdo placeholder - As notícias reais serão carregadas em breve"
+  },
+  "standings": {
+    "championship": "Campeonato Distrital",
+    "title": "Classificação",
+    "season": "Época 2025/2026",
+    "team": "Equipa",
+    "games": "Jogos",
+    "gamesPlayed": "J",
+    "wins": "V",
+    "winsLabel": "Vitórias",
+    "draws": "E",
+    "drawsLabel": "Empates",
+    "losses": "D",
+    "lossesLabel": "Derrotas",
+    "goalsFor": "GM",
+    "goalsForLabel": "Golos Marcados",
+    "goalsAgainst": "GS",
+    "goalsAgainstLabel": "Golos Sofridos",
+    "points": "Pts",
+    "pointsLabel": "Pontos",
+    "legend": {
+      "games": "Jogos",
+      "wins": "Vitórias",
+      "draws": "Empates",
+      "losses": "Derrotas",
+      "goalsFor": "Golos Marcados",
+      "goalsAgainst": "Golos Sofridos",
+      "points": "Pontos"
+    },
+    "footer": "* Dados placeholder - Classificação real em breve"
+  },
+  "footer": {
+    "title": "ERICEIRENSE",
+    "subtitle": "G.D.U.E",
+    "tagline": "A força do mar, a alma da terra",
+    "contact": "Contacto",
+    "socials": "Redes Sociais",
+    "location": "Localização",
+    "copyright": "© 2026 Ericeirense Futebol Clube. Todos os direitos reservados."
+  }
+}
