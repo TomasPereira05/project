@@ -13,6 +13,13 @@ interface MemberRepository {
 
     fun findAll(): List<Member>
 
+    fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Member>
+
+    fun countAll(): Long
+
     fun findAllActive(): List<Member>
 
     fun nextMemberNumber(): Int

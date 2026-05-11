@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorError
@@ -20,7 +21,10 @@ class SponsorController(
     private val sponsorService: SponsorService,
 ) {
     @GetMapping(Uris.Sponsors.GET_ALL)
-    fun getAllSponsors(): ResponseEntity<List<Sponsor>> = ResponseEntity.ok(sponsorService.getAllSponsors())
+    fun getAllSponsors(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "20") size: Int,
+    ): ResponseEntity<*> = ResponseEntity.ok(sponsorService.getSponsorsPage(page, size))
 
     @GetMapping(Uris.Sponsors.GET_BY_ID)
     fun getSponsorById(

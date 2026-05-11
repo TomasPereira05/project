@@ -10,7 +10,6 @@ import {
   deactivateOtherSport,
   deactivatePubOption,
   deactivateTeamCategory,
-  fetchCatalogSnapshot,
   reorderEquipmentPlacements,
   reorderOtherSports,
   reorderPubOptions,
@@ -24,64 +23,48 @@ import {
   upsertTeamCategoryPriceOverride,
   upsertTeamGroupSponsorshipPrice,
 } from "..";
-import type { CatalogSnapshot, EquipmentPlacement, OtherSport, PubOption, TeamCategory, TeamGroup } from "..";
-import { compareBySortOrder, moveItem } from "..";
+import type { EquipmentPlacement, OtherSport, PubOption, TeamCategory, TeamGroup } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import { euroInputFromCents } from "../../../shared/utils";
+import { useSponsorCatalogs } from "../hooks";
+import {
+  buildOtherSportPriceDrafts,
+  buildPubPriceDrafts,
+  buildTeamGroupPriceDrafts,
+  buildTeamOverridePriceDrafts,
+  createEmptyCatalogDraft,
+  initialCatalogDrafts,
+  isValidPubCapacity,
+  moveItem,
+  parseCatalogCount,
+  type CatalogEditor,
+  type CatalogKind,
+} from "../utils";
 
-type CatalogEditor = { code: string; label: string; teamGroupId?: string };
-type CatalogKind = "pub" | "team" | "placement" | "sport";
 type CatalogItem = PubOption | TeamCategory | EquipmentPlacement | OtherSport;
 
 export default function SponsorSettings() {
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
-  const [catalogs, setCatalogs] = useState<CatalogSnapshot>({
-    pubOptions: [],
-    teamGroups: [],
-    teamCategories: [],
-    equipmentPlacements: [],
-    otherSports: [],
-    pubOptionPrices: [],
-    teamGroupPrices: [],
-    teamCategoryPriceOverrides: [],
-    otherSportPrices: [],
+  const { catalogs, errorMessage: catalogErrorMessage, isLoading, refreshCatalogs } = useSponsorCatalogs({
+    enabled: canManage,
+    errorMessage: "Nao foi possivel carregar a configuracao.",
   });
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [actionErrorMessage, setActionErrorMessage] = useState("");
   const [notice, setNotice] = useState("");
-  const [catalogDrafts, setCatalogDrafts] = useState<Record<CatalogKind, CatalogEditor>>({
-    pub: { code: "", label: "" },
-    team: { code: "", label: "" },
-    placement: { code: "", label: "" },
-    sport: { code: "", label: "" },
-  });
+  const [catalogDrafts, setCatalogDrafts] = useState<Record<CatalogKind, CatalogEditor>>(initialCatalogDrafts);
   const [pubPriceDrafts, setPubPriceDrafts] = useState<Record<number, string>>({});
   const [teamPriceDrafts, setTeamPriceDrafts] = useState<Record<string, string>>({});
   const [teamOverrideDrafts, setTeamOverrideDrafts] = useState<Record<string, string>>({});
   const [selectedOverrideTeamId, setSelectedOverrideTeamId] = useState("");
   const [otherSportPriceDrafts, setOtherSportPriceDrafts] = useState<Record<number, string>>({});
   const [dragState, setDragState] = useState<{ kind: CatalogKind; index: number } | null>(null);
+  const displayErrorMessage = actionErrorMessage || catalogErrorMessage;
 
   useEffect(() => {
-    if (!canManage) return;
-    void refreshCatalogs();
-  }, [canManage]);
-
-  useEffect(() => {
-    setPubPriceDrafts(Object.fromEntries(catalogs.pubOptionPrices.map((item) => [item.pubOptionId, euroInputFromCents(item.price)])));
-    setOtherSportPriceDrafts(Object.fromEntries(catalogs.otherSportPrices.map((item) => [item.sportId, euroInputFromCents(item.price)])));
-    setTeamPriceDrafts(
-      Object.fromEntries(catalogs.teamGroupPrices.map((item) => [`${item.teamGroupId}-${item.placementId}`, euroInputFromCents(item.price)])),
-    );
-    setTeamOverrideDrafts(
-      Object.fromEntries(
-        catalogs.teamCategoryPriceOverrides.map((item) => [
-          `${item.teamCategoryId}-${item.placementId}`,
-          euroInputFromCents(item.price),
-        ]),
-      ),
-    );
+    setPubPriceDrafts(buildPubPriceDrafts(catalogs.pubOptionPrices));
+    setOtherSportPriceDrafts(buildOtherSportPriceDrafts(catalogs.otherSportPrices));
+    setTeamPriceDrafts(buildTeamGroupPriceDrafts(catalogs.teamGroupPrices));
+    setTeamOverrideDrafts(buildTeamOverridePriceDrafts(catalogs.teamCategoryPriceOverrides));
   }, [catalogs]);
 
   if (!role) {
@@ -92,56 +75,48 @@ export default function SponsorSettings() {
     return <Navigate to="/sponsors" replace />;
   }
 
-  async function refreshCatalogs() {
-    setIsLoading(true);
-    setErrorMessage("");
-    try {
-      const response = await fetchCatalogSnapshot();
-      setCatalogs({
-          ...response,
-          pubOptions: [...response.pubOptions].sort(compareBySortOrder),
-          teamGroups: [...response.teamGroups].sort(compareBySortOrder),
-          teamCategories: [...response.teamCategories].sort(compareBySortOrder),
-          equipmentPlacements: [...response.equipmentPlacements].sort(compareBySortOrder),
-          otherSports: [...response.otherSports].sort(compareBySortOrder),
-      });
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar a configuracao.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   async function handleCreateCatalog(kind: CatalogKind) {
     const draft = catalogDrafts[kind];
     if (!draft.code.trim() || !draft.label.trim()) {
-      setErrorMessage("Code e label sao obrigatorios.");
+      setActionErrorMessage("Code e label sao obrigatorios.");
       return;
     }
-    setErrorMessage("");
+    setActionErrorMessage("");
     setNotice("");
     try {
-      if (kind === "pub") await createPubOption({ ...draft, sortOrder: catalogs.pubOptions.length });
+      if (kind === "pub") {
+        const available = parseCatalogCount(draft.available);
+        const free = parseCatalogCount(draft.free);
+        const occupied = parseCatalogCount(draft.occupied);
+        if (!isValidPubCapacity(available, free, occupied)) {
+          setActionErrorMessage("Available, free e occupied devem ser inteiros coerentes.");
+          return;
+        }
+        await createPubOption({ code: draft.code, label: draft.label, available, free, occupied, sortOrder: catalogs.pubOptions.length });
+      }
       else if (kind === "team") {
         const teamGroupId = Number.parseInt(draft.teamGroupId ?? "", 10);
         if (Number.isNaN(teamGroupId)) {
-          setErrorMessage("Escolhe o grupo da equipa.");
+          setActionErrorMessage("Escolhe o grupo da equipa.");
           return;
         }
         await createTeamCategory({ ...draft, teamGroupId, sortOrder: catalogs.teamCategories.length });
       }
       else if (kind === "placement") await createEquipmentPlacement({ ...draft, sortOrder: catalogs.equipmentPlacements.length });
       else await createOtherSport({ ...draft, sortOrder: catalogs.otherSports.length });
-      setCatalogDrafts((current) => ({ ...current, [kind]: { code: "", label: "" } }));
+      setCatalogDrafts((current) => ({
+        ...current,
+        [kind]: createEmptyCatalogDraft(kind),
+      }));
       setNotice("Opcao criada com sucesso.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a opcao.");
     }
   }
 
   async function handleSaveCatalogItem(kind: CatalogKind, item: CatalogItem) {
-    setErrorMessage("");
+    setActionErrorMessage("");
     setNotice("");
     try {
       if (kind === "pub") await updatePubOption((item as PubOption).pubId, item as PubOption);
@@ -151,12 +126,12 @@ export default function SponsorSettings() {
       setNotice("Opcao atualizada.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a opcao.");
     }
   }
 
   async function handleDeactivateCatalogItem(kind: CatalogKind, id: number) {
-    setErrorMessage("");
+    setActionErrorMessage("");
     setNotice("");
     try {
       if (kind === "pub") await deactivatePubOption(id);
@@ -166,7 +141,7 @@ export default function SponsorSettings() {
       setNotice("Opcao desativada.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel desativar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel desativar a opcao.");
     }
   }
 
@@ -180,7 +155,7 @@ export default function SponsorSettings() {
       setNotice("Ordem atualizada.");
       await refreshCatalogs();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar.");
+      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar.");
     } finally {
       setDragState(null);
     }
@@ -200,10 +175,10 @@ export default function SponsorSettings() {
           </Link>
         </section>
 
-        {errorMessage ? (
+        {displayErrorMessage ? (
           <div className="sponsor-feedback sponsor-feedback-error">
             <ShieldAlert size={18} />
-            <span>{errorMessage}</span>
+            <span>{displayErrorMessage}</span>
           </div>
         ) : null}
         {notice ? <div className="sponsor-feedback sponsor-feedback-success">{notice}</div> : null}
@@ -332,6 +307,13 @@ function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items,
       <div className="sponsor-inline-form">
         <input className="sponsor-input" placeholder="Code" value={draft.code} onChange={(event) => onDraftChange({ ...draft, code: event.target.value })} />
         <input className="sponsor-input" placeholder="Label" value={draft.label} onChange={(event) => onDraftChange({ ...draft, label: event.target.value })} />
+        {kind === "pub" ? (
+          <>
+            <input className="sponsor-input" inputMode="numeric" placeholder="Available" value={draft.available ?? "0"} onChange={(event) => onDraftChange({ ...draft, available: event.target.value })} />
+            <input className="sponsor-input" inputMode="numeric" placeholder="Free" value={draft.free ?? "0"} onChange={(event) => onDraftChange({ ...draft, free: event.target.value })} />
+            <input className="sponsor-input" inputMode="numeric" placeholder="Occupied" value={draft.occupied ?? "0"} onChange={(event) => onDraftChange({ ...draft, occupied: event.target.value })} />
+          </>
+        ) : null}
         {kind === "team" ? (
           <select className="sponsor-input" value={draft.teamGroupId ?? ""} onChange={(event) => onDraftChange({ ...draft, teamGroupId: event.target.value })}>
             <option value="">Grupo</option>
@@ -357,18 +339,48 @@ function SettingsCatalogRow<T extends CatalogItem>({ item, kind, onSave, onDeact
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(item.code);
   const [label, setLabel] = useState(item.label);
-  useEffect(() => { setCode(item.code); setLabel(item.label); }, [item.code, item.label]);
+  const pubItem = kind === "pub" ? item as PubOption : null;
+  const [available, setAvailable] = useState(String(pubItem?.available ?? 0));
+  const [free, setFree] = useState(String(pubItem?.free ?? 0));
+  const [occupied, setOccupied] = useState(String(pubItem?.occupied ?? 0));
+  useEffect(() => {
+    setCode(item.code);
+    setLabel(item.label);
+    if (pubItem) {
+      setAvailable(String(pubItem.available));
+      setFree(String(pubItem.free));
+      setOccupied(String(pubItem.occupied));
+    }
+  }, [item.code, item.label, pubItem?.available, pubItem?.free, pubItem?.occupied]);
   return (
     <div className="sponsor-catalog-row" draggable onDragStart={onDragStart} onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
       <div className="sponsor-catalog-reorder"><GripVertical size={16} /></div>
       <div className="sponsor-catalog-fields">
         <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
+        {pubItem ? (
+          <>
+            <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={available} onChange={(event) => setAvailable(event.target.value)} />
+            <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={free} onChange={(event) => setFree(event.target.value)} />
+            <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={occupied} onChange={(event) => setOccupied(event.target.value)} />
+          </>
+        ) : null}
       </div>
       <div className="sponsor-catalog-actions">
         {renderExtra ? renderExtra(item) : null}
         <button className="sponsor-button-secondary" onClick={() => { if (isEditing) { setCode(item.code); setLabel(item.label); } setIsEditing((current) => !current); }} type="button">{isEditing ? "Cancel" : "Edit"}</button>
-        {isEditing ? <button className="sponsor-button-primary" onClick={() => { onSave({ ...item, code, label } as T); setIsEditing(false); }} type="button">Save</button> : null}
+        {isEditing ? <button className="sponsor-button-primary" onClick={() => {
+          if (pubItem) {
+            const nextAvailable = parseCatalogCount(available);
+            const nextFree = parseCatalogCount(free);
+            const nextOccupied = parseCatalogCount(occupied);
+            if (!isValidPubCapacity(nextAvailable, nextFree, nextOccupied)) return;
+            onSave({ ...item, code, label, available: nextAvailable, free: nextFree, occupied: nextOccupied } as T);
+          } else {
+            onSave({ ...item, code, label } as T);
+          }
+          setIsEditing(false);
+        }} type="button">Save</button> : null}
         <button className="sponsor-button-ghost" onClick={() => onDeactivate(getCatalogItemId(kind, item))} type="button">Deactivate</button>
       </div>
     </div>

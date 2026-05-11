@@ -1,133 +1,25 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ArrowRight, Settings, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
-import { fetchCatalogSnapshot } from "..";
-import type { CatalogSnapshot } from "..";
-import { compareBySortOrder, resolveTeamSponsorshipPrice } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatCurrency } from "../../../shared/utils";
-
-const emptyCatalogs: CatalogSnapshot = {
-  pubOptions: [],
-  teamGroups: [],
-  teamCategories: [],
-  equipmentPlacements: [],
-  otherSports: [],
-  pubOptionPrices: [],
-  teamGroupPrices: [],
-  teamCategoryPriceOverrides: [],
-  otherSportPrices: [],
-};
+import { useSponsorCatalogs } from "../hooks";
+import {
+  buildSponsorOtherRows,
+  buildSponsorPubRows,
+  buildSponsorTeamColumns,
+  buildSponsorTeamMatrix,
+} from "../utils";
 
 export default function SponsorsInfo() {
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
-  const [catalogs, setCatalogs] = useState<CatalogSnapshot>(emptyCatalogs);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { catalogs, errorMessage, isLoading } = useSponsorCatalogs();
 
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadCatalogs() {
-      setIsLoading(true);
-      setErrorMessage("");
-
-      try {
-        const response = await fetchCatalogSnapshot();
-        if (!ignore) {
-          setCatalogs({
-            ...response,
-            pubOptions: [...response.pubOptions].sort(compareBySortOrder),
-            teamGroups: [...response.teamGroups].sort(compareBySortOrder),
-            teamCategories: [...response.teamCategories].sort(compareBySortOrder),
-            equipmentPlacements: [...response.equipmentPlacements].sort(compareBySortOrder),
-            otherSports: [...response.otherSports].sort(compareBySortOrder),
-          });
-        }
-      } catch (error) {
-        if (!ignore) {
-          setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar a tabela de patrocinio.");
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadCatalogs();
-    return () => {
-      ignore = true;
-    };
-  }, []);
-
-  const pubRows = useMemo(
-    () =>
-      catalogs.pubOptions
-        .map((option) => ({
-          id: option.pubId,
-          label: option.label,
-          code: option.code,
-          price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === option.pubId)?.price ?? null,
-        }))
-        .filter((row) => row.price != null),
-    [catalogs],
-  );
-
-  const otherRows = useMemo(
-    () =>
-      catalogs.otherSports
-        .map((sport) => ({
-          id: sport.sportId,
-          label: sport.label,
-          code: sport.code,
-          price: catalogs.otherSportPrices.find((price) => price.sportId === sport.sportId)?.price ?? null,
-        }))
-        .filter((row) => row.price != null),
-    [catalogs],
-  );
-
-  const teamColumns = useMemo(() => {
-    const publicGroupCodes = new Set(["FUT11", "FUT9", "FUT7"]);
-    const groupColumns = catalogs.teamGroups
-      .filter((group) => publicGroupCodes.has(group.code.toUpperCase()))
-      .filter((group) => catalogs.teamGroupPrices.some((price) => price.teamGroupId === group.teamGroupId))
-      .map((group) => ({
-        id: `group-${group.teamGroupId}`,
-        label: group.label,
-        resolvePrice: (placementId: number) =>
-          catalogs.teamGroupPrices.find(
-            (entry) => entry.teamGroupId === group.teamGroupId && entry.placementId === placementId,
-          )?.price ?? null,
-      }));
-
-    const overrideColumns = catalogs.teamCategories
-      .filter((team) =>
-        catalogs.teamCategoryPriceOverrides.some((override) => override.teamCategoryId === team.teamId),
-      )
-      .map((team) => ({
-        id: `team-${team.teamId}`,
-        label: team.label,
-        resolvePrice: (placementId: number) =>
-          resolveTeamSponsorshipPrice(team.teamId, team.teamGroupId, placementId, catalogs),
-      }));
-
-    return [...overrideColumns, ...groupColumns];
-  }, [catalogs]);
-
-  const teamMatrix = useMemo(
-    () =>
-      catalogs.equipmentPlacements.map((placement) => ({
-        placement,
-        values: teamColumns.map((column) => ({
-          id: column.id,
-          label: column.label,
-          price: column.resolvePrice(placement.equipmentId),
-        })),
-      })),
-    [catalogs.equipmentPlacements, teamColumns],
-  );
+  const pubRows = useMemo(() => buildSponsorPubRows(catalogs), [catalogs]);
+  const otherRows = useMemo(() => buildSponsorOtherRows(catalogs), [catalogs]);
+  const teamColumns = useMemo(() => buildSponsorTeamColumns(catalogs), [catalogs]);
+  const teamMatrix = useMemo(() => buildSponsorTeamMatrix(catalogs, teamColumns), [catalogs, teamColumns]);
 
   return (
     <main className="sponsor-page">
@@ -206,6 +98,7 @@ export default function SponsorsInfo() {
                   <thead>
                     <tr>
                       <th>Descritivo</th>
+                      <th>Livre</th>
                       <th>Valor</th>
                     </tr>
                   </thead>
@@ -213,6 +106,7 @@ export default function SponsorsInfo() {
                     {pubRows.map((row) => (
                       <tr key={row.id}>
                         <td>{row.label}</td>
+                        <td>{row.free}</td>
                         <td>{row.price == null ? "-" : formatCurrency(row.price)}</td>
                       </tr>
                     ))}

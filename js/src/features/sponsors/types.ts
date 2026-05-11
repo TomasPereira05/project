@@ -1,5 +1,13 @@
 export type SponsorRole = "ADMIN" | "SECRETARIA" | "NORMAL";
 
+export type PaginatedResponse<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+};
+
 export type Sponsor = {
   sponsorId: number;
   name: string;
@@ -24,11 +32,24 @@ export type Sponsorship = {
   sportId: number | null;
 };
 
+export type SponsorshipRow = {
+  sponsor: Sponsor | null;
+  sponsorship: Sponsorship;
+};
+
+export type SponsorApprovalItem = {
+  sponsor: Sponsor;
+  sponsorship: Sponsorship;
+};
+
 export type PubOption = {
   pubId: number;
   code: string;
   label: string;
   active: boolean;
+  available: number;
+  free: number;
+  occupied: number;
   sortOrder: number | null;
 };
 

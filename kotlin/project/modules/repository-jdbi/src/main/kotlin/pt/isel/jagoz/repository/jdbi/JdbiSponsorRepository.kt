@@ -21,10 +21,34 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .orElse(null)
     }
 
+    override fun findByEmail(email: String): List<Sponsor> {
+        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE lower(email) = lower(:email) ORDER BY sponsor_id DESC")
+            .bind("email", email)
+            .mapTo(Sponsor::class.java)
+            .list()
+    }
+
     override fun findAll(): List<Sponsor> {
         return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC")
             .mapTo(Sponsor::class.java)
             .list()
+    }
+
+    override fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Sponsor> {
+        return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC LIMIT :limit OFFSET :offset")
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .mapTo(Sponsor::class.java)
+            .list()
+    }
+
+    override fun countAll(): Long {
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.sponsor")
+            .mapTo(Long::class.java)
+            .one()
     }
 
     override fun save(sponsor: Sponsor): Long {

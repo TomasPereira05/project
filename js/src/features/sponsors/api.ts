@@ -6,7 +6,9 @@ import type {
   OtherSportPrice,
   PubOption,
   PubOptionPrice,
+  PaginatedResponse,
   Sponsor,
+  SponsorApprovalItem,
   SponsorFormValues,
   Sponsorship,
   SponsorshipFormValues,
@@ -16,6 +18,7 @@ import type {
   TeamGroupPrice,
 } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
+import { HttpError } from "../../shared/types/HttpError";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -28,8 +31,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Could not communicate with the server.");
+    throw await HttpError.fromResponse(response);
   }
 
   if (response.status === 204) {
@@ -44,8 +46,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return JSON.parse(text) as T;
 }
 
-export function fetchSponsors() {
-  return request<Sponsor[]>("/sponsors");
+export function fetchSponsors(page = 1, size = 20) {
+  const search = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+  return request<PaginatedResponse<Sponsor>>(`/sponsors?${search.toString()}`);
+}
+
+export function fetchSponsorById(sponsorId: number) {
+  return request<Sponsor>(`/sponsors/${sponsorId}`);
 }
 
 export function createSponsor(values: SponsorFormValues) {
@@ -74,25 +84,32 @@ export function updateSponsor(sponsorId: number, values: SponsorFormValues) {
   });
 }
 
-export function fetchSponsorshipsBySponsor(sponsorId: number) {
-  return request<Sponsorship[]>(`/sponsors/${sponsorId}/sponsorships`);
+export function fetchSponsorshipsBySponsor(sponsorId: number, page = 1, size = 8) {
+  const search = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+  return request<PaginatedResponse<Sponsorship>>(`/sponsors/${sponsorId}/sponsorships?${search.toString()}`);
 }
 
-export async function fetchAllSponsorships() {
-  const sponsors = await fetchSponsors();
-  const sponsorships = await Promise.all(
-    sponsors.map(async (sponsor) => ({
-      sponsor,
-      sponsorships: await fetchSponsorshipsBySponsor(sponsor.sponsorId),
-    })),
-  );
+export function fetchMySponsorships(page = 1, size = 8) {
+  const search = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+  return request<PaginatedResponse<Sponsorship>>(`/sponsorships/my?${search.toString()}`);
+}
 
-  return sponsorships.flatMap(({ sponsor, sponsorships }) =>
-    sponsorships.map((sponsorship) => ({
-      sponsor,
-      sponsorship,
-    })),
-  );
+export function fetchSponsorshipById(sponsorshipId: number) {
+  return request<Sponsorship>(`/sponsorships/${sponsorshipId}`);
+}
+
+export function fetchAllSponsorships(page = 1, size = 8) {
+  const search = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+  });
+  return request<PaginatedResponse<SponsorApprovalItem>>(`/sponsorships?${search.toString()}`);
 }
 
 export function createSponsorship(values: SponsorshipFormValues, price: number) {
@@ -135,7 +152,7 @@ export function fetchPubOptions() {
   return request<PubOption[]>("/sponsorship-catalog/pub-options/active");
 }
 
-export function createPubOption(payload: { code: string; label: string; sortOrder: number }) {
+export function createPubOption(payload: { code: string; label: string; available: number; free: number; occupied: number; sortOrder: number }) {
   return request<PubOption>("/sponsorship-catalog/pub-options", {
     method: "POST",
     body: JSON.stringify({
@@ -143,6 +160,9 @@ export function createPubOption(payload: { code: string; label: string; sortOrde
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: true,
+      available: payload.available,
+      free: payload.free,
+      occupied: payload.occupied,
       sortOrder: payload.sortOrder,
     }),
   });
@@ -150,7 +170,7 @@ export function createPubOption(payload: { code: string; label: string; sortOrde
 
 export function updatePubOption(
   pubId: number,
-  payload: { code: string; label: string; active: boolean; sortOrder: number | null },
+  payload: { code: string; label: string; active: boolean; available: number; free: number; occupied: number; sortOrder: number | null },
 ) {
   return request<PubOption>(`/sponsorship-catalog/pub-options/${pubId}`, {
     method: "PUT",
@@ -159,6 +179,9 @@ export function updatePubOption(
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: payload.active,
+      available: payload.available,
+      free: payload.free,
+      occupied: payload.occupied,
       sortOrder: payload.sortOrder,
     }),
   });

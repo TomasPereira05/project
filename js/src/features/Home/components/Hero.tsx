@@ -1,7 +1,10 @@
 import { ChevronDown } from "lucide-react";
 import {HERO_IMG_SRC} from "../../../shared/config/config";
+import { useTranslation } from "react-i18next";
 
 export default function Hero() {
+  const { t } = useTranslation();
+
   return (
     <section className="hero-section">
       <div 
@@ -15,19 +18,19 @@ export default function Hero() {
           
           <div className="location-badge">
             <div className="location-dot"></div>
-            <span className="location-text">Ericeira, Portugal</span>
+            <span className="location-text">{t("hero.location")}</span>
           </div>
           
-          <h1 className="hero-title" data-testid="hero-slogan">Ericeirense</h1>
-          <p className="hero-subtitle">Grupo Desportivo União Ericeirense</p>
+          <h1 className="hero-title" data-testid="hero-slogan">{t("hero.clubName")}</h1>
+          <p className="hero-subtitle">{t("hero.clubSubtitle")}</p>
           
           <div className="hero-tagline-container">
             <div className="hero-line"></div>
-            <p className="hero-tagline">A força do mar, a alma da terra</p>
+            <p className="hero-tagline">{t("hero.tagline")}</p>
           </div>
           
           <p className="hero-desc">
-            Onde o mar é mais azul. Um clube com história, paixão e uma comunidade que vive o futebol com orgulho.
+            {t("hero.description")}
           </p>
         </div>
       </div>

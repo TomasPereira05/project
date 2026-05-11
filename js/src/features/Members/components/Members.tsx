@@ -45,6 +45,8 @@ export default function Members() {
   
   const [members, setMembers] = useState<Member[]>([]);
   const [page, setPage] = useState(1);
+  const [totalMembers, setTotalMembers] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [pendingOpen, setPendingOpen] = useState(false);
@@ -57,13 +59,15 @@ export default function Members() {
       setErrorMessage("");
 
       try {
-        const response = await fetchMembers();
+        const response = await fetchMembers(page, PAGE_SIZE);
 
         if (!ignore) {
-          const sorted = [...response].sort(
+          const sorted = [...response.items].sort(
             (first, second) => first.memberNumber - second.memberNumber,
           );
           setMembers(sorted);
+          setTotalMembers(response.total);
+          setTotalPages(response.totalPages);
         }
       } catch {
         if (!ignore) {
@@ -83,7 +87,7 @@ export default function Members() {
     return () => {
       ignore = true;
     };
-  }, [role]);
+  }, [page, role]);
 
   // RBAC logic
   if (role === "NORMAL") {
@@ -99,19 +103,11 @@ export default function Members() {
     [members],
   );
 
-  const totalPages = Math.max(1, Math.ceil(members.length / PAGE_SIZE));
-
   useEffect(() => {
     if (page > totalPages) {
       setPage(totalPages);
     }
   }, [page, totalPages]);
-
-  const paginatedMembers = useMemo(() => {
-    const start = (page - 1) * PAGE_SIZE;
-    return members.slice(start, start + PAGE_SIZE);
-  }, [members, page]);
-
 
   return (
     <>
@@ -225,7 +221,7 @@ export default function Members() {
                           </tr>
                       </thead>
                       <tbody className="member-table-body">
-                          {paginatedMembers.map((member) => (
+                          {members.map((member) => (
                               <tr className="member-tr-interactive" key={member.memberId}>
                                   <td className="member-td-number">#{member.memberNumber}</td>
                                   <td className="member-td">
@@ -271,7 +267,7 @@ export default function Members() {
               {/* PAGINATION */}
               <div className="member-pagination">
                 <p className="member-pagination-text">
-                  A mostrar <span className="member-pagination-strong">{(page - 1) * PAGE_SIZE + 1}</span> até <span className="member-pagination-strong">{Math.min(page * PAGE_SIZE, members.length)}</span> de <span className="member-pagination-strong">{members.length}</span> sócios
+                  A mostrar <span className="member-pagination-strong">{totalMembers === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}</span> até <span className="member-pagination-strong">{Math.min(page * PAGE_SIZE, totalMembers)}</span> de <span className="member-pagination-strong">{totalMembers}</span> sócios
                 </p>
                 <div className="member-pagination-controls">
                   <button

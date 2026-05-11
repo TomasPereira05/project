@@ -1,4 +1,5 @@
 import { BASE_URL } from "../../shared/config/config";
+import { HttpError } from "../../shared/types/HttpError";
 import type { Athlete, AthleteRegisterValues, TeamCategory } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -11,8 +12,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Nao foi possivel comunicar com o servidor.");
+    throw await HttpError.fromResponse(response);
   }
 
   return response.json() as Promise<T>;

@@ -2,8 +2,11 @@ import { Waves } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
 import {LOGO_SRC} from "../config/config";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -15,18 +18,18 @@ export default function Footer() {
                 <img src={LOGO_SRC} alt="Logo" className="footer-logo-icon" />
               </div>
               <div>
-                <span className="footer-logo-title">ERICEIRENSE</span>
-                <p className="footer-logo-subtitle">G.D.U.E</p>
+                <span className="footer-logo-title">{t("footer.title")}</span>
+                <p className="footer-logo-subtitle">{t("footer.subtitle")}</p>
               </div>
             </div>
             <p className="footer-tagline">
               <Waves className="w-4 h-4" style={{ color: '#00A3E0' }} />
-              A força do mar, a alma da terra
+              {t("footer.tagline")}
             </p>
           </div>
 
           <div>
-            <h4 className="footer-heading">Contacto</h4>
+            <h4 className="footer-heading">{t("footer.contact")}</h4>
             <div className="footer-contact-list">
               <p>Ericeira, Portugal</p>
               <p>geral@gdue.pt</p>
@@ -35,7 +38,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="footer-heading">Redes Sociais</h4>
+            <h4 className="footer-heading">{t("footer.socials")}</h4>
             <div className="footer-socials">
               <a href="https://www.facebook.com/gdueoficial" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Facebook">
                 <FontAwesomeIcon icon={faFacebook} style={{ width: 18, height: 18 }} />
@@ -47,7 +50,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="footer-heading">Localização</h4>
+            <h4 className="footer-heading">{t("footer.location")}</h4>
             <div className="footer-contact-list">
               <p>Campo Henrique Tomás Frade</p>
               <p>Urbanização da Camacha</p>
@@ -57,7 +60,7 @@ export default function Footer() {
         </div>
 
         <div className="footer-bottom">
-          <p>© 2026 Ericeirense Futebol Clube. Todos os direitos reservados.</p>
+          <p>{t("footer.copyright")}</p>
         </div>
 
       </div>

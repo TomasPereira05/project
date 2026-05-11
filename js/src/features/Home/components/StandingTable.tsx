@@ -1,20 +1,23 @@
 import { Trophy } from "lucide-react";
 import { standings } from ".."; 
+import { useTranslation } from "react-i18next";
 
 export default function StandingsTable() {
+  const { t } = useTranslation();
+
   return (
     <section data-testid="standings-table" className="standings-section">
       <div className="st-container">
         
         <div className="standings-header-top">
           <div>
-            <span className="standings-label">Campeonato Distrital</span>
+            <span className="standings-label">{t("standings.championship")}</span>
             <h2 className="standings-title">
               <Trophy className="w-8 h-8" style={{ color: '#FACC15' }} />
-              Classificação
+              {t("standings.title")}
             </h2>
           </div>
-          <span className="standings-subtitle">Época 2025/2026</span>
+          <span className="standings-subtitle">{t("standings.season")}</span>
         </div>
 
         <div className="standings-table-card">
@@ -23,14 +26,14 @@ export default function StandingsTable() {
               <thead>
                 <tr>
                   <th>Pos</th>
-                  <th className="left-align">Equipa</th>
-                  <th>J</th>
-                  <th className="hide-sm">V</th>
-                  <th className="hide-sm">E</th>
-                  <th className="hide-sm">D</th>
-                  <th className="hide-md">GM</th>
-                  <th className="hide-md">GS</th>
-                  <th>Pts</th>
+                  <th className="left-align">{t("standings.team")}</th>
+                  <th>{t("standings.gamesPlayed")}</th>
+                  <th className="hide-sm">{t("standings.wins")}</th>
+                  <th className="hide-sm">{t("standings.draws")}</th>
+                  <th className="hide-sm">{t("standings.losses")}</th>
+                  <th className="hide-md">{t("standings.goalsFor")}</th>
+                  <th className="hide-md">{t("standings.goalsAgainst")}</th>
+                  <th>{t("standings.points")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -74,15 +77,15 @@ export default function StandingsTable() {
 
         <div className="standings-legend-container">
           <div className="legend-items">
-            <span><strong>J</strong> - Jogos</span>
-            <span className="hide-sm"><strong>V</strong> - Vitórias</span>
-            <span className="hide-sm"><strong>E</strong> - Empates</span>
-            <span className="hide-sm"><strong>D</strong> - Derrotas</span>
-            <span className="hide-md"><strong>GM</strong> - Golos Marcados</span>
-            <span className="hide-md"><strong>GS</strong> - Golos Sofridos</span>
-            <span><strong>Pts</strong> - Pontos</span>
+            <span><strong>{t("standings.gamesPlayed")}</strong> - {t("standings.games")}</span>
+            <span className="hide-sm"><strong>{t("standings.wins")}</strong> - {t("standings.winsLabel")}</span>
+            <span className="hide-sm"><strong>{t("standings.draws")}</strong> - {t("standings.drawsLabel")}</span>
+            <span className="hide-sm"><strong>{t("standings.losses")}</strong> - {t("standings.lossesLabel")}</span>
+            <span className="hide-md"><strong>{t("standings.goalsFor")}</strong> - {t("standings.goalsForLabel")}</span>
+            <span className="hide-md"><strong>{t("standings.goalsAgainst")}</strong> - {t("standings.goalsAgainstLabel")}</span>
+            <span><strong>{t("standings.points")}</strong> - {t("standings.pointsLabel")}</span>
           </div>
-          <p className="standings-footer-note">* Dados placeholder - Classificação real em breve</p>
+          <p className="standings-footer-note">* {t("standings.footer")}</p>
         </div>
 
       </div>

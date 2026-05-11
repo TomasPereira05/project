@@ -22,7 +22,9 @@ import {
 import {
   SponsorApprovals,
   SponsorCreate,
+  MySponsorships,
   SponsorSettings,
+  SponsorshipDetails,
   SponsorsInfo,
   SponsorsLayout,
 } from "./features/sponsors";
@@ -142,6 +144,22 @@ const router = createBrowserRouter([
         <AuthRequire>
           <SponsorCreate />
         </AuthRequire>,
+      },
+      {
+        path: "my",
+        element: (
+          <AuthRequire>
+            <MySponsorships />
+          </AuthRequire>
+        ),
+      },
+      {
+        path: "my/:sponsorshipId",
+        element: (
+          <AuthRequire>
+            <SponsorshipDetails />
+          </AuthRequire>
+        ),
       },
       {
         path: "settings",

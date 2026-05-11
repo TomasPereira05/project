@@ -125,6 +125,27 @@ class UserService(
             success(user)
         }
 
+    fun getUsersPage(
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<UserServiceError, Page<User>> {
+        if (authenticatedUser.role != Role.ADMIN && authenticatedUser.role != Role.SECRETARIA) {
+            return failure(UserServiceError.Unauthorized("Not authorized"))
+        }
+
+        val request = pageRequest(page, size)
+        return transactionManager.run { transaction ->
+            success(
+                pageOf(
+                    items = transaction.userRepository.findPage(request.size, request.offset),
+                    request = request,
+                    total = transaction.userRepository.countAll(),
+                ),
+            )
+        }
+    }
+
     fun getUserByToken(token: String): User? {
         if (!userDomain.isTokenValidFormat(token)) {
             return null

@@ -1,65 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ShieldAlert } from "lucide-react";
-import { approveSponsorship, cancelSponsorship, fetchAllSponsorships, markSponsorshipPaid } from "..";
-import type { Sponsor, Sponsorship } from "..";
-import { sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "..";
+import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatCurrency } from "../../../shared/utils";
-
-type SponsorApprovalItem = {
-  sponsor: Sponsor;
-  sponsorship: Sponsorship;
-};
+import { useSponsorApprovals } from "../hooks";
+import { orderSponsorApprovalItems, sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "../utils";
 
 export default function SponsorApprovals() {
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
-  const [items, setItems] = useState<SponsorApprovalItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [page, setPage] = useState(1);
+  const { errorMessage, isLoading, items, pageSize, runAction, totalItems, totalPages } = useSponsorApprovals(canManage, page);
+  const orderedItems = useMemo(() => orderSponsorApprovalItems(items), [items]);
 
   useEffect(() => {
-    if (!canManage) {
-      return;
+    if (page > totalPages) {
+      setPage(totalPages);
     }
-
-    let ignore = false;
-
-    async function loadItems() {
-      setIsLoading(true);
-      setErrorMessage("");
-      try {
-        const response = await fetchAllSponsorships();
-        if (!ignore) {
-          setItems(response);
-        }
-      } catch (error) {
-        if (!ignore) {
-          setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar os patrocinios.");
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void loadItems();
-    return () => {
-      ignore = true;
-    };
-  }, [canManage]);
-
-  const orderedItems = useMemo(
-    () =>
-      [...items].sort((first, second) => {
-        if (first.sponsorship.status === "SUBMETIDO" && second.sponsorship.status !== "SUBMETIDO") return -1;
-        if (first.sponsorship.status !== "SUBMETIDO" && second.sponsorship.status === "SUBMETIDO") return 1;
-        return second.sponsorship.sponsorshipId - first.sponsorship.sponsorshipId;
-      }),
-    [items],
-  );
+  }, [page, totalPages]);
 
   if (!role) {
     return <Navigate to="/auth/login" replace />;
@@ -67,22 +25,6 @@ export default function SponsorApprovals() {
 
   if (!canManage) {
     return <Navigate to="/sponsors" replace />;
-  }
-
-  async function runAction(sponsorshipId: number, action: "approve" | "paid" | "cancel") {
-    try {
-      if (action === "approve") {
-        await approveSponsorship(sponsorshipId);
-      } else if (action === "paid") {
-        await markSponsorshipPaid(sponsorshipId);
-      } else {
-        await cancelSponsorship(sponsorshipId);
-      }
-      const response = await fetchAllSponsorships();
-      setItems(response);
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o patrocinio.");
-    }
   }
 
   return (
@@ -153,6 +95,33 @@ export default function SponsorApprovals() {
             </div>
           )}
         </section>
+
+        <div className="member-pagination">
+          <p className="member-pagination-text">
+            A mostrar <span className="member-pagination-strong">{totalItems === 0 ? 0 : (page - 1) * pageSize + 1}</span> ate <span className="member-pagination-strong">{Math.min(page * pageSize, totalItems)}</span> de <span className="member-pagination-strong">{totalItems}</span> patrocinios
+          </p>
+          <div className="member-pagination-controls">
+            <button
+              className="member-icon-btn"
+              disabled={page === 1}
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              type="button"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="member-pagination-current">
+              {page} / {totalPages}
+            </span>
+            <button
+              className="member-icon-btn"
+              disabled={page === totalPages}
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              type="button"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
       </div>
     </main>
   );

@@ -5,11 +5,18 @@ import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.SponsorType
 import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
+
+data class SponsorshipWithSponsor(
+    val sponsor: pt.isel.jagoz.domain.sponsor.Sponsor,
+    val sponsorship: Sponsorship,
+)
 
 @Named
 class SponsorshipService(
@@ -18,8 +25,13 @@ class SponsorshipService(
 ) {
     fun createSponsorship(sponsorship: Sponsorship): SponsorshipResult =
         transactionManager.run { transaction ->
-            if (!transaction.sponsorRepository.existsById(sponsorship.sponsorId)) {
-                return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+            when (val validatedSponsor = sponsorDomain.validateForCreation(sponsor)) {
+                is Either.Left -> return@run validatedSponsor
+                is Either.Right -> Unit
             }
 
             when (val enriched = enrichWithPricing(transaction, sponsorship)) {
@@ -28,6 +40,13 @@ class SponsorshipService(
                     when (val validated = sponsorDomain.validateForCreation(enriched.value)) {
                         is Either.Left -> validated
                         is Either.Right -> {
+                            if (validated.value.type == SponsorType.PUB) {
+                                val pubOptionId = validated.value.pubOptionId
+                                    ?: return@run failure(SponsorError.ValidationError("pubOptionId required for PUB"))
+                                if (!transaction.pubOptionRepository.reserve(pubOptionId)) {
+                                    return@run failure(SponsorError.DomainError("No free spaces for pub option $pubOptionId"))
+                                }
+                            }
                             val sponsorshipId = transaction.sponsorshipRepository.save(validated.value)
                             success(validated.value.copy(sponsorshipId = sponsorshipId))
                         }
@@ -45,6 +64,22 @@ class SponsorshipService(
             success(sponsorship)
         }
 
+    fun getSponsorshipByIdForUser(
+        sponsorshipId: Long,
+        authenticatedUser: AuthenticatedUser,
+    ): SponsorshipResult =
+        transactionManager.run { transaction ->
+            val sponsorship =
+                transaction.sponsorshipRepository.findById(sponsorshipId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsorship $sponsorshipId not found"))
+
+            if (!canAccessSponsorship(transaction, authenticatedUser, sponsorship)) {
+                return@run failure(SponsorError.DomainError("Sponsorship $sponsorshipId not found"))
+            }
+
+            success(sponsorship)
+        }
+
     fun getSponsorshipsBySponsorId(sponsorId: Long): Either<SponsorError, List<Sponsorship>> =
         transactionManager.run { transaction ->
             if (!transaction.sponsorRepository.existsById(sponsorId)) {
@@ -52,6 +87,122 @@ class SponsorshipService(
             }
 
             success(transaction.sponsorshipRepository.findBySponsorId(sponsorId))
+        }
+
+    fun getSponsorshipsBySponsorIdForUserPage(
+        sponsorId: Long,
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<SponsorError, Page<Sponsorship>> =
+        transactionManager.run { transaction ->
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
+
+            if (!canManageSponsorships(authenticatedUser) && !sponsor.email.equals(authenticatedUser.email, ignoreCase = true)) {
+                return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
+            }
+
+            val request = pageRequest(page, size)
+            success(
+                pageOf(
+                    items = transaction.sponsorshipRepository.findPageBySponsorId(sponsorId, request.size, request.offset),
+                    request = request,
+                    total = transaction.sponsorshipRepository.countBySponsorId(sponsorId),
+                ),
+            )
+        }
+
+    fun getSponsorshipsBySponsorIdForUser(
+        sponsorId: Long,
+        authenticatedUser: AuthenticatedUser,
+    ): Either<SponsorError, List<Sponsorship>> =
+        transactionManager.run { transaction ->
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
+
+            if (authenticatedUser.role != Role.ADMIN && !sponsor.email.equals(authenticatedUser.email, ignoreCase = true)) {
+                return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
+            }
+
+            success(transaction.sponsorshipRepository.findBySponsorId(sponsorId))
+        }
+
+    fun getSponsorshipsForUser(authenticatedUser: AuthenticatedUser): Either<SponsorError, List<Sponsorship>> =
+        transactionManager.run { transaction ->
+            if (canManageSponsorships(authenticatedUser)) {
+                return@run success(transaction.sponsorshipRepository.findAll())
+            }
+
+            val sponsors = transaction.sponsorRepository.findByEmail(authenticatedUser.email)
+            val sponsorships = sponsors.flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
+
+            success(sponsorships.sortedByDescending { it.sponsorshipId })
+        }
+
+    fun getSponsorshipsForUserPage(
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<SponsorError, Page<Sponsorship>> =
+        transactionManager.run { transaction ->
+            val request = pageRequest(page, size)
+            if (canManageSponsorships(authenticatedUser)) {
+                return@run success(
+                    pageOf(
+                        items = transaction.sponsorshipRepository.findPage(request.size, request.offset),
+                        request = request,
+                        total = transaction.sponsorshipRepository.countAll(),
+                    ),
+                )
+            }
+
+            val sponsors = transaction.sponsorRepository.findByEmail(authenticatedUser.email)
+            val sponsorships =
+                sponsors
+                    .flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
+                    .sortedByDescending { it.sponsorshipId }
+
+            success(
+                pageOf(
+                    items = sponsorships.drop(request.offset).take(request.size),
+                    request = request,
+                    total = sponsorships.size.toLong(),
+                ),
+            )
+        }
+
+    fun getAllSponsorshipsWithSponsorsPage(
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+    ): Either<SponsorError, Page<SponsorshipWithSponsor>> =
+        transactionManager.run { transaction ->
+            if (!canManageSponsorships(authenticatedUser)) {
+                return@run failure(SponsorError.DomainError("Not authorized"))
+            }
+
+            val request = pageRequest(page, size)
+            val sponsorships = transaction.sponsorshipRepository.findPage(request.size, request.offset)
+            val sponsors =
+                sponsorships
+                    .mapNotNull { sponsorship -> transaction.sponsorRepository.findById(sponsorship.sponsorId) }
+                    .associateBy { it.sponsorId }
+
+            success(
+                pageOf(
+                    items =
+                        sponsorships.mapNotNull { sponsorship ->
+                            sponsors[sponsorship.sponsorId]?.let { sponsor ->
+                                SponsorshipWithSponsor(sponsor, sponsorship)
+                            }
+                        },
+                    request = request,
+                    total = transaction.sponsorshipRepository.countAll(),
+                ),
+            )
         }
 
     fun approveSponsorship(sponsorshipId: Long): SponsorshipResult =
@@ -74,6 +225,13 @@ class SponsorshipService(
             when (val updated = transition(sponsorship)) {
                 is Either.Left -> updated
                 is Either.Right -> {
+                    if (
+                        sponsorship.type == SponsorType.PUB &&
+                        sponsorship.status != updated.value.status &&
+                        updated.value.status.name == "CANCELADO"
+                    ) {
+                        sponsorship.pubOptionId?.let { transaction.pubOptionRepository.release(it) }
+                    }
                     transaction.sponsorshipRepository.update(updated.value)
                     success(updated.value)
                 }
@@ -159,4 +317,20 @@ class SponsorshipService(
             }
         }
     }
+
+    private fun canAccessSponsorship(
+        transaction: Transaction,
+        authenticatedUser: AuthenticatedUser,
+        sponsorship: Sponsorship,
+    ): Boolean {
+        if (canManageSponsorships(authenticatedUser)) {
+            return true
+        }
+
+        val sponsor = transaction.sponsorRepository.findById(sponsorship.sponsorId) ?: return false
+        return sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
+    }
+
+    private fun canManageSponsorships(authenticatedUser: AuthenticatedUser): Boolean =
+        authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA
 }

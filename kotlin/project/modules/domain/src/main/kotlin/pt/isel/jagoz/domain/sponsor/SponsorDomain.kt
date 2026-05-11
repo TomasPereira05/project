@@ -62,6 +62,17 @@ class SponsorDomain {
         return success(s)
     }
 
+    fun validateForCreation(sponsor: Sponsor): Either<SponsorError, Sponsor> {
+        validateSponsor(
+            name = sponsor.name,
+            email = sponsor.email,
+            phone = sponsor.phone,
+            nif = sponsor.nif,
+        )?.let { return failure(it.toSponsorError()) }
+
+        return success(sponsor)
+    }
+
     fun markPaid(s: Sponsorship): Either<SponsorError, Sponsorship> {
         if (s.status != SponsorshipStatus.APROVADO) {
             return failure(
@@ -79,39 +90,7 @@ class SponsorDomain {
         phone: String,
         nif: String,
     ): Either<SponsorError, Sponsor> {
-        ValidationUtils.requireNotBlank(name, "name")?.let {
-            return failure(it.toSponsorError())
-        }
-
-        ValidationUtils.requireNotBlank(email, "email")?.let {
-            return failure(it.toSponsorError())
-        }
-
-        ValidationUtils.requireRegex(
-            email,
-            ValidationPatterns.EMAIL,
-            "email",
-            "invalid email format",
-        )?.let {
-            return failure(it.toSponsorError())
-        }
-
-        ValidationUtils.requireNotBlank(phone, "phone")?.let {
-            return failure(it.toSponsorError())
-        }
-
-        ValidationUtils.requireNotBlank(nif, "nif")?.let {
-            return failure(it.toSponsorError())
-        }
-
-        ValidationUtils.requireRegex(
-            nif,
-            ValidationPatterns.NIF,
-            "nif",
-            "invalid nif format",
-        )?.let {
-            return failure(it.toSponsorError())
-        }
+        validateSponsor(name, email, phone, nif)?.let { return failure(it.toSponsorError()) }
 
         return success(
             sponsor.copy(
@@ -122,6 +101,31 @@ class SponsorDomain {
             ),
         )
     }
+
+    private fun validateSponsor(
+        name: String,
+        email: String,
+        phone: String,
+        nif: String,
+    ): ValidationError? =
+        firstError(
+            ValidationUtils.requireNotBlank(name, "name"),
+            ValidationUtils.requireNotBlank(email, "email"),
+            ValidationUtils.requireRegex(
+                email,
+                ValidationPatterns.EMAIL,
+                "email",
+                "invalid email format",
+            ),
+            ValidationUtils.requireNotBlank(phone, "phone"),
+            ValidationUtils.requireNotBlank(nif, "nif"),
+            ValidationUtils.requireRegex(
+                nif,
+                ValidationPatterns.NIF,
+                "nif",
+                "must have 9 digits",
+            ),
+        )
 
     private fun validateSponsorship(s: Sponsorship): ValidationError? {
         ValidationUtils.requireNotBlank(s.season, "season")?.let { return it }

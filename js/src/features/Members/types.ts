@@ -1,6 +1,14 @@
 export type MemberCategory = "SOCIO" | "ATLETA_SOCIO";
 export type MemberStatus = "PENDENTE" | "ATIVO" | "INATIVO" | "REJEITADO";
 
+export type PaginatedResponse<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+};
+
 export type Member = {
   memberId: number;
   userId: number;

@@ -34,6 +34,70 @@ class JdbiSponsorshipRepository(private val handle: Handle) : SponsorshipReposit
             .list()
     }
 
+    override fun findAll(): List<Sponsorship> {
+        return handle.createQuery(
+            """
+            SELECT s.*
+            FROM jagoz.sponsorship s
+            ORDER BY s.sponsorship_id DESC
+            """,
+        )
+            .mapTo(Sponsorship::class.java)
+            .list()
+    }
+
+    override fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Sponsorship> {
+        return handle.createQuery(
+            """
+            SELECT s.*
+            FROM jagoz.sponsorship s
+            ORDER BY s.sponsorship_id DESC
+            LIMIT :limit OFFSET :offset
+            """,
+        )
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .mapTo(Sponsorship::class.java)
+            .list()
+    }
+
+    override fun countAll(): Long {
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.sponsorship")
+            .mapTo(Long::class.java)
+            .one()
+    }
+
+    override fun findPageBySponsorId(
+        sponsorId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<Sponsorship> {
+        return handle.createQuery(
+            """
+            SELECT s.*
+            FROM jagoz.sponsorship s
+            WHERE s.sponsor_id = :sponsorId
+            ORDER BY s.sponsorship_id DESC
+            LIMIT :limit OFFSET :offset
+            """,
+        )
+            .bind("sponsorId", sponsorId)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .mapTo(Sponsorship::class.java)
+            .list()
+    }
+
+    override fun countBySponsorId(sponsorId: Long): Long {
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.sponsorship WHERE sponsor_id = :sponsorId")
+            .bind("sponsorId", sponsorId)
+            .mapTo(Long::class.java)
+            .one()
+    }
+
     override fun save(sponsorship: Sponsorship): Long {
         return handle.createUpdate(
             """

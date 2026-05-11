@@ -1,0 +1,96 @@
+{
+  "common": {
+    "soon": "coming soon"
+  },
+  "header": {
+    "logoAlt": "Logo",
+    "clubSubtitle": "Grupo Desportivo União Ericeirense",
+    "aria": {
+      "menu": "Menu",
+      "userAccount": "User account",
+      "language": "Language"
+    },
+    "nav": {
+      "members": "Members",
+      "sponsors": "Sponsorships",
+      "teams": "Teams",
+      "otherSports": "Other sports"
+    },
+    "auth": {
+      "login": "Sign in",
+      "register": "Register",
+      "logout": "Sign out",
+      "hello": "Hi, {{username}}"
+    },
+    "members": {
+      "profile": "Member profile",
+      "list": "Member list",
+      "become": "Become a member"
+    },
+    "sponsors": {
+      "info": "Information",
+      "my": "My sponsorships",
+      "approvals": "Approvals",
+      "settings": "Settings",
+      "become": "Become a sponsor"
+    },
+    "user": {
+      "profile": "Profile"
+    },
+    "teams": {
+      "becomeAthlete": "Become an athlete"
+    }
+  },
+  "hero": {
+    "location": "Ericeira, Portugal",
+    "clubName": "Ericeirense",
+    "clubSubtitle": "Grupo Desportivo União Ericeirense",
+    "tagline": "The strength of the sea, the soul of the land",
+    "description": "Where the sea is bluest. A club with history, passion, and a community that lives football with pride."
+  },
+  "newsGrid": {
+    "label": "Latest Updates",
+    "title": "Club News",
+    "viewAll": "View All",
+    "placeholderText": "* Placeholder content - Actual news will be loaded soon"
+  },
+  "standings": {
+    "championship": "District Championship",
+    "title": "Standings",
+    "season": "2025/2026 Season",
+    "team": "Team",
+    "games": "Games",
+    "gamesPlayed": "GP",
+    "wins": "W",
+    "winsLabel": "Wins",
+    "draws": "D",
+    "drawsLabel": "Draws",
+    "losses": "L",
+    "lossesLabel": "Losses",
+    "goalsFor": "GF",
+    "goalsForLabel": "Goals For",
+    "goalsAgainst": "GA",
+    "goalsAgainstLabel": "Goals Against",
+    "points": "Pts",
+    "pointsLabel": "Points",
+    "legend": {
+      "games": "Games Played",
+      "wins": "Wins",
+      "draws": "Draws",
+      "losses": "Losses",
+      "goalsFor": "Goals For",
+      "goalsAgainst": "Goals Against",
+      "points": "Points"
+    },
+    "footer": "* Placeholder data - Real standings coming soon"
+  },
+  "footer": {
+    "title": "ERICEIRENSE",
+    "subtitle": "G.D.U.E",
+    "tagline": "The strength of the sea, the soul of the land",
+    "contact": "Contact",
+    "socials": "Social Networks",
+    "location": "Location",
+    "copyright": "© 2026 Ericeirense Futebol Clube. All rights reserved."
+  }
+}

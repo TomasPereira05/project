@@ -7,7 +7,16 @@ interface SponsorRepository {
 
     fun findByNif(nif: String): Sponsor?
 
+    fun findByEmail(email: String): List<Sponsor>
+
     fun findAll(): List<Sponsor>
+
+    fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Sponsor>
+
+    fun countAll(): Long
 
     fun save(sponsor: Sponsor): Long
 

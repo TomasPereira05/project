@@ -23,6 +23,7 @@ import pt.isel.jagoz.http.model.member.tooutput
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.MemberService
+import pt.isel.jagoz.service.Page
 
 @RestController
 class MemberController(
@@ -38,9 +39,20 @@ class MemberController(
         )
 
     @GetMapping(Uris.Members.GET_MEMBERS)
-    fun getAllMembers(): ResponseEntity<List<MemberOutput>> {
-        val members = memberService.getAllMembers().map{it.tooutput()}
-        return ResponseEntity.ok(members)
+    fun getAllMembers(
+        @RequestParam(defaultValue = "1") page: Int,
+        @RequestParam(defaultValue = "8") size: Int,
+    ): ResponseEntity<Page<MemberOutput>> {
+        val members = memberService.getMembersPage(page, size)
+        return ResponseEntity.ok(
+            Page(
+                items = members.items.map { it.tooutput() },
+                page = members.page,
+                size = members.size,
+                total = members.total,
+                totalPages = members.totalPages,
+            ),
+        )
     }
 
     @GetMapping(Uris.Members.GET_ACTIVE_MEMBERS)

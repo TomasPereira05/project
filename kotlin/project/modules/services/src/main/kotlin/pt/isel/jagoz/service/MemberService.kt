@@ -117,6 +117,22 @@ class MemberService(
         }
     }
 
+    fun getMembersPage(
+        page: Int,
+        size: Int,
+    ): Page<Member> {
+        LOG.debug("Retrieving members page $page with size $size")
+
+        val request = pageRequest(page, size)
+        return transactionManager.run { transaction ->
+            pageOf(
+                items = transaction.memberRepository.findPage(request.size, request.offset),
+                request = request,
+                total = transaction.memberRepository.countAll(),
+            )
+        }
+    }
+
     /**
      * Retrieves all active members.
      *

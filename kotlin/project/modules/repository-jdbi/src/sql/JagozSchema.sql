@@ -2,10 +2,6 @@ drop schema jagoz cascade;
 drop type if exists member_category cascade;
 drop type if exists member_status cascade;
 drop type if exists sponsor_type cascade;
-drop type if exists pub_option cascade;
-drop type if exists team_category cascade;
-drop type if exists equipment_placement cascade;
-drop type if exists other_sport cascade;
 drop type if exists sponsorship_status cascade;
 drop type if exists user_role cascade;
 drop type if exists charge_type cascade;
@@ -114,7 +110,17 @@ CREATE TABLE pub_option (
     code VARCHAR(50) UNIQUE NOT NULL,
     label TEXT NOT NULL,
     active BOOLEAN DEFAULT TRUE,
-    sort_order INT NOT NULL DEFAULT 0
+    available INT NOT NULL DEFAULT 0,
+    free INT NOT NULL DEFAULT 0,
+    occupied INT NOT NULL DEFAULT 0,
+    sort_order INT NOT NULL DEFAULT 0,
+
+    CONSTRAINT chk_pub_option_capacity CHECK (
+        available >= 0
+        AND free >= 0
+        AND occupied >= 0
+        AND free + occupied <= available
+    )
 );
 
 CREATE TABLE pub_option_price (

@@ -9,14 +9,16 @@ export class HttpError extends Error {
     public status?: number;
     public title?: string;
     public description?: string;
+    public type?: string;
 
-    constructor(message: string, status?: number, title?: string, description?: string) {
+    constructor(message: string, status?: number, title?: string, description?: string, type?: string) {
         super(message);
 
         Object.setPrototypeOf(this, HttpError.prototype);
         this.status = status;
         this.title = title;
         this.description = description;
+        this.type = type;
     }
 
     /**
@@ -28,12 +30,25 @@ export class HttpError extends Error {
     static async fromResponse(response: Response): Promise<HttpError> {
         const defaultMessage = "An unexpected error occurred.";
         try {
-            const errorData = await response.json();
+            const text = await response.text();
+            if (!text) {
+                return new HttpError(defaultMessage, response.status);
+            }
+
+            let errorData: any;
+            try {
+                errorData = JSON.parse(text);
+            } catch {
+                return new HttpError(text, response.status);
+            }
+
+            const message = errorData.message || errorData.detail || errorData.description || defaultMessage;
             return new HttpError(
-                errorData.description || defaultMessage,
+                message,
                 response.status,
                 errorData.title,
-                errorData.description
+                errorData.description,
+                errorData.type,
             );
         } catch {
             return new HttpError(defaultMessage, response.status);

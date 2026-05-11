@@ -62,6 +62,23 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
             .orElse(null)
     }
 
+    override fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<User> {
+        return handle.createQuery("SELECT * FROM jagoz.users ORDER BY user_id ASC LIMIT :limit OFFSET :offset")
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .map(UserMapper())
+            .list()
+    }
+
+    override fun countAll(): Long {
+        return handle.createQuery("SELECT COUNT(*) FROM jagoz.users")
+            .mapTo(Long::class.java)
+            .one()
+    }
+
     override fun update(user: User) {
         handle.createUpdate(
             """

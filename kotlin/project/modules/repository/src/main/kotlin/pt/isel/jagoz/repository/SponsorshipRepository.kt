@@ -8,6 +8,23 @@ interface SponsorshipRepository {
 
     fun findBySponsorId(sponsorId: Long): List<Sponsorship>
 
+    fun findAll(): List<Sponsorship>
+
+    fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Sponsorship>
+
+    fun countAll(): Long
+
+    fun findPageBySponsorId(
+        sponsorId: Long,
+        limit: Int,
+        offset: Int,
+    ): List<Sponsorship>
+
+    fun countBySponsorId(sponsorId: Long): Long
+
     fun save(sponsorship: Sponsorship): Long
 
     fun updateStatus(

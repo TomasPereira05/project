@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
-import { createSponsor, createSponsorship, fetchCatalogSnapshot } from "..";
-import type { CatalogSnapshot, SponsorFormValues, SponsorshipFormValues } from "..";
-import { compareBySortOrder, resolveTeamSponsorshipPrice } from "..";
+import { createSponsor, createSponsorship } from "..";
+import type { SponsorFormValues, SponsorshipFormValues } from "..";
 import { formatCurrency } from "../../../shared/utils";
+import { useSponsorCatalogs } from "../hooks";
+import { buildOtherSponsorshipCards, buildPubSponsorshipCards, buildTeamSponsorshipGroups } from "../utils";
 
 const initialSponsorForm: SponsorFormValues = {
   name: "",
@@ -24,109 +25,22 @@ const initialSponsorshipForm: SponsorshipFormValues = {
 };
 
 export default function SponsorCreate() {
-  const [catalogs, setCatalogs] = useState<CatalogSnapshot>({
-    pubOptions: [],
-    teamGroups: [],
-    teamCategories: [],
-    equipmentPlacements: [],
-    otherSports: [],
-    pubOptionPrices: [],
-    teamGroupPrices: [],
-    teamCategoryPriceOverrides: [],
-    otherSportPrices: [],
+  const { catalogs, errorMessage: catalogErrorMessage, isLoading } = useSponsorCatalogs({
+    errorMessage: "Nao foi possivel carregar as opcoes de patrocinio.",
   });
   const [sponsorForm, setSponsorForm] = useState<SponsorFormValues>(initialSponsorForm);
   const [selection, setSelection] = useState<SponsorshipFormValues>(initialSponsorshipForm);
-  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [teamIndex, setTeamIndex] = useState(0);
 
-  useEffect(() => {
-    let ignore = false;
+  const displayErrorMessage = errorMessage || catalogErrorMessage;
 
-    async function loadCatalogs() {
-      setIsLoading(true);
-      setErrorMessage("");
-      try {
-        const response = await fetchCatalogSnapshot();
-        if (!ignore) {
-          setCatalogs({
-            ...response,
-            pubOptions: [...response.pubOptions].sort(compareBySortOrder),
-            teamGroups: [...response.teamGroups].sort(compareBySortOrder),
-            teamCategories: [...response.teamCategories].sort(compareBySortOrder),
-            equipmentPlacements: [...response.equipmentPlacements].sort(compareBySortOrder),
-            otherSports: [...response.otherSports].sort(compareBySortOrder),
-          });
-        }
-      } catch (error) {
-        if (!ignore) {
-          setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar as opcoes de patrocinio.");
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
+  const pubCards = useMemo(() => buildPubSponsorshipCards(catalogs), [catalogs]);
 
-    void loadCatalogs();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  const teamOptionGroups = useMemo(() => buildTeamSponsorshipGroups(catalogs), [catalogs]);
 
-  const pubCards = useMemo(
-    () =>
-      catalogs.pubOptions
-        .map((item) => ({
-          key: `PUB-${item.pubId}`,
-          type: "PUB" as const,
-          title: item.label,
-          description: item.label,
-          price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === item.pubId)?.price ?? null,
-          pubOptionId: item.pubId,
-        }))
-        .filter((item) => item.price != null),
-    [catalogs.pubOptionPrices, catalogs.pubOptions],
-  );
-
-  const teamOptionGroups = useMemo(
-    () =>
-      catalogs.teamCategories
-        .map((team) => ({
-          team,
-          options: catalogs.equipmentPlacements
-            .map((placement) => ({
-              key: `TEAM-${team.teamId}-${placement.equipmentId}`,
-              type: "TEAM" as const,
-              title: placement.label,
-              description: `${team.label} / ${placement.label}`,
-              price: resolveTeamSponsorshipPrice(team.teamId, team.teamGroupId, placement.equipmentId, catalogs),
-              teamCategoryId: team.teamId,
-              placementId: placement.equipmentId,
-            }))
-            .filter((item) => item.price != null),
-        }))
-        .filter((group) => group.options.length > 0),
-    [catalogs],
-  );
-
-  const otherCards = useMemo(
-    () =>
-      catalogs.otherSports
-        .map((item) => ({
-          key: `OTHER-${item.sportId}`,
-          type: "OTHER" as const,
-          title: item.label,
-          description: item.label,
-          price: catalogs.otherSportPrices.find((price) => price.sportId === item.sportId)?.price ?? null,
-          sportId: item.sportId,
-        }))
-        .filter((item) => item.price != null),
-    [catalogs.otherSportPrices, catalogs.otherSports],
-  );
+  const otherCards = useMemo(() => buildOtherSponsorshipCards(catalogs), [catalogs]);
 
   const availableOptions = useMemo(
     () => [...pubCards, ...teamOptionGroups.flatMap((group) => group.options), ...otherCards],
@@ -251,10 +165,10 @@ export default function SponsorCreate() {
           </Link>
         </section>
 
-        {errorMessage ? (
+        {displayErrorMessage ? (
           <div className="sponsor-feedback sponsor-feedback-error">
             <ShieldAlert size={18} />
-            <span>{errorMessage}</span>
+            <span>{displayErrorMessage}</span>
           </div>
         ) : null}
 
@@ -409,6 +323,7 @@ function SponsorOptionButton({
     title: string;
     description: string;
     price: number | null;
+    free?: number;
   };
   isSelected: boolean;
   onSelect: () => void;
@@ -422,7 +337,7 @@ function SponsorOptionButton({
       <div>
         <span className="sponsor-badge sponsor-badge-approved">{option.type}</span>
         <h3>{option.title}</h3>
-        <p>{option.description}</p>
+        <p>{option.description}{option.type === "PUB" && option.free != null ? ` - ${option.free} livres` : ""}</p>
       </div>
       <strong>{option.price == null ? "-" : formatCurrency(option.price)}</strong>
     </button>

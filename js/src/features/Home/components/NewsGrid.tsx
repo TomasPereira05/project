@@ -1,7 +1,10 @@
 import { ArrowRight, Calendar } from "lucide-react";
 import { news } from "..";
+import { useTranslation } from "react-i18next";
 
 export default function NewsGrid() {
+  const { t } = useTranslation();
+  
   return (
     <section id="news-section" data-testid="news-section" className="news-section">
       <div className="news-container">
@@ -9,12 +12,12 @@ export default function NewsGrid() {
         {/* Header */}
         <div className="news-header">
           <div>
-            <span className="news-label">Últimas Atualizações</span>
-            <h2 className="news-title">Notícias do Clube</h2>
+            <span className="news-label">{t("newsGrid.label")}</span>
+            <h2 className="news-title">{t("newsGrid.title")}</h2>
           </div>
 
           <button className="news-view-all">
-            Ver Todas
+            {t("newsGrid.viewAll")}
             <ArrowRight />
           </button>
         </div>
@@ -51,10 +54,9 @@ export default function NewsGrid() {
           ))}
         </div>
 
-        {/* Footer info manually requested in snippet */}
         <div className="news-footer">
           <p className="news-footer-text">
-            * Conteúdo placeholder - As notícias reais serão carregadas em breve
+            {t("newsGrid.placeholderText")}
           </p>
         </div>
 
