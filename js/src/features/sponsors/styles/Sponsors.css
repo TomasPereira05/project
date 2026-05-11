@@ -373,7 +373,7 @@
   }
 
   .sponsor-catalog-grid {
-    @apply grid gap-5 xl:grid-cols-2;
+    @apply grid items-start gap-5 xl:auto-rows-max;
   }
 
   .sponsor-catalog-section {
@@ -400,6 +400,10 @@
     @apply flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 md:flex-row md:items-center;
   }
 
+  .sponsor-catalog-row.is-muted {
+    @apply bg-slate-50 opacity-75;
+  }
+
   .sponsor-catalog-reorder {
     @apply flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-text-secondary;
   }
@@ -410,6 +414,51 @@
 
   .sponsor-catalog-actions {
     @apply flex flex-wrap items-center gap-2;
+  }
+
+  .sponsor-checkbox-line {
+    @apply flex items-center gap-2 text-sm font-semibold text-text-secondary;
+  }
+
+  .team-settings-management-grid {
+    @apply grid items-start gap-5 xl:auto-rows-max;
+  }
+
+  .team-settings-inline-form {
+    @apply md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto];
+  }
+
+  .team-settings-field {
+    @apply flex min-w-0 flex-col gap-1;
+  }
+
+  .team-settings-field-label {
+    @apply relative inline-flex w-fit items-center text-xs font-bold uppercase text-text-secondary;
+  }
+
+  .team-settings-tooltip {
+    @apply invisible absolute left-0 top-full z-20 mt-2 w-60 rounded-lg border border-border bg-white p-3 text-left text-xs font-medium normal-case text-text-primary opacity-0 shadow-lg transition;
+  }
+
+  .team-settings-field-label:hover .team-settings-tooltip,
+  .team-settings-field-label:focus .team-settings-tooltip {
+    @apply visible opacity-100;
+  }
+
+  .team-settings-row-fields {
+    @apply md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .team-settings-draggable-row {
+    @apply cursor-grab transition;
+  }
+
+  .team-settings-draggable-row:active {
+    @apply cursor-grabbing;
+  }
+
+  .team-settings-draggable-row.is-dragging {
+    @apply border-primary bg-primary/5 opacity-80;
   }
 
   .sponsor-price-editor {

@@ -124,4 +124,16 @@ class JdbiTeamGroupRepository(private val handle: Handle) : TeamGroupRepository 
             .bind("id", id)
             .execute()
     }
+
+    override fun activate(id: Long) {
+        handle.createUpdate(
+            """
+            UPDATE jagoz.team_group
+            SET active = true
+            WHERE team_group_id = :id
+            """,
+        )
+            .bind("id", id)
+            .execute()
+    }
 }

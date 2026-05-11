@@ -5,25 +5,21 @@ import {
   createEquipmentPlacement,
   createOtherSport,
   createPubOption,
-  createTeamCategory,
   deactivateEquipmentPlacement,
   deactivateOtherSport,
   deactivatePubOption,
-  deactivateTeamCategory,
   reorderEquipmentPlacements,
   reorderOtherSports,
   reorderPubOptions,
-  reorderTeamCategories,
   updateEquipmentPlacement,
   updateOtherSport,
   updatePubOption,
-  updateTeamCategory,
   upsertOtherSportPrice,
   upsertPubOptionPrice,
   upsertTeamCategoryPriceOverride,
   upsertTeamGroupSponsorshipPrice,
 } from "..";
-import type { EquipmentPlacement, OtherSport, PubOption, TeamCategory, TeamGroup } from "..";
+import type { EquipmentPlacement, OtherSport, PubOption } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { useSponsorCatalogs } from "../hooks";
 import {
@@ -40,7 +36,7 @@ import {
   type CatalogKind,
 } from "../utils";
 
-type CatalogItem = PubOption | TeamCategory | EquipmentPlacement | OtherSport;
+type CatalogItem = PubOption | EquipmentPlacement | OtherSport;
 
 export default function SponsorSettings() {
   const { role } = useAuth();
@@ -94,14 +90,6 @@ export default function SponsorSettings() {
         }
         await createPubOption({ code: draft.code, label: draft.label, available, free, occupied, sortOrder: catalogs.pubOptions.length });
       }
-      else if (kind === "team") {
-        const teamGroupId = Number.parseInt(draft.teamGroupId ?? "", 10);
-        if (Number.isNaN(teamGroupId)) {
-          setActionErrorMessage("Escolhe o grupo da equipa.");
-          return;
-        }
-        await createTeamCategory({ ...draft, teamGroupId, sortOrder: catalogs.teamCategories.length });
-      }
       else if (kind === "placement") await createEquipmentPlacement({ ...draft, sortOrder: catalogs.equipmentPlacements.length });
       else await createOtherSport({ ...draft, sortOrder: catalogs.otherSports.length });
       setCatalogDrafts((current) => ({
@@ -120,7 +108,6 @@ export default function SponsorSettings() {
     setNotice("");
     try {
       if (kind === "pub") await updatePubOption((item as PubOption).pubId, item as PubOption);
-      else if (kind === "team") await updateTeamCategory((item as TeamCategory).teamId, item as TeamCategory);
       else if (kind === "placement") await updateEquipmentPlacement((item as EquipmentPlacement).equipmentId, item as EquipmentPlacement);
       else await updateOtherSport((item as OtherSport).sportId, item as OtherSport);
       setNotice("Opcao atualizada.");
@@ -135,7 +122,6 @@ export default function SponsorSettings() {
     setNotice("");
     try {
       if (kind === "pub") await deactivatePubOption(id);
-      else if (kind === "team") await deactivateTeamCategory(id);
       else if (kind === "placement") await deactivateEquipmentPlacement(id);
       else await deactivateOtherSport(id);
       setNotice("Opcao desativada.");
@@ -149,7 +135,6 @@ export default function SponsorSettings() {
     if (!dragState || dragState.kind !== kind) return;
     try {
       if (kind === "pub") await reorderPubOptions(moveItem(catalogs.pubOptions, dragState.index, targetIndex).map((item) => item.pubId));
-      else if (kind === "team") await reorderTeamCategories(moveItem(catalogs.teamCategories, dragState.index, targetIndex).map((item) => item.teamId));
       else if (kind === "placement") await reorderEquipmentPlacements(moveItem(catalogs.equipmentPlacements, dragState.index, targetIndex).map((item) => item.equipmentId));
       else await reorderOtherSports(moveItem(catalogs.otherSports, dragState.index, targetIndex).map((item) => item.sportId));
       setNotice("Ordem atualizada.");
@@ -196,7 +181,6 @@ export default function SponsorSettings() {
               </div>
               <div className="sponsor-catalog-grid">
                 <SettingsCatalogSection title="Pub options" subtitle="Publicidade." items={catalogs.pubOptions} kind="pub" draft={catalogDrafts.pub} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, pub: value }))} onCreate={() => void handleCreateCatalog("pub")} onSave={(item) => void handleSaveCatalogItem("pub", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("pub", id)} onDragStart={(index) => setDragState({ kind: "pub", index })} onDrop={(index) => void handleCatalogDrop("pub", index)} renderExtra={(item) => <InlinePriceEditor value={pubPriceDrafts[item.pubId] ?? ""} onChange={(value) => setPubPriceDrafts((current) => ({ ...current, [item.pubId]: value }))} onSave={() => void (async () => { await upsertPubOptionPrice(item.pubId, pubPriceDrafts[item.pubId] ?? ""); setNotice("Preco atualizado."); await refreshCatalogs(); })()} />} />
-                <SettingsCatalogSection title="Team categories" subtitle="Equipas." items={catalogs.teamCategories} kind="team" draft={catalogDrafts.team} teamGroups={catalogs.teamGroups} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, team: value }))} onCreate={() => void handleCreateCatalog("team")} onSave={(item) => void handleSaveCatalogItem("team", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("team", id)} onDragStart={(index) => setDragState({ kind: "team", index })} onDrop={(index) => void handleCatalogDrop("team", index)} renderExtra={(item) => <span className="sponsor-muted-text">{catalogs.teamGroups.find((group) => group.teamGroupId === item.teamGroupId)?.label ?? "Sem grupo"}</span>} />
                 <SettingsCatalogSection title="Equipment placements" subtitle="Localizacoes." items={catalogs.equipmentPlacements} kind="placement" draft={catalogDrafts.placement} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, placement: value }))} onCreate={() => void handleCreateCatalog("placement")} onSave={(item) => void handleSaveCatalogItem("placement", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("placement", id)} onDragStart={(index) => setDragState({ kind: "placement", index })} onDrop={(index) => void handleCatalogDrop("placement", index)} />
                 <SettingsCatalogSection title="Other sports" subtitle="Outras modalidades." items={catalogs.otherSports} kind="sport" draft={catalogDrafts.sport} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, sport: value }))} onCreate={() => void handleCreateCatalog("sport")} onSave={(item) => void handleSaveCatalogItem("sport", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("sport", id)} onDragStart={(index) => setDragState({ kind: "sport", index })} onDrop={(index) => void handleCatalogDrop("sport", index)} renderExtra={(item) => <InlinePriceEditor value={otherSportPriceDrafts[item.sportId] ?? ""} onChange={(value) => setOtherSportPriceDrafts((current) => ({ ...current, [item.sportId]: value }))} onSave={() => void (async () => { await upsertOtherSportPrice(item.sportId, otherSportPriceDrafts[item.sportId] ?? ""); setNotice("Preco atualizado."); await refreshCatalogs(); })()} />} />
               </div>
@@ -285,7 +269,6 @@ type SettingsCatalogSectionProps<T extends CatalogItem> = {
   items: T[];
   kind: CatalogKind;
   draft: CatalogEditor;
-  teamGroups?: TeamGroup[];
   onDraftChange: (value: CatalogEditor) => void;
   onCreate: () => void;
   onSave: (item: T) => void;
@@ -295,7 +278,7 @@ type SettingsCatalogSectionProps<T extends CatalogItem> = {
   renderExtra?: (item: T) => ReactNode;
 };
 
-function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items, kind, draft, teamGroups = [], onDraftChange, onCreate, onSave, onDeactivate, onDragStart, onDrop, renderExtra }: SettingsCatalogSectionProps<T>) {
+function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items, kind, draft, onDraftChange, onCreate, onSave, onDeactivate, onDragStart, onDrop, renderExtra }: SettingsCatalogSectionProps<T>) {
   return (
     <article className="sponsor-catalog-section">
       <div className="sponsor-catalog-headline">
@@ -313,16 +296,6 @@ function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items,
             <input className="sponsor-input" inputMode="numeric" placeholder="Free" value={draft.free ?? "0"} onChange={(event) => onDraftChange({ ...draft, free: event.target.value })} />
             <input className="sponsor-input" inputMode="numeric" placeholder="Occupied" value={draft.occupied ?? "0"} onChange={(event) => onDraftChange({ ...draft, occupied: event.target.value })} />
           </>
-        ) : null}
-        {kind === "team" ? (
-          <select className="sponsor-input" value={draft.teamGroupId ?? ""} onChange={(event) => onDraftChange({ ...draft, teamGroupId: event.target.value })}>
-            <option value="">Grupo</option>
-            {teamGroups.map((group) => (
-              <option key={group.teamGroupId} value={group.teamGroupId}>
-                {group.label}
-              </option>
-            ))}
-          </select>
         ) : null}
         <button className="sponsor-button-primary" onClick={onCreate} type="button">Add</button>
       </div>
@@ -398,7 +371,6 @@ function InlinePriceEditor({ value, onChange, onSave }: { value: string; onChang
 
 function getCatalogItemId(kind: CatalogKind, item: CatalogItem) {
   if (kind === "pub") return (item as PubOption).pubId;
-  if (kind === "team") return (item as TeamCategory).teamId;
   if (kind === "placement") return (item as EquipmentPlacement).equipmentId;
   return (item as OtherSport).sportId;
 }

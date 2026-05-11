@@ -186,6 +186,15 @@ export default function Header() {
                     >
                         {t("header.teams.becomeAthlete")}
                     </Link>
+                    {role === "ADMIN" && (
+                        <Link
+                            to="/athletes/settings"
+                            className="dropdown-link"
+                            onClick={closeMenus}
+                        >
+                            Settings
+                        </Link>
+                    )}
                 </nav>
             </div>
 

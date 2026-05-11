@@ -91,6 +91,8 @@ object Uris {
     object Team {
         const val GROUPS_ACTIVE = "$PREFIX/teams/groups/active"
         const val GROUPS = "$PREFIX/teams/groups"
+        const val GROUP_BY_ID = "$PREFIX/teams/groups/{groupId}"
+        const val GROUPS_REORDER = "$PREFIX/teams/groups/reorder"
         const val GROUP_PRICES = "$PREFIX/teams/groups-prices"
 
         const val CATEGORY_OVERRIDES = "$PREFIX/teams/category-overrides"

@@ -4,17 +4,15 @@ import type { OtherSportPrice, PubOptionPrice, TeamCategoryPriceOverride, TeamGr
 export type CatalogEditor = {
   code: string;
   label: string;
-  teamGroupId?: string;
   available?: string;
   free?: string;
   occupied?: string;
 };
 
-export type CatalogKind = "pub" | "team" | "placement" | "sport";
+export type CatalogKind = "pub" | "placement" | "sport";
 
 export const initialCatalogDrafts: Record<CatalogKind, CatalogEditor> = {
   pub: { code: "", label: "", available: "0", free: "0", occupied: "0" },
-  team: { code: "", label: "" },
   placement: { code: "", label: "" },
   sport: { code: "", label: "" },
 };

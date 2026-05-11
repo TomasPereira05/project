@@ -218,8 +218,58 @@ export function fetchTeamCategories() {
   return request<TeamCategory[]>("/teams/categories/active");
 }
 
+export function fetchAllTeamCategories() {
+  return request<TeamCategory[]>("/teams/categories");
+}
+
 export function fetchTeamGroups() {
   return request<TeamGroup[]>("/teams/groups/active");
+}
+
+export function fetchAllTeamGroups() {
+  return request<TeamGroup[]>("/teams/groups");
+}
+
+export function createTeamGroup(payload: { code: string; label: string; sortOrder: number }) {
+  return request<TeamGroup>("/teams/groups", {
+    method: "POST",
+    body: JSON.stringify({
+      teamGroupId: 0,
+      code: payload.code.trim(),
+      label: payload.label.trim(),
+      active: true,
+      sortOrder: payload.sortOrder,
+    }),
+  });
+}
+
+export function updateTeamGroup(
+  teamGroupId: number,
+  payload: { code: string; label: string; active: boolean; sortOrder: number | null },
+) {
+  return request<TeamGroup>(`/teams/groups/${teamGroupId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      teamGroupId,
+      code: payload.code.trim(),
+      label: payload.label.trim(),
+      active: payload.active,
+      sortOrder: payload.sortOrder,
+    }),
+  });
+}
+
+export function deactivateTeamGroup(teamGroupId: number) {
+  return request<void>(`/teams/groups/${teamGroupId}`, {
+    method: "DELETE",
+  });
+}
+
+export function reorderTeamGroups(ids: number[]) {
+  return request<TeamGroup[]>("/teams/groups/reorder", {
+    method: "PUT",
+    body: JSON.stringify({ ids }),
+  });
 }
 
 export function createTeamCategory(payload: { teamGroupId: number; code: string; label: string; sortOrder: number }) {

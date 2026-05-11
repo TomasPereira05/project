@@ -6,4 +6,5 @@ export { default as AthletePage } from "./components/Athlete";
 export { default as AthleteByTeamCategory } from "./components/AthleteByTeamCategory";
 export { default as UpdateAthlete } from "./components/UpdateAthlete";
 export { default as AthleteRegister } from "./components/AthleteRegister";
+export { default as TeamSettings } from "./components/TeamSettings";
 
