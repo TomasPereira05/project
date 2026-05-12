@@ -9,6 +9,8 @@ interface SponsorRepository {
 
     fun findByEmail(email: String): List<Sponsor>
 
+    fun findByUserId(userId: Long): List<Sponsor>
+
     fun findAll(): List<Sponsor>
 
     fun findPage(
@@ -28,6 +30,11 @@ interface SponsorRepository {
         email: String,
         phone: String,
         nif: String,
+    )
+
+    fun updateUserId(
+        sponsorId: Long,
+        userId: Long?,
     )
 
     fun deleteById(id: Long)

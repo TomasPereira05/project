@@ -16,7 +16,9 @@ import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.team.TeamCategory
+import pt.isel.jagoz.domain.team.TeamCategoryPriceOverride
 import pt.isel.jagoz.domain.team.TeamGroup
+import pt.isel.jagoz.domain.team.TeamGroupPrice
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
@@ -33,7 +35,9 @@ import pt.isel.jagoz.repository.jdbi.mappers.PubOptionMapper
 import pt.isel.jagoz.repository.jdbi.mappers.SponsorMapper
 import pt.isel.jagoz.repository.jdbi.mappers.SponsorshipMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TeamCategoryMapper
+import pt.isel.jagoz.repository.jdbi.mappers.TeamCategoryPriceOverrideMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TeamGroupMapper
+import pt.isel.jagoz.repository.jdbi.mappers.TeamGroupPriceMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TicketMapper
 import pt.isel.jagoz.repository.jdbi.mappers.TokenMapper
 import pt.isel.jagoz.repository.jdbi.mappers.UserMapper
@@ -60,8 +64,10 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerRowMapper(EquipmentPlacement::class.java, EquipmentPlacementMapper())
     registerRowMapper(OtherSport::class.java, OtherSportMapper())
     registerRowMapper(TeamCategory::class.java, TeamCategoryMapper())
+    registerRowMapper(TeamCategoryPriceOverride::class.java, TeamCategoryPriceOverrideMapper())
     registerRowMapper(PubOption::class.java, PubOptionMapper())
     registerRowMapper(TeamGroup::class.java, TeamGroupMapper())
+    registerRowMapper(TeamGroupPrice::class.java, TeamGroupPriceMapper())
 
     return this
 }

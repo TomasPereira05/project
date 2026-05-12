@@ -5,6 +5,7 @@ import {
   IdCard,
   LogOut,
   Mail,
+  Phone,
   Shield,
   User as UserIcon,
   UserPlus,
@@ -15,6 +16,7 @@ import Footer from "../../../shared/components/Footer";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { fetchMember, getInitials, type Member } from "../../Members";
 import { fetchAthleteByMemberId, labelForCategory, type Athlete } from "../../Athletes";
+import { claimSponsorAccount } from "../../sponsors";
 import { roleLabel, roleBadgeColor } from "../utils";
 
 export default function UserPage() {
@@ -23,6 +25,9 @@ export default function UserPage() {
 
   const [member, setMember] = useState<Member | null>(null);
   const [athlete, setAthlete] = useState<Athlete | null>(null);
+  const [claimForm, setClaimForm] = useState({ nif: "", email: "", phone: "" });
+  const [claimMessage, setClaimMessage] = useState("");
+  const [claimError, setClaimError] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -58,6 +63,20 @@ export default function UserPage() {
     if (clearAuth) clearAuth();
     navigate("/");
   };
+
+  async function handleSponsorClaim(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setClaimMessage("");
+    setClaimError("");
+
+    try {
+      const sponsor = await claimSponsorAccount(claimForm);
+      setClaimMessage(`Conta associada ao patrocinador ${sponsor.name}.`);
+      setClaimForm({ nif: "", email: "", phone: "" });
+    } catch (error) {
+      setClaimError(error instanceof Error ? error.message : "Nao foi possivel associar a conta ao patrocinador.");
+    }
+  }
 
   const displayName = username ?? "Utilizador";
   const hasSpecialRole = role === "ADMIN" || role === "SECRETARIA";
@@ -233,6 +252,60 @@ export default function UserPage() {
               </div>
             </section>
           )}
+
+          <section className="member-card mb-8">
+            <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
+              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+                <IdCard size={20} />
+              </div>
+              <div>
+                <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Patrocinador</h2>
+                <p className="text-xs text-text-secondary mt-1">Associe esta conta a um patrocinador ja registado.</p>
+              </div>
+            </div>
+
+            <form className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4" onSubmit={handleSponsorClaim}>
+              <label className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
+                NIF
+                <input
+                  className="member-input"
+                  required
+                  value={claimForm.nif}
+                  onChange={(event) => setClaimForm((current) => ({ ...current, nif: event.target.value }))}
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
+                Email
+                <input
+                  className="member-input"
+                  required
+                  type="email"
+                  value={claimForm.email}
+                  onChange={(event) => setClaimForm((current) => ({ ...current, email: event.target.value }))}
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
+                Telemovel
+                <input
+                  className="member-input"
+                  required
+                  value={claimForm.phone}
+                  onChange={(event) => setClaimForm((current) => ({ ...current, phone: event.target.value }))}
+                />
+              </label>
+              <div className="md:col-span-3 flex flex-wrap items-center gap-3">
+                <button
+                  type="submit"
+                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md"
+                >
+                  <Phone size={18} />
+                  Associar Patrocinador
+                </button>
+                {claimMessage ? <p className="text-sm font-medium text-green-700">{claimMessage}</p> : null}
+                {claimError ? <p className="text-sm font-medium text-red-700">{claimError}</p> : null}
+              </div>
+            </form>
+          </section>
 
         </div>
       </main>

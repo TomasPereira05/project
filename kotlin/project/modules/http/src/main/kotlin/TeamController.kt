@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.team.TeamError
 import pt.isel.jagoz.domain.team.TeamGroup
+import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.sponsor.ReorderRequest
 import pt.isel.jagoz.http.model.team.TeamCategoryPriceOverrideRequest
 import pt.isel.jagoz.http.model.team.TeamGroupPriceRequest
+import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.TeamService
 
@@ -35,35 +38,53 @@ class TeamController(
         ResponseEntity.ok(teamService.getTeamGroups())
 
     @PostMapping(Uris.Team.GROUPS)
-    fun createTeamGroup(@RequestBody group: TeamGroup): ResponseEntity<*> =
-        teamService.createTeamGroup(group).handle(
+    fun createTeamGroup(
+        authenticatedUser: AuthenticatedUser,
+        @RequestBody group: TeamGroup,
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.createTeamGroup(group).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
+    }
 
     @PutMapping(Uris.Team.GROUP_BY_ID)
     fun updateTeamGroup(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable groupId: Long,
         @RequestBody group: TeamGroup,
-    ): ResponseEntity<*> =
-        teamService.updateTeamGroup(group.copy(teamGroupId = groupId)).handle(
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.updateTeamGroup(group.copy(teamGroupId = groupId)).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
+    }
 
     @DeleteMapping(Uris.Team.GROUP_BY_ID)
-    fun deactivateTeamGroup(@PathVariable groupId: Long): ResponseEntity<*> =
-        teamService.deactivateTeamGroup(groupId).handle(
+    fun deactivateTeamGroup(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable groupId: Long,
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.deactivateTeamGroup(groupId).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.noContent().build() },
         )
+    }
 
     @PutMapping(Uris.Team.GROUPS_REORDER)
-    fun reorderTeamGroups(@RequestBody request: ReorderRequest): ResponseEntity<*> =
-        teamService.reorderTeamGroups(request.ids).handle(
+    fun reorderTeamGroups(
+        authenticatedUser: AuthenticatedUser,
+        @RequestBody request: ReorderRequest,
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.reorderTeamGroups(request.ids).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
+    }
 
     // ---------------- TEAM CATEGORIES ----------------
 
@@ -76,35 +97,53 @@ class TeamController(
         ResponseEntity.ok(teamService.getTeamCategories())
 
     @PostMapping(Uris.Team.CATEGORIES)
-    fun createTeamCategory(@RequestBody category: TeamCategory): ResponseEntity<*> =
-        teamService.createTeamCategory(category).handle(
+    fun createTeamCategory(
+        authenticatedUser: AuthenticatedUser,
+        @RequestBody category: TeamCategory,
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.createTeamCategory(category).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
+    }
 
     @PutMapping(Uris.Team.CATEGORY_BY_ID)
     fun updateTeamCategory(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable categoryId: Long,
         @RequestBody category: TeamCategory,
-    ): ResponseEntity<*> =
-        teamService.updateTeamCategory(category.copy(teamId = categoryId)).handle(
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.updateTeamCategory(category.copy(teamId = categoryId)).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
+    }
 
     @DeleteMapping(Uris.Team.CATEGORY_BY_ID)
-    fun deactivateTeamCategory(@PathVariable categoryId: Long): ResponseEntity<*> =
-        teamService.deactivateTeamCategory(categoryId).handle(
+    fun deactivateTeamCategory(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable categoryId: Long,
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.deactivateTeamCategory(categoryId).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.noContent().build() },
         )
+    }
 
     @PutMapping(Uris.Team.CATEGORIES_REORDER)
-    fun reorderTeamCategories(@RequestBody request: ReorderRequest): ResponseEntity<*> =
-        teamService.reorderTeamCategories(request.ids).handle(
+    fun reorderTeamCategories(
+        authenticatedUser: AuthenticatedUser,
+        @RequestBody request: ReorderRequest,
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.reorderTeamCategories(request.ids).handle(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
+    }
 
     // ---------------- GROUP PRICES ----------------
 
@@ -114,9 +153,11 @@ class TeamController(
 
     @PutMapping(Uris.Team.GROUP_PRICES)
     fun upsertTeamGroupPrice(
+        authenticatedUser: AuthenticatedUser,
         @RequestBody request: TeamGroupPriceRequest
-    ): ResponseEntity<*> =
-        teamService.upsertTeamGroupPrice(
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.upsertTeamGroupPrice(
             request.teamGroupId,
             request.placementId,
             request.price
@@ -124,6 +165,7 @@ class TeamController(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
+    }
 
     // ---------------- CATEGORY OVERRIDES ----------------
 
@@ -133,9 +175,11 @@ class TeamController(
 
     @PutMapping(Uris.Team.CATEGORY_OVERRIDES)
     fun upsertTeamCategoryOverride(
+        authenticatedUser: AuthenticatedUser,
         @RequestBody request: TeamCategoryPriceOverrideRequest
-    ): ResponseEntity<*> =
-        teamService.upsertTeamCategoryOverride(
+    ): ResponseEntity<*> {
+        requireTeamManager(authenticatedUser)?.let { return it }
+        return teamService.upsertTeamCategoryOverride(
             request.teamCategoryId,
             request.placementId,
             request.price
@@ -143,6 +187,14 @@ class TeamController(
             onFailure = { handleTeamError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
+    }
+
+    private fun requireTeamManager(authenticatedUser: AuthenticatedUser): ResponseEntity<Any>? =
+        if (authenticatedUser.canManageBackoffice()) {
+            null
+        } else {
+            Problem.Unauthorized("Not authorized").response(HttpStatus.UNAUTHORIZED)
+        }
 
     private fun handleTeamError(error: TeamError): ResponseEntity<Any> =
         when (error) {

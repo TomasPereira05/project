@@ -16,5 +16,6 @@ class SponsorMapper : RowMapper<Sponsor> {
             email = rs.getString("email"),
             phone = rs.getString("phone"),
             nif = rs.getString("nif"),
+            userId = rs.getLong("user_id").let { if (rs.wasNull()) null else it },
         )
 }

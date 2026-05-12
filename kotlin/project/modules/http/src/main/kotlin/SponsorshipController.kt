@@ -24,18 +24,20 @@ class SponsorshipController(
 ) {
     @PostMapping(Uris.Sponsorships.CREATE)
     fun createSponsorship(
+        authenticatedUser: AuthenticatedUser,
         @RequestBody sponsorship: Sponsorship,
     ): ResponseEntity<*> =
-        sponsorshipService.createSponsorship(sponsorship).handle(
+        sponsorshipService.createSponsorship(authenticatedUser, sponsorship).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
 
     @PostMapping(Uris.Sponsorships.CREATE_WITH_SPONSOR)
     fun createSponsorshipWithSponsor(
+        authenticatedUser: AuthenticatedUser,
         @RequestBody request: SponsorSponsorshipRequest,
     ): ResponseEntity<*> =
-        sponsorshipService.createSponsorshipWithSponsor(request.sponsor, request.sponsorship).handle(
+        sponsorshipService.createSponsorshipWithSponsor(authenticatedUser, request.sponsor, request.sponsorship, request.userId).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
@@ -86,27 +88,30 @@ class SponsorshipController(
 
     @PutMapping(Uris.Sponsorships.APPROVE)
     fun approveSponsorship(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable sponsorshipId: Long,
     ): ResponseEntity<*> =
-        sponsorshipService.approveSponsorship(sponsorshipId).handle(
+        sponsorshipService.approveSponsorship(authenticatedUser, sponsorshipId).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
 
     @PutMapping(Uris.Sponsorships.MARK_PAID)
     fun markSponsorshipPaid(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable sponsorshipId: Long,
     ): ResponseEntity<*> =
-        sponsorshipService.markSponsorshipPaid(sponsorshipId).handle(
+        sponsorshipService.markSponsorshipPaid(authenticatedUser, sponsorshipId).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
 
     @PutMapping(Uris.Sponsorships.CANCEL)
     fun cancelSponsorship(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable sponsorshipId: Long,
     ): ResponseEntity<*> =
-        sponsorshipService.cancelSponsorship(sponsorshipId).handle(
+        sponsorshipService.cancelSponsorship(authenticatedUser, sponsorshipId).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
@@ -117,6 +122,8 @@ class SponsorshipController(
             is SponsorError.InvalidTransition -> Problem.InvalidTransition(error.from.toString(), error.attempted).response(HttpStatus.BAD_REQUEST)
             is SponsorError.DomainError ->
                 when {
+                    error.message.contains("not authorized", ignoreCase = true) ->
+                        Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
                     error.message.contains("sponsorship", ignoreCase = true) && error.message.contains("not found", ignoreCase = true) ->
                         Problem.SponsorshipNotFound(error.message).response(HttpStatus.NOT_FOUND)
                     error.message.contains("sponsor", ignoreCase = true) && error.message.contains("not found", ignoreCase = true) ->

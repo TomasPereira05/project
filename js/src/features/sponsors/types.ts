@@ -14,6 +14,7 @@ export type Sponsor = {
   email: string;
   phone: string;
   nif: string;
+  userId: number | null;
 };
 
 export type SponsorType = "PUB" | "TEAM" | "OTHER";
@@ -115,6 +116,7 @@ export type SponsorFormValues = {
   email: string;
   phone: string;
   nif: string;
+  userId?: number | null;
 };
 
 export type SponsorshipFormValues = {

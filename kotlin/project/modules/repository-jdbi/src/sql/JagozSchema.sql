@@ -145,6 +145,7 @@ CREATE TABLE team_category_price_override (
 
 CREATE TABLE sponsor (
     sponsor_id  SERIAL PRIMARY KEY,
+    user_id     INT,
     name        VARCHAR(255) NOT NULL,
     email       VARCHAR(255) NOT NULL,
     phone       VARCHAR(20)  NOT NULL,
@@ -202,6 +203,10 @@ CREATE TABLE users (
     role user_role NOT NULL,
     active_member_id INT REFERENCES member(member_id) ON DELETE SET NULL
 );
+
+ALTER TABLE sponsor
+    ADD CONSTRAINT sponsor_user_id_fkey
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL;
 
 CREATE TABLE user_token (
     token_validation VARCHAR(255) PRIMARY KEY,

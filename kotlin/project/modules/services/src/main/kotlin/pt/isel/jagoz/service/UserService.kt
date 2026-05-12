@@ -10,35 +10,17 @@ import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.domain.user.UserDomain
+import pt.isel.jagoz.domain.user.UserError
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.user.toAuthenticatedUser
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager
 
-typealias UserResult = Either<UserServiceError, User>
-typealias AuthenticatedUserResult = Either<UserServiceError, AuthenticatedUser>
-typealias TokenCreationResult = Either<UserServiceError, TokenExternalInfo>
-
-sealed class UserServiceError {
-    data class NotFound(
-        val field: String,
-        val value: Any,
-    ) : UserServiceError()
-
-    data class AlreadyExists(
-        val field: String,
-        val value: Any,
-    ) : UserServiceError()
-
-    data class Validation(
-        val message: String,
-    ) : UserServiceError()
-
-    data class Unauthorized(
-        val message: String,
-    ) : UserServiceError()
-}
+typealias UserResult = Either<UserError, User>
+typealias AuthenticatedUserResult = Either<UserError, AuthenticatedUser>
+typealias TokenCreationResult = Either<UserError, TokenExternalInfo>
 
 data class TokenExternalInfo(
     val tokenValue: String,
@@ -64,23 +46,23 @@ class UserService(
     ): UserResult {
         LOG.info("Creating user with username: {}", username)
 
-        if (email.isBlank()) return failure(UserServiceError.Validation("Email cannot be blank"))
-        if (username.isBlank()) return failure(UserServiceError.Validation("Username cannot be blank"))
+        if (email.isBlank()) return failure(UserError.Validation("Email cannot be blank"))
+        if (username.isBlank()) return failure(UserError.Validation("Username cannot be blank"))
         if (!userDomain.isSafePassword(password)) {
-            return failure(UserServiceError.Validation("Password must have at least 8 characters, one letter, and one digit"))
+            return failure(UserError.Validation("Password must have at least 8 characters, one letter, and one digit"))
         }
 
         return transactionManager.run { transaction ->
             if (transaction.userRepository.findByEmail(email) != null) {
-                return@run failure(UserServiceError.AlreadyExists("email", email))
+                return@run failure(UserError.AlreadyExists("email", email))
             }
 
             if (transaction.userRepository.findByUsername(username) != null) {
-                return@run failure(UserServiceError.AlreadyExists("username", username))
+                return@run failure(UserError.AlreadyExists("username", username))
             }
 
             if (activeMemberId != null && transaction.memberRepository.findById(activeMemberId) == null) {
-                return@run failure(UserServiceError.NotFound("activeMemberId", activeMemberId))
+                return@run failure(UserError.NotFound("activeMemberId", activeMemberId))
             }
 
             val userToSave =
@@ -102,36 +84,60 @@ class UserService(
         transactionManager.run { transaction ->
             val user =
                 transaction.userRepository.findById(userId)
-                    ?: return@run failure(UserServiceError.NotFound("userId", userId))
+                    ?: return@run failure(UserError.NotFound("userId", userId))
 
             success(user)
         }
+
+    fun getUserById(
+        authenticatedUser: AuthenticatedUser,
+        userId: Long,
+    ): UserResult {
+        if (!authenticatedUser.canManageBackoffice()) return failure(UserError.Unauthorized("Not authorized"))
+        return getUserById(userId)
+    }
 
     fun getUserByEmail(email: String): UserResult =
         transactionManager.run { transaction ->
             val user =
                 transaction.userRepository.findByEmail(email)
-                    ?: return@run failure(UserServiceError.NotFound("email", email))
+                    ?: return@run failure(UserError.NotFound("email", email))
 
             success(user)
         }
+
+    fun getUserByEmail(
+        authenticatedUser: AuthenticatedUser,
+        email: String,
+    ): UserResult {
+        if (!authenticatedUser.canManageBackoffice()) return failure(UserError.Unauthorized("Not authorized"))
+        return getUserByEmail(email)
+    }
 
     fun getUserByUsername(username: String): UserResult =
         transactionManager.run { transaction ->
             val user =
                 transaction.userRepository.findByUsername(username)
-                    ?: return@run failure(UserServiceError.NotFound("username", username))
+                    ?: return@run failure(UserError.NotFound("username", username))
 
             success(user)
         }
+
+    fun getUserByUsername(
+        authenticatedUser: AuthenticatedUser,
+        username: String,
+    ): UserResult {
+        if (!authenticatedUser.canManageBackoffice()) return failure(UserError.Unauthorized("Not authorized"))
+        return getUserByUsername(username)
+    }
 
     fun getUsersPage(
         authenticatedUser: AuthenticatedUser,
         page: Int,
         size: Int,
-    ): Either<UserServiceError, Page<User>> {
-        if (authenticatedUser.role != Role.ADMIN && authenticatedUser.role != Role.SECRETARIA) {
-            return failure(UserServiceError.Unauthorized("Not authorized"))
+    ): Either<UserError, Page<User>> {
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(UserError.Unauthorized("Not authorized"))
         }
 
         val request = pageRequest(page, size)
@@ -184,16 +190,16 @@ class UserService(
         password: String,
     ): TokenCreationResult {
         if (username.isBlank() || password.isBlank()) {
-            return failure(UserServiceError.Validation("Username or Password cannot be blank"))
+            return failure(UserError.Validation("Username or Password cannot be blank"))
         }
 
         return transactionManager.run { transaction ->
             val user: User =
                 transaction.userRepository.findByUsername(username)
-                    ?: return@run failure(UserServiceError.NotFound("username", username))
+                    ?: return@run failure(UserError.NotFound("username", username))
 
             if (!userDomain.validatePassword(password, user.passwordValidation)) {
-                return@run failure(UserServiceError.Validation("Invalid Password"))
+                return@run failure(UserError.Validation("Invalid Password"))
             }
 
             val tokenValue = userDomain.generateTokenValue()
@@ -217,13 +223,13 @@ class UserService(
         identifier: String,
         password: String,
     ): AuthenticatedUserResult {
-        if (identifier.isBlank()) return failure(UserServiceError.Validation("Identifier cannot be blank"))
-        if (password.isBlank()) return failure(UserServiceError.Validation("Password cannot be blank"))
+        if (identifier.isBlank()) return failure(UserError.Validation("Identifier cannot be blank"))
+        if (password.isBlank()) return failure(UserError.Validation("Password cannot be blank"))
 
         return transactionManager.run { transaction ->
             val user = transaction.userRepository.findByUsername(identifier) ?: transaction.userRepository.findByEmail(identifier)
             if (user == null || !userDomain.validatePassword(password, user.passwordValidation)) {
-                return@run failure(UserServiceError.Unauthorized("Invalid credentials"))
+                return@run failure(UserError.Unauthorized("Invalid credentials"))
             }
 
             val (token, rawToken) = userDomain.createToken(user.userId)
@@ -232,15 +238,15 @@ class UserService(
         }
     }
 
-    fun logout(token: String): Either<UserServiceError, Unit> {
+    fun logout(token: String): Either<UserError, Unit> {
         if (!userDomain.isTokenValidFormat(token)) {
-            return failure(UserServiceError.Unauthorized("Invalid token"))
+            return failure(UserError.Unauthorized("Invalid token"))
         }
 
         return transactionManager.run { transaction ->
             val validation = userDomain.createTokenValidationInformation(token)
             val removed = transaction.userRepository.removeTokenByValidation(validation)
-            if (removed == 0) return@run failure(UserServiceError.Unauthorized("Invalid token"))
+            if (removed == 0) return@run failure(UserError.Unauthorized("Invalid token"))
 
             success(Unit)
         }
