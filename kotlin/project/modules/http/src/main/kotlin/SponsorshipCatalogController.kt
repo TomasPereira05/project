@@ -14,7 +14,7 @@ import pt.isel.jagoz.domain.sponsor.OtherSport
 import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.user.AuthenticatedUser
-import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.sponsor.ReorderRequest
 import pt.isel.jagoz.http.utils.Problem
@@ -182,7 +182,7 @@ class SponsorshipCatalogController(
     }
 
     private fun requireCatalogManager(authenticatedUser: AuthenticatedUser): ResponseEntity<Any>? =
-        if (authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA) {
+        if (authenticatedUser.canManageBackoffice()) {
             null
         } else {
             Problem.Unauthorized("Not authorized").response(HttpStatus.UNAUTHORIZED)

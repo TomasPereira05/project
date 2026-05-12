@@ -7,7 +7,7 @@ import pt.isel.jagoz.domain.sponsor.SponsorType
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.user.AuthenticatedUser
-import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -28,7 +28,7 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         sponsorship: Sponsorship,
     ): SponsorshipResult {
-        if (!canManageSponsorships(authenticatedUser)) {
+        if (!authenticatedUser.canManageBackoffice()) {
             return failure(SponsorError.DomainError("Not authorized"))
         }
         return transactionManager.run { transaction ->
@@ -55,7 +55,7 @@ class SponsorshipService(
                         transaction.sponsorRepository.findByNif(validatedSponsor.value.nif)
 
                     val userIdToAssociate =
-                        if (canManageSponsorships(authenticatedUser)) requestedUserId else authenticatedUser.userId
+                        if (authenticatedUser.canManageBackoffice()) requestedUserId else authenticatedUser.userId
 
                     if (userIdToAssociate != null && transaction.userRepository.findById(userIdToAssociate) == null) {
                         return@run failure(SponsorError.DomainError("User $userIdToAssociate not found"))
@@ -64,14 +64,14 @@ class SponsorshipService(
                     val sponsorId =
                         if (existingSponsor != null) {
                             if (
-                                !canManageSponsorships(authenticatedUser) &&
+                                !authenticatedUser.canManageBackoffice() &&
                                 existingSponsor.userId != null &&
                                 existingSponsor.userId != userIdToAssociate
                             ) {
                                 return@run failure(SponsorError.ValidationError("Sponsor is already associated with another account"))
                             }
 
-                            if (canManageSponsorships(authenticatedUser) && userIdToAssociate != null && existingSponsor.userId != userIdToAssociate) {
+                            if (authenticatedUser.canManageBackoffice() && userIdToAssociate != null && existingSponsor.userId != userIdToAssociate) {
                                 transaction.sponsorRepository.updateUserId(existingSponsor.sponsorId, userIdToAssociate)
                             } else if (userIdToAssociate != null && existingSponsor.userId == null) {
                                 transaction.sponsorRepository.updateUserId(existingSponsor.sponsorId, userIdToAssociate)
@@ -165,7 +165,7 @@ class SponsorshipService(
                 transaction.sponsorRepository.findById(sponsorId)
                     ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
 
-            if (!canManageSponsorships(authenticatedUser) && !canAccessSponsor(authenticatedUser, sponsor)) {
+            if (!authenticatedUser.canManageBackoffice() && !canAccessSponsor(authenticatedUser, sponsor)) {
                 return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
             }
 
@@ -188,7 +188,7 @@ class SponsorshipService(
                 transaction.sponsorRepository.findById(sponsorId)
                     ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
 
-            if (!canManageSponsorships(authenticatedUser) && !canAccessSponsor(authenticatedUser, sponsor)) {
+            if (!authenticatedUser.canManageBackoffice() && !canAccessSponsor(authenticatedUser, sponsor)) {
                 return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
             }
 
@@ -197,7 +197,7 @@ class SponsorshipService(
 
     fun getSponsorshipsForUser(authenticatedUser: AuthenticatedUser): Either<SponsorError, List<Sponsorship>> =
         transactionManager.run { transaction ->
-            if (canManageSponsorships(authenticatedUser)) {
+            if (authenticatedUser.canManageBackoffice()) {
                 return@run success(transaction.sponsorshipRepository.findAll())
             }
 
@@ -216,7 +216,7 @@ class SponsorshipService(
     ): Either<SponsorError, Page<Sponsorship>> =
         transactionManager.run { transaction ->
             val request = pageRequest(page, size)
-            if (canManageSponsorships(authenticatedUser)) {
+            if (authenticatedUser.canManageBackoffice()) {
                 return@run success(
                     pageOf(
                         items = transaction.sponsorshipRepository.findPage(request.size, request.offset),
@@ -249,7 +249,7 @@ class SponsorshipService(
         size: Int,
     ): Either<SponsorError, Page<SponsorshipWithSponsor>> =
         transactionManager.run { transaction ->
-            if (!canManageSponsorships(authenticatedUser)) {
+            if (!authenticatedUser.canManageBackoffice()) {
                 return@run failure(SponsorError.DomainError("Not authorized"))
             }
 
@@ -278,7 +278,7 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         sponsorshipId: Long,
     ): SponsorshipResult {
-        if (!canManageSponsorships(authenticatedUser)) return failure(SponsorError.DomainError("Not authorized"))
+        if (!authenticatedUser.canManageBackoffice()) return failure(SponsorError.DomainError("Not authorized"))
         return transitionSponsorship(sponsorshipId) { sponsorDomain.approveSponsorship(it) }
     }
 
@@ -286,7 +286,7 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         sponsorshipId: Long,
     ): SponsorshipResult {
-        if (!canManageSponsorships(authenticatedUser)) return failure(SponsorError.DomainError("Not authorized"))
+        if (!authenticatedUser.canManageBackoffice()) return failure(SponsorError.DomainError("Not authorized"))
         return transitionSponsorship(sponsorshipId) { sponsorDomain.markPaid(it) }
     }
 
@@ -294,7 +294,7 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         sponsorshipId: Long,
     ): SponsorshipResult {
-        if (!canManageSponsorships(authenticatedUser)) return failure(SponsorError.DomainError("Not authorized"))
+        if (!authenticatedUser.canManageBackoffice()) return failure(SponsorError.DomainError("Not authorized"))
         return transitionSponsorship(sponsorshipId) { sponsorDomain.cancelSponsorship(it) }
     }
 
@@ -402,7 +402,7 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         sponsorship: Sponsorship,
     ): Boolean {
-        if (canManageSponsorships(authenticatedUser)) {
+        if (authenticatedUser.canManageBackoffice()) {
             return true
         }
 
@@ -415,7 +415,4 @@ class SponsorshipService(
         sponsor: Sponsor,
     ): Boolean =
         sponsor.userId == authenticatedUser.userId || sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
-
-    private fun canManageSponsorships(authenticatedUser: AuthenticatedUser): Boolean =
-        authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA
 }

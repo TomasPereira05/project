@@ -5,7 +5,7 @@ import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.user.AuthenticatedUser
-import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -35,7 +35,7 @@ class SponsorService(
         authenticatedUser: AuthenticatedUser,
         sponsor: Sponsor,
     ): SponsorResult {
-        if (!canManageSponsors(authenticatedUser)) {
+        if (!authenticatedUser.canManageBackoffice()) {
             return failure(SponsorError.DomainError("Not authorized"))
         }
         return createSponsor(sponsor)
@@ -59,7 +59,7 @@ class SponsorService(
                 transaction.sponsorRepository.findById(sponsorId)
                     ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
 
-            if (!canManageSponsors(authenticatedUser) && sponsor.userId != authenticatedUser.userId) {
+            if (!authenticatedUser.canManageBackoffice() && sponsor.userId != authenticatedUser.userId) {
                 return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
             }
 
@@ -76,7 +76,7 @@ class SponsorService(
         page: Int,
         size: Int,
     ): Either<SponsorError, Page<Sponsor>> {
-        if (!canManageSponsors(authenticatedUser)) {
+        if (!authenticatedUser.canManageBackoffice()) {
             return failure(SponsorError.DomainError("Not authorized"))
         }
         val request = pageRequest(page, size)
@@ -99,7 +99,7 @@ class SponsorService(
         phone: String,
         nif: String,
     ): SponsorResult {
-        if (!canManageSponsors(authenticatedUser)) {
+        if (!authenticatedUser.canManageBackoffice()) {
             return failure(SponsorError.DomainError("Not authorized"))
         }
         return updateSponsor(sponsorId, name, email, phone, nif)
@@ -132,7 +132,7 @@ class SponsorService(
         sponsorId: Long,
         userId: Long?,
     ): SponsorResult {
-        if (!canManageSponsors(authenticatedUser)) {
+        if (!authenticatedUser.canManageBackoffice()) {
             return failure(SponsorError.DomainError("Not authorized"))
         }
 
@@ -172,7 +172,4 @@ class SponsorService(
             transaction.sponsorRepository.updateUserId(sponsor.sponsorId, authenticatedUser.userId)
             success(sponsor.copy(userId = authenticatedUser.userId))
         }
-
-    private fun canManageSponsors(authenticatedUser: AuthenticatedUser): Boolean =
-        authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA
 }

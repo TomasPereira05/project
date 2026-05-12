@@ -13,7 +13,7 @@ import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.team.TeamError
 import pt.isel.jagoz.domain.team.TeamGroup
 import pt.isel.jagoz.domain.user.AuthenticatedUser
-import pt.isel.jagoz.domain.user.Role
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.sponsor.ReorderRequest
 import pt.isel.jagoz.http.model.team.TeamCategoryPriceOverrideRequest
@@ -190,7 +190,7 @@ class TeamController(
     }
 
     private fun requireTeamManager(authenticatedUser: AuthenticatedUser): ResponseEntity<Any>? =
-        if (authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA) {
+        if (authenticatedUser.canManageBackoffice()) {
             null
         } else {
             Problem.Unauthorized("Not authorized").response(HttpStatus.UNAUTHORIZED)

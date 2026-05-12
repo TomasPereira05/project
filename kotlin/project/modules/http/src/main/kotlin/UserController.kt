@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.UserError
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.user.AuthenticatedUserOutputModel
 import pt.isel.jagoz.http.model.user.CreateUserRequest
@@ -23,7 +24,6 @@ import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.Page
 import pt.isel.jagoz.service.UserService
-import pt.isel.jagoz.service.UserServiceError
 import java.time.Duration
 
 @RestController
@@ -183,11 +183,11 @@ class UserController(
     @GetMapping(Uris.Users.ME)
     fun me(authenticatedUser: AuthenticatedUser): ResponseEntity<AuthenticatedUser> = ResponseEntity.ok(authenticatedUser)
 
-    private fun serviceErrorToProblem(error: UserServiceError): ResponseEntity<*> =
+    private fun serviceErrorToProblem(error: UserError): ResponseEntity<*> =
         when (error) {
-            is UserServiceError.NotFound -> Problem.UserNotFound(error.field, error.value).response(HttpStatus.NOT_FOUND)
-            is UserServiceError.AlreadyExists -> Problem.UnknownError.response(HttpStatus.INTERNAL_SERVER_ERROR)
-            is UserServiceError.Validation -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-            is UserServiceError.Unauthorized -> Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
+            is UserError.NotFound -> Problem.UserNotFound(error.field, error.value).response(HttpStatus.NOT_FOUND)
+            is UserError.AlreadyExists -> Problem.UserAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
+            is UserError.Validation -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+            is UserError.Unauthorized -> Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
         }
 }
