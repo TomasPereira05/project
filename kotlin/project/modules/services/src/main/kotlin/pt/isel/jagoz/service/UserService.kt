@@ -107,6 +107,14 @@ class UserService(
             success(user)
         }
 
+    fun getUserById(
+        authenticatedUser: AuthenticatedUser,
+        userId: Long,
+    ): UserResult {
+        if (!canManageUsers(authenticatedUser)) return failure(UserServiceError.Unauthorized("Not authorized"))
+        return getUserById(userId)
+    }
+
     fun getUserByEmail(email: String): UserResult =
         transactionManager.run { transaction ->
             val user =
@@ -115,6 +123,14 @@ class UserService(
 
             success(user)
         }
+
+    fun getUserByEmail(
+        authenticatedUser: AuthenticatedUser,
+        email: String,
+    ): UserResult {
+        if (!canManageUsers(authenticatedUser)) return failure(UserServiceError.Unauthorized("Not authorized"))
+        return getUserByEmail(email)
+    }
 
     fun getUserByUsername(username: String): UserResult =
         transactionManager.run { transaction ->
@@ -125,12 +141,20 @@ class UserService(
             success(user)
         }
 
+    fun getUserByUsername(
+        authenticatedUser: AuthenticatedUser,
+        username: String,
+    ): UserResult {
+        if (!canManageUsers(authenticatedUser)) return failure(UserServiceError.Unauthorized("Not authorized"))
+        return getUserByUsername(username)
+    }
+
     fun getUsersPage(
         authenticatedUser: AuthenticatedUser,
         page: Int,
         size: Int,
     ): Either<UserServiceError, Page<User>> {
-        if (authenticatedUser.role != Role.ADMIN && authenticatedUser.role != Role.SECRETARIA) {
+        if (!canManageUsers(authenticatedUser)) {
             return failure(UserServiceError.Unauthorized("Not authorized"))
         }
 
@@ -245,4 +269,7 @@ class UserService(
             success(Unit)
         }
     }
+
+    private fun canManageUsers(authenticatedUser: AuthenticatedUser): Boolean =
+        authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA
 }

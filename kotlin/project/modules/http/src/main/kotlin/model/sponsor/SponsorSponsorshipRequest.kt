@@ -6,4 +6,5 @@ import pt.isel.jagoz.domain.sponsor.Sponsorship
 data class SponsorSponsorshipRequest(
     val sponsor: Sponsor,
     val sponsorship: Sponsorship,
+    val userId: Long? = null,
 )

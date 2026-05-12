@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
-import { createSponsorshipWithSponsor } from "..";
+import { createSponsorshipWithSponsor, fetchUserByUsername } from "..";
 import type { SponsorFormValues, SponsorshipFormValues } from "..";
 import { formatCurrency } from "../../../shared/utils";
+import { useAuth } from "../../../shared/hooks/useAuth";
 import { useSponsorCatalogs } from "../hooks";
 import { buildOtherSponsorshipCards, buildPubSponsorshipCards, buildTeamSponsorshipGroups } from "../utils";
 
@@ -25,14 +26,19 @@ const initialSponsorshipForm: SponsorshipFormValues = {
 };
 
 export default function SponsorCreate() {
+  const { id: currentUserId, role } = useAuth();
   const { catalogs, errorMessage: catalogErrorMessage, isLoading } = useSponsorCatalogs({
     errorMessage: "Nao foi possivel carregar as opcoes de patrocinio.",
   });
   const [sponsorForm, setSponsorForm] = useState<SponsorFormValues>(initialSponsorForm);
   const [selection, setSelection] = useState<SponsorshipFormValues>(initialSponsorshipForm);
+  const [userMode, setUserMode] = useState<"none" | "self" | "username">("none");
+  const [usernameSearch, setUsernameSearch] = useState("");
+  const [selectedUser, setSelectedUser] = useState<{ userId: number; username: string; email: string } | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [teamIndex, setTeamIndex] = useState(0);
+  const isAdmin = role === "ADMIN";
 
   const displayErrorMessage = errorMessage || catalogErrorMessage;
 
@@ -82,13 +88,45 @@ export default function SponsorCreate() {
       return;
     }
 
+    const userId =
+      isAdmin && userMode === "self"
+        ? currentUserId ?? null
+        : isAdmin && userMode === "username"
+          ? selectedUser?.userId ?? null
+          : null;
+
+    if (isAdmin && userMode === "username" && !userId) {
+      setErrorMessage("Pesquisa e seleciona um utilizador antes de submeter.");
+      return;
+    }
+
     try {
-      await createSponsorshipWithSponsor(sponsorForm, selection, selectedCard.price);
+      await createSponsorshipWithSponsor(sponsorForm, selection, selectedCard.price, userId);
       setSuccessMessage("Pedido de patrocinio submetido com sucesso. Ficara pendente de aprovacao.");
       setSponsorForm(initialSponsorForm);
       setSelection(initialSponsorshipForm);
+      setUsernameSearch("");
+      setSelectedUser(null);
+      setUserMode("none");
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel submeter o patrocinio.");
+    }
+  }
+
+  async function handleUserSearch() {
+    setErrorMessage("");
+    setSelectedUser(null);
+
+    if (!usernameSearch.trim()) {
+      setErrorMessage("Indica um username para procurar.");
+      return;
+    }
+
+    try {
+      const user = await fetchUserByUsername(usernameSearch);
+      setSelectedUser(user);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel encontrar esse utilizador.");
     }
   }
 
@@ -197,6 +235,41 @@ export default function SponsorCreate() {
                 <span>Epoca</span>
                 <input className="sponsor-input" required value={selection.season} onChange={(e) => setSelection((c) => ({ ...c, season: e.target.value }))} />
               </label>
+              {isAdmin ? (
+                <div className="sponsor-field sponsor-field-span">
+                  <span>Conta associada</span>
+                  <div className="sponsor-type-tabs">
+                    <button className={`sponsor-type-tab ${userMode === "none" ? "is-selected" : ""}`} onClick={() => setUserMode("none")} type="button">
+                      Nenhuma
+                    </button>
+                    <button className={`sponsor-type-tab ${userMode === "self" ? "is-selected" : ""}`} onClick={() => setUserMode("self")} type="button">
+                      Eu
+                    </button>
+                    <button className={`sponsor-type-tab ${userMode === "username" ? "is-selected" : ""}`} onClick={() => setUserMode("username")} type="button">
+                      Username
+                    </button>
+                  </div>
+                  {userMode === "username" ? (
+                    <div className="sponsor-inline-editor">
+                      <input
+                        className="sponsor-input"
+                        placeholder="username"
+                        value={usernameSearch}
+                        onChange={(e) => {
+                          setUsernameSearch(e.target.value);
+                          setSelectedUser(null);
+                        }}
+                      />
+                      <button className="sponsor-button-secondary" onClick={handleUserSearch} type="button">
+                        Procurar
+                      </button>
+                    </div>
+                  ) : null}
+                  {selectedUser ? (
+                    <p className="sponsor-muted-text">Selecionado: {selectedUser.username} ({selectedUser.email})</p>
+                  ) : null}
+                </div>
+              ) : null}
               <div className="sponsor-form-actions sponsor-field-span">
                 <button className="sponsor-button-primary" disabled={!selectedCard} type="submit">
                   Submeter patrocinio

@@ -24,14 +24,28 @@ class SponsorshipService(
     private val transactionManager: TransactionManager,
     private val sponsorDomain: SponsorDomain,
 ) {
+    fun createSponsorship(
+        authenticatedUser: AuthenticatedUser,
+        sponsorship: Sponsorship,
+    ): SponsorshipResult {
+        if (!canManageSponsorships(authenticatedUser)) {
+            return failure(SponsorError.DomainError("Not authorized"))
+        }
+        return transactionManager.run { transaction ->
+            createValidatedSponsorship(transaction, sponsorship)
+        }
+    }
+
     fun createSponsorship(sponsorship: Sponsorship): SponsorshipResult =
         transactionManager.run { transaction ->
             createValidatedSponsorship(transaction, sponsorship)
         }
 
     fun createSponsorshipWithSponsor(
+        authenticatedUser: AuthenticatedUser,
         sponsor: Sponsor,
         sponsorship: Sponsorship,
+        requestedUserId: Long?,
     ): SponsorshipResult =
         transactionManager.run { transaction ->
             when (val validatedSponsor = sponsorDomain.validateForCreation(sponsor)) {
@@ -40,9 +54,32 @@ class SponsorshipService(
                     val existingSponsor =
                         transaction.sponsorRepository.findByNif(validatedSponsor.value.nif)
 
+                    val userIdToAssociate =
+                        if (canManageSponsorships(authenticatedUser)) requestedUserId else authenticatedUser.userId
+
+                    if (userIdToAssociate != null && transaction.userRepository.findById(userIdToAssociate) == null) {
+                        return@run failure(SponsorError.DomainError("User $userIdToAssociate not found"))
+                    }
+
                     val sponsorId =
-                        existingSponsor?.sponsorId
-                            ?: transaction.sponsorRepository.save(validatedSponsor.value)
+                        if (existingSponsor != null) {
+                            if (
+                                !canManageSponsorships(authenticatedUser) &&
+                                existingSponsor.userId != null &&
+                                existingSponsor.userId != userIdToAssociate
+                            ) {
+                                return@run failure(SponsorError.ValidationError("Sponsor is already associated with another account"))
+                            }
+
+                            if (canManageSponsorships(authenticatedUser) && userIdToAssociate != null && existingSponsor.userId != userIdToAssociate) {
+                                transaction.sponsorRepository.updateUserId(existingSponsor.sponsorId, userIdToAssociate)
+                            } else if (userIdToAssociate != null && existingSponsor.userId == null) {
+                                transaction.sponsorRepository.updateUserId(existingSponsor.sponsorId, userIdToAssociate)
+                            }
+                            existingSponsor.sponsorId
+                        } else {
+                            transaction.sponsorRepository.save(validatedSponsor.value.copy(userId = userIdToAssociate))
+                        }
 
                     createValidatedSponsorship(transaction, sponsorship.copy(sponsorId = sponsorId))
                 }
@@ -128,7 +165,7 @@ class SponsorshipService(
                 transaction.sponsorRepository.findById(sponsorId)
                     ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
 
-            if (!canManageSponsorships(authenticatedUser) && !sponsor.email.equals(authenticatedUser.email, ignoreCase = true)) {
+            if (!canManageSponsorships(authenticatedUser) && !canAccessSponsor(authenticatedUser, sponsor)) {
                 return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
             }
 
@@ -151,7 +188,7 @@ class SponsorshipService(
                 transaction.sponsorRepository.findById(sponsorId)
                     ?: return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
 
-            if (authenticatedUser.role != Role.ADMIN && !sponsor.email.equals(authenticatedUser.email, ignoreCase = true)) {
+            if (!canManageSponsorships(authenticatedUser) && !canAccessSponsor(authenticatedUser, sponsor)) {
                 return@run failure(SponsorError.DomainError("Sponsor $sponsorId not found"))
             }
 
@@ -164,7 +201,9 @@ class SponsorshipService(
                 return@run success(transaction.sponsorshipRepository.findAll())
             }
 
-            val sponsors = transaction.sponsorRepository.findByEmail(authenticatedUser.email)
+            val sponsors =
+                transaction.sponsorRepository.findByUserId(authenticatedUser.userId)
+                    .ifEmpty { transaction.sponsorRepository.findByEmail(authenticatedUser.email) }
             val sponsorships = sponsors.flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
 
             success(sponsorships.sortedByDescending { it.sponsorshipId })
@@ -187,7 +226,9 @@ class SponsorshipService(
                 )
             }
 
-            val sponsors = transaction.sponsorRepository.findByEmail(authenticatedUser.email)
+            val sponsors =
+                transaction.sponsorRepository.findByUserId(authenticatedUser.userId)
+                    .ifEmpty { transaction.sponsorRepository.findByEmail(authenticatedUser.email) }
             val sponsorships =
                 sponsors
                     .flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
@@ -233,13 +274,29 @@ class SponsorshipService(
             )
         }
 
-    fun approveSponsorship(sponsorshipId: Long): SponsorshipResult =
-        transitionSponsorship(sponsorshipId) { sponsorDomain.approveSponsorship(it) }
+    fun approveSponsorship(
+        authenticatedUser: AuthenticatedUser,
+        sponsorshipId: Long,
+    ): SponsorshipResult {
+        if (!canManageSponsorships(authenticatedUser)) return failure(SponsorError.DomainError("Not authorized"))
+        return transitionSponsorship(sponsorshipId) { sponsorDomain.approveSponsorship(it) }
+    }
 
-    fun markSponsorshipPaid(sponsorshipId: Long): SponsorshipResult = transitionSponsorship(sponsorshipId) { sponsorDomain.markPaid(it) }
+    fun markSponsorshipPaid(
+        authenticatedUser: AuthenticatedUser,
+        sponsorshipId: Long,
+    ): SponsorshipResult {
+        if (!canManageSponsorships(authenticatedUser)) return failure(SponsorError.DomainError("Not authorized"))
+        return transitionSponsorship(sponsorshipId) { sponsorDomain.markPaid(it) }
+    }
 
-    fun cancelSponsorship(sponsorshipId: Long): SponsorshipResult =
-        transitionSponsorship(sponsorshipId) { sponsorDomain.cancelSponsorship(it) }
+    fun cancelSponsorship(
+        authenticatedUser: AuthenticatedUser,
+        sponsorshipId: Long,
+    ): SponsorshipResult {
+        if (!canManageSponsorships(authenticatedUser)) return failure(SponsorError.DomainError("Not authorized"))
+        return transitionSponsorship(sponsorshipId) { sponsorDomain.cancelSponsorship(it) }
+    }
 
     private fun transitionSponsorship(
         sponsorshipId: Long,
@@ -350,8 +407,14 @@ class SponsorshipService(
         }
 
         val sponsor = transaction.sponsorRepository.findById(sponsorship.sponsorId) ?: return false
-        return sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
+        return canAccessSponsor(authenticatedUser, sponsor)
     }
+
+    private fun canAccessSponsor(
+        authenticatedUser: AuthenticatedUser,
+        sponsor: Sponsor,
+    ): Boolean =
+        sponsor.userId == authenticatedUser.userId || sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
 
     private fun canManageSponsorships(authenticatedUser: AuthenticatedUser): Boolean =
         authenticatedUser.role == Role.ADMIN || authenticatedUser.role == Role.SECRETARIA

@@ -6,4 +6,5 @@ data class Sponsor(
     val email: String,
     val phone: String,
     val nif: String,
+    val userId: Long? = null,
 )

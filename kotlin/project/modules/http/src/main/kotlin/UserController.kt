@@ -41,18 +41,7 @@ class UserController(
             role = request.role,
             activeMemberId = request.activeMemberId,
         ).handle(
-            onFailure = { error ->
-                when (error) {
-                    is UserServiceError.AlreadyExists -> Problem.UserAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
-                    is UserServiceError.NotFound ->
-                        Problem.UserRelatedResourceNotFound(
-                            error.field,
-                            error.value,
-                        ).response(HttpStatus.NOT_FOUND)
-                    is UserServiceError.Validation -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-                    is UserServiceError.Unauthorized -> Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
-                }
-            },
+            onFailure = { error -> serviceErrorToProblem(error) },
             onSuccess = { created ->
                 ResponseEntity.status(HttpStatus.CREATED)
                     .body(created.toOutputModel())
@@ -82,9 +71,10 @@ class UserController(
 
     @GetMapping(Uris.Users.GET_BY_ID)
     fun getUserById(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable userId: Long,
     ): ResponseEntity<*> =
-        userService.getUserById(userId).handle(
+        userService.getUserById(authenticatedUser, userId).handle(
             onFailure = { error ->
                 serviceErrorToProblem(error)
             },
@@ -93,9 +83,10 @@ class UserController(
 
     @GetMapping(Uris.Users.GET_BY_EMAIL)
     fun getUserByEmail(
+        authenticatedUser: AuthenticatedUser,
         @RequestParam email: String,
     ): ResponseEntity<*> =
-        userService.getUserByEmail(email).handle(
+        userService.getUserByEmail(authenticatedUser, email).handle(
             onFailure = { error ->
                 serviceErrorToProblem(error)
             },
@@ -104,9 +95,10 @@ class UserController(
 
     @GetMapping(Uris.Users.GET_BY_USERNAME)
     fun getUserByUsername(
+        authenticatedUser: AuthenticatedUser,
         @RequestParam username: String,
     ): ResponseEntity<*> =
-        userService.getUserByUsername(username).handle(
+        userService.getUserByUsername(authenticatedUser, username).handle(
             onFailure = { error ->
                 serviceErrorToProblem(error)
             },
@@ -137,6 +129,7 @@ class UserController(
                     .body(
                         AuthenticatedUserOutputModel(
                             res.userId,
+                            res.email,
                             res.username,
                             res.activeMemberId,
                             res.role,

@@ -18,6 +18,14 @@ import type {
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
 
+export type SponsorUserSummary = {
+  userId: number;
+  email: string;
+  username: string;
+  role: string;
+  activeMemberId: number | null;
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: {
@@ -65,6 +73,7 @@ export function createSponsor(values: SponsorFormValues) {
       email: values.email.trim(),
       phone: values.phone.trim(),
       nif: values.nif.trim(),
+      userId: values.userId ?? null,
     }),
   });
 }
@@ -78,6 +87,7 @@ export function updateSponsor(sponsorId: number, values: SponsorFormValues) {
       email: values.email.trim(),
       phone: values.phone.trim(),
       nif: values.nif.trim(),
+      userId: values.userId ?? null,
     }),
   });
 }
@@ -167,7 +177,7 @@ export function createPubOption(payload: { code: string; label: string; availabl
   });
 }
 
-export function createSponsorshipWithSponsor(sponsor: SponsorFormValues, values: SponsorshipFormValues, price: number) {
+export function createSponsorshipWithSponsor(sponsor: SponsorFormValues, values: SponsorshipFormValues, price: number, userId?: number | null) {
   return request<Sponsorship>("/sponsorships/with-sponsor", {
     method: "POST",
     body: JSON.stringify({
@@ -177,6 +187,7 @@ export function createSponsorshipWithSponsor(sponsor: SponsorFormValues, values:
         email: sponsor.email.trim(),
         phone: sponsor.phone.trim(),
         nif: sponsor.nif.trim(),
+        userId: userId ?? sponsor.userId ?? null,
       },
       sponsorship: {
         sponsorshipId: 0,
@@ -190,6 +201,30 @@ export function createSponsorshipWithSponsor(sponsor: SponsorFormValues, values:
         placementId: values.placementId ? Number.parseInt(values.placementId, 10) : null,
         sportId: values.sportId ? Number.parseInt(values.sportId, 10) : null,
       },
+      userId: userId ?? sponsor.userId ?? null,
+    }),
+  });
+}
+
+export function fetchUserByUsername(username: string) {
+  const search = new URLSearchParams({ username: username.trim() });
+  return request<SponsorUserSummary>(`/users/by-username?${search.toString()}`);
+}
+
+export function assignSponsorUser(sponsorId: number, userId: number | null) {
+  return request<Sponsor>(`/sponsors/${sponsorId}/user`, {
+    method: "PUT",
+    body: JSON.stringify({ userId }),
+  });
+}
+
+export function claimSponsorAccount(values: { nif: string; email: string; phone: string }) {
+  return request<Sponsor>("/sponsors/claim", {
+    method: "POST",
+    body: JSON.stringify({
+      nif: values.nif.trim(),
+      email: values.email.trim(),
+      phone: values.phone.trim(),
     }),
   });
 }

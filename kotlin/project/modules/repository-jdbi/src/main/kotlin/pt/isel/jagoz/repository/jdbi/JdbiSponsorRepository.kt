@@ -28,6 +28,13 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .list()
     }
 
+    override fun findByUserId(userId: Long): List<Sponsor> {
+        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE user_id = :userId ORDER BY sponsor_id DESC")
+            .bind("userId", userId)
+            .mapTo(Sponsor::class.java)
+            .list()
+    }
+
     override fun findAll(): List<Sponsor> {
         return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC")
             .mapTo(Sponsor::class.java)
@@ -54,10 +61,11 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
     override fun save(sponsor: Sponsor): Long {
         return handle.createUpdate(
             """
-            INSERT INTO jagoz.sponsor (name, email, phone, nif)
-            VALUES (:name, :email, :phone, :nif)
+            INSERT INTO jagoz.sponsor (user_id, name, email, phone, nif)
+            VALUES (:userId, :name, :email, :phone, :nif)
             """,
         )
+            .bind("userId", sponsor.userId)
             .bind("name", sponsor.name)
             .bind("email", sponsor.email)
             .bind("phone", sponsor.phone)
@@ -92,6 +100,22 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .execute()
     }
 
+    override fun updateUserId(
+        sponsorId: Long,
+        userId: Long?,
+    ) {
+        handle.createUpdate(
+            """
+            UPDATE jagoz.sponsor
+            SET user_id = :userId
+            WHERE sponsor_id = :sponsorId
+            """,
+        )
+            .bind("sponsorId", sponsorId)
+            .bind("userId", userId)
+            .execute()
+    }
+
     override fun deleteById(id: Long) {
         handle.createUpdate("DELETE FROM jagoz.sponsor WHERE sponsor_id = :id")
             .bind("id", id)
@@ -119,7 +143,8 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
                 name = :name, 
                 email = :email, 
                 phone = :phone, 
-                nif = :nif
+                nif = :nif,
+                user_id = :userId
             WHERE sponsor_id = :id
             """,
         )
@@ -128,6 +153,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .bind("email", sponsor.email)
             .bind("phone", sponsor.phone)
             .bind("nif", sponsor.nif)
+            .bind("userId", sponsor.userId)
             .execute()
     }
 }

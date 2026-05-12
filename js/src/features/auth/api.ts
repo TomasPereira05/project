@@ -48,6 +48,7 @@ export const api = {
     login: async (identifier: string, password: string) => {
       const data = await request<{
         userId: number;
+        email: string;
         username: string;
         role: string;
         activeMemberId: number | null;
@@ -58,6 +59,7 @@ export const api = {
       });
       return {
         id: data.userId,
+        email: data.email,
         username: data.username,
         role: data.role,
         activeMemberId: data.activeMemberId,
@@ -89,6 +91,7 @@ export const api = {
         const data = await request<any>("/users/me");
         return {
           id: data.userId, 
+          email: data.email,
           username: data.username,
           role: data.role,
           activeMemberId: data.activeMemberId
