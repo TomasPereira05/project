@@ -30,11 +30,11 @@ import {
   createEmptyCatalogDraft,
   initialCatalogDrafts,
   isValidPubCapacity,
-  moveItem,
   parseCatalogCount,
   type CatalogEditor,
   type CatalogKind,
 } from "../utils";
+import { moveItem } from "../../../shared/utils";
 
 type CatalogItem = PubOption | EquipmentPlacement | OtherSport;
 

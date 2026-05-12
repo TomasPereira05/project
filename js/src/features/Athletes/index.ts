@@ -1,6 +1,7 @@
 export * from "./types";
 export * from "./api";
 export * from "./utils";
+export * from "./hooks";
 export { default as Athletes } from "./components/Athletes";
 export { default as AthletePage } from "./components/Athlete";
 export { default as AthleteByTeamCategory } from "./components/AthleteByTeamCategory";

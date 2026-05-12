@@ -92,5 +92,9 @@
     "socials": "Redes Sociais",
     "location": "Localização",
     "copyright": "© 2026 Ericeirense Futebol Clube. Todos os direitos reservados."
+  },
+  "config": {
+    "codeTooltip": "Code é o identificador curto usado internamente. ex: 'SENIORES'",
+    "labelTooltip": "Label é o nome visivel para admins e utilizadores. ex: 'Seniores'"
   }
 }

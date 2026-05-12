@@ -428,23 +428,6 @@
     @apply md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto];
   }
 
-  .team-settings-field {
-    @apply flex min-w-0 flex-col gap-1;
-  }
-
-  .team-settings-field-label {
-    @apply relative inline-flex w-fit items-center text-xs font-bold uppercase text-text-secondary;
-  }
-
-  .team-settings-tooltip {
-    @apply invisible absolute left-0 top-full z-20 mt-2 w-60 rounded-lg border border-border bg-white p-3 text-left text-xs font-medium normal-case text-text-primary opacity-0 shadow-lg transition;
-  }
-
-  .team-settings-field-label:hover .team-settings-tooltip,
-  .team-settings-field-label:focus .team-settings-tooltip {
-    @apply visible opacity-100;
-  }
-
   .team-settings-row-fields {
     @apply md:grid-cols-2 xl:grid-cols-3;
   }

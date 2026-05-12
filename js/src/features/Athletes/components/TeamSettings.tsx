@@ -1,264 +1,38 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Eye, EyeOff, GripVertical, ShieldAlert } from "lucide-react";
-import {
-  createTeamCategory,
-  createTeamGroup,
-  deactivateTeamCategory,
-  deactivateTeamGroup,
-  fetchAllTeamCategories,
-  fetchAllTeamGroups,
-  reorderTeamCategories,
-  reorderTeamGroups,
-  updateTeamCategory,
-  updateTeamGroup,
-  type TeamCategory,
-  type TeamGroup,
-} from "../../sponsors";
-import { moveItem } from "../../sponsors/utils";
-
-type TeamCategoryDraft = {
-  code: string;
-  label: string;
-  teamGroupId: string;
-};
-
-type TeamGroupDraft = {
-  code: string;
-  label: string;
-};
-
-type DragState = {
-  kind: "category" | "group";
-  id: number;
-} | null;
-
-const emptyCategoryDraft: TeamCategoryDraft = {
-  code: "",
-  label: "",
-  teamGroupId: "",
-};
-
-const emptyGroupDraft: TeamGroupDraft = {
-  code: "",
-  label: "",
-};
-
-const codeTooltip = "Code e o identificador curto usado internamente e nas regras de negocio.";
-const labelTooltip = "Label e o nome visivel para admins e utilizadores.";
+import { useTranslation } from "react-i18next";
+import LabeledField from "../../../shared/components/LabeledField";
+import type { TeamCatalogCategory, TeamGroup } from "../types";
+import { useTeamSettings } from "../hooks";
 
 export default function TeamSettings() {
-  const [categories, setCategories] = useState<TeamCategory[]>([]);
-  const [groups, setGroups] = useState<TeamGroup[]>([]);
-  const [categoryDraft, setCategoryDraft] = useState<TeamCategoryDraft>(emptyCategoryDraft);
-  const [groupDraft, setGroupDraft] = useState<TeamGroupDraft>(emptyGroupDraft);
-  const [showInactive, setShowInactive] = useState(false);
-  const [dragState, setDragState] = useState<DragState>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [notice, setNotice] = useState("");
-
-  const visibleGroups = useMemo(
-    () => groups.filter((group) => (showInactive ? !group.active : group.active)),
-    [groups, showInactive],
-  );
-
-  const visibleCategories = useMemo(
-    () => categories.filter((category) => (showInactive ? !category.active : category.active)),
-    [categories, showInactive],
-  );
-
-  useEffect(() => {
-    void refreshSettings();
-  }, []);
-
-  async function refreshSettings() {
-    setIsLoading(true);
-    setErrorMessage("");
-
-    try {
-      const [nextCategories, nextGroups] = await Promise.all([
-        fetchAllTeamCategories(),
-        fetchAllTeamGroups(),
-      ]);
-      setCategories(nextCategories);
-      setGroups(nextGroups);
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar as equipas.");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleCreateGroup() {
-    if (!groupDraft.code.trim() || !groupDraft.label.trim()) {
-      setErrorMessage("Code e label sao obrigatorios.");
-      return;
-    }
-
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      await createTeamGroup({
-        code: groupDraft.code.trim(),
-        label: groupDraft.label.trim(),
-        sortOrder: groups.length,
-      });
-      setGroupDraft(emptyGroupDraft);
-      setNotice("Grupo criado com sucesso.");
-      await refreshSettings();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar o grupo.");
-    }
-  }
-
-  async function handleCreateCategory() {
-    if (!categoryDraft.code.trim() || !categoryDraft.label.trim()) {
-      setErrorMessage("Code e label sao obrigatorios.");
-      return;
-    }
-
-    const teamGroupId = Number.parseInt(categoryDraft.teamGroupId, 10);
-    if (Number.isNaN(teamGroupId)) {
-      setErrorMessage("Escolhe o grupo da equipa.");
-      return;
-    }
-
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      await createTeamCategory({
-        code: categoryDraft.code.trim(),
-        label: categoryDraft.label.trim(),
-        teamGroupId,
-        sortOrder: categories.length,
-      });
-      setCategoryDraft(emptyCategoryDraft);
-      setNotice("Categoria criada com sucesso.");
-      await refreshSettings();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a categoria.");
-    }
-  }
-
-  async function handleSaveGroup(group: TeamGroup) {
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      await updateTeamGroup(group.teamGroupId, group);
-      setNotice("Grupo atualizado.");
-      await refreshSettings();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o grupo.");
-    }
-  }
-
-  async function handleSaveCategory(category: TeamCategory) {
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      await updateTeamCategory(category.teamId, category);
-      setNotice("Categoria atualizada.");
-      await refreshSettings();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a categoria.");
-    }
-  }
-
-  async function handleToggleGroup(group: TeamGroup) {
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      if (group.active) {
-        await deactivateTeamGroup(group.teamGroupId);
-        setNotice("Grupo desativado.");
-      } else {
-        await updateTeamGroup(group.teamGroupId, { ...group, active: true });
-        setNotice("Grupo ativado.");
-      }
-      await refreshSettings();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o estado do grupo.");
-    }
-  }
-
-  async function handleToggleCategory(category: TeamCategory) {
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      if (category.active) {
-        await deactivateTeamCategory(category.teamId);
-        setNotice("Categoria desativada.");
-      } else {
-        await updateTeamCategory(category.teamId, { ...category, active: true });
-        setNotice("Categoria ativada.");
-      }
-      await refreshSettings();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o estado da categoria.");
-    }
-  }
-
-  async function handleGroupDrop(targetId: number) {
-    if (dragState?.kind !== "group" || dragState.id === targetId) {
-      setDragState(null);
-      return;
-    }
-
-    const fromIndex = groups.findIndex((group) => group.teamGroupId === dragState.id);
-    const toIndex = groups.findIndex((group) => group.teamGroupId === targetId);
-    if (fromIndex < 0 || toIndex < 0) {
-      setDragState(null);
-      return;
-    }
-
-    const reordered = moveItem(groups, fromIndex, toIndex).map((group, index) => ({ ...group, sortOrder: index }));
-    setGroups(reordered);
-    setDragState(null);
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      await reorderTeamGroups(reordered.map((group) => group.teamGroupId));
-      setNotice("Ordem dos grupos atualizada.");
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar os grupos.");
-      await refreshSettings();
-    }
-  }
-
-  async function handleCategoryDrop(targetId: number) {
-    if (dragState?.kind !== "category" || dragState.id === targetId) {
-      setDragState(null);
-      return;
-    }
-
-    const fromIndex = categories.findIndex((category) => category.teamId === dragState.id);
-    const toIndex = categories.findIndex((category) => category.teamId === targetId);
-    if (fromIndex < 0 || toIndex < 0) {
-      setDragState(null);
-      return;
-    }
-
-    const reordered = moveItem(categories, fromIndex, toIndex).map((category, index) => ({ ...category, sortOrder: index }));
-    setCategories(reordered);
-    setDragState(null);
-    setErrorMessage("");
-    setNotice("");
-
-    try {
-      await reorderTeamCategories(reordered.map((category) => category.teamId));
-      setNotice("Ordem das categorias atualizada.");
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar as categorias.");
-      await refreshSettings();
-    }
-  }
+  const { t } = useTranslation();
+  const codeTooltip = t("config.codeTooltip");
+  const labelTooltip = t("config.labelTooltip");
+  const {
+    categoryDraft,
+    dragState,
+    errorMessage,
+    groupDraft,
+    groups,
+    handleCategoryDrop,
+    handleCreateCategory,
+    handleCreateGroup,
+    handleGroupDrop,
+    handleSaveCategory,
+    handleSaveGroup,
+    handleToggleCategory,
+    handleToggleGroup,
+    isLoading,
+    notice,
+    setCategoryDraft,
+    setDragState,
+    setGroupDraft,
+    setShowInactive,
+    showInactive,
+    visibleCategories,
+    visibleGroups,
+  } = useTeamSettings();
 
   return (
     <main className="sponsor-page">
@@ -445,9 +219,12 @@ function TeamGroupRow({
   onSave: (group: TeamGroup) => void;
   onToggleActive: () => void;
 }) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(group.code);
   const [label, setLabel] = useState(group.label);
+  const codeTooltip = t("config.codeTooltip");
+  const labelTooltip = t("config.labelTooltip");
 
   useEffect(() => {
     setCode(group.code);
@@ -520,18 +297,21 @@ function TeamCategoryRow({
   onSave,
   onToggleActive,
 }: {
-  category: TeamCategory;
+  category: TeamCatalogCategory;
   groups: TeamGroup[];
   isDragging: boolean;
   onDragStart: () => void;
   onDrop: () => void;
-  onSave: (category: TeamCategory) => void;
+  onSave: (category: TeamCatalogCategory) => void;
   onToggleActive: () => void;
 }) {
+  const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(category.code);
   const [label, setLabel] = useState(category.label);
   const [teamGroupId, setTeamGroupId] = useState(String(category.teamGroupId));
+  const codeTooltip = t("config.codeTooltip");
+  const labelTooltip = t("config.labelTooltip");
 
   useEffect(() => {
     setCode(category.code);
@@ -608,25 +388,5 @@ function TeamCategoryRow({
         </button>
       </div>
     </div>
-  );
-}
-
-function LabeledField({
-  children,
-  label,
-  tooltip,
-}: {
-  children: ReactNode;
-  label: string;
-  tooltip?: string;
-}) {
-  return (
-    <label className="team-settings-field">
-      <span className="team-settings-field-label">
-        {label}
-        {tooltip ? <span className="team-settings-tooltip">{tooltip}</span> : null}
-      </span>
-      {children}
-    </label>
   );
 }

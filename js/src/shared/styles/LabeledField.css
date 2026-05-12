@@ -1,0 +1,18 @@
+@layer components {
+  .labeled-field {
+    @apply flex min-w-0 flex-col gap-1;
+  }
+
+  .labeled-field-label {
+    @apply relative inline-flex w-fit items-center text-xs font-bold uppercase text-text-secondary;
+  }
+
+  .labeled-field-tooltip {
+    @apply invisible absolute left-0 top-full z-20 mt-2 w-60 rounded-lg border border-border bg-white p-3 text-left text-xs font-medium normal-case text-text-primary opacity-0 shadow-lg transition;
+  }
+
+  .labeled-field-label:hover .labeled-field-tooltip,
+  .labeled-field-label:focus .labeled-field-tooltip {
+    @apply visible opacity-100;
+  }
+}

@@ -1,5 +1,5 @@
 import type { CatalogSnapshot } from "../types";
-import { compareBySortOrder } from "./arrayUtils";
+import { compareBySortOrder } from "../../../shared/utils";
 
 export const emptySponsorCatalogs: CatalogSnapshot = {
   pubOptions: [],
