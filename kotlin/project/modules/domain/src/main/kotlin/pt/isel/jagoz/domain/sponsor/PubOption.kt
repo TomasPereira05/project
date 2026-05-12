@@ -8,5 +8,6 @@ data class PubOption(
     val available: Int,
     val free: Int,
     val occupied: Int,
+    val price: Int,
     val sortOrder: Int?,
 )

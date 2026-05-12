@@ -47,8 +47,8 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
     override fun save(po: PubOption): Long {
         return handle.createUpdate(
             """
-        INSERT INTO jagoz.pub_option (code, label, active, available, free, occupied, sort_order)
-        VALUES (:code, :label, :active, :available, :free, :occupied, :sortOrder)
+        INSERT INTO jagoz.pub_option (code, label, active, available, free, occupied, price, sort_order)
+        VALUES (:code, :label, :active, :available, :free, :occupied, :price, :sortOrder)
         """,
         )
             .bind("code", po.code)
@@ -57,6 +57,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             .bind("available", po.available)
             .bind("free", po.free)
             .bind("occupied", po.occupied)
+            .bind("price", po.price)
             .bind("sortOrder", po.sortOrder)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
@@ -73,6 +74,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             available = :available,
             free = :free,
             occupied = :occupied,
+            price = :price,
             sort_order = :sortOrder
         WHERE pub_option_id = :id
         """,
@@ -84,6 +86,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             .bind("available", po.available)
             .bind("free", po.free)
             .bind("occupied", po.occupied)
+            .bind("price", po.price)
             .bind("sortOrder", po.sortOrder)
             .execute()
     }

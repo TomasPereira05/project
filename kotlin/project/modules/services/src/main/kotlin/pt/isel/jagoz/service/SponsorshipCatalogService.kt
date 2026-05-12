@@ -3,9 +3,7 @@ package pt.isel.jagoz.service
 import jakarta.inject.Named
 import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
 import pt.isel.jagoz.domain.sponsor.OtherSport
-import pt.isel.jagoz.domain.sponsor.OtherSportPrice
 import pt.isel.jagoz.domain.sponsor.PubOption
-import pt.isel.jagoz.domain.sponsor.PubOptionPrice
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -22,27 +20,32 @@ class SponsorshipCatalogService(
 
     fun getActiveOtherSports(): List<OtherSport> = transactionManager.run { transaction -> transaction.otherSportRepository.findActive() }
 
-    fun getPubOptionPrices(): List<PubOptionPrice> =
-        transactionManager.run { transaction -> transaction.pubOptionPriceRepository.findAll() }
-
-    fun getOtherSportPrices(): List<OtherSportPrice> =
-        transactionManager.run { transaction -> transaction.otherSportPriceRepository.findAll() }
-
     fun createPubOption(pubOption: PubOption) =
         transactionManager.run { transaction ->
-            validatePubOptionCapacity(pubOption)?.let { return@run failure(it) }
-            val id = transaction.pubOptionRepository.save(pubOption)
-            success(pubOption.copy(pubId = id))
+            val normalized = pubOption.copy(
+                occupied = 0,
+                free = pubOption.available,
+            )
+            validatePubOptionCapacity(normalized)?.let { return@run failure(it) }
+            validatePrice(pubOption.price)?.let { return@run failure(it) }
+            val id = transaction.pubOptionRepository.save(normalized)
+            success(normalized.copy(pubId = id))
         }
 
     fun updatePubOption(pubOption: PubOption) =
         transactionManager.run { transaction ->
-            if (transaction.pubOptionRepository.findById(pubOption.pubId) == null) {
+            val current = transaction.pubOptionRepository.findById(pubOption.pubId)
+            if (current == null) {
                 return@run failure(SponsorError.DomainError("Pub option ${pubOption.pubId} not found"))
             }
-            validatePubOptionCapacity(pubOption)?.let { return@run failure(it) }
-            transaction.pubOptionRepository.update(pubOption)
-            success(pubOption)
+            val normalized = pubOption.copy(
+                occupied = current.occupied,
+                free = pubOption.available - current.occupied,
+            )
+            validatePubOptionCapacity(normalized)?.let { return@run failure(it) }
+            validatePrice(pubOption.price)?.let { return@run failure(it) }
+            transaction.pubOptionRepository.update(normalized)
+            success(normalized)
         }
 
     fun deactivatePubOption(pubOptionId: Long) =
@@ -71,12 +74,12 @@ class SponsorshipCatalogService(
         }
 
     private fun validatePubOptionCapacity(pubOption: PubOption): SponsorError.ValidationError? {
-        if (pubOption.available < 0 || pubOption.free < 0 || pubOption.occupied < 0) {
-            return SponsorError.ValidationError("available, free and occupied must be non-negative")
+        if (pubOption.available < 0) {
+            return SponsorError.ValidationError("available must be non-negative")
         }
 
-        if (pubOption.free + pubOption.occupied > pubOption.available) {
-            return SponsorError.ValidationError("free plus occupied cannot exceed available")
+        if (pubOption.occupied < 0 || pubOption.free < 0) {
+            return SponsorError.ValidationError("available cannot be lower than occupied sponsorships")
         }
 
         return null
@@ -124,6 +127,7 @@ class SponsorshipCatalogService(
 
     fun createOtherSport(otherSport: OtherSport) =
         transactionManager.run { transaction ->
+            validatePrice(otherSport.price)?.let { return@run failure(it) }
             val id = transaction.otherSportRepository.save(otherSport)
             success(otherSport.copy(sportId = id))
         }
@@ -133,6 +137,7 @@ class SponsorshipCatalogService(
             if (transaction.otherSportRepository.findById(otherSport.sportId) == null) {
                 return@run failure(SponsorError.DomainError("Other sport ${otherSport.sportId} not found"))
             }
+            validatePrice(otherSport.price)?.let { return@run failure(it) }
             transaction.otherSportRepository.update(otherSport)
             success(otherSport)
         }
@@ -162,31 +167,6 @@ class SponsorshipCatalogService(
             success(reordered)
         }
 
-    fun upsertPubOptionPrice(
-        pubOptionId: Long,
-        price: Int,
-    ) = transactionManager.run { transaction ->
-        if (price < 0) return@run failure(SponsorError.ValidationError("price cannot be negative"))
-        if (transaction.pubOptionRepository.findById(pubOptionId) == null) {
-            return@run failure(SponsorError.DomainError("Pub option $pubOptionId not found"))
-        }
-
-        val model = PubOptionPrice(pubOptionId, price)
-        transaction.pubOptionPriceRepository.upsert(model)
-        success(model)
-    }
-
-    fun upsertOtherSportPrice(
-        sportId: Long,
-        price: Int,
-    ) = transactionManager.run { transaction ->
-        if (price < 0) return@run failure(SponsorError.ValidationError("price cannot be negative"))
-        if (transaction.otherSportRepository.findById(sportId) == null) {
-            return@run failure(SponsorError.DomainError("Other sport $sportId not found"))
-        }
-
-        val model = OtherSportPrice(sportId, price)
-        transaction.otherSportPriceRepository.upsert(model)
-        success(model)
-    }
+    private fun validatePrice(price: Int): SponsorError.ValidationError? =
+        if (price < 0) SponsorError.ValidationError("price cannot be negative") else null
 }

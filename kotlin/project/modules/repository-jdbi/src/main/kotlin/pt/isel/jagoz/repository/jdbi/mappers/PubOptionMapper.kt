@@ -18,6 +18,7 @@ class PubOptionMapper : RowMapper<PubOption> {
             available = rs.getInt("available"),
             free = rs.getInt("free"),
             occupied = rs.getInt("occupied"),
+            price = rs.getInt("price"),
             sortOrder = (rs.getObject("sort_order") as? Number)?.toInt(),
         )
 }

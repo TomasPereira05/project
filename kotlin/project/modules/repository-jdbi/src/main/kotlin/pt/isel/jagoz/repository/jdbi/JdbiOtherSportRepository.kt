@@ -47,13 +47,14 @@ class JdbiOtherSportRepository(private val handle: Handle) : OtherSportRepositor
     override fun save(os: OtherSport): Long {
         return handle.createUpdate(
             """
-        INSERT INTO jagoz.other_sport (code, label, active, sort_order)
-        VALUES (:code, :label, :active, :sortOrder)
+        INSERT INTO jagoz.other_sport (code, label, active, price, sort_order)
+        VALUES (:code, :label, :active, :price, :sortOrder)
         """,
         )
             .bind("code", os.code)
             .bind("label", os.label)
             .bind("active", os.active)
+            .bind("price", os.price)
             .bind("sortOrder", os.sortOrder)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
@@ -67,6 +68,7 @@ class JdbiOtherSportRepository(private val handle: Handle) : OtherSportRepositor
             code = :code,
             label = :label,
             active = :active,
+            price = :price,
             sort_order = :sortOrder
         WHERE sport_id = :id
         """,
@@ -75,6 +77,7 @@ class JdbiOtherSportRepository(private val handle: Handle) : OtherSportRepositor
             .bind("code", os.code)
             .bind("label", os.label)
             .bind("active", os.active)
+            .bind("price", os.price)
             .bind("sortOrder", os.sortOrder)
             .execute()
     }

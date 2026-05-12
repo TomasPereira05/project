@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
-import { createSponsor, createSponsorship } from "..";
+import { createSponsorshipWithSponsor } from "..";
 import type { SponsorFormValues, SponsorshipFormValues } from "..";
 import { formatCurrency } from "../../../shared/utils";
 import { useSponsorCatalogs } from "../hooks";
@@ -83,14 +83,7 @@ export default function SponsorCreate() {
     }
 
     try {
-      const sponsor = await createSponsor(sponsorForm);
-      await createSponsorship(
-        {
-          ...selection,
-          sponsorId: String(sponsor.sponsorId),
-        },
-        selectedCard.price,
-      );
+      await createSponsorshipWithSponsor(sponsorForm, selection, selectedCard.price);
       setSuccessMessage("Pedido de patrocinio submetido com sucesso. Ficara pendente de aprovacao.");
       setSponsorForm(initialSponsorForm);
       setSelection(initialSponsorshipForm);

@@ -50,6 +50,7 @@ export type PubOption = {
   available: number;
   free: number;
   occupied: number;
+  price: number;
   sortOrder: number | null;
 };
 
@@ -83,12 +84,8 @@ export type OtherSport = {
   code: string;
   label: string;
   active: boolean;
-  sortOrder: number | null;
-};
-
-export type PubOptionPrice = {
-  pubOptionId: number;
   price: number;
+  sortOrder: number | null;
 };
 
 export type TeamGroupPrice = {
@@ -103,21 +100,14 @@ export type TeamCategoryPriceOverride = {
   price: number;
 };
 
-export type OtherSportPrice = {
-  sportId: number;
-  price: number;
-};
-
 export type CatalogSnapshot = {
   pubOptions: PubOption[];
   teamGroups: TeamGroup[];
   teamCategories: TeamCategory[];
   equipmentPlacements: EquipmentPlacement[];
   otherSports: OtherSport[];
-  pubOptionPrices: PubOptionPrice[];
   teamGroupPrices: TeamGroupPrice[];
   teamCategoryPriceOverrides: TeamCategoryPriceOverride[];
-  otherSportPrices: OtherSportPrice[];
 };
 
 export type SponsorFormValues = {

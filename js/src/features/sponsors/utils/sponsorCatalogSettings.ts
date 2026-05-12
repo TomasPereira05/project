@@ -1,32 +1,25 @@
 import { euroInputFromCents } from "../../../shared/utils";
-import type { OtherSportPrice, PubOptionPrice, TeamCategoryPriceOverride, TeamGroupPrice } from "../types";
+import type { TeamCategoryPriceOverride, TeamGroupPrice } from "../types";
 
 export type CatalogEditor = {
   code: string;
   label: string;
   available?: string;
-  free?: string;
-  occupied?: string;
+  price?: string;
 };
 
 export type CatalogKind = "pub" | "placement" | "sport";
 
 export const initialCatalogDrafts: Record<CatalogKind, CatalogEditor> = {
-  pub: { code: "", label: "", available: "0", free: "0", occupied: "0" },
+  pub: { code: "", label: "", available: "0", price: "0.00" },
   placement: { code: "", label: "" },
-  sport: { code: "", label: "" },
+  sport: { code: "", label: "", price: "0.00" },
 };
 
 export function createEmptyCatalogDraft(kind: CatalogKind): CatalogEditor {
-  return kind === "pub" ? { code: "", label: "", available: "0", free: "0", occupied: "0" } : { code: "", label: "" };
-}
-
-export function buildPubPriceDrafts(prices: PubOptionPrice[]) {
-  return Object.fromEntries(prices.map((item) => [item.pubOptionId, euroInputFromCents(item.price)]));
-}
-
-export function buildOtherSportPriceDrafts(prices: OtherSportPrice[]) {
-  return Object.fromEntries(prices.map((item) => [item.sportId, euroInputFromCents(item.price)]));
+  if (kind === "pub") return { code: "", label: "", available: "0", price: "0.00" };
+  if (kind === "sport") return { code: "", label: "", price: "0.00" };
+  return { code: "", label: "" };
 }
 
 export function buildTeamGroupPriceDrafts(prices: TeamGroupPrice[]) {
@@ -46,7 +39,6 @@ export function parseCatalogCount(value: string | undefined) {
   return Number.parseInt(value ?? "0", 10);
 }
 
-export function isValidPubCapacity(available: number, free: number, occupied: number) {
-  return Number.isInteger(available) && Number.isInteger(free) && Number.isInteger(occupied) &&
-    available >= 0 && free >= 0 && occupied >= 0 && free + occupied <= available;
+export function isValidPubCapacity(available: number) {
+  return Number.isInteger(available) && available >= 0;
 }

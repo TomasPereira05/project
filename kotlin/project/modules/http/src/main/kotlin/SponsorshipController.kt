@@ -13,6 +13,7 @@ import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
+import pt.isel.jagoz.http.model.sponsor.SponsorSponsorshipRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.SponsorshipService
@@ -26,6 +27,15 @@ class SponsorshipController(
         @RequestBody sponsorship: Sponsorship,
     ): ResponseEntity<*> =
         sponsorshipService.createSponsorship(sponsorship).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
+        )
+
+    @PostMapping(Uris.Sponsorships.CREATE_WITH_SPONSOR)
+    fun createSponsorshipWithSponsor(
+        @RequestBody request: SponsorSponsorshipRequest,
+    ): ResponseEntity<*> =
+        sponsorshipService.createSponsorshipWithSponsor(request.sponsor, request.sponsorship).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )

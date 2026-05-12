@@ -273,7 +273,7 @@
   }
 
   .sponsor-input-price {
-    @apply min-w-[104px];
+    @apply min-w-[120px];
   }
 
   .sponsor-form-actions {
@@ -392,6 +392,10 @@
     @apply mt-4 grid gap-3 md:grid-cols-[0.8fr_1.4fr_auto];
   }
 
+  .sponsor-form-action {
+    @apply self-end;
+  }
+
   .sponsor-catalog-list {
     @apply mt-4 flex flex-col gap-3;
   }
@@ -445,7 +449,15 @@
   }
 
   .sponsor-price-editor {
-    @apply flex items-center gap-2;
+    @apply flex flex-wrap items-end gap-2;
+  }
+
+  .sponsor-price-editor-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .sponsor-capacity-summary {
+    @apply flex flex-wrap items-center gap-2 self-end text-xs font-semibold uppercase text-text-secondary;
   }
 
   .sponsor-team-price-panel {

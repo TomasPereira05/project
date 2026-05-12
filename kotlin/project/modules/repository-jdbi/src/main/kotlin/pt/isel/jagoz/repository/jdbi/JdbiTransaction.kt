@@ -6,10 +6,8 @@ import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.MemberRepository
-import pt.isel.jagoz.repository.OtherSportPriceRepository
 import pt.isel.jagoz.repository.OtherSportRepository
 import pt.isel.jagoz.repository.PaymentRepository
-import pt.isel.jagoz.repository.PubOptionPriceRepository
 import pt.isel.jagoz.repository.PubOptionRepository
 import pt.isel.jagoz.repository.SponsorRepository
 import pt.isel.jagoz.repository.SponsorshipRepository
@@ -35,8 +33,6 @@ class JdbiTransaction(private val handle: Handle) : Transaction {
     override val otherSportRepository: OtherSportRepository = JdbiOtherSportRepository(handle)
     override val pubOptionRepository: PubOptionRepository = JdbiPubOptionRepository(handle)
     override val teamCategoryRepository: TeamCategoryRepository = JdbiTeamCategoryRepository(handle)
-    override val pubOptionPriceRepository: PubOptionPriceRepository = JdbiPubOptionPriceRepository(handle)
-    override val otherSportPriceRepository: OtherSportPriceRepository = JdbiOtherSportPriceRepository(handle)
     override val teamCategoryPriceOverrideRepository: TeamCategoryPriceOverrideRepository = JdbiTeamCategoryPriceOverrideRepository(handle)
     override val teamGroupPriceRepository: TeamGroupPriceRepository = JdbiTeamGroupPriceRepository(handle)
     override val teamGroupRepository: TeamGroupRepository = JdbiTeamGroupRepository(handle)
