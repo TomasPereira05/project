@@ -30,6 +30,10 @@ class TeamController(
     fun getActiveTeamGroups() =
         ResponseEntity.ok(teamService.getActiveTeamGroups())
 
+    @GetMapping(Uris.Team.GROUPS)
+    fun getTeamGroups() =
+        ResponseEntity.ok(teamService.getTeamGroups())
+
     @PostMapping(Uris.Team.GROUPS)
     fun createTeamGroup(@RequestBody group: TeamGroup): ResponseEntity<*> =
         teamService.createTeamGroup(group).handle(
@@ -37,11 +41,39 @@ class TeamController(
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it) },
         )
 
+    @PutMapping(Uris.Team.GROUP_BY_ID)
+    fun updateTeamGroup(
+        @PathVariable groupId: Long,
+        @RequestBody group: TeamGroup,
+    ): ResponseEntity<*> =
+        teamService.updateTeamGroup(group.copy(teamGroupId = groupId)).handle(
+            onFailure = { handleTeamError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    @DeleteMapping(Uris.Team.GROUP_BY_ID)
+    fun deactivateTeamGroup(@PathVariable groupId: Long): ResponseEntity<*> =
+        teamService.deactivateTeamGroup(groupId).handle(
+            onFailure = { handleTeamError(it) },
+            onSuccess = { ResponseEntity.noContent().build() },
+        )
+
+    @PutMapping(Uris.Team.GROUPS_REORDER)
+    fun reorderTeamGroups(@RequestBody request: ReorderRequest): ResponseEntity<*> =
+        teamService.reorderTeamGroups(request.ids).handle(
+            onFailure = { handleTeamError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
     // ---------------- TEAM CATEGORIES ----------------
 
     @GetMapping(Uris.Team.CATEGORIES_ACTIVE)
     fun getActiveTeamCategories() =
         ResponseEntity.ok(teamService.getActiveTeamCategories())
+
+    @GetMapping(Uris.Team.CATEGORIES)
+    fun getTeamCategories() =
+        ResponseEntity.ok(teamService.getTeamCategories())
 
     @PostMapping(Uris.Team.CATEGORIES)
     fun createTeamCategory(@RequestBody category: TeamCategory): ResponseEntity<*> =

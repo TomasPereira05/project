@@ -13,6 +13,23 @@ export type TeamCategory =
 
 export type GuardianRole = "FATHER" | "MOTHER" | "LEGAL_GUARDIAN";
 
+export type TeamCatalogCategory = {
+  teamId: number;
+  teamGroupId: number;
+  code: string;
+  label: string;
+  active: boolean;
+  sortOrder: number | null;
+};
+
+export type TeamGroup = {
+  teamGroupId: number;
+  code: string;
+  label: string;
+  active: boolean;
+  sortOrder: number | null;
+};
+
 export type Guardian = {
   guardianId: number;
   athleteId: number;

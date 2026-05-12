@@ -13,7 +13,7 @@ export function buildSponsorPubRows(catalogs: CatalogSnapshot) {
       id: option.pubId,
       label: option.label,
       code: option.code,
-      price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === option.pubId)?.price ?? null,
+      price: option.price,
       available: option.available,
       free: option.free,
       occupied: option.occupied,
@@ -27,7 +27,7 @@ export function buildSponsorOtherRows(catalogs: CatalogSnapshot) {
       id: sport.sportId,
       label: sport.label,
       code: sport.code,
-      price: catalogs.otherSportPrices.find((price) => price.sportId === sport.sportId)?.price ?? null,
+      price: sport.price,
     }))
     .filter((row) => row.price != null);
 }

@@ -14,4 +14,6 @@ interface TeamGroupRepository {
     fun update(team: TeamGroup)
 
     fun deactivate(id: Long)
+
+    fun activate(id: Long)
 }

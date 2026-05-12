@@ -17,6 +17,7 @@ import {
   AthleteByTeamCategory,
   AthletePage,
   AthleteRegister,
+  TeamSettings,
   UpdateAthlete,
 } from "./features/Athletes";
 import {
@@ -111,6 +112,16 @@ const router = createBrowserRouter([
     element: (
       <AuthRequire>
         <AthleteRegister />
+      </AuthRequire>
+    ),
+  },
+  {
+    path: "/athletes/settings",
+    element: (
+      <AuthRequire>
+        <Require allowAdmin>
+          <TeamSettings />
+        </Require>
       </AuthRequire>
     ),
   },

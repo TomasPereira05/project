@@ -27,7 +27,12 @@ class TeamService(
     fun getActiveTeamCategories(): List<TeamCategory> =
         transactionManager.run { transaction -> transaction.teamCategoryRepository.findActive() }
 
+    fun getTeamCategories(): List<TeamCategory> =
+        transactionManager.run { transaction -> transaction.teamCategoryRepository.findAll() }
+
     fun getActiveTeamGroups(): List<TeamGroup> = transactionManager.run { transaction -> transaction.teamGroupRepository.findActive() }
+
+    fun getTeamGroups(): List<TeamGroup> = transactionManager.run { transaction -> transaction.teamGroupRepository.findAll() }
 
     fun createTeamCategory(teamCategory: TeamCategory) =
         transactionManager.run { transaction ->
@@ -39,6 +44,40 @@ class TeamService(
         transactionManager.run { transaction ->
             val id = transaction.teamGroupRepository.save(teamGroup)
             success(teamGroup.copy(teamGroupId = id))
+        }
+
+    fun updateTeamGroup(teamGroup: TeamGroup) =
+        transactionManager.run { transaction ->
+            if (transaction.teamGroupRepository.findById(teamGroup.teamGroupId) == null) {
+                return@run failure(TeamError.NotFound("Team group ${teamGroup.teamGroupId} not found"))
+            }
+            transaction.teamGroupRepository.update(teamGroup)
+            success(teamGroup)
+        }
+
+    fun deactivateTeamGroup(teamGroupId: Long) =
+        transactionManager.run { transaction ->
+            if (transaction.teamGroupRepository.findById(teamGroupId) == null) {
+                return@run failure(TeamError.NotFound("Team group $teamGroupId not found"))
+            }
+            transaction.teamGroupRepository.deactivate(teamGroupId)
+            success(Unit)
+        }
+
+    fun reorderTeamGroups(teamGroupIdsInOrder: List<Long>) =
+        transactionManager.run { transaction ->
+            val all = transaction.teamGroupRepository.findAll()
+            val byId = all.associateBy { it.teamGroupId }
+            if (all.size != teamGroupIdsInOrder.size || teamGroupIdsInOrder.any { it !in byId }) {
+                return@run failure(TeamError.ValidationError("teamGroupIdsInOrder must include every team group exactly once"))
+            }
+            val reordered =
+                teamGroupIdsInOrder.mapIndexed { index, id ->
+                    val updated = byId.getValue(id).copy(sortOrder = index)
+                    transaction.teamGroupRepository.update(updated)
+                    updated
+                }
+            success(reordered)
         }
 
     fun updateTeamCategory(teamCategory: TeamCategory) =

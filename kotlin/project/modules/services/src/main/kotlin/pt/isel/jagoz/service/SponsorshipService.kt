@@ -4,6 +4,7 @@ import jakarta.inject.Named
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.SponsorType
+import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.Role
@@ -25,35 +26,62 @@ class SponsorshipService(
 ) {
     fun createSponsorship(sponsorship: Sponsorship): SponsorshipResult =
         transactionManager.run { transaction ->
-            val sponsor =
-                transaction.sponsorRepository.findById(sponsorship.sponsorId)
-                    ?: return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+            createValidatedSponsorship(transaction, sponsorship)
+        }
 
+    fun createSponsorshipWithSponsor(
+        sponsor: Sponsor,
+        sponsorship: Sponsorship,
+    ): SponsorshipResult =
+        transactionManager.run { transaction ->
             when (val validatedSponsor = sponsorDomain.validateForCreation(sponsor)) {
                 is Either.Left -> return@run validatedSponsor
-                is Either.Right -> Unit
-            }
-
-            when (val enriched = enrichWithPricing(transaction, sponsorship)) {
-                is Either.Left -> enriched
                 is Either.Right -> {
-                    when (val validated = sponsorDomain.validateForCreation(enriched.value)) {
-                        is Either.Left -> validated
-                        is Either.Right -> {
-                            if (validated.value.type == SponsorType.PUB) {
-                                val pubOptionId = validated.value.pubOptionId
-                                    ?: return@run failure(SponsorError.ValidationError("pubOptionId required for PUB"))
-                                if (!transaction.pubOptionRepository.reserve(pubOptionId)) {
-                                    return@run failure(SponsorError.DomainError("No free spaces for pub option $pubOptionId"))
-                                }
+                    val existingSponsor =
+                        transaction.sponsorRepository.findByNif(validatedSponsor.value.nif)
+
+                    val sponsorId =
+                        existingSponsor?.sponsorId
+                            ?: transaction.sponsorRepository.save(validatedSponsor.value)
+
+                    createValidatedSponsorship(transaction, sponsorship.copy(sponsorId = sponsorId))
+                }
+            }
+        }
+
+    private fun createValidatedSponsorship(
+        transaction: Transaction,
+        sponsorship: Sponsorship,
+    ): SponsorshipResult {
+        val sponsor =
+            transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                ?: return failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+        when (val validatedSponsor = sponsorDomain.validateForCreation(sponsor)) {
+            is Either.Left -> return validatedSponsor
+            is Either.Right -> Unit
+        }
+
+        return when (val enriched = enrichWithPricing(transaction, sponsorship)) {
+            is Either.Left -> enriched
+            is Either.Right -> {
+                when (val validated = sponsorDomain.validateForCreation(enriched.value)) {
+                    is Either.Left -> validated
+                    is Either.Right -> {
+                        if (validated.value.type == SponsorType.PUB) {
+                            val pubOptionId = validated.value.pubOptionId
+                                ?: return failure(SponsorError.ValidationError("pubOptionId required for PUB"))
+                            if (!transaction.pubOptionRepository.reserve(pubOptionId)) {
+                                return failure(SponsorError.DomainError("No free spaces for pub option $pubOptionId"))
                             }
-                            val sponsorshipId = transaction.sponsorshipRepository.save(validated.value)
-                            success(validated.value.copy(sponsorshipId = sponsorshipId))
                         }
+                        val sponsorshipId = transaction.sponsorshipRepository.save(validated.value)
+                        success(validated.value.copy(sponsorshipId = sponsorshipId))
                     }
                 }
             }
         }
+    }
 
     fun getSponsorshipById(sponsorshipId: Long): SponsorshipResult =
         transactionManager.run { transaction ->
@@ -247,16 +275,13 @@ class SponsorshipService(
                 val pubOptionId =
                     sponsorship.pubOptionId
                         ?: return failure(SponsorError.ValidationError("pubOptionId required for PUB"))
-                if (transaction.pubOptionRepository.findById(pubOptionId) == null) {
-                    return failure(SponsorError.DomainError("Pub option $pubOptionId not found"))
-                }
-                val price =
-                    transaction.pubOptionPriceRepository.findByPubOptionId(pubOptionId)
-                        ?: return failure(SponsorError.DomainError("Price not configured for pub option $pubOptionId"))
+                val pubOption =
+                    transaction.pubOptionRepository.findById(pubOptionId)
+                        ?: return failure(SponsorError.DomainError("Pub option $pubOptionId not found"))
 
                 success(
                     sponsorship.copy(
-                        price = price.price,
+                        price = pubOption.price,
                     ),
                 )
             }
@@ -302,16 +327,13 @@ class SponsorshipService(
                 val sportId =
                     sponsorship.sportId
                         ?: return failure(SponsorError.ValidationError("sportId required for OTHER"))
-                if (transaction.otherSportRepository.findById(sportId) == null) {
-                    return failure(SponsorError.DomainError("Other sport $sportId not found"))
-                }
-                val price =
-                    transaction.otherSportPriceRepository.findBySportId(sportId)
-                        ?: return failure(SponsorError.DomainError("Price not configured for other sport $sportId"))
+                val otherSport =
+                    transaction.otherSportRepository.findById(sportId)
+                        ?: return failure(SponsorError.DomainError("Other sport $sportId not found"))
 
                 success(
                     sponsorship.copy(
-                        price = price.price,
+                        price = otherSport.price,
                     ),
                 )
             }

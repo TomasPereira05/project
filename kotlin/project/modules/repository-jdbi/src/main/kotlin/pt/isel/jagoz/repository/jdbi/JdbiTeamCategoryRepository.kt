@@ -93,4 +93,16 @@ class JdbiTeamCategoryRepository(private val handle: Handle) : TeamCategoryRepos
             .bind("id", id)
             .execute()
     }
+
+    override fun activate(id: Long) {
+        handle.createUpdate(
+            """
+        UPDATE jagoz.team_category
+        SET active = true
+        WHERE team_category_id = :id
+        """,
+        )
+            .bind("id", id)
+            .execute()
+    }
 }

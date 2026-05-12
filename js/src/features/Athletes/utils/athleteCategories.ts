@@ -1,9 +1,4 @@
-import type {
-  Athlete,
-  AthleteFormValues,
-  AthleteRegisterValues,
-  TeamCategory,
-} from "./types";
+import type { Athlete, AthleteFormValues, AthleteRegisterValues, TeamCategory } from "../types";
 
 export const TEAM_CATEGORIES: TeamCategory[] = [
   "SENIORES",
@@ -94,4 +89,3 @@ export function defaultAthleteRegisterValues(): AthleteRegisterValues {
     schoolCertificationAccepted: false,
   };
 }
-

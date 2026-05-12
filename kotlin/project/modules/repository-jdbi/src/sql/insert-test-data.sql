@@ -6,12 +6,12 @@
 -- OTHER SPORTS
 -- =========================
 INSERT INTO jagoz.other_sport (
-    code, label, sort_order
+    code, label, price, sort_order
 ) VALUES
-    ('PATINAGEM', 'Patinagem',1),
-    ('VOLEIBOL', 'Voleibol',2),
-    ('FUTEBOL_PRAIA', 'Futebol de Praia',3),
-    ('GOLF', 'Golf',4);
+    ('PATINAGEM', 'Patinagem', 20000, 1),
+    ('VOLEIBOL', 'Voleibol', 25000, 2),
+    ('FUTEBOL_PRAIA', 'Futebol de Praia', 30000, 3),
+    ('GOLF', 'Golf', 40000, 4);
 
 -- =========================
 -- EQUIPMENT PLACEMENT OPTIONS
@@ -28,14 +28,14 @@ INSERT INTO jagoz.equipment_placement (
 -- PUBLICITY OPTIONS
 -- =========================
 INSERT INTO jagoz.pub_option (
-    code, label, available, free, occupied, sort_order
+    code, label, available, free, occupied, price, sort_order
 ) VALUES
-    ('LONA_3X0_8', 'Lona 3x0.8', 37, 32, 5, 1),
-    ('LONA_5X2_3', 'Lona 5x2.3', 10, 10, 0, 2),
-    ('LONA_3_80X1_3', 'Lona 3.8x1.3', 6, 5, 1, 3),
-    ('OUTDOOR_2_8X1_3', 'Outdoor 2.8x1.3', 12, 10, 2, 4),
-    ('OUTDOOR_3_8X1_3', 'Outdoor 3.8x1.3', 4, 4, 0, 5),
-    ('OUTDOOR_3_8X1_8', 'Outdoor 3.8x1.8', 4, 3, 1, 6);
+    ('LONA_3X0_8', 'Lona 3x0.8', 37, 32, 5, 30000, 1),
+    ('LONA_5X2_3', 'Lona 5x2.3', 10, 10, 0, 75000, 2),
+    ('LONA_3_80X1_3', 'Lona 3.8x1.3', 6, 5, 1, 60000, 3),
+    ('OUTDOOR_2_8X1_3', 'Outdoor 2.8x1.3', 12, 10, 2, 120000, 4),
+    ('OUTDOOR_3_8X1_3', 'Outdoor 3.8x1.3', 4, 4, 0, 135000, 5),
+    ('OUTDOOR_3_8X1_8', 'Outdoor 3.8x1.8', 4, 3, 1, 150000, 6);
 
 -- =========================
 -- TEAM CATEGORIES
@@ -92,28 +92,6 @@ INSERT INTO jagoz.team_category_price_override (
 (1, 2, 350000),
 (1, 3, 35000),
 (1, 4, 35000);
-
-INSERT INTO jagoz.pub_option_price (pub_option_id, price)
-SELECT pub_option_id,
-       CASE code
-           WHEN 'LONA_3X0_8' THEN 30000
-           WHEN 'LONA_5X2_3' THEN 75000
-           WHEN 'LONA_3_80X1_3' THEN 60000
-           WHEN 'OUTDOOR_2_8X1_3' THEN 120000
-           WHEN 'OUTDOOR_3_8X1_3' THEN 135000
-           WHEN 'OUTDOOR_3_8X1_8' THEN 150000
-           END
-FROM jagoz.pub_option;
-
-INSERT INTO jagoz.other_sport_price (sport_id, price)
-SELECT sport_id,
-       CASE code
-           WHEN 'PATINAGEM' THEN 20000
-           WHEN 'VOLEIBOL' THEN 25000
-           WHEN 'FUTEBOL_PRAIA' THEN 30000
-           WHEN 'GOLF' THEN 40000
-           END
-FROM jagoz.other_sport;
 
 -- =========================
 -- MEMBERS

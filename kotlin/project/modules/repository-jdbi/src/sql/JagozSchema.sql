@@ -94,6 +94,7 @@ CREATE TABLE other_sport (
     code VARCHAR(50) UNIQUE NOT NULL,
     label TEXT NOT NULL,
     active BOOLEAN DEFAULT TRUE,
+    price INT NOT NULL DEFAULT 0,
     sort_order INT NOT NULL DEFAULT 0
 );
 
@@ -113,6 +114,7 @@ CREATE TABLE pub_option (
     available INT NOT NULL DEFAULT 0,
     free INT NOT NULL DEFAULT 0,
     occupied INT NOT NULL DEFAULT 0,
+    price INT NOT NULL DEFAULT 0,
     sort_order INT NOT NULL DEFAULT 0,
 
     CONSTRAINT chk_pub_option_capacity CHECK (
@@ -121,11 +123,6 @@ CREATE TABLE pub_option (
         AND occupied >= 0
         AND free + occupied <= available
     )
-);
-
-CREATE TABLE pub_option_price (
-    pub_option_id INT PRIMARY KEY REFERENCES pub_option(pub_option_id),
-    price INT NOT NULL
 );
 
 CREATE TABLE team_group_price (
@@ -144,11 +141,6 @@ CREATE TABLE team_category_price_override (
     price INT NOT NULL,
 
     UNIQUE (team_category_id, placement_id)
-);
-
-CREATE TABLE other_sport_price (
-    sport_id INT PRIMARY KEY REFERENCES other_sport(sport_id),
-    price INT NOT NULL
 );
 
 CREATE TABLE sponsor (

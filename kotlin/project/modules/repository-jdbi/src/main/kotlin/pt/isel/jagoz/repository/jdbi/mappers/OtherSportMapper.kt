@@ -15,6 +15,7 @@ class OtherSportMapper : RowMapper<OtherSport> {
             code = rs.getString("code"),
             label = rs.getString("label"),
             active = rs.getBoolean("active"),
-            sortOrder = rs.getInt("sort_order"),
+            price = rs.getInt("price"),
+            sortOrder = (rs.getObject("sort_order") as? Number)?.toInt(),
         )
 }

@@ -14,4 +14,6 @@ interface TeamCategoryRepository {
     fun update(team: TeamCategory)
 
     fun deactivate(id: Long)
+
+    fun activate(id: Long)
 }

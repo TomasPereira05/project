@@ -1,3 +1,4 @@
+export * from "./arrayUtils";
 export * from "./formatDate";
 export * from "./centsFromEuroInput";
 export * from "./euroInputFromCents";

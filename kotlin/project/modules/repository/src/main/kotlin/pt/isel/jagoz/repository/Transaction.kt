@@ -31,10 +31,6 @@ interface Transaction {
 
     val teamCategoryRepository: TeamCategoryRepository
 
-    val pubOptionPriceRepository: PubOptionPriceRepository
-
-    val otherSportPriceRepository: OtherSportPriceRepository
-
     val teamCategoryPriceOverrideRepository: TeamCategoryPriceOverrideRepository
 
     val teamGroupPriceRepository: TeamGroupPriceRepository

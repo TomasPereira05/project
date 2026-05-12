@@ -273,7 +273,7 @@
   }
 
   .sponsor-input-price {
-    @apply min-w-[104px];
+    @apply min-w-[120px];
   }
 
   .sponsor-form-actions {
@@ -373,7 +373,7 @@
   }
 
   .sponsor-catalog-grid {
-    @apply grid gap-5 xl:grid-cols-2;
+    @apply grid items-start gap-5 xl:auto-rows-max;
   }
 
   .sponsor-catalog-section {
@@ -392,12 +392,20 @@
     @apply mt-4 grid gap-3 md:grid-cols-[0.8fr_1.4fr_auto];
   }
 
+  .sponsor-form-action {
+    @apply self-end;
+  }
+
   .sponsor-catalog-list {
     @apply mt-4 flex flex-col gap-3;
   }
 
   .sponsor-catalog-row {
     @apply flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 md:flex-row md:items-center;
+  }
+
+  .sponsor-catalog-row.is-muted {
+    @apply bg-slate-50 opacity-75;
   }
 
   .sponsor-catalog-reorder {
@@ -412,8 +420,44 @@
     @apply flex flex-wrap items-center gap-2;
   }
 
+  .sponsor-checkbox-line {
+    @apply flex items-center gap-2 text-sm font-semibold text-text-secondary;
+  }
+
+  .team-settings-management-grid {
+    @apply grid items-start gap-5 xl:auto-rows-max;
+  }
+
+  .team-settings-inline-form {
+    @apply md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto];
+  }
+
+  .team-settings-row-fields {
+    @apply md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .team-settings-draggable-row {
+    @apply cursor-grab transition;
+  }
+
+  .team-settings-draggable-row:active {
+    @apply cursor-grabbing;
+  }
+
+  .team-settings-draggable-row.is-dragging {
+    @apply border-primary bg-primary/5 opacity-80;
+  }
+
   .sponsor-price-editor {
-    @apply flex items-center gap-2;
+    @apply flex flex-wrap items-end gap-2;
+  }
+
+  .sponsor-price-editor-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .sponsor-capacity-summary {
+    @apply flex flex-wrap items-center gap-2 self-end text-xs font-semibold uppercase text-text-secondary;
   }
 
   .sponsor-team-price-panel {

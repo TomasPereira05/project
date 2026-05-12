@@ -1,5 +1,5 @@
 import type { CatalogSnapshot } from "../types";
-import { compareBySortOrder } from "./arrayUtils";
+import { compareBySortOrder } from "../../../shared/utils";
 
 export const emptySponsorCatalogs: CatalogSnapshot = {
   pubOptions: [],
@@ -7,10 +7,8 @@ export const emptySponsorCatalogs: CatalogSnapshot = {
   teamCategories: [],
   equipmentPlacements: [],
   otherSports: [],
-  pubOptionPrices: [],
   teamGroupPrices: [],
   teamCategoryPriceOverrides: [],
-  otherSportPrices: [],
 };
 
 export function sortSponsorCatalogs(catalogs: CatalogSnapshot): CatalogSnapshot {

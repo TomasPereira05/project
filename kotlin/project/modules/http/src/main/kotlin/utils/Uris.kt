@@ -61,6 +61,7 @@ object Uris {
     object Sponsorships {
         const val GET_ALL = "$PREFIX/sponsorships"
         const val CREATE = "$PREFIX/sponsorships"
+        const val CREATE_WITH_SPONSOR = "$PREFIX/sponsorships/with-sponsor"
         const val MY = "$PREFIX/sponsorships/my"
         const val GET_BY_ID = "$PREFIX/sponsorships/{sponsorshipId}"
         const val GET_BY_SPONSOR = "$PREFIX/sponsors/{sponsorId}/sponsorships"
@@ -74,7 +75,6 @@ object Uris {
         const val PUB_OPTIONS = "$PREFIX/sponsorship-catalog/pub-options"
         const val PUB_OPTION_BY_ID = "$PREFIX/sponsorship-catalog/pub-options/{pubOptionId}"
         const val PUB_OPTIONS_REORDER = "$PREFIX/sponsorship-catalog/pub-options/reorder"
-        const val PUB_OPTION_PRICES = "$PREFIX/sponsorship-catalog/pub-option-prices"
 
         const val EQUIPMENT_PLACEMENTS_ACTIVE = "$PREFIX/sponsorship-catalog/equipment-placements/active"
         const val EQUIPMENT_PLACEMENTS = "$PREFIX/sponsorship-catalog/equipment-placements"
@@ -85,12 +85,13 @@ object Uris {
         const val OTHER_SPORTS = "$PREFIX/sponsorship-catalog/other-sports"
         const val OTHER_SPORT_BY_ID = "$PREFIX/sponsorship-catalog/other-sports/{sportId}"
         const val OTHER_SPORTS_REORDER = "$PREFIX/sponsorship-catalog/other-sports/reorder"
-        const val OTHER_SPORT_PRICES = "$PREFIX/sponsorship-catalog/other-sport-prices"
     }
 
     object Team {
         const val GROUPS_ACTIVE = "$PREFIX/teams/groups/active"
         const val GROUPS = "$PREFIX/teams/groups"
+        const val GROUP_BY_ID = "$PREFIX/teams/groups/{groupId}"
+        const val GROUPS_REORDER = "$PREFIX/teams/groups/reorder"
         const val GROUP_PRICES = "$PREFIX/teams/groups-prices"
 
         const val CATEGORY_OVERRIDES = "$PREFIX/teams/category-overrides"

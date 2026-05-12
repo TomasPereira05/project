@@ -1,4 +1,3 @@
-export * from "./arrayUtils";
 export * from "./buildSponsorsInfoTables";
 export * from "./buildSponsorshipOptions";
 export * from "./calculateMySponsorshipTotals";

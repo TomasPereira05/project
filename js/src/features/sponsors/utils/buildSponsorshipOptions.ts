@@ -8,7 +8,7 @@ export function buildPubSponsorshipCards(catalogs: CatalogSnapshot) {
       type: "PUB" as const,
       title: item.label,
       description: item.label,
-      price: catalogs.pubOptionPrices.find((price) => price.pubOptionId === item.pubId)?.price ?? null,
+      price: item.price,
       free: item.free,
       pubOptionId: item.pubId,
     }))
@@ -41,7 +41,7 @@ export function buildOtherSponsorshipCards(catalogs: CatalogSnapshot) {
       type: "OTHER" as const,
       title: item.label,
       description: item.label,
-      price: catalogs.otherSportPrices.find((price) => price.sportId === item.sportId)?.price ?? null,
+      price: item.price,
       sportId: item.sportId,
     }))
     .filter((item) => item.price != null);

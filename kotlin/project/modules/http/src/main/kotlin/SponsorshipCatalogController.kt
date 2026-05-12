@@ -15,8 +15,6 @@ import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.utils.handle
-import pt.isel.jagoz.http.model.sponsor.OtherSportPriceRequest
-import pt.isel.jagoz.http.model.sponsor.PubOptionPriceRequest
 import pt.isel.jagoz.http.model.sponsor.ReorderRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
@@ -56,16 +54,6 @@ class SponsorshipCatalogController(
     @PutMapping(Uris.SponsorshipCatalog.PUB_OPTIONS_REORDER)
     fun reorderPubOptions(@RequestBody request: ReorderRequest): ResponseEntity<*> =
         catalogService.reorderPubOptions(request.ids).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
-
-    @GetMapping(Uris.SponsorshipCatalog.PUB_OPTION_PRICES)
-    fun getPubOptionPrices() = ResponseEntity.ok(catalogService.getPubOptionPrices())
-
-    @PutMapping(Uris.SponsorshipCatalog.PUB_OPTION_PRICES)
-    fun upsertPubOptionPrice(@RequestBody request: PubOptionPriceRequest): ResponseEntity<*> =
-        catalogService.upsertPubOptionPrice(request.pubOptionId, request.price).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
@@ -134,16 +122,6 @@ class SponsorshipCatalogController(
     @PutMapping(Uris.SponsorshipCatalog.OTHER_SPORTS_REORDER)
     fun reorderOtherSports(@RequestBody request: ReorderRequest): ResponseEntity<*> =
         catalogService.reorderOtherSports(request.ids).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
-
-    @GetMapping(Uris.SponsorshipCatalog.OTHER_SPORT_PRICES)
-    fun getOtherSportPrices() = ResponseEntity.ok(catalogService.getOtherSportPrices())
-
-    @PutMapping(Uris.SponsorshipCatalog.OTHER_SPORT_PRICES)
-    fun upsertOtherSportPrice(@RequestBody request: OtherSportPriceRequest): ResponseEntity<*> =
-        catalogService.upsertOtherSportPrice(request.sportId, request.price).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )

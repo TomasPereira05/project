@@ -3,9 +3,7 @@ import type {
   CatalogSnapshot,
   EquipmentPlacement,
   OtherSport,
-  OtherSportPrice,
   PubOption,
-  PubOptionPrice,
   PaginatedResponse,
   Sponsor,
   SponsorApprovalItem,
@@ -152,7 +150,7 @@ export function fetchPubOptions() {
   return request<PubOption[]>("/sponsorship-catalog/pub-options/active");
 }
 
-export function createPubOption(payload: { code: string; label: string; available: number; free: number; occupied: number; sortOrder: number }) {
+export function createPubOption(payload: { code: string; label: string; available: number; free: number; occupied: number; price: number; sortOrder: number }) {
   return request<PubOption>("/sponsorship-catalog/pub-options", {
     method: "POST",
     body: JSON.stringify({
@@ -163,14 +161,42 @@ export function createPubOption(payload: { code: string; label: string; availabl
       available: payload.available,
       free: payload.free,
       occupied: payload.occupied,
+      price: payload.price,
       sortOrder: payload.sortOrder,
+    }),
+  });
+}
+
+export function createSponsorshipWithSponsor(sponsor: SponsorFormValues, values: SponsorshipFormValues, price: number) {
+  return request<Sponsorship>("/sponsorships/with-sponsor", {
+    method: "POST",
+    body: JSON.stringify({
+      sponsor: {
+        sponsorId: 0,
+        name: sponsor.name.trim(),
+        email: sponsor.email.trim(),
+        phone: sponsor.phone.trim(),
+        nif: sponsor.nif.trim(),
+      },
+      sponsorship: {
+        sponsorshipId: 0,
+        sponsorId: 0,
+        season: values.season.trim(),
+        status: "SUBMETIDO",
+        type: values.type,
+        price,
+        pubOptionId: values.pubOptionId ? Number.parseInt(values.pubOptionId, 10) : null,
+        teamCategoryId: values.teamCategoryId ? Number.parseInt(values.teamCategoryId, 10) : null,
+        placementId: values.placementId ? Number.parseInt(values.placementId, 10) : null,
+        sportId: values.sportId ? Number.parseInt(values.sportId, 10) : null,
+      },
     }),
   });
 }
 
 export function updatePubOption(
   pubId: number,
-  payload: { code: string; label: string; active: boolean; available: number; free: number; occupied: number; sortOrder: number | null },
+  payload: { code: string; label: string; active: boolean; available: number; free: number; occupied: number; price: number; sortOrder: number | null },
 ) {
   return request<PubOption>(`/sponsorship-catalog/pub-options/${pubId}`, {
     method: "PUT",
@@ -182,6 +208,7 @@ export function updatePubOption(
       available: payload.available,
       free: payload.free,
       occupied: payload.occupied,
+      price: payload.price,
       sortOrder: payload.sortOrder,
     }),
   });
@@ -200,70 +227,12 @@ export function reorderPubOptions(ids: number[]) {
   });
 }
 
-export function fetchPubOptionPrices() {
-  return request<PubOptionPrice[]>("/sponsorship-catalog/pub-option-prices");
-}
-
-export function upsertPubOptionPrice(pubOptionId: number, euroValue: string) {
-  return request<PubOptionPrice>("/sponsorship-catalog/pub-option-prices", {
-    method: "PUT",
-    body: JSON.stringify({
-      pubOptionId,
-      price: centsFromEuroInput(euroValue),
-    }),
-  });
-}
-
 export function fetchTeamCategories() {
   return request<TeamCategory[]>("/teams/categories/active");
 }
 
 export function fetchTeamGroups() {
   return request<TeamGroup[]>("/teams/groups/active");
-}
-
-export function createTeamCategory(payload: { teamGroupId: number; code: string; label: string; sortOrder: number }) {
-  return request<TeamCategory>("/teams/categories", {
-    method: "POST",
-    body: JSON.stringify({
-      teamId: 0,
-      teamGroupId: payload.teamGroupId,
-      code: payload.code.trim(),
-      label: payload.label.trim(),
-      active: true,
-      sortOrder: payload.sortOrder,
-    }),
-  });
-}
-
-export function updateTeamCategory(
-  teamId: number,
-  payload: { teamGroupId: number; code: string; label: string; active: boolean; sortOrder: number | null },
-) {
-  return request<TeamCategory>(`/teams/categories/${teamId}`, {
-    method: "PUT",
-    body: JSON.stringify({
-      teamId,
-      teamGroupId: payload.teamGroupId,
-      code: payload.code.trim(),
-      label: payload.label.trim(),
-      active: payload.active,
-      sortOrder: payload.sortOrder,
-    }),
-  });
-}
-
-export function deactivateTeamCategory(teamId: number) {
-  return request<void>(`/teams/categories/${teamId}`, {
-    method: "DELETE",
-  });
-}
-
-export function reorderTeamCategories(ids: number[]) {
-  return request<TeamCategory[]>("/teams/categories/reorder", {
-    method: "PUT",
-    body: JSON.stringify({ ids }),
-  });
 }
 
 export function fetchTeamGroupSponsorshipPrices() {
@@ -346,7 +315,7 @@ export function fetchOtherSports() {
   return request<OtherSport[]>("/sponsorship-catalog/other-sports/active");
 }
 
-export function createOtherSport(payload: { code: string; label: string; sortOrder: number }) {
+export function createOtherSport(payload: { code: string; label: string; price: number; sortOrder: number }) {
   return request<OtherSport>("/sponsorship-catalog/other-sports", {
     method: "POST",
     body: JSON.stringify({
@@ -354,6 +323,7 @@ export function createOtherSport(payload: { code: string; label: string; sortOrd
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: true,
+      price: payload.price,
       sortOrder: payload.sortOrder,
     }),
   });
@@ -361,7 +331,7 @@ export function createOtherSport(payload: { code: string; label: string; sortOrd
 
 export function updateOtherSport(
   sportId: number,
-  payload: { code: string; label: string; active: boolean; sortOrder: number | null },
+  payload: { code: string; label: string; active: boolean; price: number; sortOrder: number | null },
 ) {
   return request<OtherSport>(`/sponsorship-catalog/other-sports/${sportId}`, {
     method: "PUT",
@@ -370,6 +340,7 @@ export function updateOtherSport(
       code: payload.code.trim(),
       label: payload.label.trim(),
       active: payload.active,
+      price: payload.price,
       sortOrder: payload.sortOrder,
     }),
   });
@@ -388,20 +359,6 @@ export function reorderOtherSports(ids: number[]) {
   });
 }
 
-export function fetchOtherSportPrices() {
-  return request<OtherSportPrice[]>("/sponsorship-catalog/other-sport-prices");
-}
-
-export function upsertOtherSportPrice(sportId: number, euroValue: string) {
-  return request<OtherSportPrice>("/sponsorship-catalog/other-sport-prices", {
-    method: "PUT",
-    body: JSON.stringify({
-      sportId,
-      price: centsFromEuroInput(euroValue),
-    }),
-  });
-}
-
 export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
   const [
     pubOptions,
@@ -409,20 +366,16 @@ export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
     teamCategories,
     equipmentPlacements,
     otherSports,
-    pubOptionPrices,
     teamGroupPrices,
     teamCategoryPriceOverrides,
-    otherSportPrices,
   ] = await Promise.all([
     fetchPubOptions(),
     fetchTeamGroups(),
     fetchTeamCategories(),
     fetchEquipmentPlacements(),
     fetchOtherSports(),
-    fetchPubOptionPrices(),
     fetchTeamGroupSponsorshipPrices(),
     fetchTeamCategoryPriceOverrides(),
-    fetchOtherSportPrices(),
   ]);
 
   return {
@@ -431,9 +384,7 @@ export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
     teamCategories,
     equipmentPlacements,
     otherSports,
-    pubOptionPrices,
     teamGroupPrices,
     teamCategoryPriceOverrides,
-    otherSportPrices,
   };
 }
