@@ -41,7 +41,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun findById(id: Long): User? {
         return handle.createQuery("SELECT * FROM jagoz.users WHERE user_id = :id")
             .bind("id", id)
-            .map(UserMapper())
+            .mapTo(User::class.java)
             .findOne()
             .orElse(null)
     }
@@ -49,7 +49,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun findByUsername(username: String): User? {
         return handle.createQuery("SELECT * FROM jagoz.users WHERE username = :username")
             .bind("username", username)
-            .map(UserMapper())
+            .mapTo(User::class.java)
             .findOne()
             .orElse(null)
     }
@@ -57,7 +57,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     override fun findByEmail(email: String): User? {
         return handle.createQuery("SELECT * FROM jagoz.users WHERE email = :email")
             .bind("email", email)
-            .map(UserMapper())
+            .mapTo(User::class.java)
             .findOne()
             .orElse(null)
     }
@@ -69,7 +69,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         return handle.createQuery("SELECT * FROM jagoz.users ORDER BY user_id ASC LIMIT :limit OFFSET :offset")
             .bind("limit", limit)
             .bind("offset", offset)
-            .map(UserMapper())
+            .mapTo(User::class.java)
             .list()
     }
 

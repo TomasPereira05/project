@@ -19,13 +19,7 @@ class JdbiTeamGroupPriceRepository(private val handle: Handle) : TeamGroupPriceR
         )
             .bind("groupId", groupId)
             .bind("placementId", placementId)
-            .map { rs, _ ->
-                TeamGroupPrice(
-                    teamGroupId = rs.getLong("team_group_id"),
-                    placementId = rs.getLong("placement_id"),
-                    price = rs.getInt("price"),
-                )
-            }
+            .mapTo(TeamGroupPrice::class.java)
             .findOne()
             .orElse(null)
     }
@@ -38,13 +32,7 @@ class JdbiTeamGroupPriceRepository(private val handle: Handle) : TeamGroupPriceR
         ORDER BY team_group_id, placement_id
         """,
         )
-            .map { rs, _ ->
-                TeamGroupPrice(
-                    teamGroupId = rs.getLong("team_group_id"),
-                    placementId = rs.getLong("placement_id"),
-                    price = rs.getInt("price"),
-                )
-            }
+            .mapTo(TeamGroupPrice::class.java)
             .list()
     }
 

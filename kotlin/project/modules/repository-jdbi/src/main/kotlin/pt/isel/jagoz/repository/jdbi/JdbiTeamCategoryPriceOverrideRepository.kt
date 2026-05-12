@@ -19,13 +19,7 @@ class JdbiTeamCategoryPriceOverrideRepository(private val handle: Handle) : Team
         )
             .bind("categoryId", categoryId)
             .bind("placementId", placementId)
-            .map { rs, _ ->
-                TeamCategoryPriceOverride(
-                    teamCategoryId = rs.getLong("team_category_id"),
-                    placementId = rs.getLong("placement_id"),
-                    price = rs.getInt("price"),
-                )
-            }
+            .mapTo(TeamCategoryPriceOverride::class.java)
             .findOne()
             .orElse(null)
     }
@@ -38,13 +32,7 @@ class JdbiTeamCategoryPriceOverrideRepository(private val handle: Handle) : Team
         ORDER BY team_category_id, placement_id
         """,
         )
-            .map { rs, _ ->
-                TeamCategoryPriceOverride(
-                    teamCategoryId = rs.getLong("team_category_id"),
-                    placementId = rs.getLong("placement_id"),
-                    price = rs.getInt("price"),
-                )
-            }
+            .mapTo(TeamCategoryPriceOverride::class.java)
             .list()
     }
 

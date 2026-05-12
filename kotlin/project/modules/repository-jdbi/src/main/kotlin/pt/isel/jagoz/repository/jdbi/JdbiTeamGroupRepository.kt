@@ -13,15 +13,7 @@ class JdbiTeamGroupRepository(private val handle: Handle) : TeamGroupRepository 
             ORDER BY sort_order ASC
             """,
         )
-            .map { rs, _ ->
-                TeamGroup(
-                    teamGroupId = rs.getLong("team_group_id"),
-                    code = rs.getString("code"),
-                    label = rs.getString("label"),
-                    active = rs.getBoolean("active"),
-                    sortOrder = rs.getInt("sort_order"),
-                )
-            }
+            .mapTo(TeamGroup::class.java)
             .list()
     }
 
@@ -34,15 +26,7 @@ class JdbiTeamGroupRepository(private val handle: Handle) : TeamGroupRepository 
             """,
         )
             .bind("id", id)
-            .map { rs, _ ->
-                TeamGroup(
-                    teamGroupId = rs.getLong("team_group_id"),
-                    code = rs.getString("code"),
-                    label = rs.getString("label"),
-                    active = rs.getBoolean("active"),
-                    sortOrder = rs.getInt("sort_order"),
-                )
-            }
+            .mapTo(TeamGroup::class.java)
             .findOne()
             .orElse(null)
     }
@@ -56,15 +40,7 @@ class JdbiTeamGroupRepository(private val handle: Handle) : TeamGroupRepository 
             ORDER BY sort_order ASC
             """,
         )
-            .map { rs, _ ->
-                TeamGroup(
-                    teamGroupId = rs.getLong("team_group_id"),
-                    code = rs.getString("code"),
-                    label = rs.getString("label"),
-                    active = rs.getBoolean("active"),
-                    sortOrder = rs.getInt("sort_order"),
-                )
-            }
+            .mapTo(TeamGroup::class.java)
             .list()
     }
 
