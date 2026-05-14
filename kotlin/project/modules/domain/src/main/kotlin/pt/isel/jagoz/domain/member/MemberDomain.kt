@@ -315,6 +315,11 @@ class MemberDomain {
             "birthDate",
             "is unrealistic",
         )?.let { return it }
+        ValidationUtils.requireCondition(
+            member.birthDate < member.registrationDate,
+            "birthDate",
+            "must be before today",
+        )?.let { return it }
         return null
     }
 

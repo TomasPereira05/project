@@ -3,41 +3,45 @@ package pt.isel.jagoz.domain.athlete
 import kotlinx.datetime.LocalDate
 import pt.isel.jagoz.domain.team.TeamCategory
 
+/**
+ * Estado actual de um atleta no clube. Os dados pessoais (nome, data de nascimento,
+ * morada, contactos, NIF, naturalidade) vivem no [pt.isel.jagoz.domain.member.Member]
+ * associado por [memberId] — Atleta É sempre Sócio (categoria ATLETA_SOCIO).
+ */
 data class Athlete(
     val athleteId: Long,
-    // FK â†’ Member (todo atleta Ã© sÃ³cio)
     val memberId: Long,
     val nationality: String,
-    val birthplace: String,
-    val birthdate: LocalDate,
-    val email: String,
-    val phone: String,
-    val postalCode: String,
-    val address: String,
-    val city: String,
-    val state: String,
-    // NÃºmero de IdentificaÃ§Ã£o da SeguranÃ§a Social
+    // Número de Identificação da Segurança Social
     val niss: String,
-    // NÃºmero de IdentificaÃ§Ã£o Fiscal
-    val nif: String,
-    // NÃºmero de Utente da SaÃºde
+    // Número de Utente da Saúde
     val numeroUtente: String,
-    // Bilhete de Identidade / CartÃ£o de CidadÃ£o
+    // Bilhete de Identidade / Cartão de Cidadão
     val bi: String,
-    // Data de expiraÃ§Ã£o do BI/CC
+    // Data de expiração do BI/CC
     val biExpirationDate: LocalDate,
     val school: String?,
     val schoolYear: String?,
     val schoolClass: String?,
     val lastClub: String?,
-    // Ã‰poca desportiva (ex: "2025/2026")
+    // Época desportiva (ex: "2025/2026")
     val season: String?,
-    // EscalÃ£o em que joga
+    // Escalão em que joga
     val teamCategory: TeamCategory,
-    // Se ainda Ã© atleta ativo do clube
-    val active: Boolean = true,
-    val privacyAccepted: Boolean = false,
-    val comsAccepted: Boolean = false,
+    // Atribuído pós-inscrição pelo treinador
+    val jerseyNumber: Int? = null,
+    // Atribuída pós-inscrição pelo treinador
+    val position: String? = null,
+    // Referência ao ficheiro da foto (upload fora de scope nesta fase)
+    val photoUrl: String? = null,
+    /**
+     * Declaração feita pelo encarregado no momento da inscrição: "tem mais filhos
+     * a frequentar o clube?". Snapshot — não é actualizado automaticamente quando
+     * outros membros da família entram ou saem do clube.
+     */
+    val hasFamilyInClub: Boolean = false,
     val schoolCertificationAccepted: Boolean = false,
+    // Se ainda é atleta ativo do clube
+    val active: Boolean = true,
     val guardians: List<Guardian> = emptyList(),
 )
