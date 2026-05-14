@@ -6,11 +6,10 @@ import {
   buildPaymentHistory,
   fetchMember,
   getDebtSummary,
-  getInitials,
   rejectMember,
   type Member,
 } from "..";
-import { formatCurrency, formatDate } from "../../../shared/utils";
+import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 
 function statusText(status: Member["status"]) {
