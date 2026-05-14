@@ -4,7 +4,9 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.payment.Charge
 import pt.isel.jagoz.repository.ChargeRepository
 
-class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
+class JdbiChargeRepository(
+    private val handle: Handle,
+) : ChargeRepository {
     private val selectQuery =
         """
         SELECT
@@ -16,53 +18,53 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
         LEFT JOIN users u_ch ON c.charged_user_id = u_ch.user_id
         """.trimIndent()
 
-    override fun findById(id: Long): Charge? {
-        return handle.createQuery("$selectQuery WHERE c.charge_id = :id")
+    override fun findById(id: Long): Charge? =
+        handle
+            .createQuery("$selectQuery WHERE c.charge_id = :id")
             .bind("id", id)
             .mapTo(Charge::class.java)
             .findOne()
             .orElse(null)
-    }
 
     override fun findByMemberAndSeason(
         memberId: Long,
         season: String,
-    ): List<Charge> {
-        return handle.createQuery("$selectQuery WHERE c.member_id = :memberId AND c.season = :season ORDER BY c.month ASC")
+    ): List<Charge> =
+        handle
+            .createQuery("$selectQuery WHERE c.member_id = :memberId AND c.season = :season ORDER BY c.month ASC")
             .bind("memberId", memberId)
             .bind("season", season)
             .mapTo(Charge::class.java)
             .list()
-    }
 
-    override fun findPendingByMember(memberId: Long): List<Charge> {
-        return handle.createQuery("$selectQuery WHERE c.member_id = :memberId AND c.status = 'PENDING' ORDER BY c.created_at ASC")
+    override fun findPendingByMember(memberId: Long): List<Charge> =
+        handle
+            .createQuery("$selectQuery WHERE c.member_id = :memberId AND c.status = 'PENDING' ORDER BY c.created_at ASC")
             .bind("memberId", memberId)
             .mapTo(Charge::class.java)
             .list()
-    }
 
     override fun existsByMemberSeasonMonth(
         memberId: Long,
         season: String,
         month: Int,
-    ): Boolean {
-        return handle.createQuery("SELECT COUNT(*) FROM jagoz.charge WHERE member_id = :memberId AND season = :season AND month = :month")
+    ): Boolean =
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.charge WHERE member_id = :memberId AND season = :season AND month = :month")
             .bind("memberId", memberId)
             .bind("season", season)
             .bind("month", month)
             .mapTo(Int::class.java)
             .one() > 0
-    }
 
-    override fun save(charge: Charge): Long {
-        return handle.createUpdate(
-            """
+    override fun save(charge: Charge): Long =
+        handle
+            .createUpdate(
+                """
             INSERT INTO jagoz.charge (type, member_id, sponsorship_id, value, status, season, month, created_at, creation_user_id, charged_user_id, paid_at)
             VALUES (CAST(:type AS jagoz.charge_type), :memberId, :sponsorshipId, :value, CAST(:status AS jagoz.charge_status), :season, :month, CAST(:createdAt AS DATE), :creationUserId, :chargedUserId, CAST(:paidAt AS DATE))
             """,
-        )
-            .bind("type", charge.type.name)
+            ).bind("type", charge.type.name)
             .bind("memberId", charge.memberId)
             .bind("sponsorshipId", charge.sponsorshipId)
             .bind("value", charge.value)
@@ -76,11 +78,11 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun update(charge: Charge) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE jagoz.charge SET
                 type = CAST(:type AS jagoz.charge_type),
                 member_id = :memberId,
@@ -95,8 +97,7 @@ class JdbiChargeRepository(private val handle: Handle) : ChargeRepository {
                 paid_at = CAST(:paidAt AS DATE)
             WHERE charge_id = :id
             """,
-        )
-            .bind("id", charge.chargeId)
+            ).bind("id", charge.chargeId)
             .bind("type", charge.type.name)
             .bind("memberId", charge.memberId)
             .bind("sponsorshipId", charge.sponsorshipId)

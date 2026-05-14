@@ -1,7 +1,7 @@
 package pt.isel.jagoz.http
 
-import jakarta.validation.Valid
 import jakarta.servlet.http.HttpServletRequest
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseCookie
 import org.springframework.http.ResponseEntity
@@ -34,19 +34,21 @@ class UserController(
     fun createUser(
         @RequestBody request: CreateUserRequest,
     ): ResponseEntity<*> =
-        userService.createUser(
-            email = request.email,
-            username = request.username,
-            password = request.password,
-            role = request.role,
-            activeMemberId = request.activeMemberId,
-        ).handle(
-            onFailure = { error -> serviceErrorToProblem(error) },
-            onSuccess = { created ->
-                ResponseEntity.status(HttpStatus.CREATED)
-                    .body(created.toOutputModel())
-            },
-        )
+        userService
+            .createUser(
+                email = request.email,
+                username = request.username,
+                password = request.password,
+                role = request.role,
+                activeMemberId = request.activeMemberId,
+            ).handle(
+                onFailure = { error -> serviceErrorToProblem(error) },
+                onSuccess = { created ->
+                    ResponseEntity
+                        .status(HttpStatus.CREATED)
+                        .body(created.toOutputModel())
+                },
+            )
 
     @GetMapping(Uris.Users.GET_ALL)
     fun getUsers(
@@ -116,7 +118,8 @@ class UserController(
             },
             onSuccess = { res ->
                 val cookie =
-                    ResponseCookie.from("token", res.token)
+                    ResponseCookie
+                        .from("token", res.token)
                         .httpOnly(true)
                         .secure(httpRequest.isSecure)
                         .sameSite("Strict")
@@ -124,7 +127,8 @@ class UserController(
                         .maxAge(Duration.ofHours(24))
                         .build()
 
-                ResponseEntity.status(HttpStatus.CREATED)
+                ResponseEntity
+                    .status(HttpStatus.CREATED)
                     .header("Set-Cookie", cookie.toString())
                     .body(
                         AuthenticatedUserOutputModel(
@@ -150,7 +154,8 @@ class UserController(
             },
             onSuccess = {
                 val cookie =
-                    ResponseCookie.from("token", "")
+                    ResponseCookie
+                        .from("token", "")
                         .httpOnly(true)
                         .secure(httpRequest.isSecure)
                         .sameSite("Strict")
@@ -168,17 +173,17 @@ class UserController(
     @PostMapping(Uris.Users.TOKEN)
     fun token(
         @Valid @RequestBody input: UserCreateTokenInputModel,
-    ): ResponseEntity<*> {
-        return userService.createToken(input.username, input.password).handle(
+    ): ResponseEntity<*> =
+        userService.createToken(input.username, input.password).handle(
             onSuccess = { res ->
-                ResponseEntity.status(HttpStatus.CREATED)
+                ResponseEntity
+                    .status(HttpStatus.CREATED)
                     .body(UserTokenCreateOutputModel(res.tokenValue))
             },
             onFailure = { error ->
                 serviceErrorToProblem(error)
             },
         )
-    }
 
     @GetMapping(Uris.Users.ME)
     fun me(authenticatedUser: AuthenticatedUser): ResponseEntity<AuthenticatedUser> = ResponseEntity.ok(authenticatedUser)

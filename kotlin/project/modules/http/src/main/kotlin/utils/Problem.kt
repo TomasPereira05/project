@@ -7,12 +7,15 @@ import java.net.URI
 private const val MEDIA_TYPE = "application/problem+json"
 private const val PROBLEM_URI_PATH = "/problems"
 
-sealed class Problem(typeUri: URI) {
+sealed class Problem(
+    typeUri: URI,
+) {
     val type: String = typeUri.toString()
     val title: String = typeUri.toString().split("/").last()
 
     fun response(status: HttpStatus): ResponseEntity<Any> =
-        ResponseEntity.status(status)
+        ResponseEntity
+            .status(status)
             .header("Content-Type", MEDIA_TYPE)
             .body(this)
 
@@ -24,49 +27,78 @@ sealed class Problem(typeUri: URI) {
         val description = "Socio nao encontrado."
     }
 
-    data class ValidationError(val message: String) : Problem(URI("${PROBLEM_URI_PATH}/validation-error")) {
+    data class ValidationError(
+        val message: String,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/validation-error")) {
         val description = "Erro de validacao."
     }
 
-    data class MemberAlreadyExists(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/member-already-exists")) {
+    data class MemberAlreadyExists(
+        val field: String,
+        val value: Any,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/member-already-exists")) {
         val description = "Socio ja existe."
     }
 
-    data class UserNotFound(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/user-not-found")) {
+    data class UserNotFound(
+        val field: String,
+        val value: Any,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/user-not-found")) {
         val description = "Utilizador nao encontrado."
     }
 
-    data class UserAlreadyExists(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/user-already-exists")) {
+    data class UserAlreadyExists(
+        val field: String,
+        val value: Any,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/user-already-exists")) {
         val description = "Utilizador ja existe."
     }
 
-    data class AthleteNotFound(val field: String, val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/athlete-not-found")) {
+    data class AthleteNotFound(
+        val field: String,
+        val value: Any,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/athlete-not-found")) {
         val description = "Atleta nao encontrado."
     }
 
-    data class UserRelatedResourceNotFound(val field: String, val value: Any) : Problem(
-        URI("${PROBLEM_URI_PATH}/user-related-resource-not-found"),
-    ) {
+    data class UserRelatedResourceNotFound(
+        val field: String,
+        val value: Any,
+    ) : Problem(
+            URI("${PROBLEM_URI_PATH}/user-related-resource-not-found"),
+        ) {
         val description = "Recurso associado ao utilizador nao encontrado."
     }
 
-    data class SponsorNotFound(val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/sponsor-not-found")) {
+    data class SponsorNotFound(
+        val value: Any,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/sponsor-not-found")) {
         val description = "Sponsor nao encontrado."
     }
 
-    data class SponsorshipNotFound(val value: Any) : Problem(URI("${PROBLEM_URI_PATH}/sponsorship-not-found")) {
+    data class SponsorshipNotFound(
+        val value: Any,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/sponsorship-not-found")) {
         val description = "Sponsorship nao encontrado."
     }
 
-    data class Unauthorized(val message: String) : Problem(URI("${PROBLEM_URI_PATH}/unauthorized")) {
+    data class Unauthorized(
+        val message: String,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/unauthorized")) {
         val description = "Autenticacao invalida ou em falta."
     }
 
-    data class InvalidTransition(val from: String, val attempted: String) : Problem(URI("${PROBLEM_URI_PATH}/invalid-transition")) {
+    data class InvalidTransition(
+        val from: String,
+        val attempted: String,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/invalid-transition")) {
         val description = "Transicao invalida."
     }
 
-    data class InvalidOperation(val operation: String, val reason: String) : Problem(URI("${PROBLEM_URI_PATH}/invalid-operation")) {
+    data class InvalidOperation(
+        val operation: String,
+        val reason: String,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/invalid-operation")) {
         val description = "Operacao invalida."
     }
 }

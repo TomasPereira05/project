@@ -31,14 +31,11 @@ class AuthenticatedUserArgumentResolver : HandlerMethodArgumentResolver {
         fun addUserTo(
             user: AuthenticatedUser,
             request: HttpServletRequest,
-        ) {
-            return request.setAttribute(KEY, user)
-        }
+        ) = request.setAttribute(KEY, user)
 
-        fun getUserFrom(request: HttpServletRequest): AuthenticatedUser? {
-            return request.getAttribute(KEY)?.let {
+        fun getUserFrom(request: HttpServletRequest): AuthenticatedUser? =
+            request.getAttribute(KEY)?.let {
                 it as? AuthenticatedUser
             }
-        }
     }
 }

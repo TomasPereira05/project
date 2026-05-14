@@ -13,9 +13,10 @@ import pt.isel.jagoz.repository.jdbi.configureWithAppRequirements
 class JdbiConfig {
     @Bean
     fun jdbi() =
-        Jdbi.create(
-            PGSimpleDataSource().apply {
-                setURL(Environment.getDbUrl())
-            },
-        ).configureWithAppRequirements()
+        Jdbi
+            .create(
+                PGSimpleDataSource().apply {
+                    setURL(Environment.getDbUrl())
+                },
+            ).configureWithAppRequirements()
 }

@@ -4,34 +4,35 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.repository.EventRepository
 
-class JdbiEventRepository(private val handle: Handle) : EventRepository {
-    override fun findById(id: Long): Event? {
-        return handle.createQuery("SELECT * FROM jagoz.event WHERE event_id = :id")
+class JdbiEventRepository(
+    private val handle: Handle,
+) : EventRepository {
+    override fun findById(id: Long): Event? =
+        handle
+            .createQuery("SELECT * FROM jagoz.event WHERE event_id = :id")
             .bind("id", id)
             .mapTo(Event::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun findAll(): List<Event> {
-        return handle.createQuery("SELECT * FROM jagoz.event ORDER BY date DESC")
+    override fun findAll(): List<Event> =
+        handle
+            .createQuery("SELECT * FROM jagoz.event ORDER BY date DESC")
             .mapTo(Event::class.java)
             .list()
-    }
 
-    override fun save(event: Event): Long {
-        return handle.createUpdate(
-            """
+    override fun save(event: Event): Long =
+        handle
+            .createUpdate(
+                """
             INSERT INTO jagoz.event (name, description, date, location)
             VALUES (:name, :description, CAST(:date AS DATE), :location)
             """,
-        )
-            .bind("name", event.name)
+            ).bind("name", event.name)
             .bind("description", event.description)
             .bind("date", event.date.toString())
             .bind("location", event.location)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 }

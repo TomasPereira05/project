@@ -13,8 +13,8 @@ class InstantArgumentFactory : ArgumentFactory {
         type: Type,
         value: Any?,
         config: ConfigRegistry?,
-    ): Optional<Argument> {
-        return if (type == Instant::class.java && value is Instant) {
+    ): Optional<Argument> =
+        if (type == Instant::class.java && value is Instant) {
             Optional.of(
                 Argument { position, statement, _ ->
                     val timestamp = Timestamp.from(java.time.Instant.ofEpochMilli(value.toEpochMilliseconds()))
@@ -24,5 +24,4 @@ class InstantArgumentFactory : ArgumentFactory {
         } else {
             Optional.empty()
         }
-    }
 }

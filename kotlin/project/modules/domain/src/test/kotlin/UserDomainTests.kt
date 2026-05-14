@@ -26,7 +26,9 @@ class UserDomainTests {
         ): Boolean = encodedPassword == encode(rawPassword)
     }
 
-    private class FixedClock(private val instant: Instant) : Clock {
+    private class FixedClock(
+        private val instant: Instant,
+    ) : Clock {
         override fun now(): Instant = instant
     }
 

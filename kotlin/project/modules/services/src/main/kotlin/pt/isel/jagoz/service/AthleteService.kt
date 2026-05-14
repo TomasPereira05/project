@@ -101,10 +101,11 @@ class AthleteService(
         LOG.info("Registering new athlete for nif=${input.nif}")
 
         return transactionManager.run { tx ->
-            val teamCategory = tx.teamCategoryRepository.findById(input.teamCategoryId)
-                ?: return@run failure(
-                    AthleteError.ValidationError("teamCategoryId ${input.teamCategoryId} not found"),
-                )
+            val teamCategory =
+                tx.teamCategoryRepository.findById(input.teamCategoryId)
+                    ?: return@run failure(
+                        AthleteError.ValidationError("teamCategoryId ${input.teamCategoryId} not found"),
+                    )
 
             if (input.birthplace.isNullOrBlank()) {
                 return@run failure(AthleteError.ValidationError("birthplace cannot be blank"))
@@ -114,43 +115,46 @@ class AthleteService(
                 return@run failure(AthleteError.ValidationError("biExpirationDate must be after today"))
             }
 
-            val resolvedGuardians = input.guardians.map { g ->
-                if (g.memberNumber == null) {
-                    g to null
-                } else {
-                    val existing = tx.memberRepository.findByMemberNumber(g.memberNumber)
-                        ?: return@run failure(
-                            AthleteError.ValidationError("memberNumber ${g.memberNumber} not found"),
-                        )
-                    g to existing.memberId
+            val resolvedGuardians =
+                input.guardians.map { g ->
+                    if (g.memberNumber == null) {
+                        g to null
+                    } else {
+                        val existing =
+                            tx.memberRepository.findByMemberNumber(g.memberNumber)
+                                ?: return@run failure(
+                                    AthleteError.ValidationError("memberNumber ${g.memberNumber} not found"),
+                                )
+                        g to existing.memberId
+                    }
                 }
-            }
 
             val memberNumber = tx.memberRepository.nextMemberNumber()
-            val member = Member(
-                memberId = 0,
-                userId = input.userId,
-                memberNumber = memberNumber,
-                completeName = input.completeName,
-                birthDate = input.birthDate,
-                birthplace = input.birthplace,
-                email = input.email,
-                phone = input.phone,
-                homePhone = input.homePhone,
-                address = input.address,
-                postalCode = input.postalCode,
-                city = input.city,
-                nif = input.nif,
-                category = MemberCategory.ATLETA_SOCIO,
-                formerMember = false,
-                status = MemberStatus.PENDENTE,
-                membershipQuota = ATHLETE_MEMBER_QUOTA,
-                billingLocation = null,
-                registrationDate = input.registrationDate,
-                approvalDate = null,
-                privacyAccepted = input.privacyAccepted,
-                comsAccepted = input.comsAccepted,
-            )
+            val member =
+                Member(
+                    memberId = 0,
+                    userId = input.userId,
+                    memberNumber = memberNumber,
+                    completeName = input.completeName,
+                    birthDate = input.birthDate,
+                    birthplace = input.birthplace,
+                    email = input.email,
+                    phone = input.phone,
+                    homePhone = input.homePhone,
+                    address = input.address,
+                    postalCode = input.postalCode,
+                    city = input.city,
+                    nif = input.nif,
+                    category = MemberCategory.ATLETA_SOCIO,
+                    formerMember = false,
+                    status = MemberStatus.PENDENTE,
+                    membershipQuota = ATHLETE_MEMBER_QUOTA,
+                    billingLocation = null,
+                    registrationDate = input.registrationDate,
+                    approvalDate = null,
+                    privacyAccepted = input.privacyAccepted,
+                    comsAccepted = input.comsAccepted,
+                )
 
             when (val res = memberDomain.validateForCreation(member)) {
                 is Either.Left -> return@run failure(memberErrorToAthleteError(res.value))
@@ -159,28 +163,29 @@ class AthleteService(
 
             val memberId = tx.memberRepository.save(member)
 
-            val athlete = Athlete(
-                athleteId = 0,
-                memberId = memberId,
-                nationality = input.nationality,
-                niss = input.niss,
-                numeroUtente = input.numeroUtente,
-                bi = input.bi,
-                biExpirationDate = input.biExpirationDate,
-                school = input.school,
-                schoolYear = input.schoolYear,
-                schoolClass = input.schoolClass,
-                lastClub = input.lastClub,
-                season = input.season,
-                teamCategory = teamCategory,
-                jerseyNumber = null,
-                position = null,
-                photoUrl = input.photoUrl,
-                hasFamilyInClub = input.hasFamilyInClub,
-                schoolCertificationAccepted = input.schoolCertificationAccepted,
-                active = true,
-                guardians = resolvedGuardians.map { (g, fk) -> g.toGuardian(athleteId = 0, memberId = fk) },
-            )
+            val athlete =
+                Athlete(
+                    athleteId = 0,
+                    memberId = memberId,
+                    nationality = input.nationality,
+                    niss = input.niss,
+                    numeroUtente = input.numeroUtente,
+                    bi = input.bi,
+                    biExpirationDate = input.biExpirationDate,
+                    school = input.school,
+                    schoolYear = input.schoolYear,
+                    schoolClass = input.schoolClass,
+                    lastClub = input.lastClub,
+                    season = input.season,
+                    teamCategory = teamCategory,
+                    jerseyNumber = null,
+                    position = null,
+                    photoUrl = input.photoUrl,
+                    hasFamilyInClub = input.hasFamilyInClub,
+                    schoolCertificationAccepted = input.schoolCertificationAccepted,
+                    active = true,
+                    guardians = resolvedGuardians.map { (g, fk) -> g.toGuardian(athleteId = 0, memberId = fk) },
+                )
 
             when (val res = athleteDomain.validateForCreation(athlete)) {
                 is Either.Left -> return@run failure(AthleteError.ValidationError(validationErrorMessage(res.value)))
@@ -202,8 +207,9 @@ class AthleteService(
 
     fun getAthleteByMemberId(memberId: Long): AthleteResult =
         transactionManager.run { tx ->
-            val athlete = tx.athleteRepository.findByMemberId(memberId)
-                ?: return@run failure(AthleteError.NotFound("memberId", memberId))
+            val athlete =
+                tx.athleteRepository.findByMemberId(memberId)
+                    ?: return@run failure(AthleteError.NotFound("memberId", memberId))
             success(athlete)
         }
 
@@ -212,8 +218,9 @@ class AthleteService(
      */
     fun getAthleteDetail(athleteId: Long): AthleteResult =
         transactionManager.run { tx ->
-            val athlete = tx.athleteRepository.findByIdWithDetail(athleteId)
-                ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
+            val athlete =
+                tx.athleteRepository.findByIdWithDetail(athleteId)
+                    ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
             success(athlete)
         }
 
@@ -223,8 +230,9 @@ class AthleteService(
      */
     fun getAthleteDetailByMemberId(memberId: Long): AthleteResult =
         transactionManager.run { tx ->
-            val basic = tx.athleteRepository.findByMemberId(memberId)
-                ?: return@run failure(AthleteError.NotFound("memberId", memberId))
+            val basic =
+                tx.athleteRepository.findByMemberId(memberId)
+                    ?: return@run failure(AthleteError.NotFound("memberId", memberId))
             val detail = tx.athleteRepository.findByIdWithDetail(basic.athleteId) ?: basic
             success(detail)
         }
@@ -244,7 +252,10 @@ class AthleteService(
         }
 
     /** Página da listagem admin. Pendentes primeiro, depois os mais recentes. */
-    fun getAthletesPage(page: Int, size: Int): Page<Athlete> {
+    fun getAthletesPage(
+        page: Int,
+        size: Int,
+    ): Page<Athlete> {
         val request = pageRequest(page, size)
         return transactionManager.run { tx ->
             pageOf(
@@ -262,14 +273,19 @@ class AthleteService(
      *
      * Falha se o Member não estiver em PENDENTE.
      */
-    fun approveAthlete(athleteId: Long, approvalDate: LocalDate): AthleteResult {
+    fun approveAthlete(
+        athleteId: Long,
+        approvalDate: LocalDate,
+    ): AthleteResult {
         LOG.info("Approving athlete athleteId=$athleteId")
 
         return transactionManager.run { tx ->
-            val athlete = tx.athleteRepository.findById(athleteId)
-                ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
-            val member = tx.memberRepository.findById(athlete.memberId)
-                ?: return@run failure(AthleteError.NotFound("memberId", athlete.memberId))
+            val athlete =
+                tx.athleteRepository.findById(athleteId)
+                    ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
+            val member =
+                tx.memberRepository.findById(athlete.memberId)
+                    ?: return@run failure(AthleteError.NotFound("memberId", athlete.memberId))
 
             when (val res = memberDomain.approve(member, approvalDate)) {
                 is Either.Left -> return@run failure(memberErrorToAthleteError(res.value))
@@ -293,10 +309,12 @@ class AthleteService(
         LOG.info("Rejecting athlete athleteId=$athleteId")
 
         return transactionManager.run { tx ->
-            val athlete = tx.athleteRepository.findById(athleteId)
-                ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
-            val member = tx.memberRepository.findById(athlete.memberId)
-                ?: return@run failure(AthleteError.NotFound("memberId", athlete.memberId))
+            val athlete =
+                tx.athleteRepository.findById(athleteId)
+                    ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
+            val member =
+                tx.memberRepository.findById(athlete.memberId)
+                    ?: return@run failure(AthleteError.NotFound("memberId", athlete.memberId))
 
             when (val res = memberDomain.reject(member)) {
                 is Either.Left -> return@run failure(memberErrorToAthleteError(res.value))
@@ -313,8 +331,7 @@ class AthleteService(
      * Carrega o Member associado a um atleta. Útil para o controller construir DTOs
      * que precisam de campos do Member (nome, data de nascimento, contactos).
      */
-    fun loadMember(memberId: Long): Member? =
-        transactionManager.run { tx -> tx.memberRepository.findById(memberId) }
+    fun loadMember(memberId: Long): Member? = transactionManager.run { tx -> tx.memberRepository.findById(memberId) }
 
     /**
      * Bulk load de Members para uma lista de atletas, indexado por memberId.
@@ -329,25 +346,31 @@ class AthleteService(
         }
     }
 
-
     /**
      * Lista atletas de uma categoria. Para listagens públicas, `activeOnly = true`
      * para esconder atletas inactivos. Não carrega guardians.
      */
-    fun listByTeamCategory(teamCategoryId: Long, activeOnly: Boolean): List<Athlete> =
+    fun listByTeamCategory(
+        teamCategoryId: Long,
+        activeOnly: Boolean,
+    ): List<Athlete> =
         transactionManager.run { tx ->
             tx.athleteRepository.findByTeamCategory(teamCategoryId, activeOnly)
         }
 
-    fun changeTeamCategory(athleteId: Long, newTeamCategoryId: Long): AthleteResult {
+    fun changeTeamCategory(
+        athleteId: Long,
+        newTeamCategoryId: Long,
+    ): AthleteResult {
         LOG.info("Changing athlete team category athleteId=$athleteId to teamCategoryId=$newTeamCategoryId")
 
         return transactionManager.run { tx ->
             val athleteRes = getAthleteOrFail(tx, athleteId)
             if (athleteRes is Either.Left) return@run athleteRes
 
-            val newCategory = tx.teamCategoryRepository.findById(newTeamCategoryId)
-                ?: return@run failure(AthleteError.ValidationError("teamCategoryId $newTeamCategoryId not found"))
+            val newCategory =
+                tx.teamCategoryRepository.findById(newTeamCategoryId)
+                    ?: return@run failure(AthleteError.ValidationError("teamCategoryId $newTeamCategoryId not found"))
 
             val athlete = (athleteRes as Either.Right).value
             when (val updatedRes = athleteDomain.changeTeamCategory(athlete, newCategory)) {
@@ -382,34 +405,38 @@ class AthleteService(
         LOG.info("Updating athlete data athleteId=$athleteId")
 
         return transactionManager.run { tx ->
-            val current = tx.athleteRepository.findById(athleteId)
-                ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
+            val current =
+                tx.athleteRepository.findById(athleteId)
+                    ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
 
-            val updated = current.copy(
-                jerseyNumber = jerseyNumber,
-                position = position,
-                photoUrl = photoUrl,
-                school = school,
-                schoolYear = schoolYear,
-                schoolClass = schoolClass,
-                lastClub = lastClub,
-                season = season,
-                hasFamilyInClub = hasFamilyInClub,
-            )
+            val updated =
+                current.copy(
+                    jerseyNumber = jerseyNumber,
+                    position = position,
+                    photoUrl = photoUrl,
+                    school = school,
+                    schoolYear = schoolYear,
+                    schoolClass = schoolClass,
+                    lastClub = lastClub,
+                    season = season,
+                    hasFamilyInClub = hasFamilyInClub,
+                )
             tx.athleteRepository.update(updated)
 
             if (guardians != null) {
-                val resolved = guardians.map { g ->
-                    if (g.memberNumber == null) {
-                        g to null
-                    } else {
-                        val existing = tx.memberRepository.findByMemberNumber(g.memberNumber)
-                            ?: return@run failure(
-                                AthleteError.ValidationError("memberNumber ${g.memberNumber} not found"),
-                            )
-                        g to existing.memberId
+                val resolved =
+                    guardians.map { g ->
+                        if (g.memberNumber == null) {
+                            g to null
+                        } else {
+                            val existing =
+                                tx.memberRepository.findByMemberNumber(g.memberNumber)
+                                    ?: return@run failure(
+                                        AthleteError.ValidationError("memberNumber ${g.memberNumber} not found"),
+                                    )
+                            g to existing.memberId
+                        }
                     }
-                }
                 resolved.forEach { (g, fk) ->
                     when (val res = athleteDomain.validateGuardianForCreation(g.toGuardian(athleteId, fk))) {
                         is Either.Left -> return@run failure(AthleteError.ValidationError(validationErrorMessage(res.value)))
@@ -488,9 +515,13 @@ class AthleteService(
         }
     }
 
-    private fun getAthleteOrFail(tx: Transaction, athleteId: Long): AthleteResult {
-        val athlete = tx.athleteRepository.findById(athleteId)
-            ?: return failure(AthleteError.NotFound("athleteId", athleteId))
+    private fun getAthleteOrFail(
+        tx: Transaction,
+        athleteId: Long,
+    ): AthleteResult {
+        val athlete =
+            tx.athleteRepository.findById(athleteId)
+                ?: return failure(AthleteError.NotFound("athleteId", athleteId))
         return success(athlete)
     }
 
@@ -509,7 +540,10 @@ class AthleteService(
             else -> AthleteError.ValidationError("member: $error")
         }
 
-    private fun GuardianInput.toGuardian(athleteId: Long, memberId: Long? = null): Guardian =
+    private fun GuardianInput.toGuardian(
+        athleteId: Long,
+        memberId: Long? = null,
+    ): Guardian =
         Guardian(
             guardianId = 0,
             athleteId = athleteId,

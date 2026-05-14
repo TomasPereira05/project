@@ -4,54 +4,53 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.repository.PubOptionRepository
 
-class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository {
-    override fun findAll(): List<PubOption> {
-        return handle.createQuery(
-            """
+class JdbiPubOptionRepository(
+    private val handle: Handle,
+) : PubOptionRepository {
+    override fun findAll(): List<PubOption> =
+        handle
+            .createQuery(
+                """
         SELECT *
         FROM jagoz.pub_option
         ORDER BY sort_order ASC
         """,
-        )
-            .mapTo(PubOption::class.java)
+            ).mapTo(PubOption::class.java)
             .list()
-    }
 
-    override fun findActive(): List<PubOption> {
-        return handle.createQuery(
-            """
+    override fun findActive(): List<PubOption> =
+        handle
+            .createQuery(
+                """
         SELECT *
         FROM jagoz.pub_option
         WHERE active = true
         ORDER BY sort_order ASC
         """,
-        )
-            .mapTo(PubOption::class.java)
+            ).mapTo(PubOption::class.java)
             .list()
-    }
 
-    override fun findById(id: Long): PubOption? {
-        return handle.createQuery(
-            """
+    override fun findById(id: Long): PubOption? =
+        handle
+            .createQuery(
+                """
         SELECT *
         FROM jagoz.pub_option
         WHERE pub_option_id = :id
         """,
-        )
-            .bind("id", id)
+            ).bind("id", id)
             .mapTo(PubOption::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun save(po: PubOption): Long {
-        return handle.createUpdate(
-            """
+    override fun save(po: PubOption): Long =
+        handle
+            .createUpdate(
+                """
         INSERT INTO jagoz.pub_option (code, label, active, available, free, occupied, price, sort_order)
         VALUES (:code, :label, :active, :available, :free, :occupied, :price, :sortOrder)
         """,
-        )
-            .bind("code", po.code)
+            ).bind("code", po.code)
             .bind("label", po.label)
             .bind("active", po.active)
             .bind("available", po.available)
@@ -62,11 +61,11 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun update(po: PubOption) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
         UPDATE jagoz.pub_option SET
             code = :code,
             label = :label,
@@ -78,8 +77,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
             sort_order = :sortOrder
         WHERE pub_option_id = :id
         """,
-        )
-            .bind("id", po.pubId)
+            ).bind("id", po.pubId)
             .bind("code", po.code)
             .bind("label", po.label)
             .bind("active", po.active)
@@ -92,20 +90,21 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
     }
 
     override fun deactivate(id: Long) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
         UPDATE jagoz.pub_option
         SET active = false
         WHERE pub_option_id = :id
         """,
-        )
-            .bind("id", id)
+            ).bind("id", id)
             .execute()
     }
 
-    override fun reserve(id: Long): Boolean {
-        return handle.createUpdate(
-            """
+    override fun reserve(id: Long): Boolean =
+        handle
+            .createUpdate(
+                """
         UPDATE jagoz.pub_option
         SET free = free - 1,
             occupied = occupied + 1
@@ -113,14 +112,13 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
           AND active = true
           AND free > 0
         """,
-        )
-            .bind("id", id)
+            ).bind("id", id)
             .execute() == 1
-    }
 
     override fun release(id: Long) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
         UPDATE jagoz.pub_option
         SET free = free + 1,
             occupied = occupied - 1
@@ -128,8 +126,7 @@ class JdbiPubOptionRepository(private val handle: Handle) : PubOptionRepository 
           AND occupied > 0
           AND free < available
         """,
-        )
-            .bind("id", id)
+            ).bind("id", id)
             .execute()
     }
 }

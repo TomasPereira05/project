@@ -191,12 +191,20 @@ class SponsorshipCatalogController(
     private fun handleSponsorError(error: SponsorError): ResponseEntity<Any> =
         when (error) {
             is SponsorError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-            is SponsorError.InvalidTransition -> Problem.InvalidTransition(error.from.toString(), error.attempted).response(HttpStatus.BAD_REQUEST)
+            is SponsorError.InvalidTransition ->
+                Problem
+                    .InvalidTransition(
+                        error.from.toString(),
+                        error.attempted,
+                    ).response(HttpStatus.BAD_REQUEST)
             is SponsorError.DomainError ->
                 when {
                     error.message.contains("not authorized", ignoreCase = true) ->
                         Problem.Unauthorized(error.message).response(HttpStatus.UNAUTHORIZED)
-                    error.message.contains("not found", ignoreCase = true) -> Problem.ValidationError(error.message).response(HttpStatus.NOT_FOUND)
+                    error.message.contains(
+                        "not found",
+                        ignoreCase = true,
+                    ) -> Problem.ValidationError(error.message).response(HttpStatus.NOT_FOUND)
                     else -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
                 }
         }

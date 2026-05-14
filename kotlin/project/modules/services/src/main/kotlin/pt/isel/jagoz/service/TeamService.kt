@@ -27,8 +27,7 @@ class TeamService(
     fun getActiveTeamCategories(): List<TeamCategory> =
         transactionManager.run { transaction -> transaction.teamCategoryRepository.findActive() }
 
-    fun getTeamCategories(): List<TeamCategory> =
-        transactionManager.run { transaction -> transaction.teamCategoryRepository.findAll() }
+    fun getTeamCategories(): List<TeamCategory> = transactionManager.run { transaction -> transaction.teamCategoryRepository.findAll() }
 
     fun getActiveTeamGroups(): List<TeamGroup> = transactionManager.run { transaction -> transaction.teamGroupRepository.findActive() }
 

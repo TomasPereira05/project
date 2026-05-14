@@ -13,22 +13,34 @@ import pt.isel.jagoz.domain.utils.success
  * Errors produced by charge-related domain operations.
  */
 sealed class ChargeError {
-    data class InvalidOperation(val message: String) : ChargeError()
+    data class InvalidOperation(
+        val message: String,
+    ) : ChargeError()
 
-    data class Validation(val message: String) : ChargeError()
+    data class Validation(
+        val message: String,
+    ) : ChargeError()
 
-    data class DomainError(val message: String) : ChargeError()
+    data class DomainError(
+        val message: String,
+    ) : ChargeError()
 }
 
 /**
  * Errors produced by payment-related domain operations.
  */
 sealed class PaymentError {
-    data class InvalidOperation(val message: String) : PaymentError()
+    data class InvalidOperation(
+        val message: String,
+    ) : PaymentError()
 
-    data class Validation(val message: String) : PaymentError()
+    data class Validation(
+        val message: String,
+    ) : PaymentError()
 
-    data class DomainError(val message: String) : PaymentError()
+    data class DomainError(
+        val message: String,
+    ) : PaymentError()
 }
 
 /**

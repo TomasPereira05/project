@@ -26,16 +26,13 @@ import pt.isel.jagoz.service.TeamService
 class TeamController(
     private val teamService: TeamService,
 ) {
-
     // ---------------- TEAM GROUPS ----------------
 
     @GetMapping(Uris.Team.GROUPS_ACTIVE)
-    fun getActiveTeamGroups() =
-        ResponseEntity.ok(teamService.getActiveTeamGroups())
+    fun getActiveTeamGroups() = ResponseEntity.ok(teamService.getActiveTeamGroups())
 
     @GetMapping(Uris.Team.GROUPS)
-    fun getTeamGroups() =
-        ResponseEntity.ok(teamService.getTeamGroups())
+    fun getTeamGroups() = ResponseEntity.ok(teamService.getTeamGroups())
 
     @PostMapping(Uris.Team.GROUPS)
     fun createTeamGroup(
@@ -89,12 +86,10 @@ class TeamController(
     // ---------------- TEAM CATEGORIES ----------------
 
     @GetMapping(Uris.Team.CATEGORIES_ACTIVE)
-    fun getActiveTeamCategories() =
-        ResponseEntity.ok(teamService.getActiveTeamCategories())
+    fun getActiveTeamCategories() = ResponseEntity.ok(teamService.getActiveTeamCategories())
 
     @GetMapping(Uris.Team.CATEGORIES)
-    fun getTeamCategories() =
-        ResponseEntity.ok(teamService.getTeamCategories())
+    fun getTeamCategories() = ResponseEntity.ok(teamService.getTeamCategories())
 
     @PostMapping(Uris.Team.CATEGORIES)
     fun createTeamCategory(
@@ -148,45 +143,45 @@ class TeamController(
     // ---------------- GROUP PRICES ----------------
 
     @GetMapping(Uris.Team.GROUP_PRICES)
-    fun getTeamGroupPrices() =
-        ResponseEntity.ok(teamService.getTeamGroupPrices())
+    fun getTeamGroupPrices() = ResponseEntity.ok(teamService.getTeamGroupPrices())
 
     @PutMapping(Uris.Team.GROUP_PRICES)
     fun upsertTeamGroupPrice(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody request: TeamGroupPriceRequest
+        @RequestBody request: TeamGroupPriceRequest,
     ): ResponseEntity<*> {
         requireTeamManager(authenticatedUser)?.let { return it }
-        return teamService.upsertTeamGroupPrice(
-            request.teamGroupId,
-            request.placementId,
-            request.price
-        ).handle(
-            onFailure = { handleTeamError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
+        return teamService
+            .upsertTeamGroupPrice(
+                request.teamGroupId,
+                request.placementId,
+                request.price,
+            ).handle(
+                onFailure = { handleTeamError(it) },
+                onSuccess = { ResponseEntity.ok(it) },
+            )
     }
 
     // ---------------- CATEGORY OVERRIDES ----------------
 
     @GetMapping(Uris.Team.CATEGORY_OVERRIDES)
-    fun getTeamCategoryOverrides() =
-        ResponseEntity.ok(teamService.getTeamCategoryOverrides())
+    fun getTeamCategoryOverrides() = ResponseEntity.ok(teamService.getTeamCategoryOverrides())
 
     @PutMapping(Uris.Team.CATEGORY_OVERRIDES)
     fun upsertTeamCategoryOverride(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody request: TeamCategoryPriceOverrideRequest
+        @RequestBody request: TeamCategoryPriceOverrideRequest,
     ): ResponseEntity<*> {
         requireTeamManager(authenticatedUser)?.let { return it }
-        return teamService.upsertTeamCategoryOverride(
-            request.teamCategoryId,
-            request.placementId,
-            request.price
-        ).handle(
-            onFailure = { handleTeamError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
+        return teamService
+            .upsertTeamCategoryOverride(
+                request.teamCategoryId,
+                request.placementId,
+                request.price,
+            ).handle(
+                onFailure = { handleTeamError(it) },
+                onSuccess = { ResponseEntity.ok(it) },
+            )
     }
 
     private fun requireTeamManager(authenticatedUser: AuthenticatedUser): ResponseEntity<Any>? =

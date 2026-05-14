@@ -50,7 +50,10 @@ data class AthleteAdminDto(
     val guardians: List<GuardianDto>,
 )
 
-private fun deriveStatus(member: Member, athleteActive: Boolean): String =
+private fun deriveStatus(
+    member: Member,
+    athleteActive: Boolean,
+): String =
     when (member.status) {
         MemberStatus.PENDENTE -> "PENDENTE"
         MemberStatus.REJEITADO -> "REJEITADO"

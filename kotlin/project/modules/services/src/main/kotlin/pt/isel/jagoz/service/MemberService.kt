@@ -148,7 +148,6 @@ class MemberService(
         }
     }
 
-
     /**
      * Approves a pending member application.
      * Changes status from PENDENTE to ATIVO and sets approval date.

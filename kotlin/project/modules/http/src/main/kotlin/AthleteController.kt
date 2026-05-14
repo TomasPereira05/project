@@ -2,6 +2,7 @@ package pt.isel.jagoz.http
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDate
 import kotlinx.datetime.todayIn
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,24 +16,20 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.AthleteError
-import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.utils.handle
-import pt.isel.jagoz.http.model.athlete.AthleteAdminDto
 import pt.isel.jagoz.http.model.athlete.AthleteCreationInputDto
-import pt.isel.jagoz.http.model.athlete.AthleteDetailDto
 import pt.isel.jagoz.http.model.athlete.AthletePublicDto
 import pt.isel.jagoz.http.model.athlete.AthleteUpdateRequest
 import pt.isel.jagoz.http.model.athlete.SchoolInfoRequest
 import pt.isel.jagoz.http.model.athlete.TeamCategoryChangeRequest
-import pt.isel.jagoz.http.model.member.ApprovalRequest
-import kotlinx.datetime.toLocalDate
 import pt.isel.jagoz.http.model.athlete.toAdminDto
 import pt.isel.jagoz.http.model.athlete.toDetailDto
 import pt.isel.jagoz.http.model.athlete.toPublicDto
 import pt.isel.jagoz.http.model.athlete.toRegistrationInput
 import pt.isel.jagoz.http.model.athlete.toServiceInput
+import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.AthleteService
@@ -79,8 +76,9 @@ class AthleteController(
      */
     @GetMapping(Uris.Athletes.GET_ME)
     fun getMe(user: AuthenticatedUser): ResponseEntity<*> {
-        val memberId = user.activeMemberId
-            ?: return Problem.AthleteNotFound("activeMemberId", "null").response(HttpStatus.NOT_FOUND)
+        val memberId =
+            user.activeMemberId
+                ?: return Problem.AthleteNotFound("activeMemberId", "null").response(HttpStatus.NOT_FOUND)
         return athleteService.getAthleteDetailByMemberId(memberId).handle(
             onFailure = { handleAthleteError(it) },
             onSuccess = { athlete -> respondAdminDto(athlete) },
@@ -93,24 +91,27 @@ class AthleteController(
         @RequestBody input: AthleteCreationInputDto,
         user: AuthenticatedUser,
     ): ResponseEntity<*> {
-        val resolvedUserId = if (input.isSelfRegistration) {
-            if (user.activeMemberId != null) {
-                return Problem
-                    .ValidationError("Já existe uma inscrição associada à conta autenticada.")
-                    .response(HttpStatus.BAD_REQUEST)
+        val resolvedUserId =
+            if (input.isSelfRegistration) {
+                if (user.activeMemberId != null) {
+                    return Problem
+                        .ValidationError("Já existe uma inscrição associada à conta autenticada.")
+                        .response(HttpStatus.BAD_REQUEST)
+                }
+                user.userId
+            } else {
+                null
             }
-            user.userId
-        } else {
-            null
-        }
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
         val serviceInput = input.toRegistrationInput(userId = resolvedUserId, registrationDate = today)
         return athleteService.registerAthlete(serviceInput).handle(
             onFailure = { handleAthleteError(it) },
             onSuccess = { athlete ->
-                val member = athleteService.loadMember(athlete.memberId)
-                    ?: return@handle Problem.AthleteNotFound("memberId", athlete.memberId)
-                        .response(HttpStatus.INTERNAL_SERVER_ERROR)
+                val member =
+                    athleteService.loadMember(athlete.memberId)
+                        ?: return@handle Problem
+                            .AthleteNotFound("memberId", athlete.memberId)
+                            .response(HttpStatus.INTERNAL_SERVER_ERROR)
                 ResponseEntity
                     .created(Uris.Athletes.byId(athlete.athleteId))
                     .body(athlete.toAdminDto(member))
@@ -135,9 +136,10 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         val athletesPage = athleteService.getAthletesPage(page, size)
         val membersById = athleteService.loadMembersFor(athletesPage.items)
-        val itemDtos = athletesPage.items.mapNotNull { a ->
-            membersById[a.memberId]?.let { m -> a.toAdminDto(m) }
-        }
+        val itemDtos =
+            athletesPage.items.mapNotNull { a ->
+                membersById[a.memberId]?.let { m -> a.toAdminDto(m) }
+            }
         return ResponseEntity.ok(
             Page(
                 items = itemDtos,
@@ -290,17 +292,21 @@ class AthleteController(
         }
 
     private fun respondDetailDto(athlete: Athlete): ResponseEntity<Any> {
-        val member = athleteService.loadMember(athlete.memberId)
-            ?: return Problem.AthleteNotFound("memberId", athlete.memberId)
-                .response(HttpStatus.INTERNAL_SERVER_ERROR)
+        val member =
+            athleteService.loadMember(athlete.memberId)
+                ?: return Problem
+                    .AthleteNotFound("memberId", athlete.memberId)
+                    .response(HttpStatus.INTERNAL_SERVER_ERROR)
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
         return ResponseEntity.ok<Any>(athlete.toDetailDto(member, today))
     }
 
     private fun respondAdminDto(athlete: Athlete): ResponseEntity<Any> {
-        val member = athleteService.loadMember(athlete.memberId)
-            ?: return Problem.AthleteNotFound("memberId", athlete.memberId)
-                .response(HttpStatus.INTERNAL_SERVER_ERROR)
+        val member =
+            athleteService.loadMember(athlete.memberId)
+                ?: return Problem
+                    .AthleteNotFound("memberId", athlete.memberId)
+                    .response(HttpStatus.INTERNAL_SERVER_ERROR)
         return ResponseEntity.ok<Any>(athlete.toAdminDto(member))
     }
 

@@ -26,7 +26,10 @@ data class AthletePublicDto(
     val fotoUrl: String?,
 )
 
-fun Athlete.toPublicDto(member: Member, today: LocalDate): AthletePublicDto =
+fun Athlete.toPublicDto(
+    member: Member,
+    today: LocalDate,
+): AthletePublicDto =
     AthletePublicDto(
         id = athleteId,
         nome = member.completeName,

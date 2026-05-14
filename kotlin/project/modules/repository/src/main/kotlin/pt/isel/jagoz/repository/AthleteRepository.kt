@@ -27,7 +27,10 @@ interface AthleteRepository {
     /** Total para cálculo de páginas. */
     fun countAll(): Long
 
-    fun findByTeamCategory(teamCategoryId: Long, activeOnly: Boolean): List<Athlete>
+    fun findByTeamCategory(
+        teamCategoryId: Long,
+        activeOnly: Boolean,
+    ): List<Athlete>
 
     // Detalhe (com guardians carregados via segunda query)
     fun findByIdWithDetail(id: Long): Athlete?
@@ -37,7 +40,10 @@ interface AthleteRepository {
 
     fun update(athlete: Athlete)
 
-    fun saveGuardians(athleteId: Long, guardians: List<Guardian>)
+    fun saveGuardians(
+        athleteId: Long,
+        guardians: List<Guardian>,
+    )
 
     fun deleteGuardiansByAthleteId(athleteId: Long)
 }

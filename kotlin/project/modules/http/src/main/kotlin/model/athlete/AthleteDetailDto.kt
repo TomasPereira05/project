@@ -31,7 +31,10 @@ data class AthleteDetailDto(
     val epocasRepresentadas: List<String>,
 )
 
-fun Athlete.toDetailDto(member: Member, today: LocalDate): AthleteDetailDto =
+fun Athlete.toDetailDto(
+    member: Member,
+    today: LocalDate,
+): AthleteDetailDto =
     AthleteDetailDto(
         id = athleteId,
         nome = member.completeName,
@@ -46,7 +49,10 @@ fun Athlete.toDetailDto(member: Member, today: LocalDate): AthleteDetailDto =
     )
 
 /** Idade em anos completos. Partilhado por DTOs públicos. */
-internal fun calculateAge(birthDate: LocalDate, today: LocalDate): Int {
+internal fun calculateAge(
+    birthDate: LocalDate,
+    today: LocalDate,
+): Int {
     var age = today.year - birthDate.year
     val notHadBirthdayYet =
         today.monthNumber < birthDate.monthNumber ||

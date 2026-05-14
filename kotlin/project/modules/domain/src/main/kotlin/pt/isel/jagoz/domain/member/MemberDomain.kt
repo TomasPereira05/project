@@ -182,7 +182,8 @@ class MemberDomain {
         ValidationUtils.requireNotBlank(postalCode, "postalCode")?.let { return failure(it.toMemberError()) }
         ValidationUtils.requireNotBlank(city, "city")?.let { return failure(it.toMemberError()) }
 
-        ValidationUtils.requireRegex(postalCode, ValidationPatterns.POSTAL_CODE, "postalCode", "must match 'NNNN-NNN'")
+        ValidationUtils
+            .requireRegex(postalCode, ValidationPatterns.POSTAL_CODE, "postalCode", "must match 'NNNN-NNN'")
             ?.let { return failure(it.toMemberError()) }
         return success(
             member.copy(
@@ -287,12 +288,13 @@ class MemberDomain {
         ValidationUtils.requireRegex(member.nif, ValidationPatterns.NIF, "nif", "must be 9 digits")?.let { return it }
         ValidationUtils.requireRegex(member.email, ValidationPatterns.EMAIL, "email", "must be a valid address")?.let { return it }
         ValidationUtils.requireRegex(member.phone, ValidationPatterns.PHONE, "phone", "must be 7 to 15 digits")?.let { return it }
-        ValidationUtils.requireRegex(
-            member.postalCode,
-            ValidationPatterns.POSTAL_CODE,
-            "postalCode",
-            "must match 'NNNN-NNN'",
-        )?.let { return it }
+        ValidationUtils
+            .requireRegex(
+                member.postalCode,
+                ValidationPatterns.POSTAL_CODE,
+                "postalCode",
+                "must match 'NNNN-NNN'",
+            )?.let { return it }
         return null
     }
 
@@ -305,21 +307,24 @@ class MemberDomain {
      */
     private fun requireConditionInMember(member: Member): ValidationError? {
         ValidationUtils.requireCondition(member.membershipQuota >= 0, "membershipQuota", "cannot be negative")?.let { return it }
-        ValidationUtils.requireCondition(
-            member.registrationDate <= MAX_REGISTRATION_DATE,
-            "registrationDate",
-            "invalid",
-        )?.let { return it }
-        ValidationUtils.requireCondition(
-            member.birthDate >= MIN_BIRTH_DATE,
-            "birthDate",
-            "is unrealistic",
-        )?.let { return it }
-        ValidationUtils.requireCondition(
-            member.birthDate < member.registrationDate,
-            "birthDate",
-            "must be before today",
-        )?.let { return it }
+        ValidationUtils
+            .requireCondition(
+                member.registrationDate <= MAX_REGISTRATION_DATE,
+                "registrationDate",
+                "invalid",
+            )?.let { return it }
+        ValidationUtils
+            .requireCondition(
+                member.birthDate >= MIN_BIRTH_DATE,
+                "birthDate",
+                "is unrealistic",
+            )?.let { return it }
+        ValidationUtils
+            .requireCondition(
+                member.birthDate < member.registrationDate,
+                "birthDate",
+                "must be before today",
+            )?.let { return it }
         return null
     }
 

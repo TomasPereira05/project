@@ -22,10 +22,11 @@ class SponsorshipCatalogService(
 
     fun createPubOption(pubOption: PubOption) =
         transactionManager.run { transaction ->
-            val normalized = pubOption.copy(
-                occupied = 0,
-                free = pubOption.available,
-            )
+            val normalized =
+                pubOption.copy(
+                    occupied = 0,
+                    free = pubOption.available,
+                )
             validatePubOptionCapacity(normalized)?.let { return@run failure(it) }
             validatePrice(pubOption.price)?.let { return@run failure(it) }
             val id = transaction.pubOptionRepository.save(normalized)
@@ -38,10 +39,11 @@ class SponsorshipCatalogService(
             if (current == null) {
                 return@run failure(SponsorError.DomainError("Pub option ${pubOption.pubId} not found"))
             }
-            val normalized = pubOption.copy(
-                occupied = current.occupied,
-                free = pubOption.available - current.occupied,
-            )
+            val normalized =
+                pubOption.copy(
+                    occupied = current.occupied,
+                    free = pubOption.available - current.occupied,
+                )
             validatePubOptionCapacity(normalized)?.let { return@run failure(it) }
             validatePrice(pubOption.price)?.let { return@run failure(it) }
             transaction.pubOptionRepository.update(normalized)

@@ -56,7 +56,14 @@ tasks.withType<Test> {
 tasks.register<Copy>("extractUberJar") {
     dependsOn("assemble")
     // opens the JAR containing everything...
-    from(zipTree(layout.buildDirectory.file("libs/host-$version.jar").get().toString()))
+    from(
+        zipTree(
+            layout.buildDirectory
+                .file("libs/host-$version.jar")
+                .get()
+                .toString(),
+        ),
+    )
     // ... into the 'build/dependency' folder
     into("build/dependency")
 }

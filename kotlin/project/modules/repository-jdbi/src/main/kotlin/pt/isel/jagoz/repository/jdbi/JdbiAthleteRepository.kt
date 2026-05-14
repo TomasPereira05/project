@@ -5,91 +5,102 @@ import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.Guardian
 import pt.isel.jagoz.repository.AthleteRepository
 
-class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
+class JdbiAthleteRepository(
+    private val handle: Handle,
+) : AthleteRepository {
     override fun findById(id: Long): Athlete? =
-        handle.createQuery(
-            """
-            $SELECT_ATHLETE_BASE
-            WHERE a.athlete_id = :id
-            """.trimIndent(),
-        )
-            .bind("id", id)
+        handle
+            .createQuery(
+                """
+                $SELECT_ATHLETE_BASE
+                WHERE a.athlete_id = :id
+                """.trimIndent(),
+            ).bind("id", id)
             .mapTo(Athlete::class.java)
             .findOne()
             .orElse(null)
 
     override fun findByMemberId(memberId: Long): Athlete? =
-        handle.createQuery(
-            """
-            $SELECT_ATHLETE_BASE
-            WHERE a.member_id = :memberId
-            """.trimIndent(),
-        )
-            .bind("memberId", memberId)
+        handle
+            .createQuery(
+                """
+                $SELECT_ATHLETE_BASE
+                WHERE a.member_id = :memberId
+                """.trimIndent(),
+            ).bind("memberId", memberId)
             .mapTo(Athlete::class.java)
             .findOne()
             .orElse(null)
 
     override fun findAllActive(): List<Athlete> =
-        handle.createQuery(
-            """
-            $SELECT_ATHLETE_BASE
-            JOIN jagoz.member m ON m.member_id = a.member_id
-            WHERE a.active = true AND m.status = 'ATIVO'
-            """.trimIndent(),
-        )
-            .mapTo(Athlete::class.java)
+        handle
+            .createQuery(
+                """
+                $SELECT_ATHLETE_BASE
+                JOIN jagoz.member m ON m.member_id = a.member_id
+                WHERE a.active = true AND m.status = 'ATIVO'
+                """.trimIndent(),
+            ).mapTo(Athlete::class.java)
             .list()
 
     override fun findAll(): List<Athlete> =
-        handle.createQuery(
-            """
-            $SELECT_ATHLETE_BASE
-            ORDER BY a.athlete_id DESC
-            """.trimIndent(),
-        )
-            .mapTo(Athlete::class.java)
+        handle
+            .createQuery(
+                """
+                $SELECT_ATHLETE_BASE
+                ORDER BY a.athlete_id DESC
+                """.trimIndent(),
+            ).mapTo(Athlete::class.java)
             .list()
 
     /**
      * Pendentes primeiro (para ficarem todos na página 1), depois mais recentes.
      * Faz JOIN com `member` para conseguir ordenar por `member.status`.
      */
-    override fun findPage(limit: Int, offset: Int): List<Athlete> =
-        handle.createQuery(
-            """
-            $SELECT_ATHLETE_BASE
-            JOIN jagoz.member m ON m.member_id = a.member_id
-            ORDER BY (m.status = 'PENDENTE') DESC, a.athlete_id DESC
-            LIMIT :limit OFFSET :offset
-            """.trimIndent(),
-        )
-            .bind("limit", limit)
+    override fun findPage(
+        limit: Int,
+        offset: Int,
+    ): List<Athlete> =
+        handle
+            .createQuery(
+                """
+                $SELECT_ATHLETE_BASE
+                JOIN jagoz.member m ON m.member_id = a.member_id
+                ORDER BY (m.status = 'PENDENTE') DESC, a.athlete_id DESC
+                LIMIT :limit OFFSET :offset
+                """.trimIndent(),
+            ).bind("limit", limit)
             .bind("offset", offset)
             .mapTo(Athlete::class.java)
             .list()
 
     override fun countAll(): Long =
-        handle.createQuery("SELECT COUNT(*) FROM jagoz.athlete")
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.athlete")
             .mapTo(Long::class.java)
             .one()
 
-    override fun findByTeamCategory(teamCategoryId: Long, activeOnly: Boolean): List<Athlete> {
-        val sql = if (activeOnly) {
-            """
-            $SELECT_ATHLETE_BASE
-            JOIN jagoz.member m ON m.member_id = a.member_id
-            WHERE a.team_category_id = :teamCategoryId
-              AND a.active = true
-              AND m.status = 'ATIVO'
-            """.trimIndent()
-        } else {
-            """
-            $SELECT_ATHLETE_BASE
-            WHERE a.team_category_id = :teamCategoryId
-            """.trimIndent()
-        }
-        return handle.createQuery(sql)
+    override fun findByTeamCategory(
+        teamCategoryId: Long,
+        activeOnly: Boolean,
+    ): List<Athlete> {
+        val sql =
+            if (activeOnly) {
+                """
+                $SELECT_ATHLETE_BASE
+                JOIN jagoz.member m ON m.member_id = a.member_id
+                WHERE a.team_category_id = :teamCategoryId
+                  AND a.active = true
+                  AND m.status = 'ATIVO'
+                """.trimIndent()
+            } else {
+                """
+                $SELECT_ATHLETE_BASE
+                WHERE a.team_category_id = :teamCategoryId
+                """.trimIndent()
+            }
+        return handle
+            .createQuery(sql)
             .bind("teamCategoryId", teamCategoryId)
             .mapTo(Athlete::class.java)
             .list()
@@ -102,69 +113,73 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
     }
 
     override fun save(athlete: Athlete): Long =
-        handle.createUpdate(
-            """
-            INSERT INTO jagoz.athlete (
-                member_id, nationality, niss, numero_utente, bi, bi_expiration_date,
-                school, school_year, school_class, last_club, season, team_category_id,
-                jersey_number, position, photo_url, has_family_in_club,
-                school_certification_accepted, active
-            ) VALUES (
-                :memberId, :nationality, :niss, :numeroUtente, :bi, CAST(:biExpirationDate AS DATE),
-                :school, :schoolYear, :schoolClass, :lastClub, :season, :teamCategoryId,
-                :jerseyNumber, :position, :photoUrl, :hasFamilyInClub,
-                :schoolCertificationAccepted, :active
-            )
-            """.trimIndent(),
-        )
-            .bindAthlete(athlete)
+        handle
+            .createUpdate(
+                """
+                INSERT INTO jagoz.athlete (
+                    member_id, nationality, niss, numero_utente, bi, bi_expiration_date,
+                    school, school_year, school_class, last_club, season, team_category_id,
+                    jersey_number, position, photo_url, has_family_in_club,
+                    school_certification_accepted, active
+                ) VALUES (
+                    :memberId, :nationality, :niss, :numeroUtente, :bi, CAST(:biExpirationDate AS DATE),
+                    :school, :schoolYear, :schoolClass, :lastClub, :season, :teamCategoryId,
+                    :jerseyNumber, :position, :photoUrl, :hasFamilyInClub,
+                    :schoolCertificationAccepted, :active
+                )
+                """.trimIndent(),
+            ).bindAthlete(athlete)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
 
     override fun update(athlete: Athlete) {
-        handle.createUpdate(
-            """
-            UPDATE jagoz.athlete SET
-                member_id = :memberId,
-                nationality = :nationality,
-                niss = :niss,
-                numero_utente = :numeroUtente,
-                bi = :bi,
-                bi_expiration_date = CAST(:biExpirationDate AS DATE),
-                school = :school,
-                school_year = :schoolYear,
-                school_class = :schoolClass,
-                last_club = :lastClub,
-                season = :season,
-                team_category_id = :teamCategoryId,
-                jersey_number = :jerseyNumber,
-                position = :position,
-                photo_url = :photoUrl,
-                has_family_in_club = :hasFamilyInClub,
-                school_certification_accepted = :schoolCertificationAccepted,
-                active = :active
-            WHERE athlete_id = :id
-            """.trimIndent(),
-        )
-            .bind("id", athlete.athleteId)
+        handle
+            .createUpdate(
+                """
+                UPDATE jagoz.athlete SET
+                    member_id = :memberId,
+                    nationality = :nationality,
+                    niss = :niss,
+                    numero_utente = :numeroUtente,
+                    bi = :bi,
+                    bi_expiration_date = CAST(:biExpirationDate AS DATE),
+                    school = :school,
+                    school_year = :schoolYear,
+                    school_class = :schoolClass,
+                    last_club = :lastClub,
+                    season = :season,
+                    team_category_id = :teamCategoryId,
+                    jersey_number = :jerseyNumber,
+                    position = :position,
+                    photo_url = :photoUrl,
+                    has_family_in_club = :hasFamilyInClub,
+                    school_certification_accepted = :schoolCertificationAccepted,
+                    active = :active
+                WHERE athlete_id = :id
+                """.trimIndent(),
+            ).bind("id", athlete.athleteId)
             .bindAthlete(athlete)
             .execute()
     }
 
-    override fun saveGuardians(athleteId: Long, guardians: List<Guardian>) {
+    override fun saveGuardians(
+        athleteId: Long,
+        guardians: List<Guardian>,
+    ) {
         if (guardians.isEmpty()) return
-        val batch = handle.prepareBatch(
-            """
-            INSERT INTO jagoz.guardian (
-                athlete_id, member_id, name, role, kinship, email, phone,
-                professional_activity, contact_phone
-            ) VALUES (
-                :athleteId, :memberId, :name, CAST(:role AS jagoz.guardian_role), :kinship, :email, :phone,
-                :professionalActivity, :contactPhone
+        val batch =
+            handle.prepareBatch(
+                """
+                INSERT INTO jagoz.guardian (
+                    athlete_id, member_id, name, role, kinship, email, phone,
+                    professional_activity, contact_phone
+                ) VALUES (
+                    :athleteId, :memberId, :name, CAST(:role AS jagoz.guardian_role), :kinship, :email, :phone,
+                    :professionalActivity, :contactPhone
+                )
+                """.trimIndent(),
             )
-            """.trimIndent(),
-        )
         guardians.forEach { g ->
             batch
                 .bind("athleteId", athleteId)
@@ -182,22 +197,23 @@ class JdbiAthleteRepository(private val handle: Handle) : AthleteRepository {
     }
 
     override fun deleteGuardiansByAthleteId(athleteId: Long) {
-        handle.createUpdate("DELETE FROM jagoz.guardian WHERE athlete_id = :athleteId")
+        handle
+            .createUpdate("DELETE FROM jagoz.guardian WHERE athlete_id = :athleteId")
             .bind("athleteId", athleteId)
             .execute()
     }
 
     private fun findGuardiansByAthleteId(athleteId: Long): List<Guardian> =
-        handle.createQuery(
-            """
-            SELECT guardian_id, athlete_id, member_id, name, role, kinship, email, phone,
-                   professional_activity, contact_phone
-            FROM jagoz.guardian
-            WHERE athlete_id = :athleteId
-            ORDER BY guardian_id ASC
-            """.trimIndent(),
-        )
-            .bind("athleteId", athleteId)
+        handle
+            .createQuery(
+                """
+                SELECT guardian_id, athlete_id, member_id, name, role, kinship, email, phone,
+                       professional_activity, contact_phone
+                FROM jagoz.guardian
+                WHERE athlete_id = :athleteId
+                ORDER BY guardian_id ASC
+                """.trimIndent(),
+            ).bind("athleteId", athleteId)
             .mapTo(Guardian::class.java)
             .list()
 
