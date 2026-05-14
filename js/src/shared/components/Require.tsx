@@ -2,14 +2,16 @@ import type { RequireProps } from "../types/RequireProps";
 import { useAuth } from "../hooks/useAuth";
 import { Navigate, useLocation } from "react-router-dom";
 
-export function Require({ children, allowAdmin, allowMember }: RequireProps) {
+export function Require({ children, allowAdmin, allowSecretaria, allowMember }: RequireProps) {
   const { role, activeMemberId } = useAuth();
 
   const hasAdmin = role === "ADMIN";
+  const hasSecretaria = role === "SECRETARIA";
   const hasMember = activeMemberId != null;
 
   if (
     (allowAdmin && hasAdmin) ||
+    (allowSecretaria && hasSecretaria) ||
     (allowMember && hasMember)
   ) {
     return <>{children}</>;
