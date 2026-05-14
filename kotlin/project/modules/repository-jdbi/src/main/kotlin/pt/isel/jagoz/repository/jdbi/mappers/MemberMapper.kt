@@ -21,6 +21,7 @@ class MemberMapper : RowMapper<Member> {
             memberNumber = memberNumber,
             completeName = rs.getString("complete_name"),
             birthDate = LocalDate.parse(rs.getString("birth_date")),
+            birthplace = rs.getString("birthplace"),
             email = rs.getString("email"),
             phone = rs.getString("phone"),
             homePhone = rs.getString("home_phone"),
