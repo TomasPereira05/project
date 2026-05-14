@@ -49,6 +49,11 @@
     @apply text-sm font-semibold uppercase tracking-wide text-slate-700 hover:text-primary transition-colors;
   }
 
+  .nav-link.is-active,
+  .dropdown-link.is-active {
+    @apply text-primary;
+  }
+
   .nav-disabled {
     @apply text-slate-400 cursor-not-allowed text-sm font-semibold uppercase tracking-wide;
   }

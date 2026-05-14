@@ -14,8 +14,9 @@ import {
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import { fetchMember, getInitials, type Member } from "../../Members";
-import { fetchAthleteByMemberId, labelForCategory, type Athlete } from "../../Athletes";
+import { fetchMember, type Member } from "../../Members";
+import { getInitials } from "../../../shared/utils";
+import { getMyAthlete, type AthleteAdmin } from "../../Athletes";
 import { claimSponsorAccount } from "../../sponsors";
 import { roleLabel, roleBadgeColor } from "../utils";
 
@@ -24,7 +25,7 @@ export default function UserPage() {
   const { username, email, role, activeMemberId, clearAuth } = useAuth();
 
   const [member, setMember] = useState<Member | null>(null);
-  const [athlete, setAthlete] = useState<Athlete | null>(null);
+  const [athlete, setAthlete] = useState<AthleteAdmin | null>(null);
   const [claimForm, setClaimForm] = useState({ nif: "", email: "", phone: "" });
   const [claimMessage, setClaimMessage] = useState("");
   const [claimError, setClaimError] = useState("");
@@ -46,7 +47,7 @@ export default function UserPage() {
         if (!ignore) setMember(null);
       });
 
-    fetchAthleteByMemberId(activeMemberId)
+    getMyAthlete()
       .then((res) => {
         if (!ignore) setAthlete(res);
       })
@@ -236,7 +237,7 @@ export default function UserPage() {
                 <div>
                   <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Atleta</h2>
                   <p className="text-xs text-text-secondary mt-1">
-                    Escalão atual: {labelForCategory(athlete.teamCategory)}.
+                    Escalão atual: {athlete.teamCategoryLabel}.
                   </p>
                 </div>
               </div>

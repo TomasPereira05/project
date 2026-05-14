@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { TEAM_CATEGORIES, labelForCategory } from "../../features/Athletes";
+import { fetchAllTeamCategories, type TeamCatalogCategory } from "../../features/Athletes";
 import { LOGO_SRC } from "../config/config";
 import { useAuth } from "../hooks/useAuth";
 
@@ -11,10 +11,32 @@ type MenuType = "mobile" | "socios" | "equipas" | "outras-modalidades" | "user" 
 export default function Header() {
     const { i18n, t } = useTranslation();
     const [activeMenu, setActiveMenu] = useState<MenuType>(null);
+    const [teamCategories, setTeamCategories] = useState<TeamCatalogCategory[]>([]);
     const navigate = useNavigate();
+    const location = useLocation();
     const { role, activeMemberId, username, clearAuth } = useAuth();
     const ref = useRef<HTMLDivElement>(null);
     const isAuthenticated = Boolean(username);
+    const isStaff = role === "ADMIN" || role === "SECRETARIA";
+
+    const sectionActive = {
+        socios: location.pathname.startsWith("/members"),
+        patrocinios: location.pathname.startsWith("/sponsors"),
+        equipas: location.pathname.startsWith("/athletes"),
+        outrasModalidades: location.pathname.startsWith("/other-sports"),
+    };
+
+    useEffect(() => {
+        let ignore = false;
+        fetchAllTeamCategories()
+            .then((cats) => {
+                if (!ignore) setTeamCategories(cats.filter((c) => c.active));
+            })
+            .catch(() => {});
+        return () => {
+            ignore = true;
+        };
+    }, []);
 
     const toggleMenu = (menu: Exclude<MenuType, null>) => {
         setActiveMenu((prev) => (prev === menu ? null : menu));
@@ -73,10 +95,10 @@ export default function Header() {
                     </Link>
 
                     <nav className="nav">
-                        <button className="nav-link" onClick={() => toggleMenu("socios")}>{t("header.nav.members")}</button>
-                        <button className="nav-link" onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
-                        <button className="nav-link" onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
-                        <button className="nav-link" onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
+                        <button className={`nav-link ${sectionActive.socios ? "is-active" : ""}`} onClick={() => toggleMenu("socios")}>{t("header.nav.members")}</button>
+                        <button className={`nav-link ${sectionActive.patrocinios ? "is-active" : ""}`} onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
+                        <button className={`nav-link ${sectionActive.equipas ? "is-active" : ""}`} onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
+                        <button className={`nav-link ${sectionActive.outrasModalidades ? "is-active" : ""}`} onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
                     </nav>
 
                     <div className="header-actions">
@@ -105,10 +127,10 @@ export default function Header() {
 
             <div className={`dropdown ${activeMenu === "mobile" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
-                    <button className="dropdown-link" onClick={() => toggleMenu("socios")}>{t("header.nav.members")}</button>
-                    <button className="dropdown-link" onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
-                    <button className="dropdown-link" onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
-                    <button className="dropdown-link" onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
+                    <button className={`dropdown-link ${sectionActive.socios ? "is-active" : ""}`} onClick={() => toggleMenu("socios")}>{t("header.nav.members")}</button>
+                    <button className={`dropdown-link ${sectionActive.patrocinios ? "is-active" : ""}`} onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
+                    <button className={`dropdown-link ${sectionActive.equipas ? "is-active" : ""}`} onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
+                    <button className={`dropdown-link ${sectionActive.outrasModalidades ? "is-active" : ""}`} onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
                 </nav>
                 <div className="dropdown-actions">
                     <LanguageSwitcher language={language} onChange={handleLanguageChange} label={t("header.aria.language")} />
@@ -136,7 +158,7 @@ export default function Header() {
                     ) : (
                         <span className="dropdown-disabled">{t("header.members.profile")}</span>
                     )}
-                    {role === "ADMIN" && (
+                    {isStaff && (
                         <Link to="/members/list" className="dropdown-link" onClick={closeMenus}>{t("header.members.list")}</Link>
                     )}
                     <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>{t("header.members.become")}</Link>
@@ -149,10 +171,10 @@ export default function Header() {
                     {isAuthenticated && (
                         <Link to="/sponsors/my" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.my")}</Link>
                     )}
-                    {role === "ADMIN" && (
+                    {isStaff && (
                         <Link to="/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.approvals")}</Link>
                     )}
-                    {role === "ADMIN" && (
+                    {isStaff && (
                         <Link to="/sponsors/settings" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.settings")}</Link>
                     )}
                     <Link to="/sponsors/create" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.become")}</Link>
@@ -169,14 +191,17 @@ export default function Header() {
 
             <div className={`dropdown ${activeMenu === "equipas" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
-                    {TEAM_CATEGORIES.map((category) => (
+                    {isStaff && (
+                        <Link to="/athletes" className="dropdown-link" onClick={closeMenus}>{t("header.teams.manage")}</Link>
+                    )}
+                    {teamCategories.map((category) => (
                         <Link
-                            key={category}
-                            to={`/athletes/category/${category}`}
+                            key={category.teamId}
+                            to={`/athletes/category/${category.code}`}
                             className="dropdown-link"
                             onClick={closeMenus}
                         >
-                            {labelForCategory(category)}
+                            {category.label}
                         </Link>
                     ))}
                     <Link
@@ -186,13 +211,13 @@ export default function Header() {
                     >
                         {t("header.teams.becomeAthlete")}
                     </Link>
-                    {role === "ADMIN" && (
+                    {isStaff && (
                         <Link
                             to="/athletes/settings"
                             className="dropdown-link"
                             onClick={closeMenus}
                         >
-                            Settings
+                            {t("header.teams.settings")}
                         </Link>
                     )}
                 </nav>
