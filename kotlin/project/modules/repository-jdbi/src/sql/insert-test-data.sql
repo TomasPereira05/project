@@ -153,35 +153,35 @@ INSERT INTO jagoz.users(
 -- ATHLETES (member_id refers to the rows inserted above, in order 3..7)
 -- =========================
 INSERT INTO jagoz.athlete (
-    member_id, nationality, niss, nif, numero_utente, bi, bi_expiration_date,
+    member_id, nationality, niss, numero_utente, bi, bi_expiration_date,
     school, school_year, school_class, last_club, season, team_category_id, active
 ) VALUES
       (
-          3, 'Portuguesa', '11122233301', '210000301', '300003001', 'CC30001', '2030-05-01',
+          3, 'Portuguesa', '11122233301', '300003001', 'CC30001', '2030-05-01',
           'Escola EB 2,3 Ericeira', '9.º ano', 'A', NULL, '2025/2026',
-          (SELECT team_category_id FROM jagoz.team_category WHERE code = 'INICIADOS'),
+          (SELECT team_category_id FROM jagoz.team_category WHERE code = 'INICIADOSC'),
           true
       ),
       (
-          4, 'Portuguesa', '11122233302', '210000302', '300003002', 'CC30002', '2031-08-15',
+          4, 'Portuguesa', '11122233302', '300003002', 'CC30002', '2031-08-15',
           'Escola Secundária de Mafra', '12.º ano', 'B', 'GD Mafra', '2025/2026',
           (SELECT team_category_id FROM jagoz.team_category WHERE code = 'JUNIORES'),
           true
       ),
       (
-          5, 'Portuguesa', '11122233303', '210000303', '300003003', 'CC30003', '2029-01-20',
+          5, 'Portuguesa', '11122233303', '300003003', 'CC30003', '2029-01-20',
           NULL, NULL, NULL, 'CF Os Belenenses', '2025/2026',
           (SELECT team_category_id FROM jagoz.team_category WHERE code = 'SENIORES'),
           true
       ),
       (
-          6, 'Portuguesa', '11122233304', '210000304', '300003004', 'CC30004', '2032-03-10',
+          6, 'Portuguesa', '11122233304', '300003004', 'CC30004', '2032-03-10',
           'Escola Básica da Ericeira', '5.º ano', 'A', NULL, '2025/2026',
           (SELECT team_category_id FROM jagoz.team_category WHERE code = 'BENJAMINS_10'),
           true
       ),
       (
-          7, 'Portuguesa', '11122233305', '210000305', '300003005', 'CC30005', '2028-11-05',
+          7, 'Portuguesa', '11122233305', '300003005', 'CC30005', '2028-11-05',
           NULL, NULL, NULL, NULL, '2025/2026',
           (SELECT team_category_id FROM jagoz.team_category WHERE code = 'VETERANOS'),
           true
@@ -191,11 +191,11 @@ INSERT INTO jagoz.athlete (
 -- GUARDIANS (apenas para atletas menores)
 -- =========================
 INSERT INTO jagoz.guardian (
-    athlete_id, member_id, name, kinship, email, phone, work, has_family_in_club
+    athlete_id, member_id, name, role, kinship, email, phone, professional_activity, contact_phone
 ) VALUES
     -- Tiago (athlete 1) -> pai
-    (1, NULL, 'Manuel Rocha', 'Pai', 'manuel.rocha@example.pt', '912000001',
-     'Engenheiro civil', false),
+    (1, NULL, 'Manuel Rocha', 'FATHER', NULL, 'manuel.rocha@example.pt', '912000001',
+     'Engenheiro civil', NULL),
     -- Sofia (athlete 4) -> mãe
-    (4, NULL, 'Helena Carvalho', 'Mãe', 'helena.carvalho@example.pt', '912000002',
-     'Professora', false);
+    (4, NULL, 'Helena Carvalho', 'MOTHER', NULL, 'helena.carvalho@example.pt', '912000002',
+     'Professora', NULL);
