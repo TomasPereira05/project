@@ -10,15 +10,17 @@ import pt.isel.jagoz.repository.UserRepository
 import pt.isel.jagoz.repository.jdbi.mappers.TokenMapper
 import pt.isel.jagoz.repository.jdbi.mappers.UserMapper
 
-class JdbiUserRepository(private val handle: Handle) : UserRepository {
-    override fun save(user: User): Long {
-        return handle.createUpdate(
-            """
+class JdbiUserRepository(
+    private val handle: Handle,
+) : UserRepository {
+    override fun save(user: User): Long =
+        handle
+            .createUpdate(
+                """
             INSERT INTO jagoz.users (email, username, password_validation, role, active_member_id)
             VALUES (:email, :username, :passwordValidation, CAST(:role AS jagoz.user_role), :activeMemberId)
             """,
-        )
-            .bind("email", user.email)
+            ).bind("email", user.email)
             .bind("username", user.username)
             .bind("passwordValidation", user.passwordValidation.validationInfo)
             .bind("role", user.role.name)
@@ -26,62 +28,63 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun updatePassword(
         userId: Long,
         newPassword: PasswordValidationInfo,
     ) {
-        handle.createUpdate("UPDATE jagoz.users SET password_validation = :pw WHERE user_id = :id")
+        handle
+            .createUpdate("UPDATE jagoz.users SET password_validation = :pw WHERE user_id = :id")
             .bind("pw", newPassword.validationInfo)
             .bind("id", userId)
             .execute()
     }
 
-    override fun findById(id: Long): User? {
-        return handle.createQuery("SELECT * FROM jagoz.users WHERE user_id = :id")
+    override fun findById(id: Long): User? =
+        handle
+            .createQuery("SELECT * FROM jagoz.users WHERE user_id = :id")
             .bind("id", id)
             .mapTo(User::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun findByUsername(username: String): User? {
-        return handle.createQuery("SELECT * FROM jagoz.users WHERE username = :username")
+    override fun findByUsername(username: String): User? =
+        handle
+            .createQuery("SELECT * FROM jagoz.users WHERE username = :username")
             .bind("username", username)
             .mapTo(User::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun findByEmail(email: String): User? {
-        return handle.createQuery("SELECT * FROM jagoz.users WHERE email = :email")
+    override fun findByEmail(email: String): User? =
+        handle
+            .createQuery("SELECT * FROM jagoz.users WHERE email = :email")
             .bind("email", email)
             .mapTo(User::class.java)
             .findOne()
             .orElse(null)
-    }
 
     override fun findPage(
         limit: Int,
         offset: Int,
-    ): List<User> {
-        return handle.createQuery("SELECT * FROM jagoz.users ORDER BY user_id ASC LIMIT :limit OFFSET :offset")
+    ): List<User> =
+        handle
+            .createQuery("SELECT * FROM jagoz.users ORDER BY user_id ASC LIMIT :limit OFFSET :offset")
             .bind("limit", limit)
             .bind("offset", offset)
             .mapTo(User::class.java)
             .list()
-    }
 
-    override fun countAll(): Long {
-        return handle.createQuery("SELECT COUNT(*) FROM jagoz.users")
+    override fun countAll(): Long =
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.users")
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun update(user: User) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE jagoz.users SET 
                 email = :email, 
                 username = :username, 
@@ -90,8 +93,7 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
                 active_member_id = :activeMemberId
             WHERE user_id = :id
             """,
-        )
-            .bind("id", user.userId)
+            ).bind("id", user.userId)
             .bind("email", user.email)
             .bind("username", user.username)
             .bind("passwordValidation", user.passwordValidation.validationInfo)
@@ -101,13 +103,13 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
     }
 
     override fun createToken(token: Token) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             INSERT INTO jagoz.user_token (token_validation, user_id, created_at, last_used_at)
             VALUES (:validation, :userId, :createdAt, :lastUsedAt)
             """,
-        )
-            .bind("validation", token.tokenValidationInfo.validationInfo)
+            ).bind("validation", token.tokenValidationInfo.validationInfo)
             .bind("userId", token.userId)
             .bind("createdAt", token.createdAt)
             .bind("lastUsedAt", token.lastUsedAt)
@@ -116,21 +118,20 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
 
     override fun getTokenByValidation(validation: TokenValidationInfo): Pair<User, Token>? {
         val userWithToken =
-            handle.createQuery(
-                """
+            handle
+                .createQuery(
+                    """
             SELECT u.*, t.token_validation, t.created_at, t.last_used_at 
             FROM jagoz.users u
             JOIN jagoz.user_token t ON u.user_id = t.user_id
             WHERE t.token_validation = :validation
             """,
-            )
-                .bind("validation", validation.validationInfo)
+                ).bind("validation", validation.validationInfo)
                 .map { rs, ctx ->
                     val user = UserMapper().map(rs, ctx)
                     val token = TokenMapper().map(rs, ctx)
                     Pair(user, token)
-                }
-                .findOne()
+                }.findOne()
 
         return userWithToken.orElse(null)
     }
@@ -139,15 +140,16 @@ class JdbiUserRepository(private val handle: Handle) : UserRepository {
         token: Token,
         now: Instant,
     ) {
-        handle.createUpdate("UPDATE jagoz.user_token SET last_used_at = :now WHERE token_validation = :validation")
+        handle
+            .createUpdate("UPDATE jagoz.user_token SET last_used_at = :now WHERE token_validation = :validation")
             .bind("now", now)
             .bind("validation", token.tokenValidationInfo.validationInfo)
             .execute()
     }
 
-    override fun removeTokenByValidation(validation: TokenValidationInfo): Int {
-        return handle.createUpdate("DELETE FROM jagoz.user_token WHERE token_validation = :validation")
+    override fun removeTokenByValidation(validation: TokenValidationInfo): Int =
+        handle
+            .createUpdate("DELETE FROM jagoz.user_token WHERE token_validation = :validation")
             .bind("validation", validation.validationInfo)
             .execute()
-    }
 }

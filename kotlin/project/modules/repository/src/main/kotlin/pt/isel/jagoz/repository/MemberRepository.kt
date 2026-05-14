@@ -9,7 +9,11 @@ interface MemberRepository {
 
     fun findById(id: Long): Member?
 
+    fun findByIds(ids: List<Long>): List<Member>
+
     fun findByEmail(email: String): Member?
+
+    fun findByMemberNumber(memberNumber: Int): Member?
 
     fun findAll(): List<Member>
 

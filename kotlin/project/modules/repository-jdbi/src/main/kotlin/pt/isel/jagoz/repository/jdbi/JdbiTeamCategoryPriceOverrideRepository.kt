@@ -4,50 +4,50 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.team.TeamCategoryPriceOverride
 import pt.isel.jagoz.repository.TeamCategoryPriceOverrideRepository
 
-class JdbiTeamCategoryPriceOverrideRepository(private val handle: Handle) : TeamCategoryPriceOverrideRepository {
+class JdbiTeamCategoryPriceOverrideRepository(
+    private val handle: Handle,
+) : TeamCategoryPriceOverrideRepository {
     override fun find(
         categoryId: Long,
         placementId: Long,
-    ): TeamCategoryPriceOverride? {
-        return handle.createQuery(
-            """
+    ): TeamCategoryPriceOverride? =
+        handle
+            .createQuery(
+                """
              SELECT team_category_id, placement_id, price
              FROM jagoz.team_category_price_override
              WHERE team_category_id = :categoryId
              AND placement_id = :placementId
              """,
-        )
-            .bind("categoryId", categoryId)
+            ).bind("categoryId", categoryId)
             .bind("placementId", placementId)
             .mapTo(TeamCategoryPriceOverride::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun findAll(): List<TeamCategoryPriceOverride> {
-        return handle.createQuery(
-            """
+    override fun findAll(): List<TeamCategoryPriceOverride> =
+        handle
+            .createQuery(
+                """
         SELECT team_category_id, placement_id, price
         FROM jagoz.team_category_price_override
         ORDER BY team_category_id, placement_id
         """,
-        )
-            .mapTo(TeamCategoryPriceOverride::class.java)
+            ).mapTo(TeamCategoryPriceOverride::class.java)
             .list()
-    }
 
     override fun save(
         categoryId: Long,
         placementId: Long,
         price: Int,
     ) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
         INSERT INTO jagoz.team_category_price_override (team_category_id, placement_id, price)
         VALUES (:categoryId, :placementId, :price)
         """,
-        )
-            .bind("categoryId", categoryId)
+            ).bind("categoryId", categoryId)
             .bind("placementId", placementId)
             .bind("price", price)
             .execute()
@@ -58,15 +58,15 @@ class JdbiTeamCategoryPriceOverrideRepository(private val handle: Handle) : Team
         placementId: Long,
         price: Int,
     ) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
         UPDATE jagoz.team_category_price_override
         SET price = :price
         WHERE team_category_id = :categoryId
           AND placement_id = :placementId
         """,
-        )
-            .bind("categoryId", categoryId)
+            ).bind("categoryId", categoryId)
             .bind("placementId", placementId)
             .bind("price", price)
             .execute()
@@ -76,14 +76,14 @@ class JdbiTeamCategoryPriceOverrideRepository(private val handle: Handle) : Team
         categoryId: Long,
         placementId: Long,
     ) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
         DELETE FROM jagoz.team_category_price_override
         WHERE team_category_id = :categoryId
           AND placement_id = :placementId
         """,
-        )
-            .bind("categoryId", categoryId)
+            ).bind("categoryId", categoryId)
             .bind("placementId", placementId)
             .execute()
     }

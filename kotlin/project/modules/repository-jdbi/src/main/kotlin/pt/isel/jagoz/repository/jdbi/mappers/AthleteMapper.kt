@@ -7,14 +7,17 @@ import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.team.TeamCategory
 import java.sql.ResultSet
 
+/**
+ * Mapper para [Athlete]. Não carrega [Athlete.guardians] — fica `emptyList()`.
+ * Quem precisa de detalhe completo (controllers admin) usa
+ * [pt.isel.jagoz.repository.AthleteRepository.findByIdWithDetail] que faz uma
+ * segunda query para carregar os guardians.
+ */
 class AthleteMapper : RowMapper<Athlete> {
     override fun map(
         rs: ResultSet,
         ctx: StatementContext,
     ): Athlete {
-        // These fields exist in the domain but are not yet persisted in the current schema.
-        // To keep the domain strict (non-null), we provide explicit placeholders.
-        val notAvailable = "N/A"
         val teamCategory =
             TeamCategory(
                 teamId = rs.getLong("team_category_id"),
@@ -29,16 +32,7 @@ class AthleteMapper : RowMapper<Athlete> {
             athleteId = rs.getLong("athlete_id"),
             memberId = rs.getLong("member_id"),
             nationality = rs.getString("nationality"),
-            birthplace = notAvailable,
-            birthdate = LocalDate.parse(rs.getString("birth_date")),
-            email = rs.getString("email"),
-            phone = rs.getString("phone"),
-            postalCode = rs.getString("postal_code"),
-            address = rs.getString("address"),
-            city = rs.getString("city"),
-            state = notAvailable,
             niss = rs.getString("niss"),
-            nif = rs.getString("nif"),
             numeroUtente = rs.getString("numero_utente"),
             bi = rs.getString("bi"),
             biExpirationDate = LocalDate.parse(rs.getString("bi_expiration_date")),
@@ -48,10 +42,13 @@ class AthleteMapper : RowMapper<Athlete> {
             lastClub = rs.getString("last_club"),
             season = rs.getString("season"),
             teamCategory = teamCategory,
+            jerseyNumber = (rs.getObject("jersey_number") as? Number)?.toInt(),
+            position = rs.getString("position"),
+            photoUrl = rs.getString("photo_url"),
+            hasFamilyInClub = rs.getBoolean("has_family_in_club"),
+            schoolCertificationAccepted = rs.getBoolean("school_certification_accepted"),
             active = rs.getBoolean("active"),
-            privacyAccepted = rs.getBoolean("privacy_accepted"),
-            comsAccepted = rs.getBoolean("coms_accepted"),
-            schoolCertificationAccepted = false,
+            guardians = emptyList(),
         )
     }
 }

@@ -15,6 +15,7 @@ data class Member(
     val memberNumber: Int,
     val completeName: String,
     val birthDate: LocalDate,
+    val birthplace: String?,
     val email: String,
     val phone: String,
     val homePhone: String?,

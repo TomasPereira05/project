@@ -4,68 +4,70 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.repository.SponsorRepository
 
-class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
-    override fun findById(id: Long): Sponsor? {
-        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE sponsor_id = :id")
+class JdbiSponsorRepository(
+    private val handle: Handle,
+) : SponsorRepository {
+    override fun findById(id: Long): Sponsor? =
+        handle
+            .createQuery("SELECT * FROM jagoz.sponsor WHERE sponsor_id = :id")
             .bind("id", id)
             .mapTo(Sponsor::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun findByNif(nif: String): Sponsor? {
-        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE nif = :nif")
+    override fun findByNif(nif: String): Sponsor? =
+        handle
+            .createQuery("SELECT * FROM jagoz.sponsor WHERE nif = :nif")
             .bind("nif", nif)
             .mapTo(Sponsor::class.java)
             .findOne()
             .orElse(null)
-    }
 
-    override fun findByEmail(email: String): List<Sponsor> {
-        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE lower(email) = lower(:email) ORDER BY sponsor_id DESC")
+    override fun findByEmail(email: String): List<Sponsor> =
+        handle
+            .createQuery("SELECT * FROM jagoz.sponsor WHERE lower(email) = lower(:email) ORDER BY sponsor_id DESC")
             .bind("email", email)
             .mapTo(Sponsor::class.java)
             .list()
-    }
 
-    override fun findByUserId(userId: Long): List<Sponsor> {
-        return handle.createQuery("SELECT * FROM jagoz.sponsor WHERE user_id = :userId ORDER BY sponsor_id DESC")
+    override fun findByUserId(userId: Long): List<Sponsor> =
+        handle
+            .createQuery("SELECT * FROM jagoz.sponsor WHERE user_id = :userId ORDER BY sponsor_id DESC")
             .bind("userId", userId)
             .mapTo(Sponsor::class.java)
             .list()
-    }
 
-    override fun findAll(): List<Sponsor> {
-        return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC")
+    override fun findAll(): List<Sponsor> =
+        handle
+            .createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC")
             .mapTo(Sponsor::class.java)
             .list()
-    }
 
     override fun findPage(
         limit: Int,
         offset: Int,
-    ): List<Sponsor> {
-        return handle.createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC LIMIT :limit OFFSET :offset")
+    ): List<Sponsor> =
+        handle
+            .createQuery("SELECT * FROM jagoz.sponsor ORDER BY name ASC LIMIT :limit OFFSET :offset")
             .bind("limit", limit)
             .bind("offset", offset)
             .mapTo(Sponsor::class.java)
             .list()
-    }
 
-    override fun countAll(): Long {
-        return handle.createQuery("SELECT COUNT(*) FROM jagoz.sponsor")
+    override fun countAll(): Long =
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.sponsor")
             .mapTo(Long::class.java)
             .one()
-    }
 
-    override fun save(sponsor: Sponsor): Long {
-        return handle.createUpdate(
-            """
+    override fun save(sponsor: Sponsor): Long =
+        handle
+            .createUpdate(
+                """
             INSERT INTO jagoz.sponsor (user_id, name, email, phone, nif)
             VALUES (:userId, :name, :email, :phone, :nif)
             """,
-        )
-            .bind("userId", sponsor.userId)
+            ).bind("userId", sponsor.userId)
             .bind("name", sponsor.name)
             .bind("email", sponsor.email)
             .bind("phone", sponsor.phone)
@@ -73,7 +75,6 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun updateContact(
         id: Long,
@@ -82,8 +83,9 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
         phone: String,
         nif: String,
     ) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE jagoz.sponsor
             SET name = :name,
                 email = :email,
@@ -91,8 +93,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
                 nif = :nif
             WHERE sponsor_id = :id
             """,
-        )
-            .bind("id", id)
+            ).bind("id", id)
             .bind("name", name)
             .bind("email", email)
             .bind("phone", phone)
@@ -104,41 +105,43 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
         sponsorId: Long,
         userId: Long?,
     ) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE jagoz.sponsor
             SET user_id = :userId
             WHERE sponsor_id = :sponsorId
             """,
-        )
-            .bind("sponsorId", sponsorId)
+            ).bind("sponsorId", sponsorId)
             .bind("userId", userId)
             .execute()
     }
 
     override fun deleteById(id: Long) {
-        handle.createUpdate("DELETE FROM jagoz.sponsor WHERE sponsor_id = :id")
+        handle
+            .createUpdate("DELETE FROM jagoz.sponsor WHERE sponsor_id = :id")
             .bind("id", id)
             .execute()
     }
 
-    override fun existsById(id: Long): Boolean {
-        return handle.createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE sponsor_id = :id)")
+    override fun existsById(id: Long): Boolean =
+        handle
+            .createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE sponsor_id = :id)")
             .bind("id", id)
             .mapTo(Boolean::class.java)
             .one()
-    }
 
-    override fun existsByNif(nif: String): Boolean {
-        return handle.createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE nif = :nif)")
+    override fun existsByNif(nif: String): Boolean =
+        handle
+            .createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.sponsor WHERE nif = :nif)")
             .bind("nif", nif)
             .mapTo(Boolean::class.java)
             .one()
-    }
 
     override fun update(sponsor: Sponsor) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE jagoz.sponsor SET 
                 name = :name, 
                 email = :email, 
@@ -147,8 +150,7 @@ class JdbiSponsorRepository(private val handle: Handle) : SponsorRepository {
                 user_id = :userId
             WHERE sponsor_id = :id
             """,
-        )
-            .bind("id", sponsor.sponsorId)
+            ).bind("id", sponsor.sponsorId)
             .bind("name", sponsor.name)
             .bind("email", sponsor.email)
             .bind("phone", sponsor.phone)

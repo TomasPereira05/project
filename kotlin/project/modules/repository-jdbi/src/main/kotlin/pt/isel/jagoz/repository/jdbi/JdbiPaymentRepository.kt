@@ -4,22 +4,24 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.payment.Payment
 import pt.isel.jagoz.repository.PaymentRepository
 
-class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
-    override fun findByChargeId(chargeId: Long): List<Payment> {
-        return handle.createQuery("SELECT * FROM jagoz.payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
+class JdbiPaymentRepository(
+    private val handle: Handle,
+) : PaymentRepository {
+    override fun findByChargeId(chargeId: Long): List<Payment> =
+        handle
+            .createQuery("SELECT * FROM jagoz.payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
             .bind("chargeId", chargeId)
             .mapTo(Payment::class.java)
             .list()
-    }
 
-    override fun save(payment: Payment): Long {
-        return handle.createUpdate(
-            """
+    override fun save(payment: Payment): Long =
+        handle
+            .createUpdate(
+                """
             INSERT INTO jagoz.payment (charge_id, amount, provider, provider_ref, status, created_at, confirmed_at)
             VALUES (:chargeId, :amount, :provider, :providerRef, CAST(:status AS jagoz.payment_status), :createdAt, :confirmedAt)
             """,
-        )
-            .bind("chargeId", payment.chargeId)
+            ).bind("chargeId", payment.chargeId)
             .bind("amount", payment.amount)
             .bind("provider", payment.provider)
             .bind("providerRef", payment.providerRef)
@@ -29,11 +31,11 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
-    }
 
     override fun update(payment: Payment) {
-        handle.createUpdate(
-            """
+        handle
+            .createUpdate(
+                """
             UPDATE jagoz.payment SET 
                 charge_id = :chargeId,
                 amount = :amount,
@@ -44,8 +46,7 @@ class JdbiPaymentRepository(private val handle: Handle) : PaymentRepository {
                 confirmed_at = :confirmedAt
             WHERE payment_id = :id
             """,
-        )
-            .bind("id", payment.paymentId)
+            ).bind("id", payment.paymentId)
             .bind("chargeId", payment.chargeId)
             .bind("amount", payment.amount)
             .bind("provider", payment.provider)

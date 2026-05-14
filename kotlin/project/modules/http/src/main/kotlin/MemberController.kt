@@ -57,7 +57,7 @@ class MemberController(
 
     @GetMapping(Uris.Members.GET_ACTIVE_MEMBERS)
     fun getAllActiveMembers(): ResponseEntity<List<MemberOutput>> {
-        val members = memberService.getAllActiveMembers().map{it.tooutput()}
+        val members = memberService.getAllActiveMembers().map { it.tooutput() }
         return ResponseEntity.ok(members)
     }
 

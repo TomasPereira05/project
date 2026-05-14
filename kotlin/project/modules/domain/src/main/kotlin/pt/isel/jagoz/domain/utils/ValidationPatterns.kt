@@ -22,6 +22,6 @@ object ValidationPatterns {
     /** Regular expression for Portuguese health service number - 9 digits. */
     val NUMEROUTENTE = Regex("^\\d{9}$")
 
-    /** Regular expression for Portuguese BI (Identity Card) - 8 digits. */
-    val BI = Regex("^\\d{8}$")
+    /** Regular expression for BI / CC / Passport - exactly 8 alphanumeric characters. */
+    val BI = Regex("^[A-Za-z0-9]{8}$")
 }

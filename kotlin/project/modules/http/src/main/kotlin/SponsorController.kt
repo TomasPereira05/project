@@ -60,17 +60,18 @@ class SponsorController(
         @PathVariable sponsorId: Long,
         @RequestBody sponsor: Sponsor,
     ): ResponseEntity<*> =
-        sponsorService.updateSponsor(
-            authenticatedUser = authenticatedUser,
-            sponsorId = sponsorId,
-            name = sponsor.name,
-            email = sponsor.email,
-            phone = sponsor.phone,
-            nif = sponsor.nif,
-        ).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
+        sponsorService
+            .updateSponsor(
+                authenticatedUser = authenticatedUser,
+                sponsorId = sponsorId,
+                name = sponsor.name,
+                email = sponsor.email,
+                phone = sponsor.phone,
+                nif = sponsor.nif,
+            ).handle(
+                onFailure = { handleSponsorError(it) },
+                onSuccess = { ResponseEntity.ok(it) },
+            )
 
     @PutMapping(Uris.Sponsors.ASSIGN_USER)
     fun assignUserToSponsor(
@@ -96,7 +97,12 @@ class SponsorController(
     private fun handleSponsorError(error: SponsorError): ResponseEntity<Any> =
         when (error) {
             is SponsorError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-            is SponsorError.InvalidTransition -> Problem.InvalidTransition(error.from.toString(), error.attempted).response(HttpStatus.BAD_REQUEST)
+            is SponsorError.InvalidTransition ->
+                Problem
+                    .InvalidTransition(
+                        error.from.toString(),
+                        error.attempted,
+                    ).response(HttpStatus.BAD_REQUEST)
             is SponsorError.DomainError ->
                 when {
                     error.message.contains("not authorized", ignoreCase = true) ->

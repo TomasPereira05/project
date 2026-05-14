@@ -16,9 +16,13 @@ import pt.isel.jagoz.domain.utils.success
  * Domain errors for ticket operations.
  */
 sealed class TicketError {
-    data class InvalidOperation(val message: String) : TicketError()
+    data class InvalidOperation(
+        val message: String,
+    ) : TicketError()
 
-    data class Validation(val message: String) : TicketError()
+    data class Validation(
+        val message: String,
+    ) : TicketError()
 }
 
 /**
@@ -50,12 +54,13 @@ class EventDomain {
     fun validateTicketForPurchase(ticket: Ticket): Either<ValidationError, Ticket> {
         ValidationUtils.requireNotBlank(ticket.buyerName, "buyerName")?.let { return failure(it) }
         ValidationUtils.requireNotBlank(ticket.buyerEmail, "buyerEmail")?.let { return failure(it) }
-        ValidationUtils.requireRegex(
-            ticket.buyerEmail,
-            ValidationPatterns.EMAIL,
-            "buyerEmail",
-            "must be a valid email",
-        )?.let { return failure(it) }
+        ValidationUtils
+            .requireRegex(
+                ticket.buyerEmail,
+                ValidationPatterns.EMAIL,
+                "buyerEmail",
+                "must be a valid email",
+            )?.let { return failure(it) }
         ValidationUtils.requireCondition(ticket.price >= 0.0, "price", "must be non-negative")?.let { return failure(it) }
         return success(ticket)
     }

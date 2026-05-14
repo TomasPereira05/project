@@ -38,7 +38,9 @@
       "profile": "Profile"
     },
     "teams": {
-      "becomeAthlete": "Become an athlete"
+      "manage": "Athlete management",
+      "becomeAthlete": "Become an athlete",
+      "settings": "Settings"
     }
   },
   "hero": {

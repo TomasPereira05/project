@@ -38,7 +38,9 @@
       "profile": "Perfil"
     },
     "teams": {
-      "becomeAthlete": "Tornar-se atleta"
+      "manage": "Gestão de Atletas",
+      "becomeAthlete": "Tornar-se atleta",
+      "settings": "Definições"
     }
   },
   "hero": {

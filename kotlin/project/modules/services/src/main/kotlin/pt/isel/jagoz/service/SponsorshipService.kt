@@ -1,10 +1,10 @@
 package pt.isel.jagoz.service
 
 import jakarta.inject.Named
+import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.SponsorType
-import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.canManageBackoffice
@@ -71,7 +71,10 @@ class SponsorshipService(
                                 return@run failure(SponsorError.ValidationError("Sponsor is already associated with another account"))
                             }
 
-                            if (authenticatedUser.canManageBackoffice() && userIdToAssociate != null && existingSponsor.userId != userIdToAssociate) {
+                            if (authenticatedUser.canManageBackoffice() &&
+                                userIdToAssociate != null &&
+                                existingSponsor.userId != userIdToAssociate
+                            ) {
                                 transaction.sponsorRepository.updateUserId(existingSponsor.sponsorId, userIdToAssociate)
                             } else if (userIdToAssociate != null && existingSponsor.userId == null) {
                                 transaction.sponsorRepository.updateUserId(existingSponsor.sponsorId, userIdToAssociate)
@@ -106,8 +109,9 @@ class SponsorshipService(
                     is Either.Left -> validated
                     is Either.Right -> {
                         if (validated.value.type == SponsorType.PUB) {
-                            val pubOptionId = validated.value.pubOptionId
-                                ?: return failure(SponsorError.ValidationError("pubOptionId required for PUB"))
+                            val pubOptionId =
+                                validated.value.pubOptionId
+                                    ?: return failure(SponsorError.ValidationError("pubOptionId required for PUB"))
                             if (!transaction.pubOptionRepository.reserve(pubOptionId)) {
                                 return failure(SponsorError.DomainError("No free spaces for pub option $pubOptionId"))
                             }
@@ -202,7 +206,8 @@ class SponsorshipService(
             }
 
             val sponsors =
-                transaction.sponsorRepository.findByUserId(authenticatedUser.userId)
+                transaction.sponsorRepository
+                    .findByUserId(authenticatedUser.userId)
                     .ifEmpty { transaction.sponsorRepository.findByEmail(authenticatedUser.email) }
             val sponsorships = sponsors.flatMap { transaction.sponsorshipRepository.findBySponsorId(it.sponsorId) }
 
@@ -227,7 +232,8 @@ class SponsorshipService(
             }
 
             val sponsors =
-                transaction.sponsorRepository.findByUserId(authenticatedUser.userId)
+                transaction.sponsorRepository
+                    .findByUserId(authenticatedUser.userId)
                     .ifEmpty { transaction.sponsorRepository.findByEmail(authenticatedUser.email) }
             val sponsorships =
                 sponsors
@@ -364,9 +370,11 @@ class SponsorshipService(
 
                 val price =
                     transaction.teamCategoryPriceOverrideRepository
-                        .find(teamCategoryId, placementId)?.price
+                        .find(teamCategoryId, placementId)
+                        ?.price
                         ?: transaction.teamGroupPriceRepository
-                            .find(groupId, placementId)?.price
+                            .find(groupId, placementId)
+                            ?.price
                         ?: return failure(
                             SponsorError.DomainError(
                                 "No price configured for group $groupId or category $teamCategoryId and placement $placementId",
@@ -413,6 +421,5 @@ class SponsorshipService(
     private fun canAccessSponsor(
         authenticatedUser: AuthenticatedUser,
         sponsor: Sponsor,
-    ): Boolean =
-        sponsor.userId == authenticatedUser.userId || sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
+    ): Boolean = sponsor.userId == authenticatedUser.userId || sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
 }

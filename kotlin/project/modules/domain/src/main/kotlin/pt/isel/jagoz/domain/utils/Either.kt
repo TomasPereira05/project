@@ -13,14 +13,18 @@ sealed class Either<out L, out R> {
      *
      * @property value The value of type [L].
      */
-    data class Left<out L>(val value: L) : Either<L, Nothing>()
+    data class Left<out L>(
+        val value: L,
+    ) : Either<L, Nothing>()
 
     /**
      * Represents the Right side of [Either] class which by convention is a "Success".
      *
      * @property value The value of type [R].
      */
-    data class Right<out R>(val value: R) : Either<Nothing, R>()
+    data class Right<out R>(
+        val value: R,
+    ) : Either<Nothing, R>()
 }
 
 // Functions for when using Either to represent success or failure

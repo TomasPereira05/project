@@ -17,19 +17,26 @@ sealed class SponsorError {
      * @param from the current [SponsorshipStatus]
      * @param attempted a short description of the attempted operation
      */
-    data class InvalidTransition(val from: SponsorshipStatus, val attempted: String) : SponsorError()
+    data class InvalidTransition(
+        val from: SponsorshipStatus,
+        val attempted: String,
+    ) : SponsorError()
 
     /**
      * Validation failure (e.g. invalid input).
      * @param message human-readable message describing the validation problem
      */
-    data class ValidationError(val message: String) : SponsorError()
+    data class ValidationError(
+        val message: String,
+    ) : SponsorError()
 
     /**
      * Generic domain error.
      * @param message description of the domain error
      */
-    data class DomainError(val message: String) : SponsorError()
+    data class DomainError(
+        val message: String,
+    ) : SponsorError()
 }
 
 /**
@@ -130,11 +137,12 @@ class SponsorDomain {
     private fun validateSponsorship(s: Sponsorship): ValidationError? {
         ValidationUtils.requireNotBlank(s.season, "season")?.let { return it }
 
-        ValidationUtils.requireCondition(
-            s.price >= 0,
-            "price",
-            "cannot be negative",
-        )?.let { return it }
+        ValidationUtils
+            .requireCondition(
+                s.price >= 0,
+                "price",
+                "cannot be negative",
+            )?.let { return it }
 
         return when (s.type) {
             SponsorType.PUB -> {

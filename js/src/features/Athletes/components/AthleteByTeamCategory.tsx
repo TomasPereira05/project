@@ -2,38 +2,55 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ShieldAlert } from "lucide-react";
 import {
-  fetchActiveAthletes,
-  isTeamCategory,
-  labelForCategory,
+  fetchAllTeamCategories,
+  listByCategory,
   type Athlete,
-  type TeamCategory,
+  type TeamCatalogCategory,
 } from "..";
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
+import { getInitials } from "../../../shared/utils";
 
 export default function AthleteByTeamCategory() {
   const { teamCategory } = useParams();
   const navigate = useNavigate();
+  const [category, setCategory] = useState<TeamCatalogCategory | null>(null);
+  const [categoryUnknown, setCategoryUnknown] = useState(false);
   const [athletes, setAthletes] = useState<Athlete[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const category = useMemo(() => {
-    if (!teamCategory) return null;
-    return isTeamCategory(teamCategory) ? (teamCategory as TeamCategory) : null;
-  }, [teamCategory]);
-
   useEffect(() => {
     let ignore = false;
 
-    async function loadAthletes() {
+    async function load() {
       setIsLoading(true);
       setErrorMessage("");
+      setCategoryUnknown(false);
+
+      if (!teamCategory) {
+        if (!ignore) {
+          setCategoryUnknown(true);
+          setIsLoading(false);
+        }
+        return;
+      }
 
       try {
-        const response = await fetchActiveAthletes();
+        const allCategories = await fetchAllTeamCategories();
+        const matched = allCategories.find((c) => c.code === teamCategory);
+        if (!matched) {
+          if (!ignore) {
+            setCategoryUnknown(true);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        const response = await listByCategory(matched.teamId);
         if (!ignore) {
+          setCategory(matched);
           setAthletes(response);
         }
       } catch {
@@ -47,17 +64,17 @@ export default function AthleteByTeamCategory() {
       }
     }
 
-    loadAthletes();
+    load();
 
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [teamCategory]);
 
-  const filtered = useMemo(() => {
-    if (!category) return [];
-    return athletes.filter((athlete) => athlete.teamCategory === category);
-  }, [athletes, category]);
+  const heading = useMemo(() => {
+    if (category) return `Atletas - ${category.label}`;
+    return "Categoria desconhecida";
+  }, [category]);
 
   return (
     <>
@@ -73,11 +90,7 @@ export default function AthleteByTeamCategory() {
           <div className="member-card-padded">
             <div className="member-card-header">
               <div>
-                <h2 className="member-title">
-                  {category
-                    ? `Atletas - ${labelForCategory(category)}`
-                    : "Categoria desconhecida"}
-                </h2>
+                <h2 className="member-title">{heading}</h2>
                 <p className="member-desc">Lista filtrada por categoria de equipa.</p>
               </div>
 
@@ -87,7 +100,7 @@ export default function AthleteByTeamCategory() {
               </button>
             </div>
 
-            {!category && (
+            {categoryUnknown && (
               <div className="member-alert-error">
                 <ShieldAlert size={20} className="text-red-500" />
                 <p className="text-sm font-medium">A categoria indicada não existe.</p>
@@ -110,37 +123,50 @@ export default function AthleteByTeamCategory() {
 
             {!isLoading && !errorMessage && category && (
               <>
-                {filtered.length === 0 ? (
+                {athletes.length === 0 ? (
                   <div className="border border-dashed border-border rounded-lg p-8 text-center text-text-secondary">
                     Sem atletas ativos nesta categoria.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filtered.map((athlete) => (
+                    {athletes.map((athlete) => (
                       <article
-                        key={athlete.athleteId}
-                        className="bg-white border border-border rounded-xl p-5 flex flex-col gap-3 hover:shadow-md transition-shadow"
+                        key={athlete.id}
+                        className="bg-white border border-border rounded-xl overflow-hidden flex hover:shadow-md transition-shadow"
                       >
-                        <div>
-                          <strong className="font-heading text-lg text-text-primary">
-                            Atleta #{athlete.athleteId}
-                          </strong>
-                          <p className="text-sm text-text-secondary">
-                            Sócio #{athlete.memberId}
-                          </p>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="member-category-badge">
-                            {labelForCategory(athlete.teamCategory)}
-                          </span>
-                          <span className="member-category-badge">{athlete.city}</span>
-                        </div>
                         <Link
-                          to={`/athletes/${athlete.athleteId}`}
-                          className="member-action-btn self-start"
+                          to={`/athletes/${athlete.id}`}
+                          aria-label={`Ver ficha de ${athlete.nome}`}
+                          className="w-1/3 aspect-square bg-gray-100 flex items-center justify-center text-2xl font-heading font-bold text-text-secondary hover:bg-gray-200 hover:text-primary transition-colors"
                         >
-                          Ver ficha
+                          {athlete.fotoUrl ? (
+                            <img
+                              src={athlete.fotoUrl}
+                              alt={athlete.nome}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span>{getInitials(athlete.nome)}</span>
+                          )}
                         </Link>
+                        <div className="flex-1 p-4 flex flex-col justify-between gap-3 min-w-0">
+                          <div className="min-w-0">
+                            <strong className="font-heading text-base text-text-primary block truncate">
+                              {athlete.nome}
+                            </strong>
+                            <p className="text-sm text-text-secondary">
+                              Nº {athlete.numero ?? "—"}
+                            </p>
+                          </div>
+                          <div className="space-y-0.5 text-sm text-text-secondary">
+                            <div>{athlete.posicao ?? "Posição por atribuir"}</div>
+                            <div>
+                              {athlete.idade !== null ? `${athlete.idade} anos` : "Idade —"}
+                              {" · "}
+                              {athlete.nacionalidade}
+                            </div>
+                          </div>
+                        </div>
                       </article>
                     ))}
                   </div>

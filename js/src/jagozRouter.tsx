@@ -82,22 +82,22 @@ const router = createBrowserRouter([
       },
       {
         path: ":memberId",
-        element: 
-        <Require allowAdmin allowMember>
+        element:
+        <Require allowAdmin allowSecretaria allowMember>
           <MemberPage />
         </Require>,
       },
       {
         path: ":memberId/edit",
-        element: 
-        <Require allowAdmin allowMember>
+        element:
+        <Require allowAdmin allowSecretaria allowMember>
           <UpdateMember />
         </Require>,
       },
       {
         path: "list",
-        element: 
-        <Require allowAdmin>
+        element:
+        <Require allowAdmin allowSecretaria>
           <Members />
         </Require>,
       },
@@ -105,7 +105,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/athletes",
-    element: <Athletes />,
+    element: (
+      <AuthRequire>
+        <Require allowAdmin allowSecretaria>
+          <Athletes />
+        </Require>
+      </AuthRequire>
+    ),
   },
   {
     path: "/athletes/register",
@@ -119,7 +125,7 @@ const router = createBrowserRouter([
     path: "/athletes/settings",
     element: (
       <AuthRequire>
-        <Require allowAdmin>
+        <Require allowAdmin allowSecretaria>
           <TeamSettings />
         </Require>
       </AuthRequire>
@@ -135,7 +141,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/athletes/:athleteId/edit",
-    element: <UpdateAthlete />,
+    element: (
+      <AuthRequire>
+        <Require allowAdmin allowSecretaria>
+          <UpdateAthlete />
+        </Require>
+      </AuthRequire>
+    ),
   },
   {
     path: "/sponsors",
@@ -176,7 +188,7 @@ const router = createBrowserRouter([
         path: "settings",
         element: (
           <AuthRequire>
-            <Require allowAdmin>
+            <Require allowAdmin allowSecretaria>
               <SponsorSettings />
             </Require>
           </AuthRequire>
@@ -186,7 +198,7 @@ const router = createBrowserRouter([
         path: "approvals",
         element: (
           <AuthRequire>
-            <Require allowAdmin>
+            <Require allowAdmin allowSecretaria>
               <SponsorApprovals />
             </Require>
           </AuthRequire>

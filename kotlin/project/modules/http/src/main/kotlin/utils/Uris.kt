@@ -25,16 +25,29 @@ object Uris {
     }
 
     object Athletes {
-        const val GET_BY_ID = "$PREFIX/athletes/{athleteId}"
-        const val GET_BY_MEMBER_ID = "$PREFIX/athletes/member/{memberId}"
-        const val GET_ACTIVE_ATHLETES = "$PREFIX/athletes/active"
+        // Públicos (anónimo ok)
+        const val LIST_BY_CATEGORY = "$PREFIX/teams/{teamCategoryId}/athletes"
+        const val GET_PUBLIC_DETAIL = "$PREFIX/athletes/{athleteId}"
+
+        // Autenticado — devolve detalhe completo do atleta do próprio user
+        const val GET_ME = "$PREFIX/athletes/me"
+
+        // Autenticado (qualquer role)
         const val CREATE_ATHLETE = "$PREFIX/athletes"
+
+        // SECRETARIA / ADMIN
+        const val GET_ALL_ADMIN = "$PREFIX/athletes"
+        const val GET_ADMIN_DETAIL = "$PREFIX/athletes/{athleteId}/admin"
+        const val GET_BY_MEMBER_ID = "$PREFIX/athletes/member/{memberId}"
+        const val UPDATE_ATHLETE = "$PREFIX/athletes/{athleteId}"
         const val CHANGE_TEAM_CATEGORY = "$PREFIX/athletes/{athleteId}/team-category"
         const val UPDATE_SCHOOL_INFO = "$PREFIX/athletes/{athleteId}/school-info"
-        const val DEACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}"
+        const val DEACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}/deactivate"
         const val REACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}/reactivate"
+        const val APPROVE_ATHLETE = "$PREFIX/athletes/{athleteId}/approve"
+        const val REJECT_ATHLETE = "$PREFIX/athletes/{athleteId}/reject"
 
-        fun byId(athleteId: Long): URI = UriTemplate(GET_BY_ID).expand(athleteId)
+        fun byId(athleteId: Long): URI = UriTemplate(GET_PUBLIC_DETAIL).expand(athleteId)
     }
 
     object Users {

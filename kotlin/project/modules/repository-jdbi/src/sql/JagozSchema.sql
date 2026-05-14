@@ -7,6 +7,7 @@ drop type if exists user_role cascade;
 drop type if exists charge_type cascade;
 drop type if exists charge_status cascade;
 drop type if exists payment_status cascade;
+drop type if exists guardian_role cascade;
 
 create schema if not exists jagoz;
 set search_path to jagoz;
@@ -18,12 +19,15 @@ CREATE TYPE sponsor_type AS ENUM ('PUB', 'TEAM', 'OTHER');
 
 CREATE TYPE sponsorship_status AS ENUM ('SUBMETIDO', 'APROVADO', 'PAGO', 'ATIVO', 'CANCELADO');
 
+CREATE TYPE guardian_role AS ENUM ('FATHER', 'MOTHER', 'LEGAL_GUARDIAN');
+
 CREATE TABLE member (
     member_id        SERIAL PRIMARY KEY,
     user_id          INT UNIQUE,
     member_number    INT UNIQUE,
     complete_name    VARCHAR(255) NOT NULL,
     birth_date       DATE NOT NULL,
+    birthplace       VARCHAR(255),
     email            VARCHAR(255) NOT NULL,
     phone            VARCHAR(20) NOT NULL,
     home_phone       VARCHAR(20),
@@ -64,7 +68,6 @@ CREATE TABLE athlete (
     member_id        INT NOT NULL UNIQUE REFERENCES member(member_id) ON DELETE CASCADE,
     nationality      VARCHAR(100) NOT NULL,
     niss             VARCHAR(50) NOT NULL UNIQUE,
-    nif              VARCHAR(50) NOT NULL UNIQUE,
     numero_utente    VARCHAR(50) NOT NULL UNIQUE,
     bi               VARCHAR(50) NOT NULL UNIQUE,
     bi_expiration_date DATE NOT NULL,
@@ -74,6 +77,11 @@ CREATE TABLE athlete (
     last_club        VARCHAR(255),
     season           VARCHAR(50),
     team_category_id INT REFERENCES team_category(team_category_id),
+    jersey_number    INT,
+    position         VARCHAR(50),
+    photo_url        VARCHAR(500),
+    has_family_in_club BOOLEAN NOT NULL DEFAULT false,
+    school_certification_accepted BOOLEAN NOT NULL DEFAULT false,
     active           BOOLEAN NOT NULL DEFAULT true
 );
 
@@ -82,11 +90,24 @@ CREATE TABLE guardian (
     athlete_id  INT NOT NULL REFERENCES athlete(athlete_id) ON DELETE CASCADE,
     member_id   INT REFERENCES member(member_id) ON DELETE SET NULL,
     name        VARCHAR(255) NOT NULL,
-    kinship     VARCHAR(50) NOT NULL,
+    role        guardian_role NOT NULL,
+    kinship     VARCHAR(50),
     email       VARCHAR(255) NOT NULL,
     phone       VARCHAR(20) NOT NULL,
-    work        VARCHAR(255),
-    has_family_in_club BOOLEAN NOT NULL
+    professional_activity VARCHAR(255),
+    contact_phone VARCHAR(20),
+
+    CONSTRAINT chk_guardian_role_fields CHECK (
+        (role = 'LEGAL_GUARDIAN'
+            AND kinship IS NOT NULL
+            AND contact_phone IS NOT NULL
+            )
+            OR
+        (role IN ('FATHER', 'MOTHER')
+            AND kinship IS NULL
+            AND contact_phone IS NULL
+            )
+        )
 );
 
 CREATE TABLE other_sport (

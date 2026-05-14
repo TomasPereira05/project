@@ -19,7 +19,9 @@ import pt.isel.jagoz.repository.TicketRepository
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.UserRepository
 
-class JdbiTransaction(private val handle: Handle) : Transaction {
+class JdbiTransaction(
+    private val handle: Handle,
+) : Transaction {
     override val memberRepository: MemberRepository = JdbiMemberRepository(handle)
     override val athleteRepository: AthleteRepository = JdbiAthleteRepository(handle)
     override val userRepository: UserRepository = JdbiUserRepository(handle)

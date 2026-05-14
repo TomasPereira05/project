@@ -62,10 +62,8 @@ export default function Members() {
         const response = await fetchMembers(page, PAGE_SIZE);
 
         if (!ignore) {
-          const sorted = [...response.items].sort(
-            (first, second) => first.memberNumber - second.memberNumber,
-          );
-          setMembers(sorted);
+          // Ordem definida no backend (pendentes primeiro, depois mais recentes).
+          setMembers(response.items);
           setTotalMembers(response.total);
           setTotalPages(response.totalPages);
         }

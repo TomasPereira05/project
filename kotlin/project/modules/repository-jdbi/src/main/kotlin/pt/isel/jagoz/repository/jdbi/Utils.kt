@@ -5,6 +5,7 @@ import org.jdbi.v3.core.Jdbi
 import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin
 import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.Guardian
 import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.domain.event.Ticket
 import pt.isel.jagoz.domain.member.Member
@@ -25,6 +26,7 @@ import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EquipmentPlacementMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
+import pt.isel.jagoz.repository.jdbi.mappers.GuardianMapper
 import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
 import pt.isel.jagoz.repository.jdbi.mappers.LocalDateArgumentFactory
@@ -52,6 +54,7 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerArgument(LocalDateArgumentFactory())
 
     registerRowMapper(Athlete::class.java, AthleteMapper())
+    registerRowMapper(Guardian::class.java, GuardianMapper())
     registerRowMapper(Charge::class.java, ChargeMapper())
     registerRowMapper(Event::class.java, EventMapper())
     registerRowMapper(Member::class.java, MemberMapper())
