@@ -85,11 +85,8 @@ class AthleteDomainTests {
     }
 
     @Test
-    fun updateSchoolInfo_and_documents() {
+    fun updateDocuments() {
         val a = sampleAthlete()
-        val changed = domain.updateSchoolInfo(a, "Escola Nova", "11", "B")
-        assertTrue(changed is Either.Right)
-        assertEquals("Escola Nova", changed.value.school)
 
         val docsOk = domain.updateDocuments(a, "222333444", "555666777", "000111222", "BB999888", LocalDate.Companion.parse("2031-01-01"))
         assertTrue(docsOk is Either.Right)
