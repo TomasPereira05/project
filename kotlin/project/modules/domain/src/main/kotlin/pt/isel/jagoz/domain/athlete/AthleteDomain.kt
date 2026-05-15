@@ -11,32 +11,6 @@ import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 
 /**
- * Errors produced by athlete domain operations.
- */
-sealed class AthleteError {
-    /** Requested resource was not found. */
-    data class NotFound(
-        val field: String,
-        val value: Any,
-    ) : AthleteError()
-
-    /** Attempted operation is invalid given the current athlete state. */
-    data class InvalidOperation(
-        val message: String,
-    ) : AthleteError()
-
-    /** Input validation failure. */
-    data class ValidationError(
-        val message: String,
-    ) : AthleteError()
-
-    /** Generic domain error. */
-    data class DomainError(
-        val message: String,
-    ) : AthleteError()
-}
-
-/**
  * Pure domain operations for [Athlete]. All functions return [Either]<[AthleteError], T>
  * where the right side contains the successful result.
  *
@@ -152,7 +126,15 @@ class AthleteDomain {
      * Mark an athlete as inactive.
      */
     fun markInactive(athlete: Athlete): Either<AthleteError, Athlete> {
-        if (!athlete.active) return failure(AthleteError.InvalidOperation("athlete already inactive"))
+        if (!athlete.active) {
+            return failure(
+                AthleteError.InvalidStateTransition(
+                    athleteId = athlete.athleteId,
+                    currentStatus = "INATIVO",
+                    attempted = "deactivate",
+                ),
+            )
+        }
         return success(athlete.copy(active = false))
     }
 
@@ -160,19 +142,17 @@ class AthleteDomain {
      * Reactivate a previously inactive athlete.
      */
     fun reactivate(athlete: Athlete): Either<AthleteError, Athlete> {
-        if (athlete.active) return failure(AthleteError.InvalidOperation("athlete already active"))
+        if (athlete.active) {
+            return failure(
+                AthleteError.InvalidStateTransition(
+                    athleteId = athlete.athleteId,
+                    currentStatus = "ATIVO",
+                    attempted = "reactivate",
+                ),
+            )
+        }
         return success(athlete.copy(active = true))
     }
-
-    /**
-     * Update school-related information for the athlete (school, year, class).
-     */
-    fun updateSchoolInfo(
-        athlete: Athlete,
-        school: String?,
-        schoolYear: String?,
-        schoolClass: String?,
-    ): Either<AthleteError, Athlete> = success(athlete.copy(school = school, schoolYear = schoolYear, schoolClass = schoolClass))
 
     /**
      * Update identification documents for an athlete.

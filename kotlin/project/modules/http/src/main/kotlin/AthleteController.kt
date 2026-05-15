@@ -22,7 +22,6 @@ import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.athlete.AthleteCreationInputDto
 import pt.isel.jagoz.http.model.athlete.AthletePublicDto
 import pt.isel.jagoz.http.model.athlete.AthleteUpdateRequest
-import pt.isel.jagoz.http.model.athlete.SchoolInfoRequest
 import pt.isel.jagoz.http.model.athlete.TeamCategoryChangeRequest
 import pt.isel.jagoz.http.model.athlete.toAdminDto
 import pt.isel.jagoz.http.model.athlete.toDetailDto
@@ -95,8 +94,8 @@ class AthleteController(
             if (input.isSelfRegistration) {
                 if (user.activeMemberId != null) {
                     return Problem
-                        .ValidationError("Já existe uma inscrição associada à conta autenticada.")
-                        .response(HttpStatus.BAD_REQUEST)
+                        .AthleteAlreadyRegistered(user.userId)
+                        .response(HttpStatus.CONFLICT)
                 }
                 user.userId
             } else {
@@ -214,21 +213,6 @@ class AthleteController(
         )
     }
 
-    @PutMapping(Uris.Athletes.UPDATE_SCHOOL_INFO)
-    fun updateSchoolInfo(
-        @PathVariable athleteId: Long,
-        @RequestBody request: SchoolInfoRequest,
-        user: AuthenticatedUser,
-    ): ResponseEntity<*> {
-        requireSecretariaOrAdmin(user)?.let { return it }
-        return athleteService
-            .updateSchoolInfo(athleteId, request.school, request.schoolYear, request.schoolClass)
-            .handle(
-                onFailure = { handleAthleteError(it) },
-                onSuccess = { athlete -> respondAdminDto(athlete) },
-            )
-    }
-
     @PatchMapping(Uris.Athletes.DEACTIVATE_ATHLETE)
     fun deactivateAthlete(
         @PathVariable athleteId: Long,
@@ -317,5 +301,17 @@ class AthleteController(
             is AthleteError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
             is AthleteError.InvalidOperation ->
                 Problem.InvalidOperation("athlete-operation", error.message).response(HttpStatus.BAD_REQUEST)
+            is AthleteError.AlreadyRegistered ->
+                Problem.AthleteAlreadyRegistered(error.userId).response(HttpStatus.CONFLICT)
+            is AthleteError.TeamCategoryNotFound ->
+                Problem.TeamCategoryNotFound(error.teamCategoryId).response(HttpStatus.NOT_FOUND)
+            is AthleteError.GuardianMemberNotFound ->
+                Problem.GuardianMemberNotFound(error.memberNumber).response(HttpStatus.NOT_FOUND)
+            is AthleteError.InvalidStateTransition ->
+                Problem
+                    .AthleteInvalidStateTransition(error.athleteId, error.currentStatus, error.attempted)
+                    .response(HttpStatus.CONFLICT)
+            is AthleteError.InvalidDateField ->
+                Problem.InvalidAthleteDateField(error.field, error.reason).response(HttpStatus.BAD_REQUEST)
         }
 }

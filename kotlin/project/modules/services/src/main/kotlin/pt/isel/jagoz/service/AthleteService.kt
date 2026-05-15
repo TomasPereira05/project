@@ -103,16 +103,16 @@ class AthleteService(
         return transactionManager.run { tx ->
             val teamCategory =
                 tx.teamCategoryRepository.findById(input.teamCategoryId)
-                    ?: return@run failure(
-                        AthleteError.ValidationError("teamCategoryId ${input.teamCategoryId} not found"),
-                    )
+                    ?: return@run failure(AthleteError.TeamCategoryNotFound(input.teamCategoryId))
 
             if (input.birthplace.isNullOrBlank()) {
                 return@run failure(AthleteError.ValidationError("birthplace cannot be blank"))
             }
 
             if (input.biExpirationDate <= input.registrationDate) {
-                return@run failure(AthleteError.ValidationError("biExpirationDate must be after today"))
+                return@run failure(
+                    AthleteError.InvalidDateField("biExpirationDate", "must be after registration date"),
+                )
             }
 
             val resolvedGuardians =
@@ -122,9 +122,7 @@ class AthleteService(
                     } else {
                         val existing =
                             tx.memberRepository.findByMemberNumber(g.memberNumber)
-                                ?: return@run failure(
-                                    AthleteError.ValidationError("memberNumber ${g.memberNumber} not found"),
-                                )
+                                ?: return@run failure(AthleteError.GuardianMemberNotFound(g.memberNumber))
                         g to existing.memberId
                     }
                 }
@@ -370,7 +368,7 @@ class AthleteService(
 
             val newCategory =
                 tx.teamCategoryRepository.findById(newTeamCategoryId)
-                    ?: return@run failure(AthleteError.ValidationError("teamCategoryId $newTeamCategoryId not found"))
+                    ?: return@run failure(AthleteError.TeamCategoryNotFound(newTeamCategoryId))
 
             val athlete = (athleteRes as Either.Right).value
             when (val updatedRes = athleteDomain.changeTeamCategory(athlete, newCategory)) {
@@ -431,9 +429,7 @@ class AthleteService(
                         } else {
                             val existing =
                                 tx.memberRepository.findByMemberNumber(g.memberNumber)
-                                    ?: return@run failure(
-                                        AthleteError.ValidationError("memberNumber ${g.memberNumber} not found"),
-                                    )
+                                    ?: return@run failure(AthleteError.GuardianMemberNotFound(g.memberNumber))
                             g to existing.memberId
                         }
                     }
@@ -481,30 +477,6 @@ class AthleteService(
 
             val athlete = (athleteRes as Either.Right).value
             when (val updatedRes = athleteDomain.reactivate(athlete)) {
-                is Either.Left -> updatedRes
-                is Either.Right -> {
-                    val updated = updatedRes.value
-                    tx.athleteRepository.update(updated)
-                    success(updated)
-                }
-            }
-        }
-    }
-
-    fun updateSchoolInfo(
-        athleteId: Long,
-        school: String?,
-        schoolYear: String?,
-        schoolClass: String?,
-    ): AthleteResult {
-        LOG.info("Updating athlete school info athleteId=$athleteId")
-
-        return transactionManager.run { tx ->
-            val athleteRes = getAthleteOrFail(tx, athleteId)
-            if (athleteRes is Either.Left) return@run athleteRes
-
-            val athlete = (athleteRes as Either.Right).value
-            when (val updatedRes = athleteDomain.updateSchoolInfo(athlete, school, schoolYear, schoolClass)) {
                 is Either.Left -> updatedRes
                 is Either.Right -> {
                     val updated = updatedRes.value
