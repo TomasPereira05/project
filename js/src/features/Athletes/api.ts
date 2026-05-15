@@ -111,19 +111,6 @@ export function changeTeamCategory(athleteId: number, teamCategoryId: number) {
   });
 }
 
-/** PUT /api/athletes/{id}/school-info */
-export function updateSchoolInfo(
-  athleteId: number,
-  school: string,
-  schoolYear: string,
-  schoolClass: string,
-) {
-  return request<AthleteAdmin>(`/athletes/${athleteId}/school-info`, {
-    method: "PUT",
-    body: JSON.stringify({ school, schoolYear, schoolClass }),
-  });
-}
-
 /** Marca atleta como inactivo. PATCH /api/athletes/{id}/deactivate */
 export function deactivateAthlete(athleteId: number) {
   return request<AthleteAdmin>(`/athletes/${athleteId}/deactivate`, {

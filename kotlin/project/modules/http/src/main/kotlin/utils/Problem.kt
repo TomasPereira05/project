@@ -61,6 +61,39 @@ sealed class Problem(
         val description = "Atleta nao encontrado."
     }
 
+    data class AthleteAlreadyRegistered(
+        val userId: Long,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/athlete-already-registered")) {
+        val description = "Ja existe uma inscricao de atleta associada a esta conta."
+    }
+
+    data class TeamCategoryNotFound(
+        val teamCategoryId: Long,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/team-category-not-found")) {
+        val description = "Categoria de equipa nao encontrada."
+    }
+
+    data class GuardianMemberNotFound(
+        val memberNumber: Int,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/guardian-member-not-found")) {
+        val description = "Socio indicado como encarregado nao encontrado."
+    }
+
+    data class AthleteInvalidStateTransition(
+        val athleteId: Long,
+        val currentStatus: String,
+        val attempted: String,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/athlete-invalid-state-transition")) {
+        val description = "Operacao incompativel com o estado actual do atleta."
+    }
+
+    data class InvalidAthleteDateField(
+        val field: String,
+        val reason: String,
+    ) : Problem(URI("${PROBLEM_URI_PATH}/invalid-athlete-date-field")) {
+        val description = "Valor de data invalido na inscricao do atleta."
+    }
+
     data class UserRelatedResourceNotFound(
         val field: String,
         val value: Any,
