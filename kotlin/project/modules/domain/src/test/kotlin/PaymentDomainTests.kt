@@ -3,21 +3,43 @@ package pt.isel.jagoz.payment
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import pt.isel.jagoz.domain.payment.Charge
+import pt.isel.jagoz.domain.payment.ChargeError
 import pt.isel.jagoz.domain.payment.ChargeStatus
 import pt.isel.jagoz.domain.payment.ChargeType
 import pt.isel.jagoz.domain.payment.Payment
 import pt.isel.jagoz.domain.payment.PaymentDomain
+import pt.isel.jagoz.domain.payment.PaymentError
 import pt.isel.jagoz.domain.payment.PaymentStatus
 import pt.isel.jagoz.domain.user.PasswordValidationInfo
 import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.domain.utils.Either
+import pt.isel.jagoz.domain.utils.ValidationError
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class PaymentDomainTests {
     private val domain = PaymentDomain()
+
+    private fun normalUser(): User =
+        User(
+            userId = 1,
+            email = "user@example.com",
+            username = "Zé Manel",
+            passwordValidation = PasswordValidationInfo("hashed"),
+            role = Role.NORMAL,
+        )
+
+    private fun adminUser(): User =
+        User(
+            userId = 2,
+            email = "admin@example.com",
+            username = "Admin",
+            passwordValidation = PasswordValidationInfo("hashed"),
+            role = Role.ADMIN,
+        )
 
     private fun sampleCharge(status: ChargeStatus = ChargeStatus.PENDING) =
         Charge(
@@ -31,8 +53,8 @@ class PaymentDomainTests {
             month = 5,
             createdAt = LocalDate.parse("2025-05-01"),
             paidAt = null,
-            creationUser = createUser(),
-            chargeUser = createAdminUser(),
+            creationUser = normalUser(),
+            chargeUser = adminUser(),
         )
 
     private fun samplePayment(status: PaymentStatus = PaymentStatus.PENDING) =
@@ -47,61 +69,174 @@ class PaymentDomainTests {
             confirmedAt = null,
         )
 
-    private fun createUser(): User =
-        User(
-            userId = 1,
-            email = "user2@gmail.com",
-            username = "ZÃƒÂ© Manel",
-            passwordValidation = PasswordValidationInfo("hashed"),
-            role = Role.NORMAL,
-            activeMemberId = null,
-        )
-
-    private fun createAdminUser(): User =
-        User(
-            userId = 1,
-            email = "user1@gmail.com",
-            username = "ZÃƒÂ©",
-            passwordValidation = PasswordValidationInfo("hashed"),
-            role = Role.ADMIN,
-            activeMemberId = null,
-        )
+    // ---- validateChargeForCreation ----
 
     @Test
-    fun validateCharge_success_and_failures() {
-        val c = sampleCharge()
-        val ok = domain.validateChargeForCreation(c)
-        assertTrue(ok is Either.Right)
-
-        val bad = c.copy(value = 0)
-        val r = domain.validateChargeForCreation(bad)
-        assertTrue(r is Either.Left)
+    fun `validateChargeForCreation accepts valid charge`() {
+        val res = domain.validateChargeForCreation(sampleCharge())
+        assertTrue(res is Either.Right)
     }
 
     @Test
-    fun markChargePaid_and_cancel_behaviour() {
-        val c = sampleCharge()
-        val paid = domain.markChargePaid(c, LocalDate.parse("2025-05-02"))
-        assertTrue(paid is Either.Right)
-        assertEquals(ChargeStatus.PAID, paid.value.status)
-
-        val cancel = domain.cancelCharge(c)
-        assertTrue(cancel is Either.Right)
-        assertEquals(ChargeStatus.CANCELLED, cancel.value.status)
+    fun `validateChargeForCreation rejects zero value`() {
+        val res = domain.validateChargeForCreation(sampleCharge().copy(value = 0))
+        assertTrue(res is Either.Left)
+        val err = assertIs<ValidationError.FieldError>(res.value)
+        assertEquals("value", err.field)
     }
 
     @Test
-    fun validatePayment_and_confirm_and_fail() {
-        val p = samplePayment()
-        val ok = domain.validatePaymentForCreation(p)
-        assertTrue(ok is Either.Right)
+    fun `validateChargeForCreation rejects negative value`() {
+        val res = domain.validateChargeForCreation(sampleCharge().copy(value = -1))
+        assertTrue(res is Either.Left)
+        assertIs<ValidationError.FieldError>(res.value)
+    }
 
-        val confirmed = domain.confirmPayment(p, LocalDateTime.parse("2025-05-02T12:00:00"))
-        assertTrue(confirmed is Either.Right)
-        assertEquals(PaymentStatus.PAID, confirmed.value.status)
+    @Test
+    fun `validateChargeForCreation rejects month out of range high`() {
+        val res = domain.validateChargeForCreation(sampleCharge().copy(month = 13))
+        assertTrue(res is Either.Left)
+        val err = assertIs<ValidationError.FieldError>(res.value)
+        assertEquals("month", err.field)
+    }
 
-        val fail = domain.failPayment(p)
-        assertTrue(fail is Either.Right)
-        assertEquals(PaymentStatus.FAILED, fail.value.status)
+    @Test
+    fun `validateChargeForCreation rejects month out of range low`() {
+        val res = domain.validateChargeForCreation(sampleCharge().copy(month = 0))
+        assertTrue(res is Either.Left)
+        val err = assertIs<ValidationError.FieldError>(res.value)
+        assertEquals("month", err.field)
+    }
+
+    @Test
+    fun `validateChargeForCreation rejects blank season`() {
+        val res = domain.validateChargeForCreation(sampleCharge().copy(season = ""))
+        assertTrue(res is Either.Left)
+        val err = assertIs<ValidationError.FieldError>(res.value)
+        assertEquals("season", err.field)
+    }
+
+    @Test
+    fun `validateChargeForCreation accepts null season and month`() {
+        val res = domain.validateChargeForCreation(sampleCharge().copy(season = null, month = null))
+        assertTrue(res is Either.Right)
+    }
+
+    // ---- markChargePaid ----
+
+    @Test
+    fun `markChargePaid transitions PENDING to PAID`() {
+        val res = domain.markChargePaid(sampleCharge(), LocalDate.parse("2025-05-02"))
+        assertTrue(res is Either.Right)
+        assertEquals(ChargeStatus.PAID, res.value.status)
+        assertEquals(LocalDate.parse("2025-05-02"), res.value.paidAt)
+    }
+
+    @Test
+    fun `markChargePaid rejects already PAID`() {
+        val res = domain.markChargePaid(sampleCharge(ChargeStatus.PAID), LocalDate.parse("2025-05-02"))
+        assertTrue(res is Either.Left)
+        assertIs<ChargeError.InvalidOperation>(res.value)
+    }
+
+    @Test
+    fun `markChargePaid rejects CANCELLED`() {
+        val res = domain.markChargePaid(sampleCharge(ChargeStatus.CANCELLED), LocalDate.parse("2025-05-02"))
+        assertTrue(res is Either.Left)
+        assertIs<ChargeError.InvalidOperation>(res.value)
+    }
+
+    // ---- cancelCharge ----
+
+    @Test
+    fun `cancelCharge transitions PENDING to CANCELLED`() {
+        val res = domain.cancelCharge(sampleCharge())
+        assertTrue(res is Either.Right)
+        assertEquals(ChargeStatus.CANCELLED, res.value.status)
+    }
+
+    @Test
+    fun `cancelCharge rejects already CANCELLED`() {
+        val res = domain.cancelCharge(sampleCharge(ChargeStatus.CANCELLED))
+        assertTrue(res is Either.Left)
+        assertIs<ChargeError.InvalidOperation>(res.value)
+    }
+
+    @Test
+    fun `cancelCharge rejects already PAID`() {
+        val res = domain.cancelCharge(sampleCharge(ChargeStatus.PAID))
+        assertTrue(res is Either.Left)
+        assertIs<ChargeError.InvalidOperation>(res.value)
+    }
+
+    // ---- validatePaymentForCreation ----
+
+    @Test
+    fun `validatePaymentForCreation accepts valid payment`() {
+        val res = domain.validatePaymentForCreation(samplePayment())
+        assertTrue(res is Either.Right)
+    }
+
+    @Test
+    fun `validatePaymentForCreation rejects zero amount`() {
+        val res = domain.validatePaymentForCreation(samplePayment().copy(amount = 0))
+        assertTrue(res is Either.Left)
+        assertIs<ValidationError.FieldError>(res.value)
+    }
+
+    @Test
+    fun `validatePaymentForCreation rejects blank provider`() {
+        val res = domain.validatePaymentForCreation(samplePayment().copy(provider = ""))
+        assertTrue(res is Either.Left)
+        val err = assertIs<ValidationError.FieldError>(res.value)
+        assertEquals("provider", err.field)
+    }
+
+    // ---- confirmPayment ----
+
+    @Test
+    fun `confirmPayment transitions PENDING to PAID`() {
+        val ts = LocalDateTime.parse("2025-05-02T12:00:00")
+        val res = domain.confirmPayment(samplePayment(), ts)
+        assertTrue(res is Either.Right)
+        assertEquals(PaymentStatus.PAID, res.value.status)
+        assertEquals(ts, res.value.confirmedAt)
+    }
+
+    @Test
+    fun `confirmPayment rejects already PAID`() {
+        val res = domain.confirmPayment(samplePayment(PaymentStatus.PAID), LocalDateTime.parse("2025-05-02T12:00:00"))
+        assertTrue(res is Either.Left)
+        assertIs<PaymentError.InvalidOperation>(res.value)
+    }
+
+    @Test
+    fun `confirmPayment rejects FAILED`() {
+        val res = domain.confirmPayment(samplePayment(PaymentStatus.FAILED), LocalDateTime.parse("2025-05-02T12:00:00"))
+        assertTrue(res is Either.Left)
+        assertIs<PaymentError.InvalidOperation>(res.value)
+    }
+
+    // ---- failPayment ----
+
+    @Test
+    fun `failPayment transitions PENDING to FAILED`() {
+        val res = domain.failPayment(samplePayment())
+        assertTrue(res is Either.Right)
+        assertEquals(PaymentStatus.FAILED, res.value.status)
+    }
+
+    @Test
+    fun `failPayment rejects already PAID`() {
+        val res = domain.failPayment(samplePayment(PaymentStatus.PAID))
+        assertTrue(res is Either.Left)
+        assertIs<PaymentError.InvalidOperation>(res.value)
+    }
+
+    @Test
+    fun `failPayment rejects already FAILED`() {
+        val res = domain.failPayment(samplePayment(PaymentStatus.FAILED))
+        assertTrue(res is Either.Left)
+        assertIs<PaymentError.InvalidOperation>(res.value)
     }
 }

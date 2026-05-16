@@ -1,16 +1,15 @@
 package pt.isel.jagoz.sponsor
 
-import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
-import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
+import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.SponsorType
 import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
-import pt.isel.jagoz.domain.team.TeamCategory
 import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class SponsorDomainTests {
@@ -25,88 +24,269 @@ class SponsorDomainTests {
             nif = "123456789",
         )
 
-    private fun samplePubSponsorship() =
+    private fun pubSponsorship(status: SponsorshipStatus = SponsorshipStatus.SUBMETIDO) =
         Sponsorship(
             sponsorshipId = 1,
             sponsorId = 1,
             season = "2025/2026",
-            status = SponsorshipStatus.SUBMETIDO,
+            status = status,
             type = SponsorType.PUB,
             price = 100000,
-            pubOption = PubOption.LONA_3X0_8,
+            pubOptionId = 5,
+            teamCategoryId = null,
+            placementId = null,
+            sportId = null,
         )
 
-    private fun sampleTeamSponsorship() =
+    private fun teamSponsorship(status: SponsorshipStatus = SponsorshipStatus.SUBMETIDO) =
         Sponsorship(
             sponsorshipId = 2,
             sponsorId = 1,
             season = "2025/2026",
-            status = SponsorshipStatus.SUBMETIDO,
+            status = status,
             type = SponsorType.TEAM,
             price = 200000,
-            teamCategory = TeamCategory.JUNIORES,
-            placement = EquipmentPlacement.FRENTE,
+            pubOptionId = null,
+            teamCategoryId = 7,
+            placementId = 3,
+            sportId = null,
         )
 
-    @Test
-    fun updateContact_valid_and_invalid() {
-        val s = sampleSponsor()
-        val ok = domain.updateContact(s, "New Name", "new@example.com", "911111111", "987654321")
-        assertTrue(ok is Either.Right)
-        assertEquals("New Name", ok.value.name)
+    private fun otherSponsorship(status: SponsorshipStatus = SponsorshipStatus.SUBMETIDO) =
+        Sponsorship(
+            sponsorshipId = 3,
+            sponsorId = 1,
+            season = "2025/2026",
+            status = status,
+            type = SponsorType.OTHER,
+            price = 50000,
+            pubOptionId = null,
+            teamCategoryId = null,
+            placementId = null,
+            sportId = 9,
+        )
 
-        val bad = domain.updateContact(s, "", "bad", "", "")
-        assertTrue(bad is Either.Left)
+    // ---- approveSponsorship ----
+
+    @Test
+    fun `approveSponsorship transitions SUBMETIDO to APROVADO`() {
+        val res = domain.approveSponsorship(pubSponsorship())
+        assertTrue(res is Either.Right)
+        assertEquals(SponsorshipStatus.APROVADO, res.value.status)
     }
 
     @Test
-    fun sponsorship_lifecycle_happy_path() {
-        val pub = samplePubSponsorship()
-        val approved = domain.approve(pub)
-        assertTrue(approved is Either.Right)
-        val paid = domain.markPaid((approved).value)
-        assertTrue(paid is Either.Right)
-        val activated = domain.activate((paid).value)
-        assertTrue(activated is Either.Right)
-        assertTrue(domain.isActive((activated).value))
+    fun `approveSponsorship rejects non-SUBMETIDO`() {
+        val res = domain.approveSponsorship(pubSponsorship(SponsorshipStatus.APROVADO))
+        assertTrue(res is Either.Left)
+        val err = assertIs<SponsorError.InvalidTransition>(res.value)
+        assertEquals("approve", err.attempted)
+    }
+
+    // ---- markPaid ----
+
+    @Test
+    fun `markPaid transitions APROVADO to PAGO`() {
+        val res = domain.markPaid(pubSponsorship(SponsorshipStatus.APROVADO))
+        assertTrue(res is Either.Right)
+        assertEquals(SponsorshipStatus.PAGO, res.value.status)
     }
 
     @Test
-    fun sponsorship_invalid_transitions_and_cancel() {
-        val pub = samplePubSponsorship()
-        val failActivate = domain.activate(pub)
-        assertTrue(failActivate is Either.Left)
+    fun `markPaid rejects non-APROVADO`() {
+        val res = domain.markPaid(pubSponsorship(SponsorshipStatus.SUBMETIDO))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.InvalidTransition>(res.value)
+    }
 
-        val cancelled = domain.cancel(pub)
-        assertTrue(cancelled is Either.Right)
-        val doubleCancel = domain.cancel((cancelled).value)
-        assertTrue(doubleCancel is Either.Left)
+    // ---- cancelSponsorship ----
+
+    @Test
+    fun `cancelSponsorship from SUBMETIDO`() {
+        val res = domain.cancelSponsorship(pubSponsorship())
+        assertTrue(res is Either.Right)
+        assertEquals(SponsorshipStatus.CANCELADO, res.value.status)
     }
 
     @Test
-    fun changePlacement_only_for_team() {
-        val pub = samplePubSponsorship()
-        val fail = domain.changePlacement(pub, EquipmentPlacement.COSTAS)
-        assertTrue(fail is Either.Left)
-
-        val team = sampleTeamSponsorship()
-        val ok = domain.changePlacement(team, EquipmentPlacement.COSTAS)
-        assertTrue(ok is Either.Right)
-        assertEquals(EquipmentPlacement.COSTAS, (ok).value.placement)
+    fun `cancelSponsorship from APROVADO`() {
+        val res = domain.cancelSponsorship(pubSponsorship(SponsorshipStatus.APROVADO))
+        assertTrue(res is Either.Right)
+        assertEquals(SponsorshipStatus.CANCELADO, res.value.status)
     }
 
     @Test
-    fun validateForCreation_checks() {
-        val pub = samplePubSponsorship()
-        val ok = domain.validateForCreation(pub)
-        assertTrue(ok is Either.Right)
+    fun `cancelSponsorship rejects already CANCELADO`() {
+        val res = domain.cancelSponsorship(pubSponsorship(SponsorshipStatus.CANCELADO))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.DomainError>(res.value)
+    }
 
-        val badPrice = pub.copy(price = -100)
-        val r1 = domain.validateForCreation(badPrice)
-        assertTrue(r1 is Either.Left)
+    // ---- validateForCreation: Sponsor ----
 
-        val blankSeason = pub.copy(season = "")
-        val r2 = domain.validateForCreation(blankSeason)
-        assertTrue(r2 is Either.Left)
+    @Test
+    fun `validateForCreation accepts valid sponsor`() {
+        val res = domain.validateForCreation(sampleSponsor())
+        assertTrue(res is Either.Right)
+    }
+
+    @Test
+    fun `validateForCreation rejects blank sponsor name`() {
+        val res = domain.validateForCreation(sampleSponsor().copy(name = ""))
+        assertTrue(res is Either.Left)
+        val err = assertIs<SponsorError.ValidationError>(res.value)
+        assertTrue(err.message.contains("name"))
+    }
+
+    @Test
+    fun `validateForCreation rejects invalid sponsor email`() {
+        val res = domain.validateForCreation(sampleSponsor().copy(email = "bad"))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects sponsor nif with wrong digits`() {
+        val res = domain.validateForCreation(sampleSponsor().copy(nif = "12"))
+        assertTrue(res is Either.Left)
+        val err = assertIs<SponsorError.ValidationError>(res.value)
+        assertTrue(err.message.contains("nif"))
+    }
+
+    @Test
+    fun `validateForCreation rejects blank sponsor phone`() {
+        val res = domain.validateForCreation(sampleSponsor().copy(phone = ""))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    // ---- validateForCreation: Sponsorship ----
+
+    @Test
+    fun `validateForCreation accepts valid PUB sponsorship`() {
+        val res = domain.validateForCreation(pubSponsorship())
+        assertTrue(res is Either.Right)
+    }
+
+    @Test
+    fun `validateForCreation accepts valid TEAM sponsorship`() {
+        val res = domain.validateForCreation(teamSponsorship())
+        assertTrue(res is Either.Right)
+    }
+
+    @Test
+    fun `validateForCreation accepts valid OTHER sponsorship`() {
+        val res = domain.validateForCreation(otherSponsorship())
+        assertTrue(res is Either.Right)
+    }
+
+    @Test
+    fun `validateForCreation rejects negative price`() {
+        val res = domain.validateForCreation(pubSponsorship().copy(price = -1))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects blank season`() {
+        val res = domain.validateForCreation(pubSponsorship().copy(season = ""))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects PUB without pubOptionId`() {
+        val res = domain.validateForCreation(pubSponsorship().copy(pubOptionId = null))
+        assertTrue(res is Either.Left)
+        val err = assertIs<SponsorError.ValidationError>(res.value)
+        assertTrue(err.message.contains("pubOptionId"))
+    }
+
+    @Test
+    fun `validateForCreation rejects PUB with teamCategoryId`() {
+        val res = domain.validateForCreation(pubSponsorship().copy(teamCategoryId = 1))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects TEAM without teamCategoryId`() {
+        val res = domain.validateForCreation(teamSponsorship().copy(teamCategoryId = null))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects TEAM without placementId`() {
+        val res = domain.validateForCreation(teamSponsorship().copy(placementId = null))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects TEAM with pubOptionId`() {
+        val res = domain.validateForCreation(teamSponsorship().copy(pubOptionId = 1))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects OTHER without sportId`() {
+        val res = domain.validateForCreation(otherSponsorship().copy(sportId = null))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `validateForCreation rejects OTHER with placementId`() {
+        val res = domain.validateForCreation(otherSponsorship().copy(placementId = 1))
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    // ---- updateSponsor ----
+
+    @Test
+    fun `updateSponsor applies new values`() {
+        val res =
+            domain.updateSponsor(
+                sampleSponsor(),
+                name = "Acme Updated",
+                email = "new@example.com",
+                phone = "999999999",
+                nif = "987654321",
+            )
+        assertTrue(res is Either.Right)
+        assertEquals("Acme Updated", res.value.name)
+        assertEquals("new@example.com", res.value.email)
+        assertEquals("987654321", res.value.nif)
+    }
+
+    @Test
+    fun `updateSponsor rejects invalid email`() {
+        val res =
+            domain.updateSponsor(
+                sampleSponsor(),
+                name = "Acme",
+                email = "no-at-sign",
+                phone = "999999999",
+                nif = "987654321",
+            )
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
+    }
+
+    @Test
+    fun `updateSponsor rejects malformed nif`() {
+        val res =
+            domain.updateSponsor(
+                sampleSponsor(),
+                name = "Acme",
+                email = "ok@example.com",
+                phone = "999999999",
+                nif = "abc",
+            )
+        assertTrue(res is Either.Left)
+        assertIs<SponsorError.ValidationError>(res.value)
     }
 }
