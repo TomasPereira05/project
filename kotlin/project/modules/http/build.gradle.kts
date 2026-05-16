@@ -18,7 +18,6 @@ dependencies {
 
     implementation("org.slf4j:slf4j-api:2.0.16")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-mail")
     testImplementation(kotlin("test"))
     implementation(kotlin("stdlib"))
 }
