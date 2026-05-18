@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { GripVertical, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -10,13 +11,13 @@ import LabeledField from "../../../shared/components/LabeledField";
 import { useSponsorCatalogs, useSponsorSettingsActions } from "../hooks";
 import { isValidPubCapacity, parseCatalogCount, type CatalogEditor, type CatalogKind } from "../utils";
 import { centsFromEuroInput, euroInputFromCents } from "../../../shared/utils";
-import { t } from "i18next";
 
 type CatalogItem = PubOption | EquipmentPlacement | OtherSport;
 
 export default function SponsorSettings() {
+  const { t } = useTranslation();
   const { catalogs, errorMessage: catalogErrorMessage, isLoading, refreshCatalogs } = useSponsorCatalogs({
-    errorMessage: "Nao foi possivel carregar a configuracao.",
+    errorMessage: t("sponsors.settings.errors.load"),
   });
   const {
     actionErrorMessage,
@@ -43,12 +44,12 @@ export default function SponsorSettings() {
       <div className="sponsor-shell">
         <section className="sponsor-page-header">
           <div>
-            <p className="sponsor-section-eyebrow">Settings</p>
-            <h1 className="sponsor-panel-title">Opcoes e precos de patrocinio</h1>
-            <p className="sponsor-muted-text">Adicionar, editar, desativar e reordenar opcoes disponiveis.</p>
+            <p className="sponsor-section-eyebrow">{t("sponsors.settings.eyebrow")}</p>
+            <h1 className="sponsor-panel-title">{t("sponsors.settings.title")}</h1>
+            <p className="sponsor-muted-text">{t("sponsors.settings.description")}</p>
           </div>
           <Link className="sponsor-button-secondary" to="/sponsors/approvals">
-            Ver aprovacoes
+            {t("sponsors.settings.approvalsLink")}
           </Link>
         </section>
 
@@ -61,28 +62,28 @@ export default function SponsorSettings() {
         {notice ? <div className="sponsor-feedback sponsor-feedback-success">{notice}</div> : null}
 
         {isLoading ? (
-          <section className="sponsor-panel"><div className="sponsor-empty-card">A carregar configuracao...</div></section>
+          <section className="sponsor-panel"><div className="sponsor-empty-card">{t("sponsors.settings.loading")}</div></section>
         ) : (
           <>
             <section className="sponsor-panel">
               <div className="sponsor-panel-header">
                 <div>
-                  <p className="sponsor-section-eyebrow">Catalogo</p>
-                  <h2 className="sponsor-panel-title">Opcoes disponiveis</h2>
+                  <p className="sponsor-section-eyebrow">{t("sponsors.settings.catalogEyebrow")}</p>
+                  <h2 className="sponsor-panel-title">{t("sponsors.settings.catalogTitle")}</h2>
                 </div>
               </div>
               <div className="sponsor-catalog-grid">
-                <SettingsCatalogSection title="Pub options" subtitle="Publicidade." items={catalogs.pubOptions} kind="pub" draft={catalogDrafts.pub} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, pub: value }))} onCreate={() => void handleCreateCatalog("pub")} onSave={(item) => void handleSaveCatalogItem("pub", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("pub", id)} onDragStart={(index) => setDragState({ kind: "pub", index })} onDrop={(index) => void handleCatalogDrop("pub", index)} />
-                <SettingsCatalogSection title="Equipment placements" subtitle="Localizacoes." items={catalogs.equipmentPlacements} kind="placement" draft={catalogDrafts.placement} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, placement: value }))} onCreate={() => void handleCreateCatalog("placement")} onSave={(item) => void handleSaveCatalogItem("placement", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("placement", id)} onDragStart={(index) => setDragState({ kind: "placement", index })} onDrop={(index) => void handleCatalogDrop("placement", index)} />
-                <SettingsCatalogSection title="Other sports" subtitle="Outras modalidades." items={catalogs.otherSports} kind="sport" draft={catalogDrafts.sport} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, sport: value }))} onCreate={() => void handleCreateCatalog("sport")} onSave={(item) => void handleSaveCatalogItem("sport", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("sport", id)} onDragStart={(index) => setDragState({ kind: "sport", index })} onDrop={(index) => void handleCatalogDrop("sport", index)} />
+                <SettingsCatalogSection t={t} title={t("sponsors.settings.sections.pub.title")} subtitle={t("sponsors.settings.sections.pub.subtitle")} items={catalogs.pubOptions} kind="pub" draft={catalogDrafts.pub} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, pub: value }))} onCreate={() => void handleCreateCatalog("pub")} onSave={(item) => void handleSaveCatalogItem("pub", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("pub", id)} onDragStart={(index) => setDragState({ kind: "pub", index })} onDrop={(index) => void handleCatalogDrop("pub", index)} />
+                <SettingsCatalogSection t={t} title={t("sponsors.settings.sections.placement.title")} subtitle={t("sponsors.settings.sections.placement.subtitle")} items={catalogs.equipmentPlacements} kind="placement" draft={catalogDrafts.placement} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, placement: value }))} onCreate={() => void handleCreateCatalog("placement")} onSave={(item) => void handleSaveCatalogItem("placement", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("placement", id)} onDragStart={(index) => setDragState({ kind: "placement", index })} onDrop={(index) => void handleCatalogDrop("placement", index)} />
+                <SettingsCatalogSection t={t} title={t("sponsors.settings.sections.sport.title")} subtitle={t("sponsors.settings.sections.sport.subtitle")} items={catalogs.otherSports} kind="sport" draft={catalogDrafts.sport} onDraftChange={(value) => setCatalogDrafts((current) => ({ ...current, sport: value }))} onCreate={() => void handleCreateCatalog("sport")} onSave={(item) => void handleSaveCatalogItem("sport", item)} onDeactivate={(id) => void handleDeactivateCatalogItem("sport", id)} onDragStart={(index) => setDragState({ kind: "sport", index })} onDrop={(index) => void handleCatalogDrop("sport", index)} />
               </div>
             </section>
 
             <section className="sponsor-panel">
               <div className="sponsor-panel-header">
                 <div>
-                  <p className="sponsor-section-eyebrow">Tabela cruzada</p>
-                  <h2 className="sponsor-panel-title">Precos de equipa</h2>
+                  <p className="sponsor-section-eyebrow">{t("sponsors.settings.teamPricesEyebrow")}</p>
+                  <h2 className="sponsor-panel-title">{t("sponsors.settings.teamPricesTitle")}</h2>
                 </div>
               </div>
               <div className="sponsor-price-grid">
@@ -98,7 +99,9 @@ export default function SponsorSettings() {
                         <InlinePriceEditor
                           value={teamPriceDrafts[key] ?? ""}
                           onChange={(value) => setTeamPriceDrafts((current) => ({ ...current, [key]: value }))}
-                          onSave={(value) => void (async () => { await upsertTeamGroupSponsorshipPrice(group.teamGroupId, placement.equipmentId, value); setNotice("Preco atualizado."); await refreshCatalogs(); })()}
+                          label={t("sponsors.fields.price")}
+                          onSave={(value) => void (async () => { await upsertTeamGroupSponsorshipPrice(group.teamGroupId, placement.equipmentId, value); setNotice(t("sponsors.settings.notices.priceUpdated")); await refreshCatalogs(); })()}
+                          t={t}
                         />
                       </div>
                     );
@@ -110,15 +113,15 @@ export default function SponsorSettings() {
             <section className="sponsor-panel">
               <div className="sponsor-panel-header">
                 <div>
-                  <p className="sponsor-section-eyebrow">Overrides</p>
-                  <h2 className="sponsor-panel-title">Preco de equipa especifica</h2>
-                  <p className="sponsor-muted-text">Escolhe uma equipa para criar ou atualizar um preco que fica acima do preco do grupo.</p>
+                  <p className="sponsor-section-eyebrow">{t("sponsors.settings.overridesEyebrow")}</p>
+                  <h2 className="sponsor-panel-title">{t("sponsors.settings.overridesTitle")}</h2>
+                  <p className="sponsor-muted-text">{t("sponsors.settings.overridesDescription")}</p>
                 </div>
               </div>
               <label className="sponsor-field">
-                <span>Equipa</span>
+                <span>{t("sponsors.fields.team")}</span>
                 <select className="sponsor-input" value={selectedOverrideTeamId} onChange={(event) => setSelectedOverrideTeamId(event.target.value)}>
-                  <option value="">Selecionar equipa</option>
+                  <option value="">{t("sponsors.settings.selectTeam")}</option>
                   {catalogs.teamCategories.map((team) => (
                     <option key={team.teamId} value={team.teamId}>
                       {team.label}
@@ -140,7 +143,9 @@ export default function SponsorSettings() {
                         <InlinePriceEditor
                           value={teamOverrideDrafts[key] ?? ""}
                           onChange={(value) => setTeamOverrideDrafts((current) => ({ ...current, [key]: value }))}
-                          onSave={(value) => void (async () => { await upsertTeamCategoryPriceOverride(teamId, placement.equipmentId, value); setNotice("Override atualizado."); await refreshCatalogs(); })()}
+                          label={t("sponsors.fields.price")}
+                          onSave={(value) => void (async () => { await upsertTeamCategoryPriceOverride(teamId, placement.equipmentId, value); setNotice(t("sponsors.settings.notices.overrideUpdated")); await refreshCatalogs(); })()}
+                          t={t}
                         />
                       </div>
                     );
@@ -156,6 +161,7 @@ export default function SponsorSettings() {
 }
 
 type SettingsCatalogSectionProps<T extends CatalogItem> = {
+  t: (key: string, options?: Record<string, unknown>) => string;
   title: string;
   subtitle: string;
   items: T[];
@@ -170,7 +176,7 @@ type SettingsCatalogSectionProps<T extends CatalogItem> = {
   renderExtra?: (item: T) => ReactNode;
 };
 
-function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items, kind, draft, onDraftChange, onCreate, onSave, onDeactivate, onDragStart, onDrop, renderExtra }: SettingsCatalogSectionProps<T>) {
+function SettingsCatalogSection<T extends CatalogItem>({ t, title, subtitle, items, kind, draft, onDraftChange, onCreate, onSave, onDeactivate, onDragStart, onDrop, renderExtra }: SettingsCatalogSectionProps<T>) {
   return (
     <article className="sponsor-catalog-section">
       <div className="sponsor-catalog-headline">
@@ -180,39 +186,39 @@ function SettingsCatalogSection<T extends CatalogItem>({ title, subtitle, items,
         </div>
       </div>
       <div className="sponsor-inline-form">
-        <LabeledField label="Code" tooltip={t("config.codeTooltip")}>
+        <LabeledField label={t("sponsors.fields.code")} tooltip={t("config.codeTooltip")}>
           <input className="sponsor-input" value={draft.code} onChange={(event) => onDraftChange({ ...draft, code: event.target.value })} />
         </LabeledField>
-        <LabeledField label="Label" tooltip={t("config.labelTooltip")}>
+        <LabeledField label={t("sponsors.fields.label")} tooltip={t("config.labelTooltip")}>
           <input className="sponsor-input" value={draft.label} onChange={(event) => onDraftChange({ ...draft, label: event.target.value })} />
         </LabeledField>
         {kind === "pub" ? (
           <>
-            <LabeledField label="Price">
+            <LabeledField label={t("sponsors.fields.price")}>
               <input className="sponsor-input" inputMode="decimal" value={draft.price ?? "0.00"} onChange={(event) => onDraftChange({ ...draft, price: event.target.value })} />
             </LabeledField>
-            <LabeledField label="Available">
+            <LabeledField label={t("sponsors.fields.available")}>
               <input className="sponsor-input" inputMode="numeric" value={draft.available ?? "0"} onChange={(event) => onDraftChange({ ...draft, available: event.target.value })} />
             </LabeledField>
           </>
         ) : null}
         {kind === "sport" ? (
-          <LabeledField label="Price">
+          <LabeledField label={t("sponsors.fields.price")}>
             <input className="sponsor-input" inputMode="decimal" value={draft.price ?? "0.00"} onChange={(event) => onDraftChange({ ...draft, price: event.target.value })} />
           </LabeledField>
         ) : null}
-        <button className="sponsor-button-primary sponsor-form-action" onClick={onCreate} type="button">Add</button>
+        <button className="sponsor-button-primary sponsor-form-action" onClick={onCreate} type="button">{t("sponsors.settings.actions.add")}</button>
       </div>
       <div className="sponsor-catalog-list">
         {items.map((item, index) => (
-          <SettingsCatalogRow item={item} kind={kind} key={getCatalogItemId(kind, item)} onSave={onSave} onDeactivate={onDeactivate} onDragStart={() => onDragStart(index)} onDrop={() => onDrop(index)} renderExtra={renderExtra} />
+          <SettingsCatalogRow t={t} item={item} kind={kind} key={getCatalogItemId(kind, item)} onSave={onSave} onDeactivate={onDeactivate} onDragStart={() => onDragStart(index)} onDrop={() => onDrop(index)} renderExtra={renderExtra} />
         ))}
       </div>
     </article>
   );
 }
 
-function SettingsCatalogRow<T extends CatalogItem>({ item, kind, onSave, onDeactivate, onDragStart, onDrop, renderExtra }: { item: T; kind: CatalogKind; onSave: (item: T) => void; onDeactivate: (id: number) => void; onDragStart: () => void; onDrop: () => void; renderExtra?: (item: T) => ReactNode; }) {
+function SettingsCatalogRow<T extends CatalogItem>({ t, item, kind, onSave, onDeactivate, onDragStart, onDrop, renderExtra }: { t: (key: string, options?: Record<string, unknown>) => string; item: T; kind: CatalogKind; onSave: (item: T) => void; onDeactivate: (id: number) => void; onDragStart: () => void; onDrop: () => void; renderExtra?: (item: T) => ReactNode; }) {
   const [isEditing, setIsEditing] = useState(false);
   const [code, setCode] = useState(item.code);
   const [label, setLabel] = useState(item.label);
@@ -232,25 +238,25 @@ function SettingsCatalogRow<T extends CatalogItem>({ item, kind, onSave, onDeact
     <div className="sponsor-catalog-row" draggable onDragStart={onDragStart} onDragOver={(event) => event.preventDefault()} onDrop={onDrop}>
       <div className="sponsor-catalog-reorder"><GripVertical size={16} /></div>
       <div className="sponsor-catalog-fields">
-        <LabeledField label="Code">
+        <LabeledField label={t("sponsors.fields.code")}>
           <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         </LabeledField>
-        <LabeledField label="Label">
+        <LabeledField label={t("sponsors.fields.label")}>
           <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
         </LabeledField>
         {pricedItem ? (
-          <LabeledField label="Price">
+          <LabeledField label={t("sponsors.fields.price")}>
             <input className="sponsor-input" disabled={!isEditing} inputMode="decimal" value={price} onChange={(event) => setPrice(event.target.value)} />
           </LabeledField>
         ) : null}
         {pubItem ? (
           <>
-            <LabeledField label="Available">
+            <LabeledField label={t("sponsors.fields.available")}>
               <input className="sponsor-input" disabled={!isEditing} inputMode="numeric" value={available} onChange={(event) => setAvailable(event.target.value)} />
             </LabeledField>
             <div className="sponsor-capacity-summary">
-              <span>Free: {pubItem.free}</span>
-              <span>Occupied: {pubItem.occupied}</span>
+              <span>{t("sponsors.fields.free")}: {pubItem.free}</span>
+              <span>{t("sponsors.fields.occupied")}: {pubItem.occupied}</span>
             </div>
           </>
         ) : null}
@@ -269,7 +275,7 @@ function SettingsCatalogRow<T extends CatalogItem>({ item, kind, onSave, onDeact
             }
           }
           setIsEditing((current) => !current);
-        }} type="button">{isEditing ? "Cancel" : "Edit"}</button>
+        }} type="button">{isEditing ? t("sponsors.settings.actions.cancel") : t("sponsors.settings.actions.edit")}</button>
         {isEditing ? <button className="sponsor-button-primary" onClick={() => {
           if (pubItem) {
             const nextAvailable = parseCatalogCount(available);
@@ -281,14 +287,14 @@ function SettingsCatalogRow<T extends CatalogItem>({ item, kind, onSave, onDeact
             onSave({ ...item, code, label } as T);
           }
           setIsEditing(false);
-        }} type="button">Save</button> : null}
-        <button className="sponsor-button-ghost" onClick={() => onDeactivate(getCatalogItemId(kind, item))} type="button">Deactivate</button>
+        }} type="button">{t("sponsors.settings.actions.save")}</button> : null}
+        <button className="sponsor-button-ghost" onClick={() => onDeactivate(getCatalogItemId(kind, item))} type="button">{t("sponsors.settings.actions.deactivate")}</button>
       </div>
     </div>
   );
 }
 
-function InlinePriceEditor({ value, onChange, onSave }: { value: string; onChange: (value: string) => void; onSave: (value: string) => void; }) {
+function InlinePriceEditor({ label, t, value, onChange, onSave }: { label: string; t: (key: string) => string; value: string; onChange: (value: string) => void; onSave: (value: string) => void; }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(value);
 
@@ -298,7 +304,7 @@ function InlinePriceEditor({ value, onChange, onSave }: { value: string; onChang
 
   return (
     <div className="sponsor-price-editor">
-      <LabeledField label="Price">
+      <LabeledField label={label}>
         <input
           className="sponsor-input sponsor-input-price"
           disabled={!isEditing}
@@ -323,7 +329,7 @@ function InlinePriceEditor({ value, onChange, onSave }: { value: string; onChang
           }}
           type="button"
         >
-          {isEditing ? "Cancel" : "Edit"}
+          {isEditing ? t("sponsors.settings.actions.cancel") : t("sponsors.settings.actions.edit")}
         </button>
         {isEditing ? (
           <button
@@ -334,7 +340,7 @@ function InlinePriceEditor({ value, onChange, onSave }: { value: string; onChang
             }}
             type="button"
           >
-            Save
+            {t("sponsors.settings.actions.save")}
           </button>
         ) : null}
       </div>

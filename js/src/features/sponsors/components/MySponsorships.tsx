@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils";
@@ -12,6 +13,7 @@ import {
 } from "../utils";
 
 export default function MySponsorships() {
+  const { t } = useTranslation();
   const [page, setPage] = useState(1);
   const { catalogs, errorMessage, isLoading, items, pageSize, totalItems, totalPages } = useMySponsorships(page);
   const totals = useMemo(() => calculateMySponsorshipTotals(items), [items]);
@@ -27,12 +29,12 @@ export default function MySponsorships() {
       <div className="sponsor-shell">
         <section className="sponsor-page-header">
           <div>
-            <p className="sponsor-section-eyebrow">Area reservada</p>
-            <h1 className="sponsor-panel-title">Meus patrocinios</h1>
-            <p className="sponsor-muted-text">Consulta os pedidos e contratos associados a esta conta.</p>
+            <p className="sponsor-section-eyebrow">{t("sponsors.my.eyebrow")}</p>
+            <h1 className="sponsor-panel-title">{t("sponsors.my.title")}</h1>
+            <p className="sponsor-muted-text">{t("sponsors.my.description")}</p>
           </div>
           <Link className="sponsor-button-secondary" to="/sponsors/info">
-            Ver opcoes
+            {t("sponsors.my.viewOptions")}
           </Link>
         </section>
 
@@ -40,15 +42,15 @@ export default function MySponsorships() {
 
         <section className="sponsor-stat-grid">
           <div className="sponsor-stat-card">
-            <span className="sponsor-stat-label">Total</span>
+            <span className="sponsor-stat-label">{t("sponsors.my.stats.total")}</span>
             <strong className="sponsor-stat-value">{totalItems}</strong>
           </div>
           <div className="sponsor-stat-card">
-            <span className="sponsor-stat-label">Submetidos</span>
+            <span className="sponsor-stat-label">{t("sponsors.my.stats.submitted")}</span>
             <strong className="sponsor-stat-value">{totals.pending}</strong>
           </div>
           <div className="sponsor-stat-card">
-            <span className="sponsor-stat-label">Valor ativo</span>
+            <span className="sponsor-stat-label">{t("sponsors.my.stats.activeValue")}</span>
             <strong className="sponsor-stat-value">{formatCurrency(totals.value)}</strong>
           </div>
         </section>
@@ -56,15 +58,15 @@ export default function MySponsorships() {
         <section className="sponsor-panel">
           <div className="sponsor-panel-header">
             <div>
-              <p className="sponsor-section-eyebrow">Contratos</p>
-              <h2 className="sponsor-panel-title">Lista</h2>
+              <p className="sponsor-section-eyebrow">{t("sponsors.my.contractsEyebrow")}</p>
+              <h2 className="sponsor-panel-title">{t("sponsors.my.listTitle")}</h2>
             </div>
           </div>
 
           {isLoading ? (
-            <div className="sponsor-empty-card">A carregar patrocinios...</div>
+            <div className="sponsor-empty-card">{t("sponsors.my.loading")}</div>
           ) : items.length === 0 ? (
-            <div className="sponsor-empty-card">Ainda nao existem patrocinios associados a esta conta.</div>
+            <div className="sponsor-empty-card">{t("sponsors.my.empty")}</div>
           ) : (
             <div className="sponsor-contract-list">
               {items.map(({ sponsor, sponsorship }) => (
@@ -73,21 +75,19 @@ export default function MySponsorships() {
                     <div>
                       <div className="sponsor-contract-topline">
                         <span className={sponsorshipStatusClass(sponsorship.status)}>
-                          {sponsorshipStatusLabel(sponsorship.status)}
+                          {sponsorshipStatusLabel(sponsorship.status, t)}
                         </span>
                         <span className="sponsor-price-pill">{formatCurrency(sponsorship.price)}</span>
                       </div>
-                      <h3 className="sponsor-contract-target">
-                        {resolveSponsorshipTarget(sponsorship, catalogs)}
-                      </h3>
+                      <h3 className="sponsor-contract-target">{resolveSponsorshipTarget(sponsorship, catalogs, t)}</h3>
                       <p className="sponsor-contract-meta">
-                        {sponsorTypeLabel(sponsorship.type)} · Epoca {sponsorship.season}
+                        {sponsorTypeLabel(sponsorship.type, t)} · {t("sponsors.fields.season")} {sponsorship.season}
                         {sponsor ? ` · ${sponsor.name}` : ""}
                       </p>
                     </div>
                     <div className="sponsor-contract-actions">
                       <Link className="sponsor-button-secondary" to={`/sponsors/my/${sponsorship.sponsorshipId}`}>
-                        Detalhes
+                        {t("sponsors.my.details")}
                       </Link>
                     </div>
                   </div>
@@ -99,7 +99,12 @@ export default function MySponsorships() {
 
         <div className="member-pagination">
           <p className="member-pagination-text">
-            A mostrar <span className="member-pagination-strong">{totalItems === 0 ? 0 : (page - 1) * pageSize + 1}</span> ate <span className="member-pagination-strong">{Math.min(page * pageSize, totalItems)}</span> de <span className="member-pagination-strong">{totalItems}</span> patrocinios
+            {t("sponsors.pagination.showing")}{" "}
+            <span className="member-pagination-strong">{totalItems === 0 ? 0 : (page - 1) * pageSize + 1}</span>{" "}
+            {t("sponsors.pagination.to")}{" "}
+            <span className="member-pagination-strong">{Math.min(page * pageSize, totalItems)}</span>{" "}
+            {t("sponsors.pagination.of")} <span className="member-pagination-strong">{totalItems}</span>{" "}
+            {t("sponsors.pagination.items")}
           </p>
           <div className="member-pagination-controls">
             <button

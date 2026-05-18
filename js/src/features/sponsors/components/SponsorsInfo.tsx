@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowRight, Settings, ShieldAlert, ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../shared/hooks/useAuth";
@@ -12,6 +13,7 @@ import {
 } from "../utils";
 
 export default function SponsorsInfo() {
+  const { t } = useTranslation();
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
   const { catalogs, errorMessage, isLoading } = useSponsorCatalogs();
@@ -26,46 +28,34 @@ export default function SponsorsInfo() {
       <div className="sponsor-shell">
         <section className="sponsor-hero">
           <div className="sponsor-hero-copy">
-            <p className="sponsor-kicker">Patrocinios</p>
-            <h1 className="sponsor-title">Patrocinios & Publicidade 2024/25</h1>
-            <p className="sponsor-description">
-              Fundado em 1921, o Grupo Desportivo Uniao Ericeirense e um clube local com uma clara aposta na
-              formacao e no desenvolvimento dos nossos jovens, nas dimensoes tecnicas, humanas e sociais.
-            </p>
-            <p className="sponsor-description">
-              E com grande satisfacao que olhamos para a evolucao feita nos ultimos anos, onde registamos um
-              crescimento significativo de atletas, presentes em todos os escaloes e com niveis de desempenho
-              que nos orgulham.
-            </p>
-            <p className="sponsor-description">
-              Queremos continuar a crescer e fazer do GDUE uma referencia no futebol de formacao do nosso distrito.
-              Para isso, contamos com a contribuicao de quem se identifica com os nossos valores e com a nossa ambicao.
-            </p>
+            <p className="sponsor-kicker">{t("sponsors.info.kicker")}</p>
+            <h1 className="sponsor-title">{t("sponsors.info.title")}</h1>
+            <p className="sponsor-description">{t("sponsors.info.description1")}</p>
+            <p className="sponsor-description">{t("sponsors.info.description2")}</p>
+            <p className="sponsor-description">{t("sponsors.info.description3")}</p>
             <div className="sponsor-hero-actions">
               <Link className="sponsor-button-primary" to="/sponsors/create">
-                Criar patrocinio
+                {t("sponsors.info.create")}
                 <ArrowRight size={16} />
               </Link>
               {canManage ? (
                 <>
                   <Link className="sponsor-button-secondary" to="/sponsors/approvals">
                     <ShieldCheck size={16} />
-                    Aprovar pedidos
+                    {t("sponsors.info.approve")}
                   </Link>
                   <Link className="sponsor-button-secondary" to="/sponsors/settings">
                     <Settings size={16} />
-                    Settings
+                    {t("sponsors.info.settings")}
                   </Link>
                 </>
               ) : null}
             </div>
           </div>
           <div className="sponsor-highlight-card">
-            <p className="sponsor-highlight-label">Torne-se nosso patrocinador</p>
-            <strong className="sponsor-highlight-value">Em 3 passos</strong>
-            <span className="sponsor-highlight-meta">
-              Preencher o formulario, escolher a modalidade e aguardar aprovacão.
-            </span>
+            <p className="sponsor-highlight-label">{t("sponsors.info.highlightLabel")}</p>
+            <strong className="sponsor-highlight-value">{t("sponsors.info.highlightValue")}</strong>
+            <span className="sponsor-highlight-meta">{t("sponsors.info.highlightMeta")}</span>
           </div>
         </section>
 
@@ -78,28 +68,28 @@ export default function SponsorsInfo() {
 
         <section className="sponsor-brochure-grid">
           <article className="sponsor-brochure-card sponsor-brochure-copy">
-            <h2>Pacote PUB</h2>
+            <h2>{t("sponsors.info.pubPackage.title")}</h2>
             <ul className="sponsor-brochure-list">
-              <li>Lona interior ou outdoor</li>
-              <li>Presenca mural digital no site</li>
+              <li>{t("sponsors.info.pubPackage.items.0")}</li>
+              <li>{t("sponsors.info.pubPackage.items.1")}</li>
             </ul>
           </article>
 
           <article className="sponsor-brochure-card sponsor-brochure-table-card">
             <div className="sponsor-table-headline">
-              <h3>Tabela PUB</h3>
-              <span>{isLoading ? "A carregar..." : `${pubRows.length} opcoes`}</span>
+              <h3>{t("sponsors.info.pubTable")}</h3>
+              <span>{isLoading ? t("sponsors.common.loading") : t("sponsors.info.optionCount", { count: pubRows.length })}</span>
             </div>
             {pubRows.length === 0 ? (
-              <div className="sponsor-empty-card">Sem opcoes PUB com preco configurado.</div>
+              <div className="sponsor-empty-card">{t("sponsors.info.empty.pub")}</div>
             ) : (
               <div className="sponsor-table-wrapper">
                 <table className="sponsor-table">
                   <thead>
                     <tr>
-                      <th>Descritivo</th>
-                      <th>Livre</th>
-                      <th>Valor</th>
+                      <th>{t("sponsors.fields.description")}</th>
+                      <th>{t("sponsors.fields.free")}</th>
+                      <th>{t("sponsors.fields.value")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -119,28 +109,28 @@ export default function SponsorsInfo() {
 
         <section className="sponsor-brochure-grid sponsor-brochure-grid-wide">
           <article className="sponsor-brochure-card sponsor-brochure-copy">
-            <h2>Pacote Equipa</h2>
+            <h2>{t("sponsors.info.teamPackage.title")}</h2>
             <ul className="sponsor-brochure-list">
-              <li>Lona interior 3,00m x 0,80m</li>
-              <li>Presenca nos equipamentos</li>
-              <li>Presenca mural digital no site</li>
-              <li>Presenca no mapa de classificacoes semanal</li>
+              <li>{t("sponsors.info.teamPackage.items.0")}</li>
+              <li>{t("sponsors.info.teamPackage.items.1")}</li>
+              <li>{t("sponsors.info.teamPackage.items.2")}</li>
+              <li>{t("sponsors.info.teamPackage.items.3")}</li>
             </ul>
           </article>
 
           <article className="sponsor-brochure-card sponsor-brochure-table-card">
             <div className="sponsor-table-headline">
-              <h3>Tabela Equipa</h3>
-              <span>{isLoading ? "A carregar..." : `${teamColumns.length} opcoes`}</span>
+              <h3>{t("sponsors.info.teamTable")}</h3>
+              <span>{isLoading ? t("sponsors.common.loading") : t("sponsors.info.optionCount", { count: teamColumns.length })}</span>
             </div>
             {teamColumns.length === 0 || catalogs.equipmentPlacements.length === 0 ? (
-              <div className="sponsor-empty-card">Sem combinacoes de equipa configuradas.</div>
+              <div className="sponsor-empty-card">{t("sponsors.info.empty.team")}</div>
             ) : (
               <div className="sponsor-table-wrapper">
                 <table className="sponsor-table">
                   <thead>
                     <tr>
-                      <th>Equipamento</th>
+                      <th>{t("sponsors.fields.equipment")}</th>
                       {teamColumns.map((column) => (
                         <th key={column.id}>{column.label}</th>
                       ))}
@@ -166,26 +156,26 @@ export default function SponsorsInfo() {
 
         <section className="sponsor-brochure-grid">
           <article className="sponsor-brochure-card sponsor-brochure-copy">
-            <h2>Outras Modalidades</h2>
+            <h2>{t("sponsors.info.otherPackage.title")}</h2>
             <ul className="sponsor-brochure-list">
-              <li>Patinagem, Voleibol, Futebol Praia, Golf e outras opcoes ativas</li>
+              <li>{t("sponsors.info.otherPackage.items.0")}</li>
             </ul>
           </article>
 
           <article className="sponsor-brochure-card sponsor-brochure-table-card">
             <div className="sponsor-table-headline">
-              <h3>Tabela Outro</h3>
-              <span>{isLoading ? "A carregar..." : `${otherRows.length} modalidades`}</span>
+              <h3>{t("sponsors.info.otherTable")}</h3>
+              <span>{isLoading ? t("sponsors.common.loading") : t("sponsors.info.sportCount", { count: otherRows.length })}</span>
             </div>
             {otherRows.length === 0 ? (
-              <div className="sponsor-empty-card">Sem modalidades extra com preco configurado.</div>
+              <div className="sponsor-empty-card">{t("sponsors.info.empty.other")}</div>
             ) : (
               <div className="sponsor-table-wrapper">
                 <table className="sponsor-table">
                   <thead>
                     <tr>
-                      <th>Modalidade</th>
-                      <th>Valor</th>
+                      <th>{t("sponsors.fields.sport")}</th>
+                      <th>{t("sponsors.fields.value")}</th>
                     </tr>
                   </thead>
                   <tbody>

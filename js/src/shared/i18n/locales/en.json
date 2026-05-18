@@ -95,6 +95,269 @@
     "location": "Location",
     "copyright": "© 2026 Ericeirense Futebol Clube. All rights reserved."
   },
+  "userPage": {
+    "emptyValue": "—",
+    "actions": {
+      "back": "Back",
+      "logout": "Sign out"
+    },
+    "profile": {
+      "defaultName": "User",
+      "subtitle": "User account"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "SECRETARIA": "Secretary",
+      "NORMAL": "User"
+    },
+    "account": {
+      "title": "Account Details",
+      "description": "Information associated with your user account.",
+      "username": "Username",
+      "email": "Email",
+      "role": "Account Type",
+      "memberNumber": "Member Number"
+    },
+    "member": {
+      "title": "Member",
+      "badge": "Member #{{memberNumber}}",
+      "hasMemberDescription": "Access your member profile.",
+      "noMemberDescription": "You do not have a linked member profile yet.",
+      "view": "View Member Profile",
+      "become": "Become a Member"
+    },
+    "athlete": {
+      "title": "Athlete",
+      "currentCategory": "Current category: {{category}}.",
+      "view": "View Athlete Profile"
+    },
+    "sponsorClaim": {
+      "title": "Sponsor",
+      "description": "Link this account to an existing registered sponsor.",
+      "nif": "Tax ID",
+      "email": "Email",
+      "phone": "Phone",
+      "submit": "Link Sponsor",
+      "success": "Account linked to sponsor {{sponsorName}}.",
+      "error": "Could not link the account to the sponsor."
+    }
+  },
+  "sponsors": {
+    "common": {
+      "back": "Back",
+      "loading": "Loading..."
+    },
+    "fields": {
+      "available": "Available",
+      "code": "Code",
+      "description": "Description",
+      "email": "Email",
+      "equipment": "Equipment",
+      "free": "Free",
+      "label": "Label",
+      "name": "Name",
+      "nif": "Tax ID",
+      "occupied": "Occupied",
+      "phone": "Phone",
+      "price": "Price",
+      "season": "Season",
+      "sport": "Sport",
+      "sponsor": "Sponsor",
+      "team": "Team",
+      "type": "Type",
+      "value": "Value"
+    },
+    "labels": {
+      "types": {
+        "PUB": "Advertising",
+        "TEAM": "Team",
+        "OTHER": "Other sport"
+      },
+      "statuses": {
+        "SUBMETIDO": "Submitted",
+        "APROVADO": "Approved",
+        "PAGO": "Paid",
+        "ATIVO": "Active",
+        "CANCELADO": "Cancelled"
+      },
+      "unknown": {
+        "pub": "Unknown PUB option",
+        "team": "Unknown team placement",
+        "sport": "Unknown sport"
+      }
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "items": "sponsorships"
+    },
+    "errors": {
+      "loadCatalog": "Could not load the sponsorship table.",
+      "loadSponsorships": "Could not load sponsorships.",
+      "updateSponsorship": "Could not update the sponsorship."
+    },
+    "info": {
+      "kicker": "Sponsorships",
+      "title": "Sponsorships & Advertising 2024/25",
+      "description1": "Founded in 1921, Grupo Desportivo União Ericeirense is a local club strongly committed to training and developing young athletes across technical, human, and social dimensions.",
+      "description2": "We are proud of the progress made in recent years, with significant growth in athletes across all age groups and performance levels that make us proud.",
+      "description3": "We want to keep growing and make GDUE a reference in youth football in our district. To do that, we count on the contribution of those who identify with our values and ambition.",
+      "create": "Create sponsorship",
+      "approve": "Approve requests",
+      "settings": "Settings",
+      "highlightLabel": "Become our sponsor",
+      "highlightValue": "In 3 steps",
+      "highlightMeta": "Fill in the form, choose a sponsorship option, and wait for approval.",
+      "optionCount": "{{count}} options",
+      "sportCount": "{{count}} sports",
+      "pubPackage": {
+        "title": "PUB Package",
+        "items": ["Indoor or outdoor banner", "Digital wall presence on the website"]
+      },
+      "teamPackage": {
+        "title": "Team Package",
+        "items": ["Indoor banner 3.00m x 0.80m", "Presence on kits", "Digital wall presence on the website", "Presence on the weekly standings map"]
+      },
+      "otherPackage": {
+        "title": "Other Sports",
+        "items": ["Skating, Volleyball, Beach Football, Golf, and other active options"]
+      },
+      "pubTable": "PUB Table",
+      "teamTable": "Team Table",
+      "otherTable": "Other Table",
+      "empty": {
+        "pub": "No PUB options with configured price.",
+        "team": "No team combinations configured.",
+        "other": "No extra sports with configured price."
+      }
+    },
+    "create": {
+      "eyebrow": "New sponsorship",
+      "title": "Create sponsorship request",
+      "description": "Fill in your details and choose one active option. The request will be registered as pending.",
+      "sponsorData": "Sponsor details",
+      "form": "Form",
+      "linkedAccount": "Linked account",
+      "accountModes": {
+        "none": "None",
+        "self": "Me",
+        "username": "Username"
+      },
+      "usernamePlaceholder": "username",
+      "search": "Search",
+      "selectedUser": "Selected: {{username}} ({{email}})",
+      "submit": "Submit sponsorship",
+      "availableOptions": "Available options",
+      "choose": "Choose sponsorship",
+      "tabs": {
+        "teams": "Teams",
+        "other": "Other"
+      },
+      "loadingOptions": "Loading options...",
+      "previousTeam": "Previous team",
+      "nextTeam": "Next team",
+      "teamCounter": "Team {{current}} of {{total}}",
+      "freeAvailable": "{{count}} free",
+      "success": "Sponsorship request submitted successfully. It will remain pending approval.",
+      "empty": {
+        "all": "There are no options with an active price at the moment.",
+        "pub": "There are no advertising options with an active price.",
+        "team": "There are no team options with an active price.",
+        "other": "There are no other options with an active price."
+      },
+      "errors": {
+        "loadOptions": "Could not load sponsorship options.",
+        "selectOption": "Choose an available sponsorship option.",
+        "selectUser": "Search and select a user before submitting.",
+        "submit": "Could not submit the sponsorship.",
+        "usernameRequired": "Enter a username to search.",
+        "userNotFound": "Could not find that user."
+      }
+    },
+    "my": {
+      "eyebrow": "Private area",
+      "title": "My sponsorships",
+      "description": "View the requests and contracts linked to this account.",
+      "viewOptions": "View options",
+      "stats": {
+        "total": "Total",
+        "submitted": "Submitted",
+        "activeValue": "Active value"
+      },
+      "contractsEyebrow": "Contracts",
+      "listTitle": "List",
+      "loading": "Loading sponsorships...",
+      "empty": "There are no sponsorships linked to this account yet.",
+      "details": "Details"
+    },
+    "details": {
+      "eyebrow": "Details",
+      "title": "Sponsorship",
+      "description": "Information about the request and the linked sponsor.",
+      "loading": "Loading sponsorship...",
+      "contract": "Contract",
+      "invalid": "Invalid sponsorship.",
+      "loadError": "Could not load the sponsorship."
+    },
+    "approvals": {
+      "eyebrow": "Approvals",
+      "title": "Sponsorship list",
+      "description": "Review pending requests and manage approval and payment flow.",
+      "settingsLink": "Go to settings",
+      "loading": "Loading sponsorships...",
+      "empty": "There are no registered sponsorships.",
+      "actions": {
+        "approve": "Approve",
+        "markPaid": "Mark paid",
+        "cancel": "Cancel"
+      }
+    },
+    "settings": {
+      "eyebrow": "Settings",
+      "title": "Sponsorship options and prices",
+      "description": "Add, edit, deactivate, and reorder available options.",
+      "approvalsLink": "View approvals",
+      "loading": "Loading configuration...",
+      "catalogEyebrow": "Catalog",
+      "catalogTitle": "Available options",
+      "teamPricesEyebrow": "Cross table",
+      "teamPricesTitle": "Team prices",
+      "overridesEyebrow": "Overrides",
+      "overridesTitle": "Specific team price",
+      "overridesDescription": "Choose a team to create or update a price that overrides the group price.",
+      "selectTeam": "Select team",
+      "sections": {
+        "pub": { "title": "PUB options", "subtitle": "Advertising." },
+        "placement": { "title": "Equipment placements", "subtitle": "Placements." },
+        "sport": { "title": "Other sports", "subtitle": "Other sports." }
+      },
+      "actions": {
+        "add": "Add",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save",
+        "deactivate": "Deactivate"
+      },
+      "notices": {
+        "created": "Option created successfully.",
+        "updated": "Option updated.",
+        "deactivated": "Option deactivated.",
+        "reordered": "Order updated.",
+        "priceUpdated": "Price updated.",
+        "overrideUpdated": "Override updated."
+      },
+      "errors": {
+        "load": "Could not load the configuration.",
+        "requiredCodeLabel": "Code and label are required.",
+        "invalidAvailable": "Available must be a positive integer.",
+        "create": "Could not create the option.",
+        "update": "Could not update the option.",
+        "deactivate": "Could not deactivate the option.",
+        "reorder": "Could not reorder."
+      }
+    }
+  },
   "config": {
     "codeTooltip": "Code is the short identifier used internally. ex: 'SENIORES'",
     "labelTooltip": "Label is the visible name for admins and users. ex: 'Seniores'"

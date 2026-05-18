@@ -95,6 +95,269 @@
     "location": "Localização",
     "copyright": "© 2026 Ericeirense Futebol Clube. Todos os direitos reservados."
   },
+  "userPage": {
+    "emptyValue": "—",
+    "actions": {
+      "back": "Voltar",
+      "logout": "Sair"
+    },
+    "profile": {
+      "defaultName": "Utilizador",
+      "subtitle": "Conta de utilizador"
+    },
+    "roles": {
+      "ADMIN": "Administrador",
+      "SECRETARIA": "Secretaria",
+      "NORMAL": "Utilizador"
+    },
+    "account": {
+      "title": "Dados da Conta",
+      "description": "Informação associada ao seu utilizador.",
+      "username": "Nome de Utilizador",
+      "email": "Email",
+      "role": "Tipo de Conta",
+      "memberNumber": "Número de Sócio"
+    },
+    "member": {
+      "title": "Sócio",
+      "badge": "Sócio #{{memberNumber}}",
+      "hasMemberDescription": "Acesso à sua ficha de sócio.",
+      "noMemberDescription": "Ainda não tem ficha de sócio associada.",
+      "view": "Ver Ficha de Sócio",
+      "become": "Tornar-se Sócio"
+    },
+    "athlete": {
+      "title": "Atleta",
+      "currentCategory": "Escalão atual: {{category}}.",
+      "view": "Ver Ficha de Atleta"
+    },
+    "sponsorClaim": {
+      "title": "Patrocinador",
+      "description": "Associe esta conta a um patrocinador já registado.",
+      "nif": "NIF",
+      "email": "Email",
+      "phone": "Telemóvel",
+      "submit": "Associar Patrocinador",
+      "success": "Conta associada ao patrocinador {{sponsorName}}.",
+      "error": "Não foi possível associar a conta ao patrocinador."
+    }
+  },
+  "sponsors": {
+    "common": {
+      "back": "Voltar",
+      "loading": "A carregar..."
+    },
+    "fields": {
+      "available": "Disponível",
+      "code": "Código",
+      "description": "Descritivo",
+      "email": "Email",
+      "equipment": "Equipamento",
+      "free": "Livre",
+      "label": "Label",
+      "name": "Nome",
+      "nif": "NIF",
+      "occupied": "Ocupado",
+      "phone": "Telefone",
+      "price": "Preço",
+      "season": "Época",
+      "sport": "Modalidade",
+      "sponsor": "Patrocinador",
+      "team": "Equipa",
+      "type": "Tipo",
+      "value": "Valor"
+    },
+    "labels": {
+      "types": {
+        "PUB": "Publicidade",
+        "TEAM": "Equipa",
+        "OTHER": "Outra modalidade"
+      },
+      "statuses": {
+        "SUBMETIDO": "Submetido",
+        "APROVADO": "Aprovado",
+        "PAGO": "Pago",
+        "ATIVO": "Ativo",
+        "CANCELADO": "Cancelado"
+      },
+      "unknown": {
+        "pub": "Opção PUB desconhecida",
+        "team": "Colocação de equipa desconhecida",
+        "sport": "Modalidade desconhecida"
+      }
+    },
+    "pagination": {
+      "showing": "A mostrar",
+      "to": "até",
+      "of": "de",
+      "items": "patrocínios"
+    },
+    "errors": {
+      "loadCatalog": "Não foi possível carregar a tabela de patrocínio.",
+      "loadSponsorships": "Não foi possível carregar os patrocínios.",
+      "updateSponsorship": "Não foi possível atualizar o patrocínio."
+    },
+    "info": {
+      "kicker": "Patrocínios",
+      "title": "Patrocínios & Publicidade 2024/25",
+      "description1": "Fundado em 1921, o Grupo Desportivo União Ericeirense é um clube local com uma clara aposta na formação e no desenvolvimento dos nossos jovens, nas dimensões técnicas, humanas e sociais.",
+      "description2": "É com grande satisfação que olhamos para a evolução feita nos últimos anos, onde registamos um crescimento significativo de atletas, presentes em todos os escalões e com níveis de desempenho que nos orgulham.",
+      "description3": "Queremos continuar a crescer e fazer do GDUE uma referência no futebol de formação do nosso distrito. Para isso, contamos com a contribuição de quem se identifica com os nossos valores e com a nossa ambição.",
+      "create": "Criar patrocínio",
+      "approve": "Aprovar pedidos",
+      "settings": "Settings",
+      "highlightLabel": "Torne-se nosso patrocinador",
+      "highlightValue": "Em 3 passos",
+      "highlightMeta": "Preencher o formulário, escolher a modalidade e aguardar aprovação.",
+      "optionCount": "{{count}} opções",
+      "sportCount": "{{count}} modalidades",
+      "pubPackage": {
+        "title": "Pacote PUB",
+        "items": ["Lona interior ou outdoor", "Presença mural digital no site"]
+      },
+      "teamPackage": {
+        "title": "Pacote Equipa",
+        "items": ["Lona interior 3,00m x 0,80m", "Presença nos equipamentos", "Presença mural digital no site", "Presença no mapa de classificações semanal"]
+      },
+      "otherPackage": {
+        "title": "Outras Modalidades",
+        "items": ["Patinagem, Voleibol, Futebol Praia, Golf e outras opções ativas"]
+      },
+      "pubTable": "Tabela PUB",
+      "teamTable": "Tabela Equipa",
+      "otherTable": "Tabela Outro",
+      "empty": {
+        "pub": "Sem opções PUB com preço configurado.",
+        "team": "Sem combinações de equipa configuradas.",
+        "other": "Sem modalidades extra com preço configurado."
+      }
+    },
+    "create": {
+      "eyebrow": "Novo patrocínio",
+      "title": "Criar pedido de patrocínio",
+      "description": "Preenche os teus dados e escolhe uma das opções ativas. O pedido será registado como pendente.",
+      "sponsorData": "Dados do patrocinador",
+      "form": "Formulário",
+      "linkedAccount": "Conta associada",
+      "accountModes": {
+        "none": "Nenhuma",
+        "self": "Eu",
+        "username": "Username"
+      },
+      "usernamePlaceholder": "username",
+      "search": "Procurar",
+      "selectedUser": "Selecionado: {{username}} ({{email}})",
+      "submit": "Submeter patrocínio",
+      "availableOptions": "Opções disponíveis",
+      "choose": "Escolher patrocínio",
+      "tabs": {
+        "teams": "Equipas",
+        "other": "Outros"
+      },
+      "loadingOptions": "A carregar opções...",
+      "previousTeam": "Equipa anterior",
+      "nextTeam": "Equipa seguinte",
+      "teamCounter": "Equipa {{current}} de {{total}}",
+      "freeAvailable": "{{count}} livres",
+      "success": "Pedido de patrocínio submetido com sucesso. Ficará pendente de aprovação.",
+      "empty": {
+        "all": "Não existem opções com preço ativo neste momento.",
+        "pub": "Não existem opções de publicidade com preço ativo.",
+        "team": "Não existem opções de equipa com preço ativo.",
+        "other": "Não existem outras opções com preço ativo."
+      },
+      "errors": {
+        "loadOptions": "Não foi possível carregar as opções de patrocínio.",
+        "selectOption": "Escolhe uma opção de patrocínio disponível.",
+        "selectUser": "Pesquisa e seleciona um utilizador antes de submeter.",
+        "submit": "Não foi possível submeter o patrocínio.",
+        "usernameRequired": "Indica um username para procurar.",
+        "userNotFound": "Não foi possível encontrar esse utilizador."
+      }
+    },
+    "my": {
+      "eyebrow": "Área reservada",
+      "title": "Meus patrocínios",
+      "description": "Consulta os pedidos e contratos associados a esta conta.",
+      "viewOptions": "Ver opções",
+      "stats": {
+        "total": "Total",
+        "submitted": "Submetidos",
+        "activeValue": "Valor ativo"
+      },
+      "contractsEyebrow": "Contratos",
+      "listTitle": "Lista",
+      "loading": "A carregar patrocínios...",
+      "empty": "Ainda não existem patrocínios associados a esta conta.",
+      "details": "Detalhes"
+    },
+    "details": {
+      "eyebrow": "Detalhe",
+      "title": "Patrocínio",
+      "description": "Informação do pedido e do patrocinador associado.",
+      "loading": "A carregar patrocínio...",
+      "contract": "Contrato",
+      "invalid": "Patrocínio inválido.",
+      "loadError": "Não foi possível carregar o patrocínio."
+    },
+    "approvals": {
+      "eyebrow": "Aprovações",
+      "title": "Lista de patrocínios",
+      "description": "Revê pedidos pendentes e gere o fluxo de aprovação e pagamento.",
+      "settingsLink": "Ir para settings",
+      "loading": "A carregar patrocínios...",
+      "empty": "Não existem patrocínios registados.",
+      "actions": {
+        "approve": "Aprovar",
+        "markPaid": "Marcar pago",
+        "cancel": "Cancelar"
+      }
+    },
+    "settings": {
+      "eyebrow": "Settings",
+      "title": "Opções e preços de patrocínio",
+      "description": "Adicionar, editar, desativar e reordenar opções disponíveis.",
+      "approvalsLink": "Ver aprovações",
+      "loading": "A carregar configuração...",
+      "catalogEyebrow": "Catálogo",
+      "catalogTitle": "Opções disponíveis",
+      "teamPricesEyebrow": "Tabela cruzada",
+      "teamPricesTitle": "Preços de equipa",
+      "overridesEyebrow": "Overrides",
+      "overridesTitle": "Preço de equipa específica",
+      "overridesDescription": "Escolhe uma equipa para criar ou atualizar um preço que fica acima do preço do grupo.",
+      "selectTeam": "Selecionar equipa",
+      "sections": {
+        "pub": { "title": "Opções PUB", "subtitle": "Publicidade." },
+        "placement": { "title": "Localizações em equipamento", "subtitle": "Localizações." },
+        "sport": { "title": "Outras modalidades", "subtitle": "Outras modalidades." }
+      },
+      "actions": {
+        "add": "Adicionar",
+        "cancel": "Cancelar",
+        "edit": "Editar",
+        "save": "Guardar",
+        "deactivate": "Desativar"
+      },
+      "notices": {
+        "created": "Opção criada com sucesso.",
+        "updated": "Opção atualizada.",
+        "deactivated": "Opção desativada.",
+        "reordered": "Ordem atualizada.",
+        "priceUpdated": "Preço atualizado.",
+        "overrideUpdated": "Override atualizado."
+      },
+      "errors": {
+        "load": "Não foi possível carregar a configuração.",
+        "requiredCodeLabel": "Código e label são obrigatórios.",
+        "invalidAvailable": "Disponível deve ser um inteiro positivo.",
+        "create": "Não foi possível criar a opção.",
+        "update": "Não foi possível atualizar a opção.",
+        "deactivate": "Não foi possível desativar a opção.",
+        "reorder": "Não foi possível reordenar."
+      }
+    }
+  },
   "config": {
     "codeTooltip": "Code é o identificador curto usado internamente. ex: 'SENIORES'",
     "labelTooltip": "Label é o nome visivel para admins e utilizadores. ex: 'Seniores'"

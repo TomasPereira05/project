@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import i18n from "../../../shared/i18n";
 import {
   createEquipmentPlacement,
   createOtherSport,
@@ -51,7 +52,7 @@ export function useSponsorSettingsActions({
   async function handleCreateCatalog(kind: CatalogKind) {
     const draft = catalogDrafts[kind];
     if (!draft.code.trim() || !draft.label.trim()) {
-      setActionErrorMessage("Code e label sao obrigatorios.");
+      setActionErrorMessage(i18n.t("sponsors.settings.errors.requiredCodeLabel"));
       return;
     }
     setActionErrorMessage("");
@@ -61,7 +62,7 @@ export function useSponsorSettingsActions({
         const available = parseCatalogCount(draft.available);
         const price = centsFromEuroInput(draft.price ?? "0");
         if (!isValidPubCapacity(available)) {
-          setActionErrorMessage("Available deve ser um inteiro positivo.");
+          setActionErrorMessage(i18n.t("sponsors.settings.errors.invalidAvailable"));
           return;
         }
         await createPubOption({ code: draft.code, label: draft.label, available, free: available, occupied: 0, price, sortOrder: catalogs.pubOptions.length });
@@ -74,10 +75,10 @@ export function useSponsorSettingsActions({
         ...current,
         [kind]: createEmptyCatalogDraft(kind),
       }));
-      setNotice("Opcao criada com sucesso.");
+      setNotice(i18n.t("sponsors.settings.notices.created"));
       await refreshCatalogs();
     } catch (error) {
-      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.settings.errors.create"));
     }
   }
 
@@ -88,10 +89,10 @@ export function useSponsorSettingsActions({
       if (kind === "pub") await updatePubOption((item as PubOption).pubId, item as PubOption);
       else if (kind === "placement") await updateEquipmentPlacement((item as EquipmentPlacement).equipmentId, item as EquipmentPlacement);
       else await updateOtherSport((item as OtherSport).sportId, item as OtherSport);
-      setNotice("Opcao atualizada.");
+      setNotice(i18n.t("sponsors.settings.notices.updated"));
       await refreshCatalogs();
     } catch (error) {
-      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.settings.errors.update"));
     }
   }
 
@@ -102,10 +103,10 @@ export function useSponsorSettingsActions({
       if (kind === "pub") await deactivatePubOption(id);
       else if (kind === "placement") await deactivateEquipmentPlacement(id);
       else await deactivateOtherSport(id);
-      setNotice("Opcao desativada.");
+      setNotice(i18n.t("sponsors.settings.notices.deactivated"));
       await refreshCatalogs();
     } catch (error) {
-      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel desativar a opcao.");
+      setActionErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.settings.errors.deactivate"));
     }
   }
 
@@ -115,10 +116,10 @@ export function useSponsorSettingsActions({
       if (kind === "pub") await reorderPubOptions(moveItem(catalogs.pubOptions, dragState.index, targetIndex).map((item) => item.pubId));
       else if (kind === "placement") await reorderEquipmentPlacements(moveItem(catalogs.equipmentPlacements, dragState.index, targetIndex).map((item) => item.equipmentId));
       else await reorderOtherSports(moveItem(catalogs.otherSports, dragState.index, targetIndex).map((item) => item.sportId));
-      setNotice("Ordem atualizada.");
+      setNotice(i18n.t("sponsors.settings.notices.reordered"));
       await refreshCatalogs();
     } catch (error) {
-      setActionErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar.");
+      setActionErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.settings.errors.reorder"));
     } finally {
       setDragState(null);
     }

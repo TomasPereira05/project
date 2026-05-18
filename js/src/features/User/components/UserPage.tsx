@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,10 +19,11 @@ import { fetchMember, type Member } from "../../Members";
 import { getInitials } from "../../../shared/utils";
 import { getMyAthlete, type AthleteAdmin } from "../../Athletes";
 import { claimSponsorAccount } from "../../sponsors";
-import { roleLabel, roleBadgeColor } from "../utils";
+import { roleBadgeColor } from "../utils";
 
 export default function UserPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { username, email, role, activeMemberId, clearAuth } = useAuth();
 
   const [member, setMember] = useState<Member | null>(null);
@@ -72,119 +74,102 @@ export default function UserPage() {
 
     try {
       const sponsor = await claimSponsorAccount(claimForm);
-      setClaimMessage(`Conta associada ao patrocinador ${sponsor.name}.`);
+      setClaimMessage(t("userPage.sponsorClaim.success", { sponsorName: sponsor.name }));
       setClaimForm({ nif: "", email: "", phone: "" });
     } catch (error) {
-      setClaimError(error instanceof Error ? error.message : "Nao foi possivel associar a conta ao patrocinador.");
+      setClaimError(error instanceof Error ? error.message : t("userPage.sponsorClaim.error"));
     }
   }
 
-  const displayName = username ?? "Utilizador";
+  const displayName = username ?? t("userPage.profile.defaultName");
   const hasSpecialRole = role === "ADMIN" || role === "SECRETARIA";
+  const roleText = role ? t(`userPage.roles.${role}`, { defaultValue: role }) : t("userPage.emptyValue");
 
   return (
     <div>
       <Header />
       <main className="member-page">
         <div className="member-detail-container">
-
-          <div className="flex justify-between items-center mb-6">
-            <button
-              onClick={() => window.history.back()}
-              className="text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide"
-            >
+          <div className="user-page-topbar">
+            <button onClick={() => window.history.back()} className="user-back-button">
               <ArrowLeft size={18} />
-              Voltar
+              {t("userPage.actions.back")}
             </button>
           </div>
 
-          {/* PROFILE HEADER */}
-          <section className="member-card mb-8">
-            <div className="bg-gradient-to-r from-[#001D4A] to-primary h-32"></div>
-            <div className="px-6 sm:px-10 pb-8 relative">
-              <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-6 -mt-12 sm:-mt-16 mb-6">
-                <div className="flex items-end gap-5">
-                  <div className="w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full flex items-center justify-center text-3xl sm:text-4xl font-heading text-primary border-4 border-white shadow-md">
-                    {getInitials(displayName)}
-                  </div>
-                  <div className="pb-2 mt-16 sm:mt-20">
-                    <h1 className="font-heading text-2xl sm:text-3xl text-text-primary uppercase tracking-tight">
-                      {displayName}
-                    </h1>
-                    <p className="text-text-secondary font-medium mt-1">Conta de utilizador</p>
+          <section className="user-profile-card">
+            <div className="user-profile-banner"></div>
+            <div className="user-profile-body">
+              <div className="user-profile-main">
+                <div className="user-profile-identity">
+                  <div className="user-avatar">{getInitials(displayName)}</div>
+                  <div className="user-profile-title-group">
+                    <h1 className="user-profile-title">{displayName}</h1>
+                    <p className="user-profile-subtitle">{t("userPage.profile.subtitle")}</p>
                   </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 pb-2">
-                  {hasSpecialRole && (
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border ${roleBadgeColor(role)}`}>
-                      {roleLabel(role)}
-                    </span>
-                  )}
+                <div className="user-badges">
+                  {hasSpecialRole && <span className={`user-role-badge ${roleBadgeColor(role)}`}>{roleText}</span>}
                   {member && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200">
-                      Sócio #{member.memberNumber}
+                    <span className="user-member-badge">
+                      {t("userPage.member.badge", { memberNumber: member.memberNumber })}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary text-primary bg-transparent hover:bg-primary hover:text-white transition-colors rounded-md"
-                >
+              <div className="user-profile-actions">
+                <button type="button" onClick={handleLogout} className="user-button-outline">
                   <LogOut size={18} />
-                  Sair
+                  {t("userPage.actions.logout")}
                 </button>
               </div>
             </div>
           </section>
 
-          {/* ACCOUNT INFO */}
-          <section className="member-card mb-8">
-            <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
-              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+          <section className="user-section-card">
+            <div className="user-section-header">
+              <div className="user-section-icon">
                 <UserIcon size={20} />
               </div>
               <div>
-                <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Dados da Conta</h2>
-                <p className="text-xs text-text-secondary mt-1">Informação associada ao seu utilizador.</p>
+                <h2 className="user-section-title">{t("userPage.account.title")}</h2>
+                <p className="user-section-description">{t("userPage.account.description")}</p>
               </div>
             </div>
 
-            <div className="p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10">
-                <div className="flex items-start gap-3">
-                  <UserIcon size={18} className="text-text-secondary mt-0.5" />
+            <div className="user-section-body">
+              <div className="user-info-grid">
+                <div className="user-info-item">
+                  <UserIcon size={18} className="user-info-icon" />
                   <div>
-                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Nome de Utilizador</p>
-                    <p className="font-medium text-text-primary mt-1">{displayName}</p>
+                    <p className="user-info-label">{t("userPage.account.username")}</p>
+                    <p className="user-info-value">{displayName}</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <Mail size={18} className="text-text-secondary mt-0.5" />
+                <div className="user-info-item">
+                  <Mail size={18} className="user-info-icon" />
                   <div>
-                    <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Email</p>
-                    <p className="font-medium text-text-primary mt-1 break-all">{email ?? "—"}</p>
+                    <p className="user-info-label">{t("userPage.account.email")}</p>
+                    <p className="user-info-value-break">{email ?? t("userPage.emptyValue")}</p>
                   </div>
                 </div>
                 {hasSpecialRole && (
-                  <div className="flex items-start gap-3">
-                    <Shield size={18} className="text-text-secondary mt-0.5" />
+                  <div className="user-info-item">
+                    <Shield size={18} className="user-info-icon" />
                     <div>
-                      <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Tipo de Conta</p>
-                      <p className="font-medium text-text-primary mt-1">{roleLabel(role)}</p>
+                      <p className="user-info-label">{t("userPage.account.role")}</p>
+                      <p className="user-info-value">{roleText}</p>
                     </div>
                   </div>
                 )}
                 {member && (
-                  <div className="flex items-start gap-3">
-                    <IdCard size={18} className="text-text-secondary mt-0.5" />
+                  <div className="user-info-item">
+                    <IdCard size={18} className="user-info-icon" />
                     <div>
-                      <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Número de Sócio</p>
-                      <p className="font-medium text-text-primary mt-1">#{member.memberNumber}</p>
+                      <p className="user-info-label">{t("userPage.account.memberNumber")}</p>
+                      <p className="user-info-value">#{member.memberNumber}</p>
                     </div>
                   </div>
                 )}
@@ -192,82 +177,71 @@ export default function UserPage() {
             </div>
           </section>
 
-          {/* MEMBER LINK */}
-          <section className="member-card mb-8">
-            <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
-              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+          <section className="user-section-card">
+            <div className="user-section-header">
+              <div className="user-section-icon">
                 <Users size={20} />
               </div>
               <div>
-                <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Sócio</h2>
-                <p className="text-xs text-text-secondary mt-1">
-                  {member ? "Acesso à sua ficha de sócio." : "Ainda não tem ficha de sócio associada."}
+                <h2 className="user-section-title">{t("userPage.member.title")}</h2>
+                <p className="user-section-description">
+                  {member ? t("userPage.member.hasMemberDescription") : t("userPage.member.noMemberDescription")}
                 </p>
               </div>
             </div>
 
-            <div className="p-6 flex flex-wrap gap-3">
+            <div className="user-link-actions">
               {member ? (
-                <Link
-                  to={`/members/${member.memberId}`}
-                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md"
-                >
+                <Link to={`/members/${member.memberId}`} className="user-button-primary">
                   <Users size={18} />
-                  Ver Ficha de Sócio
+                  {t("userPage.member.view")}
                 </Link>
               ) : (
-                <Link
-                  to="/members/create"
-                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md"
-                >
+                <Link to="/members/create" className="user-button-primary">
                   <UserPlus size={18} />
-                  Tornar-se Sócio
+                  {t("userPage.member.become")}
                 </Link>
               )}
             </div>
           </section>
 
-          {/* ATHLETE LINK (only when applicable) */}
           {athlete && (
-            <section className="member-card mb-8">
-              <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
-                <div className="p-2 bg-primary/10 text-primary rounded-lg">
+            <section className="user-section-card">
+              <div className="user-section-header">
+                <div className="user-section-icon">
                   <UserPlus size={20} />
                 </div>
                 <div>
-                  <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Atleta</h2>
-                  <p className="text-xs text-text-secondary mt-1">
-                    Escalão atual: {athlete.teamCategoryLabel}.
+                  <h2 className="user-section-title">{t("userPage.athlete.title")}</h2>
+                  <p className="user-section-description">
+                    {t("userPage.athlete.currentCategory", { category: athlete.teamCategoryLabel })}
                   </p>
                 </div>
               </div>
 
-              <div className="p-6 flex flex-wrap gap-3">
-                <Link
-                  to={`/athletes/${athlete.athleteId}`}
-                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md"
-                >
+              <div className="user-link-actions">
+                <Link to={`/athletes/${athlete.athleteId}`} className="user-button-primary">
                   <UserPlus size={18} />
-                  Ver Ficha de Atleta
+                  {t("userPage.athlete.view")}
                 </Link>
               </div>
             </section>
           )}
 
-          <section className="member-card mb-8">
-            <div className="px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3">
-              <div className="p-2 bg-primary/10 text-primary rounded-lg">
+          <section className="user-section-card">
+            <div className="user-section-header">
+              <div className="user-section-icon">
                 <IdCard size={20} />
               </div>
               <div>
-                <h2 className="font-heading text-xl text-text-primary uppercase tracking-tight">Patrocinador</h2>
-                <p className="text-xs text-text-secondary mt-1">Associe esta conta a um patrocinador ja registado.</p>
+                <h2 className="user-section-title">{t("userPage.sponsorClaim.title")}</h2>
+                <p className="user-section-description">{t("userPage.sponsorClaim.description")}</p>
               </div>
             </div>
 
-            <form className="p-6 grid grid-cols-1 md:grid-cols-3 gap-4" onSubmit={handleSponsorClaim}>
-              <label className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
-                NIF
+            <form className="user-claim-form" onSubmit={handleSponsorClaim}>
+              <label className="user-claim-label">
+                {t("userPage.sponsorClaim.nif")}
                 <input
                   className="member-input"
                   required
@@ -275,8 +249,8 @@ export default function UserPage() {
                   onChange={(event) => setClaimForm((current) => ({ ...current, nif: event.target.value }))}
                 />
               </label>
-              <label className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
-                Email
+              <label className="user-claim-label">
+                {t("userPage.sponsorClaim.email")}
                 <input
                   className="member-input"
                   required
@@ -285,8 +259,8 @@ export default function UserPage() {
                   onChange={(event) => setClaimForm((current) => ({ ...current, email: event.target.value }))}
                 />
               </label>
-              <label className="flex flex-col gap-2 text-sm font-semibold text-text-primary">
-                Telemovel
+              <label className="user-claim-label">
+                {t("userPage.sponsorClaim.phone")}
                 <input
                   className="member-input"
                   required
@@ -294,20 +268,16 @@ export default function UserPage() {
                   onChange={(event) => setClaimForm((current) => ({ ...current, phone: event.target.value }))}
                 />
               </label>
-              <div className="md:col-span-3 flex flex-wrap items-center gap-3">
-                <button
-                  type="submit"
-                  className="inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md"
-                >
+              <div className="user-claim-actions">
+                <button type="submit" className="user-button-primary">
                   <Phone size={18} />
-                  Associar Patrocinador
+                  {t("userPage.sponsorClaim.submit")}
                 </button>
-                {claimMessage ? <p className="text-sm font-medium text-green-700">{claimMessage}</p> : null}
-                {claimError ? <p className="text-sm font-medium text-red-700">{claimError}</p> : null}
+                {claimMessage ? <p className="user-claim-success">{claimMessage}</p> : null}
+                {claimError ? <p className="user-claim-error">{claimError}</p> : null}
               </div>
             </form>
           </section>
-
         </div>
       </main>
       <Footer />
