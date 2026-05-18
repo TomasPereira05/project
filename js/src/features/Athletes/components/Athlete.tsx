@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, CheckCircle2, PencilLine, XCircle } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   approveAthlete,
   deactivateAthlete,
@@ -19,16 +20,16 @@ function isAdminLike(role?: string) {
   return role === "ADMIN" || role === "SECRETARIA";
 }
 
-function statusLabel(status: AthleteStatus): string {
+function statusLabel(status: AthleteStatus, t: (key: string) => string): string {
   switch (status) {
     case "ATIVO":
-      return "Ativo";
+      return t("athletes.labels.statuses.ATIVO");
     case "PENDENTE":
-      return "Pendente";
+      return t("athletes.labels.statuses.PENDENTE");
     case "INATIVO":
-      return "Inativo";
+      return t("athletes.labels.statuses.INATIVO");
     case "REJEITADO":
-      return "Rejeitado";
+      return t("athletes.labels.statuses.REJEITADO");
   }
 }
 
@@ -58,6 +59,7 @@ function PageWrapper({ children }: { children: ReactNode }) {
 }
 
 export default function AthletePage() {
+  const { t } = useTranslation();
   const { athleteId } = useParams();
   const { role } = useAuth();
   const adminView = isAdminLike(role);
@@ -86,7 +88,7 @@ export default function AthletePage() {
           if (!ignore) setPublicDto(response);
         }
       } catch {
-        if (!ignore) setErrorMessage("Não foi possível carregar a ficha do atleta.");
+        if (!ignore) setErrorMessage(t("athletes.detail.errors.load"));
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -105,10 +107,10 @@ export default function AthletePage() {
         ? await deactivateAthlete(adminDto.athleteId)
         : await reactivateAthlete(adminDto.athleteId);
       setAdminDto(updated);
-      setFeedback(updated.active ? "Atleta reativado com sucesso." : "Atleta desativado.");
+      setFeedback(updated.active ? t("athletes.detail.feedback.reactivated") : t("athletes.detail.feedback.deactivated"));
       setErrorMessage("");
     } catch {
-      setErrorMessage("Não foi possível atualizar o estado do atleta.");
+      setErrorMessage(t("athletes.detail.errors.toggle"));
     }
   }
 
@@ -118,10 +120,10 @@ export default function AthletePage() {
       const today = new Date().toISOString().slice(0, 10);
       const updated = await approveAthlete(adminDto.athleteId, today);
       setAdminDto(updated);
-      setFeedback("Inscrição aprovada com sucesso.");
+      setFeedback(t("athletes.detail.feedback.approved"));
       setErrorMessage("");
     } catch {
-      setErrorMessage("Não foi possível aprovar a inscrição.");
+      setErrorMessage(t("athletes.detail.errors.approve"));
     }
   }
 
@@ -130,10 +132,10 @@ export default function AthletePage() {
     try {
       const updated = await rejectAthlete(adminDto.athleteId);
       setAdminDto(updated);
-      setFeedback("Inscrição rejeitada.");
+      setFeedback(t("athletes.detail.feedback.rejected"));
       setErrorMessage("");
     } catch {
-      setErrorMessage("Não foi possível rejeitar a inscrição.");
+      setErrorMessage(t("athletes.detail.errors.reject"));
     }
   }
 
@@ -142,7 +144,7 @@ export default function AthletePage() {
       <PageWrapper>
         <div className="member-loading-container py-10">
           <div className="member-loading-spinner"></div>
-          <p className="member-loading-text">A carregar ficha do atleta...</p>
+          <p className="member-loading-text">{t("athletes.detail.loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -156,7 +158,7 @@ export default function AthletePage() {
         </div>
         <Link className="member-btn-back" to="/athletes">
           <ArrowLeft size={16} />
-          Voltar
+          {t("athletes.common.back")}
         </Link>
       </PageWrapper>
     );
@@ -172,6 +174,7 @@ export default function AthletePage() {
           onToggle: handleToggleActive,
           onApprove: handleApprove,
           onReject: handleReject,
+          t,
         })}
       </PageWrapper>
     );
@@ -180,7 +183,7 @@ export default function AthletePage() {
   if (publicDto) {
     return (
       <PageWrapper>
-        {renderPublicContent(publicDto)}
+        {renderPublicContent(publicDto, t)}
       </PageWrapper>
     );
   }
@@ -195,6 +198,7 @@ function renderAdminContent({
   onToggle,
   onApprove,
   onReject,
+  t,
 }: {
   athlete: AthleteAdmin;
   feedback: string;
@@ -202,6 +206,7 @@ function renderAdminContent({
   onToggle: () => void;
   onApprove: () => void;
   onReject: () => void;
+  t: (key: string, options?: Record<string, unknown>) => string;
 }) {
   const isPending = athlete.status === "PENDENTE";
   return (
@@ -209,7 +214,7 @@ function renderAdminContent({
       <div className="member-topbar">
         <Link to="/athletes" className="member-btn-back">
           <ArrowLeft size={18} />
-          Voltar
+          {t("athletes.common.back")}
         </Link>
       </div>
 
@@ -240,12 +245,12 @@ function renderAdminContent({
               </div>
               <div className="member-profile-name-block">
                 <h1 className="member-profile-name">{athlete.member.completeName}</h1>
-                <p className="member-profile-number">Sócio #{athlete.member.memberNumber} · Atleta #{athlete.athleteId}</p>
+                <p className="member-profile-number">{t("athletes.detail.memberAthlete", { memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}</p>
               </div>
             </div>
             <div className="member-profile-badges">
               <span className={`member-status-badge ${statusColor(athlete.status)}`}>
-                {statusLabel(athlete.status)}
+                {statusLabel(athlete.status, t)}
               </span>
               <span className="member-category-badge">{athlete.teamCategoryLabel}</span>
             </div>
@@ -256,18 +261,18 @@ function renderAdminContent({
               <>
                 <button className="member-btn-approve" onClick={onApprove} type="button">
                   <CheckCircle2 size={18} />
-                  Aprovar
+                  {t("athletes.detail.actions.approve")}
                 </button>
                 <button className="member-btn-reject" onClick={onReject} type="button">
                   <XCircle size={18} />
-                  Rejeitar
+                  {t("athletes.detail.actions.reject")}
                 </button>
               </>
             ) : (
               <>
                 <Link className="member-btn-primary-sm" to={`/athletes/${athlete.athleteId}/edit`}>
                   <PencilLine size={18} />
-                  Atualizar
+                  {t("athletes.detail.actions.update")}
                 </Link>
                 <button
                   className={athlete.active ? "member-btn-reject" : "member-btn-approve"}
@@ -277,12 +282,12 @@ function renderAdminContent({
                   {athlete.active ? (
                     <>
                       <XCircle size={18} />
-                      Desativar
+                      {t("athletes.detail.actions.deactivate")}
                     </>
                   ) : (
                     <>
                       <CheckCircle2 size={18} />
-                      Reativar
+                      {t("athletes.detail.actions.reactivate")}
                     </>
                   )}
                 </button>
@@ -294,60 +299,60 @@ function renderAdminContent({
 
       <section className="member-section-card">
         <div className="member-section-header">
-          <h2 className="member-section-title">Identidade</h2>
+          <h2 className="member-section-title">{t("athletes.detail.sections.identity")}</h2>
         </div>
         <div className="member-section-body">
           <div className="member-admin-grid">
-            <Field label="Data nascimento" value={formatDate(athlete.member.birthDate)} />
-            <Field label="Naturalidade" value={athlete.member.birthplace ?? "—"} />
-            <Field label="Nacionalidade" value={athlete.nationality} />
-            <Field label="Email" value={athlete.member.email} />
-            <Field label="Telemóvel" value={athlete.member.phone} />
-            <Field label="Número" value={athlete.jerseyNumber !== null ? String(athlete.jerseyNumber) : "Não atribuído"} />
-            <Field label="Posição" value={athlete.position ?? "Não atribuída"} />
+            <Field label={t("athletes.fields.birthDate")} value={formatDate(athlete.member.birthDate)} />
+            <Field label={t("athletes.fields.birthplace")} value={athlete.member.birthplace ?? t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.nationality")} value={athlete.nationality} />
+            <Field label={t("athletes.fields.email")} value={athlete.member.email} />
+            <Field label={t("athletes.fields.phone")} value={athlete.member.phone} />
+            <Field label={t("athletes.fields.number")} value={athlete.jerseyNumber !== null ? String(athlete.jerseyNumber) : t("athletes.common.notAssigned")} />
+            <Field label={t("athletes.fields.position")} value={athlete.position ?? t("athletes.common.notAssignedFemale")} />
           </div>
         </div>
       </section>
 
       <section className="member-section-card">
         <div className="member-section-header">
-          <h2 className="member-section-title">Documentos</h2>
+          <h2 className="member-section-title">{t("athletes.detail.sections.documents")}</h2>
         </div>
         <div className="member-section-body">
           <div className="member-admin-grid">
             <Field label="NIF" value={athlete.member.nif} />
             <Field label="NISS" value={athlete.niss} />
-            <Field label="Nº Utente" value={athlete.numeroUtente} />
+            <Field label={t("athletes.fields.healthNumber")} value={athlete.numeroUtente} />
             <Field label="BI / CC / Passaporte" value={athlete.bi} />
-            <Field label="Validade BI" value={formatDate(athlete.biExpirationDate)} />
+            <Field label={t("athletes.fields.biValidity")} value={formatDate(athlete.biExpirationDate)} />
           </div>
         </div>
       </section>
 
       <section className="member-section-card">
         <div className="member-section-header">
-          <h2 className="member-section-title">Morada</h2>
+          <h2 className="member-section-title">{t("athletes.detail.sections.address")}</h2>
         </div>
         <div className="member-section-body">
           <div className="member-admin-grid">
-            <Field label="Morada" value={athlete.member.address} />
-            <Field label="Localidade" value={athlete.member.city} />
-            <Field label="Código postal" value={athlete.member.postalCode} />
+            <Field label={t("athletes.fields.address")} value={athlete.member.address} />
+            <Field label={t("athletes.fields.city")} value={athlete.member.city} />
+            <Field label={t("athletes.fields.postalCode")} value={athlete.member.postalCode} />
           </div>
         </div>
       </section>
 
       <section className="member-section-card">
         <div className="member-section-header">
-          <h2 className="member-section-title">Escola</h2>
+          <h2 className="member-section-title">{t("athletes.detail.sections.school")}</h2>
         </div>
         <div className="member-section-body">
           <div className="member-admin-grid">
-            <Field label="Escola" value={athlete.school ?? "—"} />
-            <Field label="Ano" value={athlete.schoolYear ?? "—"} />
-            <Field label="Turma" value={athlete.schoolClass ?? "—"} />
-            <Field label="Último clube" value={athlete.lastClub ?? "—"} />
-            <Field label="Época" value={athlete.season ?? "—"} />
+            <Field label={t("athletes.fields.school")} value={athlete.school ?? t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.schoolYear")} value={athlete.schoolYear ?? t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.schoolClass")} value={athlete.schoolClass ?? t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.lastClub")} value={athlete.lastClub ?? t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.season")} value={athlete.season ?? t("athletes.common.empty")} />
           </div>
         </div>
       </section>
@@ -355,7 +360,7 @@ function renderAdminContent({
       {athlete.guardians.length > 0 && (
         <section className="member-section-card">
           <div className="member-section-header">
-            <h2 className="member-section-title">Encarregados</h2>
+            <h2 className="member-section-title">{t("athletes.detail.sections.guardians")}</h2>
           </div>
           <div className="member-section-body">
             <div className="member-form-grid">
@@ -364,16 +369,16 @@ function renderAdminContent({
                   <div className="member-privacy-head">
                     <span className="member-privacy-title">{g.name}</span>
                     <span className="member-category-badge">
-                      {g.role === "FATHER" && "Pai"}
-                      {g.role === "MOTHER" && "Mãe"}
-                      {g.role === "LEGAL_GUARDIAN" && `EE${g.kinship ? ` (${g.kinship})` : ""}`}
+                      {g.role === "FATHER" && t("athletes.guardians.father")}
+                      {g.role === "MOTHER" && t("athletes.guardians.mother")}
+                      {g.role === "LEGAL_GUARDIAN" && t("athletes.guardians.legalGuardianWithKinship", { kinship: g.kinship ? ` (${g.kinship})` : "" })}
                     </span>
                   </div>
                   <div className="text-sm text-text-secondary space-y-1">
                     <div>{g.email}</div>
                     <div>{g.phone}</div>
-                    {g.contactPhone && <div>Contacto: {g.contactPhone}</div>}
-                    {g.professionalActivity && <div>Atividade: {g.professionalActivity}</div>}
+                    {g.contactPhone && <div>{t("athletes.guardians.contact", { phone: g.contactPhone })}</div>}
+                    {g.professionalActivity && <div>{t("athletes.guardians.activity", { activity: g.professionalActivity })}</div>}
                   </div>
                 </div>
               ))}
@@ -385,13 +390,13 @@ function renderAdminContent({
   );
 }
 
-function renderPublicContent(athlete: AthleteDetail) {
+function renderPublicContent(athlete: AthleteDetail, t: (key: string, options?: Record<string, unknown>) => string) {
   return (
     <>
       <div className="member-topbar">
         <Link to={`/athletes/category/${athlete.teamCategoryCode}`} className="member-btn-back">
           <ArrowLeft size={18} />
-          Voltar à categoria
+          {t("athletes.detail.backToCategory")}
         </Link>
       </div>
 
@@ -421,13 +426,13 @@ function renderPublicContent(athlete: AthleteDetail) {
 
       <section className="member-section-card">
         <div className="member-section-header">
-          <h2 className="member-section-title">Ficha desportiva</h2>
+          <h2 className="member-section-title">{t("athletes.detail.sections.sportsProfile")}</h2>
         </div>
         <div className="member-section-body">
           <div className="member-admin-grid">
-            <Field label="Número" value={athlete.numero !== null ? String(athlete.numero) : "—"} />
-            <Field label="Posição" value={athlete.posicao ?? "—"} />
-            <Field label="Idade" value={athlete.idade !== null ? `${athlete.idade} anos` : "—"} />
+            <Field label={t("athletes.fields.number")} value={athlete.numero !== null ? String(athlete.numero) : t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.position")} value={athlete.posicao ?? t("athletes.common.empty")} />
+            <Field label={t("athletes.fields.age")} value={athlete.idade !== null ? t("athletes.detail.ageValue", { count: athlete.idade }) : t("athletes.common.empty")} />
           </div>
         </div>
       </section>
@@ -435,7 +440,7 @@ function renderPublicContent(athlete: AthleteDetail) {
       {athlete.epocasRepresentadas.length > 0 && (
         <section className="member-section-card">
           <div className="member-section-header">
-            <h2 className="member-section-title">Épocas representadas</h2>
+            <h2 className="member-section-title">{t("athletes.detail.sections.representedSeasons")}</h2>
           </div>
           <div className="member-section-body">
             <div className="flex flex-wrap gap-2">

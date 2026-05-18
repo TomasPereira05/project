@@ -39,9 +39,9 @@ export default function TeamSettings() {
       <div className="sponsor-shell">
         <section className="sponsor-page-header">
           <div>
-            <p className="sponsor-section-eyebrow">Equipas</p>
-            <h1 className="sponsor-panel-title">Settings de equipas</h1>
-            <p className="sponsor-muted-text">Gere grupos, categorias, estado e ordem de apresentacao.</p>
+            <p className="sponsor-section-eyebrow">{t("athletes.teamSettings.eyebrow")}</p>
+            <h1 className="sponsor-panel-title">{t("athletes.teamSettings.title")}</h1>
+            <p className="sponsor-muted-text">{t("athletes.teamSettings.description")}</p>
           </div>
           <button
             className="sponsor-button-secondary"
@@ -49,7 +49,7 @@ export default function TeamSettings() {
             type="button"
           >
             {showInactive ? <EyeOff size={16} /> : <Eye size={16} />}
-            {showInactive ? "Mostrar ativas" : "Mostrar inativas"}
+            {showInactive ? t("athletes.teamSettings.showActive") : t("athletes.teamSettings.showInactive")}
           </button>
         </section>
 
@@ -63,21 +63,21 @@ export default function TeamSettings() {
 
         <section className="team-settings-management-grid">
           <SettingsPanel
-            emptyMessage="Sem grupos para mostrar."
+            emptyMessage={t("athletes.teamSettings.emptyGroups")}
             isLoading={isLoading}
-            loadingMessage="A carregar grupos..."
-            title="Grupos"
-            eyebrow="Team groups"
+            loadingMessage={t("athletes.teamSettings.loadingGroups")}
+            title={t("athletes.teamSettings.groups")}
+            eyebrow={t("athletes.teamSettings.teamGroups")}
             form={
               <div className="sponsor-inline-form team-settings-inline-form">
-                <LabeledField label="Code" tooltip={codeTooltip}>
+                <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
                   <input
                     className="sponsor-input"
                     value={groupDraft.code}
                     onChange={(event) => setGroupDraft((current) => ({ ...current, code: event.target.value }))}
                   />
                 </LabeledField>
-                <LabeledField label="Label" tooltip={labelTooltip}>
+                <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
                   <input
                     className="sponsor-input"
                     value={groupDraft.label}
@@ -85,7 +85,7 @@ export default function TeamSettings() {
                   />
                 </LabeledField>
                 <button className="sponsor-button-primary" onClick={handleCreateGroup} type="button">
-                  Add
+                  {t("athletes.teamSettings.actions.add")}
                 </button>
               </div>
             }
@@ -104,44 +104,44 @@ export default function TeamSettings() {
           </SettingsPanel>
 
           <SettingsPanel
-            emptyMessage="Sem categorias para mostrar."
+            emptyMessage={t("athletes.teamSettings.emptyCategories")}
             isLoading={isLoading}
-            loadingMessage="A carregar categorias..."
-            title="Escaloes de equipa"
-            eyebrow="Categorias"
+            loadingMessage={t("athletes.teamSettings.loadingCategories")}
+            title={t("athletes.teamSettings.categoriesTitle")}
+            eyebrow={t("athletes.teamSettings.categories")}
             form={
               <div className="sponsor-inline-form team-settings-inline-form">
-                <LabeledField label="Code" tooltip={codeTooltip}>
+                <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
                   <input
                     className="sponsor-input"
                     value={categoryDraft.code}
                     onChange={(event) => setCategoryDraft((current) => ({ ...current, code: event.target.value }))}
                   />
                 </LabeledField>
-                <LabeledField label="Label" tooltip={labelTooltip}>
+                <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
                   <input
                     className="sponsor-input"
                     value={categoryDraft.label}
                     onChange={(event) => setCategoryDraft((current) => ({ ...current, label: event.target.value }))}
                   />
                 </LabeledField>
-                <LabeledField label="Grupo">
+                <LabeledField label={t("athletes.teamSettings.group")}>
                   <select
                     className="sponsor-input"
                     value={categoryDraft.teamGroupId}
                     onChange={(event) => setCategoryDraft((current) => ({ ...current, teamGroupId: event.target.value }))}
                   >
-                    <option value="">Grupo</option>
+                    <option value="">{t("athletes.teamSettings.group")}</option>
                     {groups.map((group) => (
                       <option key={group.teamGroupId} value={group.teamGroupId}>
                         {group.label}
-                        {group.active ? "" : " (inativo)"}
+                        {group.active ? "" : t("athletes.teamSettings.inactiveSuffix")}
                       </option>
                     ))}
                   </select>
                 </LabeledField>
                 <button className="sponsor-button-primary" onClick={handleCreateCategory} type="button">
-                  Add
+                  {t("athletes.teamSettings.actions.add")}
                 </button>
               </div>
             }
@@ -244,14 +244,14 @@ function TeamGroupRow({
       onDragStart={onDragStart}
       onDrop={onDrop}
     >
-      <div className="sponsor-catalog-reorder" title="Arrastar para reordenar">
+      <div className="sponsor-catalog-reorder" title={t("athletes.teamSettings.dragToReorder")}>
         <GripVertical size={16} />
       </div>
       <div className="sponsor-catalog-fields team-settings-row-fields">
-        <LabeledField label="Code" tooltip={codeTooltip}>
+        <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
           <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         </LabeledField>
-        <LabeledField label="Label" tooltip={labelTooltip}>
+        <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
           <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
         </LabeledField>
       </div>
@@ -266,7 +266,7 @@ function TeamGroupRow({
           }}
           type="button"
         >
-          {isEditing ? "Cancel" : "Edit"}
+          {isEditing ? t("athletes.teamSettings.actions.cancel") : t("athletes.teamSettings.actions.edit")}
         </button>
         {isEditing ? (
           <button
@@ -277,11 +277,11 @@ function TeamGroupRow({
             }}
             type="button"
           >
-            Save
+            {t("athletes.teamSettings.actions.save")}
           </button>
         ) : null}
         <button className="sponsor-button-ghost" onClick={onToggleActive} type="button">
-          {group.active ? "Deactivate" : "Activate"}
+          {group.active ? t("athletes.teamSettings.actions.deactivate") : t("athletes.teamSettings.actions.activate")}
         </button>
       </div>
     </div>
@@ -333,22 +333,22 @@ function TeamCategoryRow({
       onDragStart={onDragStart}
       onDrop={onDrop}
     >
-      <div className="sponsor-catalog-reorder" title="Arrastar para reordenar">
+      <div className="sponsor-catalog-reorder" title={t("athletes.teamSettings.dragToReorder")}>
         <GripVertical size={16} />
       </div>
       <div className="sponsor-catalog-fields team-settings-row-fields">
-        <LabeledField label="Code" tooltip={codeTooltip}>
+        <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
           <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         </LabeledField>
-        <LabeledField label="Label" tooltip={labelTooltip}>
+        <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
           <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
         </LabeledField>
-        <LabeledField label="Grupo">
+        <LabeledField label={t("athletes.teamSettings.group")}>
           <select className="sponsor-input" disabled={!isEditing} value={teamGroupId} onChange={(event) => setTeamGroupId(event.target.value)}>
             {groups.map((group) => (
               <option key={group.teamGroupId} value={group.teamGroupId}>
                 {group.label}
-                {group.active ? "" : " (inativo)"}
+                {group.active ? "" : t("athletes.teamSettings.inactiveSuffix")}
               </option>
             ))}
           </select>
@@ -365,7 +365,7 @@ function TeamCategoryRow({
           }}
           type="button"
         >
-          {isEditing ? "Cancel" : "Edit"}
+          {isEditing ? t("athletes.teamSettings.actions.cancel") : t("athletes.teamSettings.actions.edit")}
         </button>
         {isEditing ? (
           <button
@@ -380,11 +380,11 @@ function TeamCategoryRow({
             }}
             type="button"
           >
-            Save
+            {t("athletes.teamSettings.actions.save")}
           </button>
         ) : null}
         <button className="sponsor-button-ghost" onClick={onToggleActive} type="button">
-          {category.active ? "Deactivate" : "Activate"}
+          {category.active ? t("athletes.teamSettings.actions.deactivate") : t("athletes.teamSettings.actions.activate")}
         </button>
       </div>
     </div>

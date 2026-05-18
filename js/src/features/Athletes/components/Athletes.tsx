@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, ShieldAlert, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { listAllAdmin } from "..";
 import type { AthleteAdmin, AthleteStatus } from "..";
 import Header from "../../../shared/components/Header";
@@ -9,16 +10,16 @@ import { formatDate } from "../../../shared/utils";
 
 const PAGE_SIZE = 8;
 
-function statusLabel(status: AthleteStatus): string {
+function statusLabel(status: AthleteStatus, t: (key: string) => string): string {
   switch (status) {
     case "ATIVO":
-      return "Ativo";
+      return t("athletes.labels.statuses.ATIVO");
     case "PENDENTE":
-      return "Pendente";
+      return t("athletes.labels.statuses.PENDENTE");
     case "INATIVO":
-      return "Inativo";
+      return t("athletes.labels.statuses.INATIVO");
     case "REJEITADO":
-      return "Rejeitado";
+      return t("athletes.labels.statuses.REJEITADO");
   }
 }
 
@@ -36,6 +37,7 @@ function statusColor(status: AthleteStatus): string {
 }
 
 export default function Athletes() {
+  const { t } = useTranslation();
   const [athletes, setAthletes] = useState<AthleteAdmin[]>([]);
   const [page, setPage] = useState(1);
   const [totalAthletes, setTotalAthletes] = useState(0);
@@ -60,7 +62,7 @@ export default function Athletes() {
         }
       } catch {
         if (!ignore) {
-          setErrorMessage("Não foi possível carregar a lista de atletas.");
+          setErrorMessage(t("athletes.list.errors.load"));
         }
       } finally {
         if (!ignore) setIsLoading(false);
@@ -71,7 +73,7 @@ export default function Athletes() {
     return () => {
       ignore = true;
     };
-  }, [page]);
+  }, [page, t]);
 
   useEffect(() => {
     if (page > totalPages) {
@@ -93,17 +95,17 @@ export default function Athletes() {
             <div>
               <div className="member-kicker">
                 <Users size={18} />
-                <span>Administração</span>
+                <span>{t("athletes.list.kicker")}</span>
               </div>
-              <h1 className="member-page-title">Gestão de Atletas</h1>
+              <h1 className="member-page-title">{t("athletes.list.title")}</h1>
               <p className="member-page-desc">
-                Aprove ou rejeite inscrições pendentes e consulte o estado de cada atleta.
+                {t("athletes.list.description")}
               </p>
             </div>
             <div className="member-header-actions">
               <Link to="/athletes/register" className="member-primary-link-compact">
                 <Plus size={18} />
-                Nova inscrição
+                {t("athletes.list.newRegistration")}
               </Link>
             </div>
           </header>
@@ -125,7 +127,7 @@ export default function Athletes() {
                 <div className="member-pending-icon">
                   <Bell size={20} />
                 </div>
-                <span className="member-pending-title">Atletas Pendentes</span>
+                <span className="member-pending-title">{t("athletes.list.pending.title")}</span>
                 <span className="member-pending-count">{pendingAthletes.length}</span>
               </div>
               <ChevronDown
@@ -137,7 +139,7 @@ export default function Athletes() {
             {pendingOpen && (
               <div className="member-pending-panel">
                 {pendingAthletes.length === 0 ? (
-                  <p className="member-pending-empty">Sem inscrições pendentes nesta página.</p>
+                  <p className="member-pending-empty">{t("athletes.list.pending.empty")}</p>
                 ) : (
                   <div className="member-pending-list">
                     {pendingAthletes.map((athlete) => (
@@ -148,13 +150,13 @@ export default function Athletes() {
                             <span className="member-pagination-strong">{athlete.member.completeName}</span>
                           </div>
                           <div className="member-pending-meta">
-                            <span>Registo em {formatDate(athlete.member.registrationDate)}</span>
+                            <span>{t("athletes.list.pending.registeredAt", { date: formatDate(athlete.member.registrationDate) })}</span>
                             <span>•</span>
                             <span>{athlete.teamCategoryLabel}</span>
                           </div>
                         </div>
                         <Link className="member-btn-evaluate" to={`/athletes/${athlete.athleteId}`}>
-                          Avaliar Pedido
+                          {t("athletes.list.pending.evaluate")}
                         </Link>
                       </div>
                     ))}
@@ -168,7 +170,7 @@ export default function Athletes() {
             {isLoading ? (
               <div className="member-table-loading">
                 <div className="member-loading-spinner"></div>
-                <p className="member-loading-text">A carregar atletas...</p>
+                <p className="member-loading-text">{t("athletes.common.loadingAthletes")}</p>
               </div>
             ) : !errorMessage && (
               <>
@@ -176,12 +178,12 @@ export default function Athletes() {
                   <table className="member-table-wide">
                     <thead className="member-table-head">
                       <tr>
-                        <th className="member-th">Nº Sócio</th>
-                        <th className="member-th">Nome</th>
-                        <th className="member-th">Escalão</th>
-                        <th className="member-th">Estado</th>
-                        <th className="member-th">Registo / Cidade</th>
-                        <th className="member-th-right">Ações</th>
+                        <th className="member-th">{t("athletes.table.memberNumber")}</th>
+                        <th className="member-th">{t("athletes.fields.name")}</th>
+                        <th className="member-th">{t("athletes.fields.category")}</th>
+                        <th className="member-th">{t("athletes.fields.status")}</th>
+                        <th className="member-th">{t("athletes.table.registrationCity")}</th>
+                        <th className="member-th-right">{t("athletes.table.actions")}</th>
                       </tr>
                     </thead>
                     <tbody className="member-table-body">
@@ -197,7 +199,7 @@ export default function Athletes() {
                           </td>
                           <td className="member-td">
                             <span className={`member-status-badge ${statusColor(athlete.status)}`}>
-                              {statusLabel(athlete.status)}
+                              {statusLabel(athlete.status, t)}
                             </span>
                           </td>
                           <td className="member-td">
@@ -210,13 +212,13 @@ export default function Athletes() {
                                 to={`/athletes/${athlete.athleteId}/edit`}
                                 className="member-btn-table-edit"
                               >
-                                Editar
+                                {t("athletes.common.edit")}
                               </Link>
                               <Link
                                 to={`/athletes/${athlete.athleteId}`}
                                 className="member-action-btn"
                               >
-                                Ver
+                                {t("athletes.common.view")}
                               </Link>
                             </div>
                           </td>
@@ -228,7 +230,7 @@ export default function Athletes() {
 
                 <div className="member-pagination">
                   <p className="member-pagination-text">
-                    A mostrar <span className="member-pagination-strong">{totalAthletes === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}</span> até <span className="member-pagination-strong">{Math.min(page * PAGE_SIZE, totalAthletes)}</span> de <span className="member-pagination-strong">{totalAthletes}</span> atletas
+                    {t("athletes.pagination.showing")} <span className="member-pagination-strong">{totalAthletes === 0 ? 0 : (page - 1) * PAGE_SIZE + 1}</span> {t("athletes.pagination.to")} <span className="member-pagination-strong">{Math.min(page * PAGE_SIZE, totalAthletes)}</span> {t("athletes.pagination.of")} <span className="member-pagination-strong">{totalAthletes}</span> {t("athletes.pagination.items")}
                   </p>
                   <div className="member-pagination-controls">
                     <button

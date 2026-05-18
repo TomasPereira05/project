@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createTeamCategory,
   createTeamGroup,
@@ -26,6 +27,7 @@ import {
 import { moveItemById } from "../../../shared/utils";
 
 export function useTeamSettings() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<TeamCatalogCategory[]>([]);
   const [groups, setGroups] = useState<TeamGroup[]>([]);
   const [categoryDraft, setCategoryDraft] = useState<TeamCategoryDraft>(emptyCategoryDraft);
@@ -62,7 +64,7 @@ export function useTeamSettings() {
       setCategories(nextCategories);
       setGroups(nextGroups);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar as equipas.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.load"));
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +72,7 @@ export function useTeamSettings() {
 
   async function handleCreateGroup() {
     if (!groupDraft.code.trim() || !groupDraft.label.trim()) {
-      setErrorMessage("Code e label sao obrigatorios.");
+      setErrorMessage(t("athletes.teamSettings.errors.requiredCodeLabel"));
       return;
     }
 
@@ -84,22 +86,22 @@ export function useTeamSettings() {
         sortOrder: groups.length,
       });
       setGroupDraft(emptyGroupDraft);
-      setNotice("Grupo criado com sucesso.");
+      setNotice(t("athletes.teamSettings.notices.groupCreated"));
       await refreshSettings();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar o grupo.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.createGroup"));
     }
   }
 
   async function handleCreateCategory() {
     if (!categoryDraft.code.trim() || !categoryDraft.label.trim()) {
-      setErrorMessage("Code e label sao obrigatorios.");
+      setErrorMessage(t("athletes.teamSettings.errors.requiredCodeLabel"));
       return;
     }
 
     const teamGroupId = Number.parseInt(categoryDraft.teamGroupId, 10);
     if (Number.isNaN(teamGroupId)) {
-      setErrorMessage("Escolhe o grupo da equipa.");
+      setErrorMessage(t("athletes.teamSettings.errors.chooseGroup"));
       return;
     }
 
@@ -114,10 +116,10 @@ export function useTeamSettings() {
         sortOrder: categories.length,
       });
       setCategoryDraft(emptyCategoryDraft);
-      setNotice("Categoria criada com sucesso.");
+      setNotice(t("athletes.teamSettings.notices.categoryCreated"));
       await refreshSettings();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel criar a categoria.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.createCategory"));
     }
   }
 
@@ -127,10 +129,10 @@ export function useTeamSettings() {
 
     try {
       await updateTeamGroup(group.teamGroupId, group);
-      setNotice("Grupo atualizado.");
+      setNotice(t("athletes.teamSettings.notices.groupUpdated"));
       await refreshSettings();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o grupo.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.updateGroup"));
     }
   }
 
@@ -140,10 +142,10 @@ export function useTeamSettings() {
 
     try {
       await updateTeamCategory(category.teamId, category);
-      setNotice("Categoria atualizada.");
+      setNotice(t("athletes.teamSettings.notices.categoryUpdated"));
       await refreshSettings();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar a categoria.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.updateCategory"));
     }
   }
 
@@ -154,14 +156,14 @@ export function useTeamSettings() {
     try {
       if (group.active) {
         await deactivateTeamGroup(group.teamGroupId);
-        setNotice("Grupo desativado.");
+        setNotice(t("athletes.teamSettings.notices.groupDeactivated"));
       } else {
         await updateTeamGroup(group.teamGroupId, { ...group, active: true });
-        setNotice("Grupo ativado.");
+        setNotice(t("athletes.teamSettings.notices.groupActivated"));
       }
       await refreshSettings();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o estado do grupo.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.toggleGroup"));
     }
   }
 
@@ -172,14 +174,14 @@ export function useTeamSettings() {
     try {
       if (category.active) {
         await deactivateTeamCategory(category.teamId);
-        setNotice("Categoria desativada.");
+        setNotice(t("athletes.teamSettings.notices.categoryDeactivated"));
       } else {
         await updateTeamCategory(category.teamId, { ...category, active: true });
-        setNotice("Categoria ativada.");
+        setNotice(t("athletes.teamSettings.notices.categoryActivated"));
       }
       await refreshSettings();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o estado da categoria.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.toggleCategory"));
     }
   }
 
@@ -199,9 +201,9 @@ export function useTeamSettings() {
 
     try {
       await reorderTeamGroups(reordered.map((group) => group.teamGroupId));
-      setNotice("Ordem dos grupos atualizada.");
+      setNotice(t("athletes.teamSettings.notices.groupsReordered"));
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar os grupos.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.reorderGroups"));
       await refreshSettings();
     }
   }
@@ -222,9 +224,9 @@ export function useTeamSettings() {
 
     try {
       await reorderTeamCategories(reordered.map((category) => category.teamId));
-      setNotice("Ordem das categorias atualizada.");
+      setNotice(t("athletes.teamSettings.notices.categoriesReordered"));
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel reordenar as categorias.");
+      setErrorMessage(error instanceof Error ? error.message : t("athletes.teamSettings.errors.reorderCategories"));
       await refreshSettings();
     }
   }

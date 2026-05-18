@@ -1,4 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import {
   createMember,
   defaultMemberFormValues,
@@ -10,6 +11,7 @@ import { useAuth } from "../../../shared/hooks/useAuth";
 import { centsFromEuroInput } from "../../../shared/utils";
 
 export default function CreateMembers() {
+  const { t } = useTranslation();
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -35,14 +37,14 @@ export default function CreateMembers() {
     event.preventDefault();
 
     if (!values.privacyAccepted) {
-      setErrorMessage("Tem de aceitar o consentimento de privacidade para submeter.");
+      setErrorMessage(t("members.create.errors.privacy"));
       return;
     }
 
     if (values.category !== "ATLETA_SOCIO") {
       const quotaInCents = centsFromEuroInput(values.membershipQuotaEuros);
       if (!Number.isFinite(quotaInCents) || quotaInCents < 150) {
-        setErrorMessage("A quota mensal minima e 1,50 EUR.");
+        setErrorMessage(t("members.create.errors.minimumQuota"));
         return;
       }
     }
@@ -55,11 +57,11 @@ export default function CreateMembers() {
       const userId = (role === "ADMIN" ? null : id ?? null);
       const created = await createMember(values, userId);
       setSuccessMessage(
-        `Pedido submetido com sucesso. Foi atribuído o número #${created.memberNumber}.`,
+        t("members.create.success", { memberNumber: created.memberNumber }),
       );
       setValues(defaultMemberFormValues());
     } catch {
-      setErrorMessage("Não foi possível submeter o pedido de sócio.");
+      setErrorMessage(t("members.create.errors.submit"));
     } finally {
       setIsSubmitting(false);
     }
@@ -76,12 +78,12 @@ export default function CreateMembers() {
         
         <div className="member-form-container">
           <MemberForm
-            title="Criar novo sócio"
-            description="Formulário de candidatura com os dados necessários para avaliação por parte do clube."
+            title={t("members.create.title")}
+            description={t("members.create.description")}
             values={values}
             onChange={handleChange}
             onSubmit={handleSubmit}
-            submitLabel="Submeter pedido"
+            submitLabel={t("members.create.submit")}
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             successMessage={successMessage}

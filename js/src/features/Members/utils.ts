@@ -1,6 +1,8 @@
 import type { Member, MemberFormValues, PaymentHistoryItem } from "./types";
 import { euroInputFromCents } from "../../shared/utils";
 
+type Translate = (key: string, options?: Record<string, unknown>) => string;
+
 export function defaultMemberFormValues(member?: Member): MemberFormValues {
   return {
     completeName: member?.completeName ?? "",
@@ -24,26 +26,41 @@ export function defaultMemberFormValues(member?: Member): MemberFormValues {
   };
 }
 
-export function buildPaymentHistory(member: Member): PaymentHistoryItem[] {
+export function buildPaymentHistory(member: Member, t?: Translate): PaymentHistoryItem[] {
   if (member.category === "ATLETA_SOCIO" || member.membershipQuota === 0) {
     return [];
   }
 
   const baseAmount = member.membershipQuota;
-  const monthLabels = [
-    "Janeiro",
-    "Fevereiro",
-    "Marco",
-    "Abril",
-    "Maio",
-    "Junho",
-    "Julho",
-    "Agosto",
-    "Setembro",
-    "Outubro",
-    "Novembro",
-    "Dezembro",
-  ];
+  const monthLabels = t
+    ? [
+        t("members.months.january"),
+        t("members.months.february"),
+        t("members.months.march"),
+        t("members.months.april"),
+        t("members.months.may"),
+        t("members.months.june"),
+        t("members.months.july"),
+        t("members.months.august"),
+        t("members.months.september"),
+        t("members.months.october"),
+        t("members.months.november"),
+        t("members.months.december"),
+      ]
+    : [
+        "Janeiro",
+        "Fevereiro",
+        "Marco",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro",
+      ];
 
   return monthLabels.map((month, index) => {
     const isPaid = index < 3;
@@ -51,7 +68,7 @@ export function buildPaymentHistory(member: Member): PaymentHistoryItem[] {
 
     return {
       id: `${member.memberId}-${monthNumber}`,
-      label: `Quota de ${month}`,
+      label: t ? t("members.detail.finance.quotaOf", { month }) : `Quota de ${month}`,
       season: "2025/2026",
       amountCents: baseAmount,
       status: isPaid ? "PAID" : "PENDING",
