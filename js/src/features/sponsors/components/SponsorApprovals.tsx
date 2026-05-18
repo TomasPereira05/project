@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, Navigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../../shared/hooks/useAuth";
@@ -7,6 +8,7 @@ import { useSponsorApprovals } from "../hooks";
 import { orderSponsorApprovalItems, sponsorshipStatusClass, sponsorshipStatusLabel, sponsorTypeLabel } from "../utils";
 
 export default function SponsorApprovals() {
+  const { t } = useTranslation();
   const { role } = useAuth();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
   const [page, setPage] = useState(1);
@@ -32,12 +34,12 @@ export default function SponsorApprovals() {
       <div className="sponsor-shell">
         <section className="sponsor-page-header">
           <div>
-            <p className="sponsor-section-eyebrow">Aprovacoes</p>
-            <h1 className="sponsor-panel-title">Lista de patrocinios</h1>
-            <p className="sponsor-muted-text">Reve pedidos pendentes e gere o fluxo de aprovacao e pagamento.</p>
+            <p className="sponsor-section-eyebrow">{t("sponsors.approvals.eyebrow")}</p>
+            <h1 className="sponsor-panel-title">{t("sponsors.approvals.title")}</h1>
+            <p className="sponsor-muted-text">{t("sponsors.approvals.description")}</p>
           </div>
           <Link className="sponsor-button-secondary" to="/sponsors/settings">
-            Ir para settings
+            {t("sponsors.approvals.settingsLink")}
           </Link>
         </section>
 
@@ -50,9 +52,9 @@ export default function SponsorApprovals() {
 
         <section className="sponsor-panel">
           {isLoading ? (
-            <div className="sponsor-empty-card">A carregar patrocinios...</div>
+            <div className="sponsor-empty-card">{t("sponsors.approvals.loading")}</div>
           ) : orderedItems.length === 0 ? (
-            <div className="sponsor-empty-card">Nao existem patrocinios registados.</div>
+            <div className="sponsor-empty-card">{t("sponsors.approvals.empty")}</div>
           ) : (
             <div className="sponsor-contract-list">
               {orderedItems.map(({ sponsor, sponsorship }) => (
@@ -62,30 +64,31 @@ export default function SponsorApprovals() {
                       <div className="sponsor-contract-topline">
                         <strong>{sponsor.name}</strong>
                         <span className={sponsorshipStatusClass(sponsorship.status)}>
-                          {sponsorshipStatusLabel(sponsorship.status)}
+                          {sponsorshipStatusLabel(sponsorship.status, t)}
                         </span>
                       </div>
                       <p className="sponsor-contract-target">
-                        {sponsorTypeLabel(sponsorship.type)} · {formatCurrency(sponsorship.price)}
+                        {sponsorTypeLabel(sponsorship.type, t)} · {formatCurrency(sponsorship.price)}
                       </p>
                       <p className="sponsor-contract-meta">
-                        NIF {sponsor.nif} · {sponsor.email} · {sponsor.phone} · Epoca {sponsorship.season}
+                        {t("sponsors.fields.nif")} {sponsor.nif} · {sponsor.email} · {sponsor.phone} ·{" "}
+                        {t("sponsors.fields.season")} {sponsorship.season}
                       </p>
                     </div>
                     <div className="sponsor-contract-actions">
                       {sponsorship.status === "SUBMETIDO" ? (
                         <button className="sponsor-button-primary" onClick={() => void runAction(sponsorship.sponsorshipId, "approve")} type="button">
-                          Aprovar
+                          {t("sponsors.approvals.actions.approve")}
                         </button>
                       ) : null}
                       {sponsorship.status === "APROVADO" ? (
                         <button className="sponsor-button-secondary" onClick={() => void runAction(sponsorship.sponsorshipId, "paid")} type="button">
-                          Marcar pago
+                          {t("sponsors.approvals.actions.markPaid")}
                         </button>
                       ) : null}
                       {sponsorship.status !== "CANCELADO" && sponsorship.status !== "PAGO" ? (
                         <button className="sponsor-button-ghost" onClick={() => void runAction(sponsorship.sponsorshipId, "cancel")} type="button">
-                          Cancelar
+                          {t("sponsors.approvals.actions.cancel")}
                         </button>
                       ) : null}
                     </div>
@@ -98,7 +101,12 @@ export default function SponsorApprovals() {
 
         <div className="member-pagination">
           <p className="member-pagination-text">
-            A mostrar <span className="member-pagination-strong">{totalItems === 0 ? 0 : (page - 1) * pageSize + 1}</span> ate <span className="member-pagination-strong">{Math.min(page * pageSize, totalItems)}</span> de <span className="member-pagination-strong">{totalItems}</span> patrocinios
+            {t("sponsors.pagination.showing")}{" "}
+            <span className="member-pagination-strong">{totalItems === 0 ? 0 : (page - 1) * pageSize + 1}</span>{" "}
+            {t("sponsors.pagination.to")}{" "}
+            <span className="member-pagination-strong">{Math.min(page * pageSize, totalItems)}</span>{" "}
+            {t("sponsors.pagination.of")} <span className="member-pagination-strong">{totalItems}</span>{" "}
+            {t("sponsors.pagination.items")}
           </p>
           <div className="member-pagination-controls">
             <button

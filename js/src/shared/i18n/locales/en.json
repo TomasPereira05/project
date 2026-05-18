@@ -95,8 +95,736 @@
     "location": "Location",
     "copyright": "© 2026 Ericeirense Futebol Clube. All rights reserved."
   },
+  "userPage": {
+    "emptyValue": "—",
+    "actions": {
+      "back": "Back",
+      "logout": "Sign out"
+    },
+    "profile": {
+      "defaultName": "User",
+      "subtitle": "User account"
+    },
+    "roles": {
+      "ADMIN": "Administrator",
+      "SECRETARIA": "Secretary",
+      "NORMAL": "User"
+    },
+    "account": {
+      "title": "Account Details",
+      "description": "Information associated with your user account.",
+      "username": "Username",
+      "email": "Email",
+      "role": "Account Type",
+      "memberNumber": "Member Number"
+    },
+    "member": {
+      "title": "Member",
+      "badge": "Member #{{memberNumber}}",
+      "hasMemberDescription": "Access your member profile.",
+      "noMemberDescription": "You do not have a linked member profile yet.",
+      "view": "View Member Profile",
+      "become": "Become a Member"
+    },
+    "athlete": {
+      "title": "Athlete",
+      "currentCategory": "Current category: {{category}}.",
+      "view": "View Athlete Profile"
+    },
+    "sponsorClaim": {
+      "title": "Sponsor",
+      "description": "Link this account to an existing registered sponsor.",
+      "nif": "Tax ID",
+      "email": "Email",
+      "phone": "Phone",
+      "submit": "Link Sponsor",
+      "success": "Account linked to sponsor {{sponsorName}}.",
+      "error": "Could not link the account to the sponsor."
+    }
+  },
+  "members": {
+    "common": {
+      "back": "Back",
+      "edit": "Edit",
+      "view": "View",
+      "saving": "Saving...",
+      "yes": "Yes",
+      "no": "No",
+      "notProvided": "Not provided",
+      "notDefined": "Not defined"
+    },
+    "fields": {
+      "name": "Name",
+      "completeName": "Full name",
+      "birthDate": "Date of birth",
+      "email": "Email",
+      "phone": "Mobile phone",
+      "homePhone": "Home phone",
+      "nif": "Tax ID",
+      "category": "Category",
+      "status": "Status",
+      "monthlyQuota": "Monthly fee (EUR)",
+      "address": "Address",
+      "fullAddress": "Full address",
+      "postalCode": "Postal code",
+      "city": "City",
+      "billingLocation": "Billing location"
+    },
+    "labels": {
+      "categories": {
+        "SOCIO": "Member",
+        "ATLETA_SOCIO": "Athlete Member"
+      },
+      "statuses": {
+        "ATIVO": "Active",
+        "PENDENTE": "Pending",
+        "INATIVO": "Inactive",
+        "REJEITADO": "Rejected"
+      }
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "items": "members"
+    },
+    "form": {
+      "quotaHelp": "Minimum member fee: 1.50 EUR",
+      "billingPlaceholder": "Ex: Club headquarters",
+      "formerMember": "Has been a member before",
+      "formerMemberHelp": "Helps the office understand whether this is a new registration or a re-entry.",
+      "privacyTitle": "Required privacy text",
+      "readPrivacy": "I read the text",
+      "privacyText": "The personal data collected in this form will be processed by Grupo Desportivo União Ericeirense for club membership registration and for sending communications related to sporting activity. You may exercise your rights of access, rectification, cancellation, opposition, or deletion of your personal data whenever legally permitted, including withdrawal of consent where applicable. Not providing this data prevents registration. Your personal data will not be shared with third parties except with consent, when required by law, or to respond to legal process.",
+      "privacyConsent": "Privacy consent",
+      "privacyConsentHelp": "Required for submitting and evaluating the request.",
+      "readPrivacyFirst": "Read and confirm the text above first.",
+      "clubCommunications": "Club communications",
+      "clubCommunicationsHelp": "Allows you to receive notices, events, and institutional messages."
+    },
+    "create": {
+      "title": "Create new member",
+      "description": "Application form with the data needed for evaluation by the club.",
+      "submit": "Submit request",
+      "success": "Request submitted successfully. Number #{{memberNumber}} was assigned.",
+      "errors": {
+        "privacy": "You must accept the privacy consent before submitting.",
+        "minimumQuota": "The minimum monthly fee is 1.50 EUR.",
+        "submit": "Could not submit the member request."
+      }
+    },
+    "update": {
+      "title": "Update member",
+      "description": "The form is pre-filled so the member can review and correct their information.",
+      "submit": "Save changes",
+      "loading": "Loading update form...",
+      "success": "Data updated successfully.",
+      "errors": {
+        "load": "Could not load the member for update.",
+        "submit": "Could not update this member profile."
+      }
+    },
+    "list": {
+      "kicker": "Administration",
+      "title": "Member List",
+      "description": "Manage club members. Approve or reject pending requests and check each member's status.",
+      "newMember": "New Member",
+      "loading": "Loading members...",
+      "errors": {
+        "load": "Could not load the member list."
+      },
+      "pending": {
+        "title": "Pending Requests",
+        "empty": "There are no pending requests right now.",
+        "registeredAt": "Registered on {{date}}",
+        "evaluate": "Evaluate Request"
+      },
+      "table": {
+        "number": "No.",
+        "registrationCity": "Registration / City",
+        "actions": "Actions"
+      }
+    },
+    "detail": {
+      "loading": "Loading member profile...",
+      "memberNumber": "Member #{{memberNumber}}",
+      "memberSince": "Member since {{date}}",
+      "editProfile": "Edit Profile",
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject"
+      },
+      "feedback": {
+        "approved": "Member approved successfully.",
+        "rejected": "Member rejected successfully."
+      },
+      "errors": {
+        "load": "Could not load the member profile.",
+        "approve": "Could not approve this member.",
+        "reject": "Could not reject this member."
+      },
+      "admin": {
+        "title": "Administration Information",
+        "description": "Complete data for evaluating and following up with the member.",
+        "approval": "Approval",
+        "consents": "Consents",
+        "privacy": "Privacy",
+        "communications": "Communications"
+      },
+      "finance": {
+        "title": "Financial Summary",
+        "description": "Fee history and payment status.",
+        "monthlyQuota": "Monthly Fee",
+        "overdueQuotas": "Overdue Fees",
+        "debtTotal": "Total Debt",
+        "paymentHistory": "Payment History",
+        "emptyHistory": "This member has no fees to show in the history.",
+        "quotaOf": "{{month}} fee",
+        "paymentMeta": "Season {{season}} • Due {{dueDate}}",
+        "paidAt": "Paid on {{date}}",
+        "overdue": "Overdue"
+      }
+    }
+  },
+  "sponsors": {
+    "common": {
+      "back": "Back",
+      "loading": "Loading..."
+    },
+    "fields": {
+      "available": "Available",
+      "code": "Code",
+      "description": "Description",
+      "email": "Email",
+      "equipment": "Equipment",
+      "free": "Free",
+      "label": "Label",
+      "name": "Name",
+      "nif": "Tax ID",
+      "occupied": "Occupied",
+      "phone": "Phone",
+      "price": "Price",
+      "season": "Season",
+      "sport": "Sport",
+      "sponsor": "Sponsor",
+      "team": "Team",
+      "type": "Type",
+      "value": "Value"
+    },
+    "labels": {
+      "types": {
+        "PUB": "Advertising",
+        "TEAM": "Team",
+        "OTHER": "Other sport"
+      },
+      "statuses": {
+        "SUBMETIDO": "Submitted",
+        "APROVADO": "Approved",
+        "PAGO": "Paid",
+        "ATIVO": "Active",
+        "CANCELADO": "Cancelled"
+      },
+      "unknown": {
+        "pub": "Unknown PUB option",
+        "team": "Unknown team placement",
+        "sport": "Unknown sport"
+      }
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "items": "sponsorships"
+    },
+    "errors": {
+      "loadCatalog": "Could not load the sponsorship table.",
+      "loadSponsorships": "Could not load sponsorships.",
+      "updateSponsorship": "Could not update the sponsorship."
+    },
+    "info": {
+      "kicker": "Sponsorships",
+      "title": "Sponsorships & Advertising 2024/25",
+      "description1": "Founded in 1921, Grupo Desportivo União Ericeirense is a local club strongly committed to training and developing young athletes across technical, human, and social dimensions.",
+      "description2": "We are proud of the progress made in recent years, with significant growth in athletes across all age groups and performance levels that make us proud.",
+      "description3": "We want to keep growing and make GDUE a reference in youth football in our district. To do that, we count on the contribution of those who identify with our values and ambition.",
+      "create": "Create sponsorship",
+      "approve": "Approve requests",
+      "settings": "Settings",
+      "highlightLabel": "Become our sponsor",
+      "highlightValue": "In 3 steps",
+      "highlightMeta": "Fill in the form, choose a sponsorship option, and wait for approval.",
+      "optionCount": "{{count}} options",
+      "sportCount": "{{count}} sports",
+      "pubPackage": {
+        "title": "PUB Package",
+        "items": [
+          "Indoor or outdoor banner",
+          "Digital wall presence on the website"
+        ]
+      },
+      "teamPackage": {
+        "title": "Team Package",
+        "items": [
+          "Indoor banner 3.00m x 0.80m",
+          "Presence on kits",
+          "Digital wall presence on the website",
+          "Presence on the weekly standings map"
+        ]
+      },
+      "otherPackage": {
+        "title": "Other Sports",
+        "items": [
+          "Skating, Volleyball, Beach Football, Golf, and other active options"
+        ]
+      },
+      "pubTable": "PUB Table",
+      "teamTable": "Team Table",
+      "otherTable": "Other Table",
+      "empty": {
+        "pub": "No PUB options with configured price.",
+        "team": "No team combinations configured.",
+        "other": "No extra sports with configured price."
+      }
+    },
+    "create": {
+      "eyebrow": "New sponsorship",
+      "title": "Create sponsorship request",
+      "description": "Fill in your details and choose one active option. The request will be registered as pending.",
+      "sponsorData": "Sponsor details",
+      "form": "Form",
+      "linkedAccount": "Linked account",
+      "accountModes": {
+        "none": "None",
+        "self": "Me",
+        "username": "Username"
+      },
+      "usernamePlaceholder": "username",
+      "search": "Search",
+      "selectedUser": "Selected: {{username}} ({{email}})",
+      "submit": "Submit sponsorship",
+      "availableOptions": "Available options",
+      "choose": "Choose sponsorship",
+      "tabs": {
+        "teams": "Teams",
+        "other": "Other"
+      },
+      "loadingOptions": "Loading options...",
+      "previousTeam": "Previous team",
+      "nextTeam": "Next team",
+      "teamCounter": "Team {{current}} of {{total}}",
+      "freeAvailable": "{{count}} free",
+      "success": "Sponsorship request submitted successfully. It will remain pending approval.",
+      "empty": {
+        "all": "There are no options with an active price at the moment.",
+        "pub": "There are no advertising options with an active price.",
+        "team": "There are no team options with an active price.",
+        "other": "There are no other options with an active price."
+      },
+      "errors": {
+        "loadOptions": "Could not load sponsorship options.",
+        "selectOption": "Choose an available sponsorship option.",
+        "selectUser": "Search and select a user before submitting.",
+        "submit": "Could not submit the sponsorship.",
+        "usernameRequired": "Enter a username to search.",
+        "userNotFound": "Could not find that user."
+      }
+    },
+    "my": {
+      "eyebrow": "Private area",
+      "title": "My sponsorships",
+      "description": "View the requests and contracts linked to this account.",
+      "viewOptions": "View options",
+      "stats": {
+        "total": "Total",
+        "submitted": "Submitted",
+        "activeValue": "Active value"
+      },
+      "contractsEyebrow": "Contracts",
+      "listTitle": "List",
+      "loading": "Loading sponsorships...",
+      "empty": "There are no sponsorships linked to this account yet.",
+      "details": "Details"
+    },
+    "details": {
+      "eyebrow": "Details",
+      "title": "Sponsorship",
+      "description": "Information about the request and the linked sponsor.",
+      "loading": "Loading sponsorship...",
+      "contract": "Contract",
+      "invalid": "Invalid sponsorship.",
+      "loadError": "Could not load the sponsorship."
+    },
+    "approvals": {
+      "eyebrow": "Approvals",
+      "title": "Sponsorship list",
+      "description": "Review pending requests and manage approval and payment flow.",
+      "settingsLink": "Go to settings",
+      "loading": "Loading sponsorships...",
+      "empty": "There are no registered sponsorships.",
+      "actions": {
+        "approve": "Approve",
+        "markPaid": "Mark paid",
+        "cancel": "Cancel"
+      }
+    },
+    "settings": {
+      "eyebrow": "Settings",
+      "title": "Sponsorship options and prices",
+      "description": "Add, edit, deactivate, and reorder available options.",
+      "approvalsLink": "View approvals",
+      "loading": "Loading configuration...",
+      "catalogEyebrow": "Catalog",
+      "catalogTitle": "Available options",
+      "teamPricesEyebrow": "Cross table",
+      "teamPricesTitle": "Team prices",
+      "overridesEyebrow": "Overrides",
+      "overridesTitle": "Specific team price",
+      "overridesDescription": "Choose a team to create or update a price that overrides the group price.",
+      "selectTeam": "Select team",
+      "sections": {
+        "pub": {
+          "title": "PUB options",
+          "subtitle": "Advertising."
+        },
+        "placement": {
+          "title": "Equipment placements",
+          "subtitle": "Placements."
+        },
+        "sport": {
+          "title": "Other sports",
+          "subtitle": "Other sports."
+        }
+      },
+      "actions": {
+        "add": "Add",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save",
+        "deactivate": "Deactivate"
+      },
+      "notices": {
+        "created": "Option created successfully.",
+        "updated": "Option updated.",
+        "deactivated": "Option deactivated.",
+        "reordered": "Order updated.",
+        "priceUpdated": "Price updated.",
+        "overrideUpdated": "Override updated."
+      },
+      "errors": {
+        "load": "Could not load the configuration.",
+        "requiredCodeLabel": "Code and label are required.",
+        "invalidAvailable": "Available must be a positive integer.",
+        "create": "Could not create the option.",
+        "update": "Could not update the option.",
+        "deactivate": "Could not deactivate the option.",
+        "reorder": "Could not reorder."
+      }
+    }
+  },
   "config": {
     "codeTooltip": "Code is the short identifier used internally. ex: 'SENIORES'",
     "labelTooltip": "Label is the visible name for admins and users. ex: 'Seniores'"
+  },
+  "auth": {
+    "common": {
+      "back": "Back"
+    },
+    "fields": {
+      "username": "Username",
+      "usernameOrEmail": "Username or email",
+      "email": "Email",
+      "password": "Password",
+      "repeatPassword": "Repeat password"
+    },
+    "signIn": {
+      "title": "Sign in",
+      "submit": "Sign in",
+      "noAccount": "Do not have an account?",
+      "registerHere": "Register here",
+      "errors": {
+        "invalidCredentials": "Wrong username or password. Please check your credentials and try again."
+      }
+    },
+    "signUp": {
+      "title": "Register to Jagoz",
+      "submit": "Register",
+      "success": "Registration successful. You can now log in.",
+      "errors": {
+        "passwordMismatch": "Your repeated password does not match the original password. Please try again."
+      }
+    }
+  },
+  "athletes": {
+    "common": {
+      "back": "Back",
+      "edit": "Edit",
+      "view": "View",
+      "saving": "Saving...",
+      "empty": "—",
+      "optional": "Optional",
+      "select": "Select...",
+      "loadingAthletes": "Loading athletes...",
+      "notAssigned": "Not assigned",
+      "notAssignedFemale": "Not assigned",
+      "positionMissing": "Position not assigned"
+    },
+    "fields": {
+      "name": "Name",
+      "completeName": "Full name",
+      "birthDate": "Date of birth",
+      "birthplace": "Birthplace",
+      "nationality": "Nationality",
+      "email": "Email",
+      "phone": "Mobile phone",
+      "homePhone": "Landline",
+      "number": "Number",
+      "numberShort": "No.",
+      "position": "Position",
+      "age": "Age",
+      "category": "Age group",
+      "status": "Status",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal code",
+      "school": "School",
+      "schoolYear": "Year",
+      "schoolClass": "Class",
+      "lastClub": "Previous club",
+      "season": "Season",
+      "photoUrl": "Photo (URL)",
+      "healthNumber": "Health number",
+      "biValidity": "ID validity",
+      "biValidityFull": "ID/passport validity",
+      "professionalActivity": "Professional activity",
+      "kinship": "Kinship",
+      "contactPhone": "Contact phone",
+      "memberNumberIfApplicable": "Member no. (if applicable)"
+    },
+    "labels": {
+      "statuses": {
+        "ATIVO": "Active",
+        "PENDENTE": "Pending",
+        "INATIVO": "Inactive",
+        "REJEITADO": "Rejected"
+      }
+    },
+    "validation": {
+      "nineDigits": "9 digits",
+      "elevenDigits": "11 digits",
+      "eightAlphanumeric": "8 alphanumeric characters",
+      "sevenToFifteenDigits": "7 to 15 digits",
+      "postalCode": "Format NNNN-NNN"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "items": "athletes"
+    },
+    "table": {
+      "memberNumber": "Member No.",
+      "registrationCity": "Registration / City",
+      "actions": "Actions"
+    },
+    "list": {
+      "kicker": "Administration",
+      "title": "Athlete Management",
+      "description": "Approve or reject pending registrations and check each athlete status.",
+      "newRegistration": "New registration",
+      "errors": {
+        "load": "Could not load the athlete list."
+      },
+      "pending": {
+        "title": "Pending Athletes",
+        "empty": "No pending registrations on this page.",
+        "registeredAt": "Registered on {{date}}",
+        "evaluate": "Evaluate Request"
+      }
+    },
+    "detail": {
+      "loading": "Loading athlete profile...",
+      "memberAthlete": "Member #{{memberNumber}} · Athlete #{{athleteId}}",
+      "backToCategory": "Back to category",
+      "ageValue": "{{count}} years old",
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "update": "Update",
+        "deactivate": "Deactivate",
+        "reactivate": "Reactivate"
+      },
+      "feedback": {
+        "reactivated": "Athlete reactivated successfully.",
+        "deactivated": "Athlete deactivated.",
+        "approved": "Registration approved successfully.",
+        "rejected": "Registration rejected."
+      },
+      "errors": {
+        "load": "Could not load the athlete profile.",
+        "toggle": "Could not update the athlete status.",
+        "approve": "Could not approve the registration.",
+        "reject": "Could not reject the registration."
+      },
+      "sections": {
+        "identity": "Identity",
+        "documents": "Documents",
+        "address": "Address",
+        "school": "School",
+        "schoolData": "School details",
+        "sportsData": "Sports details",
+        "sportsProfile": "Sports profile",
+        "guardians": "Guardians",
+        "representedSeasons": "Represented seasons"
+      }
+    },
+    "guardians": {
+      "father": "Father",
+      "mother": "Mother",
+      "legalGuardian": "Legal guardian",
+      "legalGuardianWithKinship": "Guardian{{kinship}}",
+      "contact": "Contact: {{phone}}",
+      "activity": "Activity: {{activity}}"
+    },
+    "register": {
+      "title": "Athlete registration",
+      "description": "Registration form. After submission, the office receives a notification to download the file and forward it to AFL.",
+      "submit": "Submit registration",
+      "submitting": "Submitting...",
+      "success": "Registration submitted. The office will be notified to validate the file with AFL.",
+      "sections": {
+        "who": "Who is being registered",
+        "personal": "Personal details",
+        "consents": "Consents"
+      },
+      "self": {
+        "title": "This registration is for me",
+        "help": "Tick this option if you are the athlete being registered. Otherwise, if you are registering a relative or another person, leave it unchecked.",
+        "unavailable": "Unavailable: your account is already linked to a registration."
+      },
+      "family": {
+        "title": "Has relatives in the club",
+        "help": "Indicates whether there are already other members or athletes from the same family."
+      },
+      "consents": {
+        "privacy": "Privacy consent",
+        "privacyHelp": "Required for submission and registration validation.",
+        "communications": "Club communications",
+        "communicationsHelp": "Allows you to receive notices, events, and institutional messages.",
+        "schoolCertification": "School certification",
+        "schoolCertificationHelp": "Authorizes the club to confirm school data with the school."
+      },
+      "placeholders": {
+        "noPreviousClub": "No previous club",
+        "season": "Ex: 2025/2026",
+        "schoolYear": "Ex: 8th year",
+        "schoolClass": "Ex: B",
+        "kinship": "Ex: Uncle, Grandmother"
+      },
+      "errors": {
+        "loadCategories": "Could not load the age groups.",
+        "privacy": "Privacy consent must be accepted.",
+        "selectCategory": "Select an age group.",
+        "birthDate": "The date of birth must be before today.",
+        "biValidity": "The ID/passport validity date must be after today.",
+        "selfAlreadyMember": "Your account is already linked to a registration. Untick \"This registration is for me\" to register someone else.",
+        "submit": "Could not submit the registration request."
+      }
+    },
+    "update": {
+      "title": "Update athlete",
+      "description": "{{name}} · Member #{{memberNumber}} · Athlete #{{athleteId}}",
+      "backToProfile": "Back to profile",
+      "loading": "Loading update form...",
+      "submit": "Save changes",
+      "success": "Athlete data updated successfully.",
+      "placeholders": {
+        "number": "Ex: 10",
+        "position": "Ex: Forward",
+        "previousClub": "Previous club",
+        "school": "School (optional)"
+      },
+      "errors": {
+        "load": "Could not load the athlete for update.",
+        "submit": "Could not update this athlete profile."
+      }
+    },
+    "category": {
+      "heading": "Athletes - {{category}}",
+      "unknown": "Unknown category",
+      "description": "List filtered by team category.",
+      "notFound": "The selected category does not exist.",
+      "empty": "No active athletes in this category.",
+      "viewAria": "View {{name}} profile",
+      "ageMissing": "Age —",
+      "trainingSchedules": "Training schedules",
+      "noSchedules": "No schedules defined."
+    },
+    "teamSettings": {
+      "eyebrow": "Teams",
+      "title": "Team settings",
+      "description": "Manage groups, categories, status, and display order.",
+      "showActive": "Show active",
+      "showInactive": "Show inactive",
+      "groups": "Groups",
+      "teamGroups": "Team groups",
+      "categories": "Categories",
+      "categoriesTitle": "Team age groups",
+      "group": "Group",
+      "code": "Code",
+      "label": "Label",
+      "inactiveSuffix": " (inactive)",
+      "emptyGroups": "No groups to show.",
+      "emptyCategories": "No categories to show.",
+      "loadingGroups": "Loading groups...",
+      "loadingCategories": "Loading categories...",
+      "dragToReorder": "Drag to reorder",
+      "actions": {
+        "add": "Add",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "save": "Save",
+        "deactivate": "Deactivate",
+        "activate": "Activate"
+      },
+      "notices": {
+        "groupCreated": "Group created successfully.",
+        "categoryCreated": "Category created successfully.",
+        "groupUpdated": "Group updated.",
+        "categoryUpdated": "Category updated.",
+        "groupDeactivated": "Group deactivated.",
+        "groupActivated": "Group activated.",
+        "categoryDeactivated": "Category deactivated.",
+        "categoryActivated": "Category activated.",
+        "groupsReordered": "Group order updated.",
+        "categoriesReordered": "Category order updated."
+      },
+      "errors": {
+        "load": "Could not load the teams.",
+        "requiredCodeLabel": "Code and label are required.",
+        "createGroup": "Could not create the group.",
+        "chooseGroup": "Choose the team group.",
+        "createCategory": "Could not create the category.",
+        "updateGroup": "Could not update the group.",
+        "updateCategory": "Could not update the category.",
+        "toggleGroup": "Could not change the group status.",
+        "toggleCategory": "Could not change the category status.",
+        "reorderGroups": "Could not reorder the groups.",
+        "reorderCategories": "Could not reorder the categories."
+      }
+    }
   }
 }

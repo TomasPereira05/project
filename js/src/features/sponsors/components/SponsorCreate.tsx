@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
 import { createSponsorshipWithSponsor, fetchUserByUsername } from "..";
@@ -26,9 +27,10 @@ const initialSponsorshipForm: SponsorshipFormValues = {
 };
 
 export default function SponsorCreate() {
+  const { t } = useTranslation();
   const { id: currentUserId, role } = useAuth();
   const { catalogs, errorMessage: catalogErrorMessage, isLoading } = useSponsorCatalogs({
-    errorMessage: "Nao foi possivel carregar as opcoes de patrocinio.",
+    errorMessage: t("sponsors.create.errors.loadOptions"),
   });
   const [sponsorForm, setSponsorForm] = useState<SponsorFormValues>(initialSponsorForm);
   const [selection, setSelection] = useState<SponsorshipFormValues>(initialSponsorshipForm);
@@ -84,7 +86,7 @@ export default function SponsorCreate() {
     setSuccessMessage("");
 
     if (!selectedCard || selectedCard.price == null) {
-      setErrorMessage("Escolhe uma opcao de patrocinio disponivel.");
+      setErrorMessage(t("sponsors.create.errors.selectOption"));
       return;
     }
 
@@ -96,20 +98,20 @@ export default function SponsorCreate() {
           : null;
 
     if (isAdmin && userMode === "username" && !userId) {
-      setErrorMessage("Pesquisa e seleciona um utilizador antes de submeter.");
+      setErrorMessage(t("sponsors.create.errors.selectUser"));
       return;
     }
 
     try {
       await createSponsorshipWithSponsor(sponsorForm, selection, selectedCard.price, userId);
-      setSuccessMessage("Pedido de patrocinio submetido com sucesso. Ficara pendente de aprovacao.");
+      setSuccessMessage(t("sponsors.create.success"));
       setSponsorForm(initialSponsorForm);
       setSelection(initialSponsorshipForm);
       setUsernameSearch("");
       setSelectedUser(null);
       setUserMode("none");
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel submeter o patrocinio.");
+      setErrorMessage(error instanceof Error ? error.message : t("sponsors.create.errors.submit"));
     }
   }
 
@@ -118,7 +120,7 @@ export default function SponsorCreate() {
     setSelectedUser(null);
 
     if (!usernameSearch.trim()) {
-      setErrorMessage("Indica um username para procurar.");
+      setErrorMessage(t("sponsors.create.errors.usernameRequired"));
       return;
     }
 
@@ -126,7 +128,7 @@ export default function SponsorCreate() {
       const user = await fetchUserByUsername(usernameSearch);
       setSelectedUser(user);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel encontrar esse utilizador.");
+      setErrorMessage(error instanceof Error ? error.message : t("sponsors.create.errors.userNotFound"));
     }
   }
 
@@ -185,14 +187,12 @@ export default function SponsorCreate() {
       <div className="sponsor-shell">
         <section className="sponsor-page-header">
           <div>
-            <p className="sponsor-section-eyebrow">Novo patrocinio</p>
-            <h1 className="sponsor-panel-title">Criar pedido de patrocinio</h1>
-            <p className="sponsor-muted-text">
-              Preenche os teus dados e escolhe uma das opcoes ativas. O pedido sera registado como pendente.
-            </p>
+            <p className="sponsor-section-eyebrow">{t("sponsors.create.eyebrow")}</p>
+            <h1 className="sponsor-panel-title">{t("sponsors.create.title")}</h1>
+            <p className="sponsor-muted-text">{t("sponsors.create.description")}</p>
           </div>
           <Link className="sponsor-button-secondary" to="/sponsors">
-            Voltar
+            {t("sponsors.common.back")}
           </Link>
         </section>
 
@@ -209,51 +209,51 @@ export default function SponsorCreate() {
           <div className="sponsor-panel">
             <div className="sponsor-panel-header">
               <div>
-                <p className="sponsor-section-eyebrow">Dados do patrocinador</p>
-                <h2 className="sponsor-panel-title">Formulario</h2>
+                <p className="sponsor-section-eyebrow">{t("sponsors.create.sponsorData")}</p>
+                <h2 className="sponsor-panel-title">{t("sponsors.create.form")}</h2>
               </div>
             </div>
 
             <form className="sponsor-form-grid" onSubmit={handleSubmit}>
               <label className="sponsor-field">
-                <span>Nome</span>
+                <span>{t("sponsors.fields.name")}</span>
                 <input className="sponsor-input" required value={sponsorForm.name} onChange={(e) => setSponsorForm((c) => ({ ...c, name: e.target.value }))} />
               </label>
               <label className="sponsor-field">
-                <span>NIF</span>
+                <span>{t("sponsors.fields.nif")}</span>
                 <input className="sponsor-input" required value={sponsorForm.nif} onChange={(e) => setSponsorForm((c) => ({ ...c, nif: e.target.value }))} />
               </label>
               <label className="sponsor-field">
-                <span>Email</span>
+                <span>{t("sponsors.fields.email")}</span>
                 <input className="sponsor-input" required type="email" value={sponsorForm.email} onChange={(e) => setSponsorForm((c) => ({ ...c, email: e.target.value }))} />
               </label>
               <label className="sponsor-field">
-                <span>Telefone</span>
+                <span>{t("sponsors.fields.phone")}</span>
                 <input className="sponsor-input" required value={sponsorForm.phone} onChange={(e) => setSponsorForm((c) => ({ ...c, phone: e.target.value }))} />
               </label>
               <label className="sponsor-field sponsor-field-span">
-                <span>Epoca</span>
+                <span>{t("sponsors.fields.season")}</span>
                 <input className="sponsor-input" required value={selection.season} onChange={(e) => setSelection((c) => ({ ...c, season: e.target.value }))} />
               </label>
               {isAdmin ? (
                 <div className="sponsor-field sponsor-field-span">
-                  <span>Conta associada</span>
+                  <span>{t("sponsors.create.linkedAccount")}</span>
                   <div className="sponsor-type-tabs">
                     <button className={`sponsor-type-tab ${userMode === "none" ? "is-selected" : ""}`} onClick={() => setUserMode("none")} type="button">
-                      Nenhuma
+                      {t("sponsors.create.accountModes.none")}
                     </button>
                     <button className={`sponsor-type-tab ${userMode === "self" ? "is-selected" : ""}`} onClick={() => setUserMode("self")} type="button">
-                      Eu
+                      {t("sponsors.create.accountModes.self")}
                     </button>
                     <button className={`sponsor-type-tab ${userMode === "username" ? "is-selected" : ""}`} onClick={() => setUserMode("username")} type="button">
-                      Username
+                      {t("sponsors.create.accountModes.username")}
                     </button>
                   </div>
                   {userMode === "username" ? (
                     <div className="sponsor-inline-editor">
                       <input
                         className="sponsor-input"
-                        placeholder="username"
+                        placeholder={t("sponsors.create.usernamePlaceholder")}
                         value={usernameSearch}
                         onChange={(e) => {
                           setUsernameSearch(e.target.value);
@@ -261,18 +261,18 @@ export default function SponsorCreate() {
                         }}
                       />
                       <button className="sponsor-button-secondary" onClick={handleUserSearch} type="button">
-                        Procurar
+                        {t("sponsors.create.search")}
                       </button>
                     </div>
                   ) : null}
                   {selectedUser ? (
-                    <p className="sponsor-muted-text">Selecionado: {selectedUser.username} ({selectedUser.email})</p>
+                    <p className="sponsor-muted-text">{t("sponsors.create.selectedUser", { username: selectedUser.username, email: selectedUser.email })}</p>
                   ) : null}
                 </div>
               ) : null}
               <div className="sponsor-form-actions sponsor-field-span">
                 <button className="sponsor-button-primary" disabled={!selectedCard} type="submit">
-                  Submeter patrocinio
+                  {t("sponsors.create.submit")}
                 </button>
               </div>
             </form>
@@ -281,8 +281,8 @@ export default function SponsorCreate() {
           <div className="sponsor-panel">
             <div className="sponsor-panel-header">
               <div>
-                <p className="sponsor-section-eyebrow">Opcoes disponiveis</p>
-                <h2 className="sponsor-panel-title">Escolher patrocinio</h2>
+                <p className="sponsor-section-eyebrow">{t("sponsors.create.availableOptions")}</p>
+                <h2 className="sponsor-panel-title">{t("sponsors.create.choose")}</h2>
               </div>
             </div>
 
@@ -292,35 +292,36 @@ export default function SponsorCreate() {
                 onClick={() => changeSponsorType("PUB")}
                 type="button"
               >
-                Publicidade
+                {t("sponsors.labels.types.PUB")}
               </button>
               <button
                 className={`sponsor-type-tab ${selection.type === "TEAM" ? "is-selected" : ""}`}
                 onClick={() => changeSponsorType("TEAM")}
                 type="button"
               >
-                Equipas
+                {t("sponsors.create.tabs.teams")}
               </button>
               <button
                 className={`sponsor-type-tab ${selection.type === "OTHER" ? "is-selected" : ""}`}
                 onClick={() => changeSponsorType("OTHER")}
                 type="button"
               >
-                Outros
+                {t("sponsors.create.tabs.other")}
               </button>
             </div>
 
             {isLoading ? (
-              <div className="sponsor-empty-card">A carregar opcoes...</div>
+              <div className="sponsor-empty-card">{t("sponsors.create.loadingOptions")}</div>
             ) : availableOptions.length === 0 ? (
-              <div className="sponsor-empty-card">Nao existem opcoes com preco ativo neste momento.</div>
+              <div className="sponsor-empty-card">{t("sponsors.create.empty.all")}</div>
             ) : selection.type === "PUB" ? (
               pubCards.length === 0 ? (
-                <div className="sponsor-empty-card">Nao existem opcoes de publicidade com preco ativo.</div>
+                <div className="sponsor-empty-card">{t("sponsors.create.empty.pub")}</div>
               ) : (
                 <div className="sponsor-option-grid">
                   {pubCards.map((option) => (
                     <SponsorOptionButton
+                      freeLabel={t("sponsors.create.freeAvailable", { count: option.free ?? 0 })}
                       isSelected={selectedCard?.key === option.key}
                       key={option.key}
                       option={option}
@@ -331,24 +332,25 @@ export default function SponsorCreate() {
               )
             ) : selection.type === "TEAM" ? (
               !currentTeamGroup ? (
-                <div className="sponsor-empty-card">Nao existem opcoes de equipa com preco ativo.</div>
+                <div className="sponsor-empty-card">{t("sponsors.create.empty.team")}</div>
               ) : (
                 <div className="sponsor-team-picker">
                   <div className="sponsor-team-picker-head">
-                    <button className="sponsor-icon-button" onClick={showPreviousTeam} type="button" aria-label="Equipa anterior">
+                    <button className="sponsor-icon-button" onClick={showPreviousTeam} type="button" aria-label={t("sponsors.create.previousTeam")}>
                       <ChevronLeft size={18} />
                     </button>
                     <div>
-                      <p className="sponsor-section-eyebrow">Equipa {teamIndex + 1} de {teamOptionGroups.length}</p>
+                      <p className="sponsor-section-eyebrow">{t("sponsors.create.teamCounter", { current: teamIndex + 1, total: teamOptionGroups.length })}</p>
                       <h3>{currentTeamGroup.team.label}</h3>
                     </div>
-                    <button className="sponsor-icon-button" onClick={showNextTeam} type="button" aria-label="Equipa seguinte">
+                    <button className="sponsor-icon-button" onClick={showNextTeam} type="button" aria-label={t("sponsors.create.nextTeam")}>
                       <ChevronRight size={18} />
                     </button>
                   </div>
                   <div className="sponsor-option-grid">
                     {currentTeamGroup.options.map((option) => (
                       <SponsorOptionButton
+                        freeLabel={t("sponsors.create.freeAvailable", { count: 0 })}
                         isSelected={selectedCard?.key === option.key}
                         key={option.key}
                         option={option}
@@ -359,11 +361,12 @@ export default function SponsorCreate() {
                 </div>
               )
             ) : otherCards.length === 0 ? (
-              <div className="sponsor-empty-card">Nao existem outras opcoes com preco ativo.</div>
+              <div className="sponsor-empty-card">{t("sponsors.create.empty.other")}</div>
             ) : (
               <div className="sponsor-option-grid">
                 {otherCards.map((option) => (
                   <SponsorOptionButton
+                    freeLabel={t("sponsors.create.freeAvailable", { count: 0 })}
                     isSelected={selectedCard?.key === option.key}
                     key={option.key}
                     option={option}
@@ -383,6 +386,7 @@ function SponsorOptionButton({
   option,
   isSelected,
   onSelect,
+  freeLabel,
 }: {
   option: {
     type: "PUB" | "TEAM" | "OTHER";
@@ -393,6 +397,7 @@ function SponsorOptionButton({
   };
   isSelected: boolean;
   onSelect: () => void;
+  freeLabel: string;
 }) {
   return (
     <button
@@ -403,7 +408,7 @@ function SponsorOptionButton({
       <div>
         <span className="sponsor-badge sponsor-badge-approved">{option.type}</span>
         <h3>{option.title}</h3>
-        <p>{option.description}{option.type === "PUB" && option.free != null ? ` - ${option.free} livres` : ""}</p>
+        <p>{option.description}{option.type === "PUB" && option.free != null ? ` - ${freeLabel}` : ""}</p>
       </div>
       <strong>{option.price == null ? "-" : formatCurrency(option.price)}</strong>
     </button>

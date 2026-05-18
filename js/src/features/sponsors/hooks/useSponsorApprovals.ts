@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import i18n from "../../../shared/i18n";
 import { approveSponsorship, cancelSponsorship, fetchAllSponsorships, markSponsorshipPaid } from "../api";
-import type { SponsorApprovalItem } from "../utils";
+import type { SponsorApprovalItem } from "../types";
 
 type SponsorApprovalAction = "approve" | "paid" | "cancel";
 const PAGE_SIZE = 8;
@@ -22,7 +23,7 @@ export function useSponsorApprovals(canManage: boolean, page: number) {
       setTotalItems(response.total);
       setTotalPages(response.totalPages);
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar os patrocinios.");
+      setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.errors.loadSponsorships"));
     } finally {
       setIsLoading(false);
     }
@@ -48,7 +49,7 @@ export function useSponsorApprovals(canManage: boolean, page: number) {
       }
       await loadItems();
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o patrocinio.");
+      setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.errors.updateSponsorship"));
     }
   }
 

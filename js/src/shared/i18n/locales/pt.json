@@ -95,8 +95,736 @@
     "location": "Localização",
     "copyright": "© 2026 Ericeirense Futebol Clube. Todos os direitos reservados."
   },
+  "userPage": {
+    "emptyValue": "—",
+    "actions": {
+      "back": "Voltar",
+      "logout": "Sair"
+    },
+    "profile": {
+      "defaultName": "Utilizador",
+      "subtitle": "Conta de utilizador"
+    },
+    "roles": {
+      "ADMIN": "Administrador",
+      "SECRETARIA": "Secretaria",
+      "NORMAL": "Utilizador"
+    },
+    "account": {
+      "title": "Dados da Conta",
+      "description": "Informação associada ao seu utilizador.",
+      "username": "Nome de Utilizador",
+      "email": "Email",
+      "role": "Tipo de Conta",
+      "memberNumber": "Número de Sócio"
+    },
+    "member": {
+      "title": "Sócio",
+      "badge": "Sócio #{{memberNumber}}",
+      "hasMemberDescription": "Acesso à sua ficha de sócio.",
+      "noMemberDescription": "Ainda não tem ficha de sócio associada.",
+      "view": "Ver Ficha de Sócio",
+      "become": "Tornar-se Sócio"
+    },
+    "athlete": {
+      "title": "Atleta",
+      "currentCategory": "Escalão atual: {{category}}.",
+      "view": "Ver Ficha de Atleta"
+    },
+    "sponsorClaim": {
+      "title": "Patrocinador",
+      "description": "Associe esta conta a um patrocinador já registado.",
+      "nif": "NIF",
+      "email": "Email",
+      "phone": "Telemóvel",
+      "submit": "Associar Patrocinador",
+      "success": "Conta associada ao patrocinador {{sponsorName}}.",
+      "error": "Não foi possível associar a conta ao patrocinador."
+    }
+  },
+  "members": {
+    "common": {
+      "back": "Voltar",
+      "edit": "Editar",
+      "view": "Ver",
+      "saving": "A guardar...",
+      "yes": "Sim",
+      "no": "Não",
+      "notProvided": "Não indicado",
+      "notDefined": "Não definido"
+    },
+    "fields": {
+      "name": "Nome",
+      "completeName": "Nome completo",
+      "birthDate": "Data de nascimento",
+      "email": "Email",
+      "phone": "Telemóvel",
+      "homePhone": "Telefone de casa",
+      "nif": "NIF",
+      "category": "Categoria",
+      "status": "Estado",
+      "monthlyQuota": "Quota mensal (EUR)",
+      "address": "Morada",
+      "fullAddress": "Morada completa",
+      "postalCode": "Código postal",
+      "city": "Cidade",
+      "billingLocation": "Local de cobrança"
+    },
+    "labels": {
+      "categories": {
+        "SOCIO": "Sócio",
+        "ATLETA_SOCIO": "Atleta Sócio"
+      },
+      "statuses": {
+        "ATIVO": "Ativo",
+        "PENDENTE": "Pendente",
+        "INATIVO": "Inativo",
+        "REJEITADO": "Rejeitado"
+      }
+    },
+    "months": {
+      "january": "Janeiro",
+      "february": "Fevereiro",
+      "march": "Março",
+      "april": "Abril",
+      "may": "Maio",
+      "june": "Junho",
+      "july": "Julho",
+      "august": "Agosto",
+      "september": "Setembro",
+      "october": "Outubro",
+      "november": "Novembro",
+      "december": "Dezembro"
+    },
+    "pagination": {
+      "showing": "A mostrar",
+      "to": "até",
+      "of": "de",
+      "items": "sócios"
+    },
+    "form": {
+      "quotaHelp": "Valor mínimo para sócio: 1,50 EUR",
+      "billingPlaceholder": "Ex: Sede do clube",
+      "formerMember": "Já foi sócio anteriormente",
+      "formerMemberHelp": "Ajuda a secretaria a perceber se a inscrição é nova ou uma reentrada.",
+      "privacyTitle": "Texto de privacidade obrigatório",
+      "readPrivacy": "Li o texto",
+      "privacyText": "Os dados pessoais recolhidos neste formulário serão tratados pelo Grupo Desportivo União Ericeirense para efeitos de inscrição como sócio do clube e para envio de comunicações relacionadas com a atividade desportiva. Poderá exercer, a qualquer momento, os direitos de acesso, retificação, anulação, oposição ou eliminação dos seus dados pessoais, nos casos legalmente admitidos, incluindo a revogação do consentimento quando aplicável. O não fornecimento destes dados inviabiliza a inscrição. Os seus dados pessoais não serão partilhados com terceiros, exceto mediante consentimento, quando exigido por lei ou para responder a processo legal.",
+      "privacyConsent": "Consentimento de privacidade",
+      "privacyConsentHelp": "Obrigatório para submissão e avaliação do pedido.",
+      "readPrivacyFirst": "Leia e confirme o texto acima primeiro.",
+      "clubCommunications": "Comunicações do clube",
+      "clubCommunicationsHelp": "Permite receber avisos, eventos e mensagens institucionais."
+    },
+    "create": {
+      "title": "Criar novo sócio",
+      "description": "Formulário de candidatura com os dados necessários para avaliação por parte do clube.",
+      "submit": "Submeter pedido",
+      "success": "Pedido submetido com sucesso. Foi atribuído o número #{{memberNumber}}.",
+      "errors": {
+        "privacy": "Tem de aceitar o consentimento de privacidade para submeter.",
+        "minimumQuota": "A quota mensal mínima é 1,50 EUR.",
+        "submit": "Não foi possível submeter o pedido de sócio."
+      }
+    },
+    "update": {
+      "title": "Atualizar sócio",
+      "description": "O formulário aparece pré-preenchido para o sócio rever e corrigir a sua informação.",
+      "submit": "Guardar alterações",
+      "loading": "A carregar formulário de atualização...",
+      "success": "Dados atualizados com sucesso.",
+      "errors": {
+        "load": "Não foi possível carregar o sócio para atualização.",
+        "submit": "Não foi possível atualizar esta ficha de sócio."
+      }
+    },
+    "list": {
+      "kicker": "Administração",
+      "title": "Lista de Sócios",
+      "description": "Gere os sócios do clube. Aprova ou rejeita pedidos pendentes e consulta o estado de cada membro.",
+      "newMember": "Novo Sócio",
+      "loading": "A carregar sócios...",
+      "errors": {
+        "load": "Não foi possível carregar a lista de sócios."
+      },
+      "pending": {
+        "title": "Pedidos Pendentes",
+        "empty": "Sem pedidos pendentes neste momento.",
+        "registeredAt": "Registo em {{date}}",
+        "evaluate": "Avaliar Pedido"
+      },
+      "table": {
+        "number": "Nº",
+        "registrationCity": "Registo / Cidade",
+        "actions": "Ações"
+      }
+    },
+    "detail": {
+      "loading": "A carregar ficha do sócio...",
+      "memberNumber": "Sócio #{{memberNumber}}",
+      "memberSince": "Membro desde {{date}}",
+      "editProfile": "Editar Perfil",
+      "actions": {
+        "approve": "Aprovar",
+        "reject": "Rejeitar"
+      },
+      "feedback": {
+        "approved": "Sócio aprovado com sucesso.",
+        "rejected": "Sócio rejeitado com sucesso."
+      },
+      "errors": {
+        "load": "Não foi possível carregar a ficha do sócio.",
+        "approve": "Não foi possível aprovar este sócio.",
+        "reject": "Não foi possível rejeitar este sócio."
+      },
+      "admin": {
+        "title": "Informação de Administração",
+        "description": "Dados completos para avaliação e acompanhamento do sócio.",
+        "approval": "Aprovação",
+        "consents": "Consentimentos",
+        "privacy": "Privacidade",
+        "communications": "Comunicações"
+      },
+      "finance": {
+        "title": "Resumo Financeiro",
+        "description": "Histórico de quotas e estado de pagamentos.",
+        "monthlyQuota": "Quota Mensal",
+        "overdueQuotas": "Quotas em Atraso",
+        "debtTotal": "Total em Dívida",
+        "paymentHistory": "Histórico de Pagamentos",
+        "emptyHistory": "Este sócio não tem quotas para apresentar no histórico.",
+        "quotaOf": "Quota de {{month}}",
+        "paymentMeta": "Época {{season}} • Vencimento {{dueDate}}",
+        "paidAt": "Pago em {{date}}",
+        "overdue": "Em atraso"
+      }
+    }
+  },
+  "sponsors": {
+    "common": {
+      "back": "Voltar",
+      "loading": "A carregar..."
+    },
+    "fields": {
+      "available": "Disponível",
+      "code": "Código",
+      "description": "Descritivo",
+      "email": "Email",
+      "equipment": "Equipamento",
+      "free": "Livre",
+      "label": "Label",
+      "name": "Nome",
+      "nif": "NIF",
+      "occupied": "Ocupado",
+      "phone": "Telefone",
+      "price": "Preço",
+      "season": "Época",
+      "sport": "Modalidade",
+      "sponsor": "Patrocinador",
+      "team": "Equipa",
+      "type": "Tipo",
+      "value": "Valor"
+    },
+    "labels": {
+      "types": {
+        "PUB": "Publicidade",
+        "TEAM": "Equipa",
+        "OTHER": "Outra modalidade"
+      },
+      "statuses": {
+        "SUBMETIDO": "Submetido",
+        "APROVADO": "Aprovado",
+        "PAGO": "Pago",
+        "ATIVO": "Ativo",
+        "CANCELADO": "Cancelado"
+      },
+      "unknown": {
+        "pub": "Opção PUB desconhecida",
+        "team": "Colocação de equipa desconhecida",
+        "sport": "Modalidade desconhecida"
+      }
+    },
+    "pagination": {
+      "showing": "A mostrar",
+      "to": "até",
+      "of": "de",
+      "items": "patrocínios"
+    },
+    "errors": {
+      "loadCatalog": "Não foi possível carregar a tabela de patrocínio.",
+      "loadSponsorships": "Não foi possível carregar os patrocínios.",
+      "updateSponsorship": "Não foi possível atualizar o patrocínio."
+    },
+    "info": {
+      "kicker": "Patrocínios",
+      "title": "Patrocínios & Publicidade 2024/25",
+      "description1": "Fundado em 1921, o Grupo Desportivo União Ericeirense é um clube local com uma clara aposta na formação e no desenvolvimento dos nossos jovens, nas dimensões técnicas, humanas e sociais.",
+      "description2": "É com grande satisfação que olhamos para a evolução feita nos últimos anos, onde registamos um crescimento significativo de atletas, presentes em todos os escalões e com níveis de desempenho que nos orgulham.",
+      "description3": "Queremos continuar a crescer e fazer do GDUE uma referência no futebol de formação do nosso distrito. Para isso, contamos com a contribuição de quem se identifica com os nossos valores e com a nossa ambição.",
+      "create": "Criar patrocínio",
+      "approve": "Aprovar pedidos",
+      "settings": "Settings",
+      "highlightLabel": "Torne-se nosso patrocinador",
+      "highlightValue": "Em 3 passos",
+      "highlightMeta": "Preencher o formulário, escolher a modalidade e aguardar aprovação.",
+      "optionCount": "{{count}} opções",
+      "sportCount": "{{count}} modalidades",
+      "pubPackage": {
+        "title": "Pacote PUB",
+        "items": [
+          "Lona interior ou outdoor",
+          "Presença mural digital no site"
+        ]
+      },
+      "teamPackage": {
+        "title": "Pacote Equipa",
+        "items": [
+          "Lona interior 3,00m x 0,80m",
+          "Presença nos equipamentos",
+          "Presença mural digital no site",
+          "Presença no mapa de classificações semanal"
+        ]
+      },
+      "otherPackage": {
+        "title": "Outras Modalidades",
+        "items": [
+          "Patinagem, Voleibol, Futebol Praia, Golf e outras opções ativas"
+        ]
+      },
+      "pubTable": "Tabela PUB",
+      "teamTable": "Tabela Equipa",
+      "otherTable": "Tabela Outro",
+      "empty": {
+        "pub": "Sem opções PUB com preço configurado.",
+        "team": "Sem combinações de equipa configuradas.",
+        "other": "Sem modalidades extra com preço configurado."
+      }
+    },
+    "create": {
+      "eyebrow": "Novo patrocínio",
+      "title": "Criar pedido de patrocínio",
+      "description": "Preenche os teus dados e escolhe uma das opções ativas. O pedido será registado como pendente.",
+      "sponsorData": "Dados do patrocinador",
+      "form": "Formulário",
+      "linkedAccount": "Conta associada",
+      "accountModes": {
+        "none": "Nenhuma",
+        "self": "Eu",
+        "username": "Username"
+      },
+      "usernamePlaceholder": "username",
+      "search": "Procurar",
+      "selectedUser": "Selecionado: {{username}} ({{email}})",
+      "submit": "Submeter patrocínio",
+      "availableOptions": "Opções disponíveis",
+      "choose": "Escolher patrocínio",
+      "tabs": {
+        "teams": "Equipas",
+        "other": "Outros"
+      },
+      "loadingOptions": "A carregar opções...",
+      "previousTeam": "Equipa anterior",
+      "nextTeam": "Equipa seguinte",
+      "teamCounter": "Equipa {{current}} de {{total}}",
+      "freeAvailable": "{{count}} livres",
+      "success": "Pedido de patrocínio submetido com sucesso. Ficará pendente de aprovação.",
+      "empty": {
+        "all": "Não existem opções com preço ativo neste momento.",
+        "pub": "Não existem opções de publicidade com preço ativo.",
+        "team": "Não existem opções de equipa com preço ativo.",
+        "other": "Não existem outras opções com preço ativo."
+      },
+      "errors": {
+        "loadOptions": "Não foi possível carregar as opções de patrocínio.",
+        "selectOption": "Escolhe uma opção de patrocínio disponível.",
+        "selectUser": "Pesquisa e seleciona um utilizador antes de submeter.",
+        "submit": "Não foi possível submeter o patrocínio.",
+        "usernameRequired": "Indica um username para procurar.",
+        "userNotFound": "Não foi possível encontrar esse utilizador."
+      }
+    },
+    "my": {
+      "eyebrow": "Área reservada",
+      "title": "Meus patrocínios",
+      "description": "Consulta os pedidos e contratos associados a esta conta.",
+      "viewOptions": "Ver opções",
+      "stats": {
+        "total": "Total",
+        "submitted": "Submetidos",
+        "activeValue": "Valor ativo"
+      },
+      "contractsEyebrow": "Contratos",
+      "listTitle": "Lista",
+      "loading": "A carregar patrocínios...",
+      "empty": "Ainda não existem patrocínios associados a esta conta.",
+      "details": "Detalhes"
+    },
+    "details": {
+      "eyebrow": "Detalhe",
+      "title": "Patrocínio",
+      "description": "Informação do pedido e do patrocinador associado.",
+      "loading": "A carregar patrocínio...",
+      "contract": "Contrato",
+      "invalid": "Patrocínio inválido.",
+      "loadError": "Não foi possível carregar o patrocínio."
+    },
+    "approvals": {
+      "eyebrow": "Aprovações",
+      "title": "Lista de patrocínios",
+      "description": "Revê pedidos pendentes e gere o fluxo de aprovação e pagamento.",
+      "settingsLink": "Ir para settings",
+      "loading": "A carregar patrocínios...",
+      "empty": "Não existem patrocínios registados.",
+      "actions": {
+        "approve": "Aprovar",
+        "markPaid": "Marcar pago",
+        "cancel": "Cancelar"
+      }
+    },
+    "settings": {
+      "eyebrow": "Settings",
+      "title": "Opções e preços de patrocínio",
+      "description": "Adicionar, editar, desativar e reordenar opções disponíveis.",
+      "approvalsLink": "Ver aprovações",
+      "loading": "A carregar configuração...",
+      "catalogEyebrow": "Catálogo",
+      "catalogTitle": "Opções disponíveis",
+      "teamPricesEyebrow": "Tabela cruzada",
+      "teamPricesTitle": "Preços de equipa",
+      "overridesEyebrow": "Overrides",
+      "overridesTitle": "Preço de equipa específica",
+      "overridesDescription": "Escolhe uma equipa para criar ou atualizar um preço que fica acima do preço do grupo.",
+      "selectTeam": "Selecionar equipa",
+      "sections": {
+        "pub": {
+          "title": "Opções PUB",
+          "subtitle": "Publicidade."
+        },
+        "placement": {
+          "title": "Localizações em equipamento",
+          "subtitle": "Localizações."
+        },
+        "sport": {
+          "title": "Outras modalidades",
+          "subtitle": "Outras modalidades."
+        }
+      },
+      "actions": {
+        "add": "Adicionar",
+        "cancel": "Cancelar",
+        "edit": "Editar",
+        "save": "Guardar",
+        "deactivate": "Desativar"
+      },
+      "notices": {
+        "created": "Opção criada com sucesso.",
+        "updated": "Opção atualizada.",
+        "deactivated": "Opção desativada.",
+        "reordered": "Ordem atualizada.",
+        "priceUpdated": "Preço atualizado.",
+        "overrideUpdated": "Override atualizado."
+      },
+      "errors": {
+        "load": "Não foi possível carregar a configuração.",
+        "requiredCodeLabel": "Código e label são obrigatórios.",
+        "invalidAvailable": "Disponível deve ser um inteiro positivo.",
+        "create": "Não foi possível criar a opção.",
+        "update": "Não foi possível atualizar a opção.",
+        "deactivate": "Não foi possível desativar a opção.",
+        "reorder": "Não foi possível reordenar."
+      }
+    }
+  },
   "config": {
     "codeTooltip": "Code é o identificador curto usado internamente. ex: 'SENIORES'",
     "labelTooltip": "Label é o nome visivel para admins e utilizadores. ex: 'Seniores'"
+  },
+  "auth": {
+    "common": {
+      "back": "Voltar"
+    },
+    "fields": {
+      "username": "Nome de utilizador",
+      "usernameOrEmail": "Nome de utilizador ou email",
+      "email": "Email",
+      "password": "Password",
+      "repeatPassword": "Repetir password"
+    },
+    "signIn": {
+      "title": "Entrar",
+      "submit": "Entrar",
+      "noAccount": "Não tem conta?",
+      "registerHere": "Registe-se aqui",
+      "errors": {
+        "invalidCredentials": "Nome de utilizador ou password incorretos. Confirma as credenciais e tenta novamente."
+      }
+    },
+    "signUp": {
+      "title": "Registar no Jagoz",
+      "submit": "Registar",
+      "success": "Registo concluído. Já pode iniciar sessão.",
+      "errors": {
+        "passwordMismatch": "A password repetida não coincide com a password original. Tenta novamente."
+      }
+    }
+  },
+  "athletes": {
+    "common": {
+      "back": "Voltar",
+      "edit": "Editar",
+      "view": "Ver",
+      "saving": "A guardar...",
+      "empty": "—",
+      "optional": "Opcional",
+      "select": "Seleciona...",
+      "loadingAthletes": "A carregar atletas...",
+      "notAssigned": "Não atribuído",
+      "notAssignedFemale": "Não atribuída",
+      "positionMissing": "Posição por atribuir"
+    },
+    "fields": {
+      "name": "Nome",
+      "completeName": "Nome completo",
+      "birthDate": "Data de nascimento",
+      "birthplace": "Naturalidade",
+      "nationality": "Nacionalidade",
+      "email": "Email",
+      "phone": "Telemóvel",
+      "homePhone": "Telefone fixo",
+      "number": "Número",
+      "numberShort": "Nº",
+      "position": "Posição",
+      "age": "Idade",
+      "category": "Escalão",
+      "status": "Estado",
+      "address": "Morada",
+      "city": "Cidade",
+      "postalCode": "Código postal",
+      "school": "Escola",
+      "schoolYear": "Ano",
+      "schoolClass": "Turma",
+      "lastClub": "Último clube",
+      "season": "Época",
+      "photoUrl": "Foto (URL)",
+      "healthNumber": "Nº Utente",
+      "biValidity": "Validade BI",
+      "biValidityFull": "Validade BI/CC/Passaporte",
+      "professionalActivity": "Atividade profissional",
+      "kinship": "Grau de parentesco",
+      "contactPhone": "Telefone de contacto",
+      "memberNumberIfApplicable": "Nº Sócio (se aplicável)"
+    },
+    "labels": {
+      "statuses": {
+        "ATIVO": "Ativo",
+        "PENDENTE": "Pendente",
+        "INATIVO": "Inativo",
+        "REJEITADO": "Rejeitado"
+      }
+    },
+    "validation": {
+      "nineDigits": "9 dígitos",
+      "elevenDigits": "11 dígitos",
+      "eightAlphanumeric": "8 caracteres alfanuméricos",
+      "sevenToFifteenDigits": "7 a 15 dígitos",
+      "postalCode": "Formato NNNN-NNN"
+    },
+    "pagination": {
+      "showing": "A mostrar",
+      "to": "até",
+      "of": "de",
+      "items": "atletas"
+    },
+    "table": {
+      "memberNumber": "Nº Sócio",
+      "registrationCity": "Registo / Cidade",
+      "actions": "Ações"
+    },
+    "list": {
+      "kicker": "Administração",
+      "title": "Gestão de Atletas",
+      "description": "Aprove ou rejeite inscrições pendentes e consulte o estado de cada atleta.",
+      "newRegistration": "Nova inscrição",
+      "errors": {
+        "load": "Não foi possível carregar a lista de atletas."
+      },
+      "pending": {
+        "title": "Atletas Pendentes",
+        "empty": "Sem inscrições pendentes nesta página.",
+        "registeredAt": "Registo em {{date}}",
+        "evaluate": "Avaliar Pedido"
+      }
+    },
+    "detail": {
+      "loading": "A carregar ficha do atleta...",
+      "memberAthlete": "Sócio #{{memberNumber}} · Atleta #{{athleteId}}",
+      "backToCategory": "Voltar à categoria",
+      "ageValue": "{{count}} anos",
+      "actions": {
+        "approve": "Aprovar",
+        "reject": "Rejeitar",
+        "update": "Atualizar",
+        "deactivate": "Desativar",
+        "reactivate": "Reativar"
+      },
+      "feedback": {
+        "reactivated": "Atleta reativado com sucesso.",
+        "deactivated": "Atleta desativado.",
+        "approved": "Inscrição aprovada com sucesso.",
+        "rejected": "Inscrição rejeitada."
+      },
+      "errors": {
+        "load": "Não foi possível carregar a ficha do atleta.",
+        "toggle": "Não foi possível atualizar o estado do atleta.",
+        "approve": "Não foi possível aprovar a inscrição.",
+        "reject": "Não foi possível rejeitar a inscrição."
+      },
+      "sections": {
+        "identity": "Identidade",
+        "documents": "Documentos",
+        "address": "Morada",
+        "school": "Escola",
+        "schoolData": "Dados escolares",
+        "sportsData": "Dados desportivos",
+        "sportsProfile": "Ficha desportiva",
+        "guardians": "Encarregados",
+        "representedSeasons": "Épocas representadas"
+      }
+    },
+    "guardians": {
+      "father": "Pai",
+      "mother": "Mãe",
+      "legalGuardian": "Encarregado de Educação",
+      "legalGuardianWithKinship": "EE{{kinship}}",
+      "contact": "Contacto: {{phone}}",
+      "activity": "Atividade: {{activity}}"
+    },
+    "register": {
+      "title": "Inscrição de atleta",
+      "description": "Formulário de inscrição. Após submissão, a secretaria recebe notificação para descarregar o dossier e reencaminhá-lo à AFL.",
+      "submit": "Submeter inscrição",
+      "submitting": "A submeter...",
+      "success": "Inscrição submetida. A secretaria será notificada para validar a ficha junto da AFL.",
+      "sections": {
+        "who": "Quem está a ser inscrito",
+        "personal": "Dados pessoais",
+        "consents": "Consentimentos"
+      },
+      "self": {
+        "title": "Esta inscrição é para mim",
+        "help": "Marca esta opção se és tu o atleta a ser inscrito. Caso contrário, se estás a inscrever um familiar ou outra pessoa, deixa por marcar.",
+        "unavailable": "Indisponível: a tua conta já está associada a uma inscrição."
+      },
+      "family": {
+        "title": "Tem familiares no clube",
+        "help": "Indica se já existem outros sócios ou atletas da mesma família."
+      },
+      "consents": {
+        "privacy": "Consentimento de privacidade",
+        "privacyHelp": "Obrigatório para submissão e validação da inscrição.",
+        "communications": "Comunicações do clube",
+        "communicationsHelp": "Permite receber avisos, eventos e mensagens institucionais.",
+        "schoolCertification": "Certificação escolar",
+        "schoolCertificationHelp": "Autoriza o clube a confirmar dados escolares junto da escola."
+      },
+      "placeholders": {
+        "noPreviousClub": "Sem clube anterior",
+        "season": "Ex: 2025/2026",
+        "schoolYear": "Ex: 8º ano",
+        "schoolClass": "Ex: B",
+        "kinship": "Ex: Tio, Avó"
+      },
+      "errors": {
+        "loadCategories": "Não foi possível carregar os escalões.",
+        "privacy": "É necessário aceitar o consentimento de privacidade.",
+        "selectCategory": "Seleciona um escalão.",
+        "birthDate": "A data de nascimento tem de ser anterior a hoje.",
+        "biValidity": "A validade do BI/CC/Passaporte tem de ser posterior a hoje.",
+        "selfAlreadyMember": "A tua conta já está associada a uma inscrição. Desmarca \"Esta inscrição é para mim\" para inscrever outra pessoa.",
+        "submit": "Não foi possível submeter o pedido de inscrição."
+      }
+    },
+    "update": {
+      "title": "Atualizar atleta",
+      "description": "{{name}} · Sócio #{{memberNumber}} · Atleta #{{athleteId}}",
+      "backToProfile": "Voltar à ficha",
+      "loading": "A carregar formulário de atualização...",
+      "submit": "Guardar alterações",
+      "success": "Dados do atleta atualizados com sucesso.",
+      "placeholders": {
+        "number": "Ex: 10",
+        "position": "Ex: Avançado",
+        "previousClub": "Clube anterior",
+        "school": "Escola (opcional)"
+      },
+      "errors": {
+        "load": "Não foi possível carregar o atleta para atualização.",
+        "submit": "Não foi possível atualizar esta ficha de atleta."
+      }
+    },
+    "category": {
+      "heading": "Atletas - {{category}}",
+      "unknown": "Categoria desconhecida",
+      "description": "Lista filtrada por categoria de equipa.",
+      "notFound": "A categoria indicada não existe.",
+      "empty": "Sem atletas ativos nesta categoria.",
+      "viewAria": "Ver ficha de {{name}}",
+      "ageMissing": "Idade —",
+      "trainingSchedules": "Horários de treino",
+      "noSchedules": "Sem horários definidos."
+    },
+    "teamSettings": {
+      "eyebrow": "Equipas",
+      "title": "Settings de equipas",
+      "description": "Gere grupos, categorias, estado e ordem de apresentação.",
+      "showActive": "Mostrar ativas",
+      "showInactive": "Mostrar inativas",
+      "groups": "Grupos",
+      "teamGroups": "Team groups",
+      "categories": "Categorias",
+      "categoriesTitle": "Escalões de equipa",
+      "group": "Grupo",
+      "code": "Code",
+      "label": "Label",
+      "inactiveSuffix": " (inativo)",
+      "emptyGroups": "Sem grupos para mostrar.",
+      "emptyCategories": "Sem categorias para mostrar.",
+      "loadingGroups": "A carregar grupos...",
+      "loadingCategories": "A carregar categorias...",
+      "dragToReorder": "Arrastar para reordenar",
+      "actions": {
+        "add": "Adicionar",
+        "cancel": "Cancelar",
+        "edit": "Editar",
+        "save": "Guardar",
+        "deactivate": "Desativar",
+        "activate": "Ativar"
+      },
+      "notices": {
+        "groupCreated": "Grupo criado com sucesso.",
+        "categoryCreated": "Categoria criada com sucesso.",
+        "groupUpdated": "Grupo atualizado.",
+        "categoryUpdated": "Categoria atualizada.",
+        "groupDeactivated": "Grupo desativado.",
+        "groupActivated": "Grupo ativado.",
+        "categoryDeactivated": "Categoria desativada.",
+        "categoryActivated": "Categoria ativada.",
+        "groupsReordered": "Ordem dos grupos atualizada.",
+        "categoriesReordered": "Ordem das categorias atualizada."
+      },
+      "errors": {
+        "load": "Não foi possível carregar as equipas.",
+        "requiredCodeLabel": "Code e label são obrigatórios.",
+        "createGroup": "Não foi possível criar o grupo.",
+        "chooseGroup": "Escolhe o grupo da equipa.",
+        "createCategory": "Não foi possível criar a categoria.",
+        "updateGroup": "Não foi possível atualizar o grupo.",
+        "updateCategory": "Não foi possível atualizar a categoria.",
+        "toggleGroup": "Não foi possível alterar o estado do grupo.",
+        "toggleCategory": "Não foi possível alterar o estado da categoria.",
+        "reorderGroups": "Não foi possível reordenar os grupos.",
+        "reorderCategories": "Não foi possível reordenar as categorias."
+      }
+    }
   }
 }

@@ -7,6 +7,7 @@ import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
 import {InfoBox, StatusBox} from "../../../shared/components/MessageFormBox";
 import Form from "../../../shared/components/Form";
 import {LOGO_SRC} from "../../../shared/config/config";
+import { useTranslation } from "react-i18next";
 
 interface State {
     username: string;
@@ -34,6 +35,7 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const SignIn: React.FC = () => {
+    const { t } = useTranslation();
     const location = useLocation();
     const {message: successMsg, username: prefilledUsername} = location.state || {};
     const [state, dispatch] = useReducer(reducer, {
@@ -88,7 +90,7 @@ const SignIn: React.FC = () => {
                     });
                 }
             } else {
-                setError("Wrong username or password. Please check your credentials and try again.");
+                setError(t("auth.signIn.errors.invalidCredentials"));
             }
         } catch (error) {
             handleError(error);
@@ -98,7 +100,7 @@ const SignIn: React.FC = () => {
     const fields = [
         {
             id: "username",
-            label: "Username or Email",
+            label: t("auth.fields.usernameOrEmail"),
             type: "text",
             value: state.username,
             onChange: (e: any) => dispatch({ type: "SET_USERNAME", payload: e.target.value }),
@@ -107,7 +109,7 @@ const SignIn: React.FC = () => {
         },
         {
             id: "password",
-            label: "Password",
+            label: t("auth.fields.password"),
             type: "password",
             value: state.password,
             onChange: (e: any) => dispatch({ type: "SET_PASSWORD", payload: e.target.value }),
@@ -121,11 +123,11 @@ const SignIn: React.FC = () => {
             <div className="auth-card">
                 <div className="auth-card-inner">
                     <Form
-                    title="Sign in"
+                    title={t("auth.signIn.title")}
                     fields={fields}
                     onSubmit={handleLogin}
                     logoSrc={LOGO_SRC}
-                    submitLabel="Entrar"
+                    submitLabel={t("auth.signIn.submit")}
                     disabled={isFormButtonDisabled}
                     >
                     {message && (type === "error" || type === "success") && (
@@ -133,9 +135,9 @@ const SignIn: React.FC = () => {
                     )}
 
                     <InfoBox 
-                    message="Não tem conta?"
+                    message={t("auth.signIn.noAccount")}
                     action={{
-                            label: "Registe-se aqui",
+                            label: t("auth.signIn.registerHere"),
                             onClick: () => navigate("/auth/register")
                         }}
                     />

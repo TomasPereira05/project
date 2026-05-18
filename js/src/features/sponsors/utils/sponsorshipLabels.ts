@@ -1,29 +1,13 @@
 import type { SponsorshipStatus, SponsorType } from "../types";
 
-export function sponsorTypeLabel(type: SponsorType) {
-  switch (type) {
-    case "PUB":
-      return "Publicidade";
-    case "TEAM":
-      return "Equipa";
-    case "OTHER":
-      return "Outra modalidade";
-  }
+type Translate = (key: string, options?: Record<string, unknown>) => string;
+
+export function sponsorTypeLabel(type: SponsorType, t: Translate) {
+  return t(`sponsors.labels.types.${type}`);
 }
 
-export function sponsorshipStatusLabel(status: SponsorshipStatus) {
-  switch (status) {
-    case "SUBMETIDO":
-      return "Submetido";
-    case "APROVADO":
-      return "Aprovado";
-    case "PAGO":
-      return "Pago";
-    case "ATIVO":
-      return "Ativo";
-    case "CANCELADO":
-      return "Cancelado";
-  }
+export function sponsorshipStatusLabel(status: SponsorshipStatus, t: Translate) {
+  return t(`sponsors.labels.statuses.${status}`);
 }
 
 export function sponsorshipStatusClass(status: SponsorshipStatus) {

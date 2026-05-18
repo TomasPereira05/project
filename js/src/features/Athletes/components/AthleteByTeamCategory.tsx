@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, ShieldAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   fetchAllTeamCategories,
   listByCategory,
@@ -13,6 +14,7 @@ import { HERO_IMG_SRC } from "../../../shared/config/config";
 import { getInitials } from "../../../shared/utils";
 
 export default function AthleteByTeamCategory() {
+  const { t } = useTranslation();
   const { teamCategory } = useParams();
   const navigate = useNavigate();
   const [category, setCategory] = useState<TeamCatalogCategory | null>(null);
@@ -55,7 +57,7 @@ export default function AthleteByTeamCategory() {
         }
       } catch {
         if (!ignore) {
-          setErrorMessage("Não foi possível carregar a lista de atletas.");
+          setErrorMessage(t("athletes.list.errors.load"));
         }
       } finally {
         if (!ignore) {
@@ -69,12 +71,12 @@ export default function AthleteByTeamCategory() {
     return () => {
       ignore = true;
     };
-  }, [teamCategory]);
+  }, [teamCategory, t]);
 
   const heading = useMemo(() => {
-    if (category) return `Atletas - ${category.label}`;
-    return "Categoria desconhecida";
-  }, [category]);
+    if (category) return t("athletes.category.heading", { category: category.label });
+    return t("athletes.category.unknown");
+  }, [category, t]);
 
   return (
     <>
@@ -91,19 +93,19 @@ export default function AthleteByTeamCategory() {
             <div className="member-card-header">
               <div>
                 <h2 className="member-title">{heading}</h2>
-                <p className="member-desc">Lista filtrada por categoria de equipa.</p>
+                <p className="member-desc">{t("athletes.category.description")}</p>
               </div>
 
               <button onClick={() => navigate(-1)} className="member-btn-back">
                 <ArrowLeft size={18} />
-                Voltar
+                {t("athletes.common.back")}
               </button>
             </div>
 
             {categoryUnknown && (
               <div className="member-alert-error">
                 <ShieldAlert size={20} className="text-red-500" />
-                <p className="text-sm font-medium">A categoria indicada não existe.</p>
+                <p className="text-sm font-medium">{t("athletes.category.notFound")}</p>
               </div>
             )}
 
@@ -117,7 +119,7 @@ export default function AthleteByTeamCategory() {
             {isLoading && (
               <div className="member-loading-container py-8">
                 <div className="member-loading-spinner" />
-                <p className="member-loading-text">A carregar atletas...</p>
+                <p className="member-loading-text">{t("athletes.common.loadingAthletes")}</p>
               </div>
             )}
 
@@ -125,7 +127,7 @@ export default function AthleteByTeamCategory() {
               <>
                 {athletes.length === 0 ? (
                   <div className="border border-dashed border-border rounded-lg p-8 text-center text-text-secondary">
-                    Sem atletas ativos nesta categoria.
+                    {t("athletes.category.empty")}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -136,7 +138,7 @@ export default function AthleteByTeamCategory() {
                       >
                         <Link
                           to={`/athletes/${athlete.id}`}
-                          aria-label={`Ver ficha de ${athlete.nome}`}
+                          aria-label={t("athletes.category.viewAria", { name: athlete.nome })}
                           className="w-1/3 aspect-square bg-gray-100 flex items-center justify-center text-2xl font-heading font-bold text-text-secondary hover:bg-gray-200 hover:text-primary transition-colors"
                         >
                           {athlete.fotoUrl ? (
@@ -155,13 +157,13 @@ export default function AthleteByTeamCategory() {
                               {athlete.nome}
                             </strong>
                             <p className="text-sm text-text-secondary">
-                              Nº {athlete.numero ?? "—"}
+                              {t("athletes.fields.numberShort")} {athlete.numero ?? t("athletes.common.empty")}
                             </p>
                           </div>
                           <div className="space-y-0.5 text-sm text-text-secondary">
-                            <div>{athlete.posicao ?? "Posição por atribuir"}</div>
+                            <div>{athlete.posicao ?? t("athletes.common.positionMissing")}</div>
                             <div>
-                              {athlete.idade !== null ? `${athlete.idade} anos` : "Idade —"}
+                              {athlete.idade !== null ? t("athletes.detail.ageValue", { count: athlete.idade }) : t("athletes.category.ageMissing")}
                               {" · "}
                               {athlete.nacionalidade}
                             </div>
@@ -178,9 +180,9 @@ export default function AthleteByTeamCategory() {
           {!isLoading && !errorMessage && category && (
             <div className="member-card-padded">
               <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border mb-4">
-                Horários de treino
+                {t("athletes.category.trainingSchedules")}
               </h3>
-              <p className="text-text-secondary">Sem horários definidos.</p>
+              <p className="text-text-secondary">{t("athletes.category.noSchedules")}</p>
             </div>
           )}
         </div>

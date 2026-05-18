@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ShieldAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   changeTeamCategory,
   fetchAllTeamCategories,
@@ -58,6 +59,7 @@ function toUpdateRequest(values: FormState): AthleteUpdateRequest {
 }
 
 export default function UpdateAthlete() {
+  const { t } = useTranslation();
   const { athleteId } = useParams();
   const [athlete, setAthlete] = useState<AthleteAdmin | null>(null);
   const [categories, setCategories] = useState<TeamCatalogCategory[]>([]);
@@ -86,7 +88,7 @@ export default function UpdateAthlete() {
           setCategories(cats);
         }
       } catch {
-        if (!ignore) setErrorMessage("Não foi possível carregar o atleta para atualização.");
+        if (!ignore) setErrorMessage(t("athletes.update.errors.load"));
       } finally {
         if (!ignore) setIsLoading(false);
       }
@@ -96,7 +98,7 @@ export default function UpdateAthlete() {
     return () => {
       ignore = true;
     };
-  }, [athleteId]);
+  }, [athleteId, t]);
 
   function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     if (!values) return;
@@ -132,9 +134,9 @@ export default function UpdateAthlete() {
 
       setAthlete(updated);
       setValues(stateFromAthlete(updated));
-      setSuccessMessage("Dados do atleta atualizados com sucesso.");
+      setSuccessMessage(t("athletes.update.success"));
     } catch {
-      setErrorMessage("Não foi possível atualizar esta ficha de atleta.");
+      setErrorMessage(t("athletes.update.errors.submit"));
     } finally {
       setIsSubmitting(false);
     }
@@ -154,7 +156,7 @@ export default function UpdateAthlete() {
             <div className="member-card-padded">
               <div className="member-form-loading-container">
                 <div className="member-form-loading-spinner"></div>
-                <p>A carregar formulário de atualização...</p>
+                <p>{t("athletes.update.loading")}</p>
               </div>
             </div>
           </div>
@@ -178,14 +180,14 @@ export default function UpdateAthlete() {
           <div className="member-card-padded">
             <div className="member-card-header">
               <div>
-                <h2 className="member-title">Atualizar atleta</h2>
+                <h2 className="member-title">{t("athletes.update.title")}</h2>
                 <p className="member-desc">
-                  {athlete.member.completeName} · Sócio #{athlete.member.memberNumber} · Atleta #{athlete.athleteId}
+                  {t("athletes.update.description", { name: athlete.member.completeName, memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}
                 </p>
               </div>
               <Link className="member-btn-back" to={`/athletes/${athlete.athleteId}`}>
                 <ArrowLeft size={18} />
-                Voltar à ficha
+                {t("athletes.update.backToProfile")}
               </Link>
             </div>
 
@@ -206,11 +208,11 @@ export default function UpdateAthlete() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Dados desportivos
+                  {t("athletes.detail.sections.sportsData")}
                 </h3>
                 <div className="member-form-grid">
                   <div className="member-input-group">
-                    <label className="member-label">Escalão</label>
+                    <label className="member-label">{t("athletes.fields.category")}</label>
                     <select className="member-input" name="teamCategoryId" value={values.teamCategoryId} onChange={handleChange}>
                       {categories.map((c) => (
                         <option key={c.teamId} value={c.teamId}>
@@ -220,44 +222,44 @@ export default function UpdateAthlete() {
                     </select>
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Número</label>
-                    <input className="member-input" type="number" name="jerseyNumber" value={values.jerseyNumber} onChange={handleChange} placeholder="Ex: 10" />
+                    <label className="member-label">{t("athletes.fields.number")}</label>
+                    <input className="member-input" type="number" name="jerseyNumber" value={values.jerseyNumber} onChange={handleChange} placeholder={t("athletes.update.placeholders.number")} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Posição</label>
-                    <input className="member-input" name="position" value={values.position} onChange={handleChange} placeholder="Ex: Avançado" />
+                    <label className="member-label">{t("athletes.fields.position")}</label>
+                    <input className="member-input" name="position" value={values.position} onChange={handleChange} placeholder={t("athletes.update.placeholders.position")} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Foto (URL)</label>
+                    <label className="member-label">{t("athletes.fields.photoUrl")}</label>
                     <input className="member-input" name="photoUrl" value={values.photoUrl} onChange={handleChange} placeholder="https://..." />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Último clube</label>
-                    <input className="member-input" name="lastClub" value={values.lastClub} onChange={handleChange} placeholder="Clube anterior" />
+                    <label className="member-label">{t("athletes.fields.lastClub")}</label>
+                    <input className="member-input" name="lastClub" value={values.lastClub} onChange={handleChange} placeholder={t("athletes.update.placeholders.previousClub")} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Época</label>
-                    <input className="member-input" name="season" value={values.season} onChange={handleChange} placeholder="Ex: 2025/2026" />
+                    <label className="member-label">{t("athletes.fields.season")}</label>
+                    <input className="member-input" name="season" value={values.season} onChange={handleChange} placeholder={t("athletes.register.placeholders.season")} />
                   </div>
                 </div>
               </section>
 
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Dados escolares
+                  {t("athletes.detail.sections.schoolData")}
                 </h3>
                 <div className="member-form-grid">
                   <div className="member-input-group member-input-group-span">
-                    <label className="member-label">Escola</label>
-                    <input className="member-input" name="school" value={values.school} onChange={handleChange} placeholder="Escola (opcional)" />
+                    <label className="member-label">{t("athletes.fields.school")}</label>
+                    <input className="member-input" name="school" value={values.school} onChange={handleChange} placeholder={t("athletes.update.placeholders.school")} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Ano</label>
-                    <input className="member-input" name="schoolYear" value={values.schoolYear} onChange={handleChange} placeholder="Ex: 8º ano" />
+                    <label className="member-label">{t("athletes.fields.schoolYear")}</label>
+                    <input className="member-input" name="schoolYear" value={values.schoolYear} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolYear")} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Turma</label>
-                    <input className="member-input" name="schoolClass" value={values.schoolClass} onChange={handleChange} placeholder="Ex: B" />
+                    <label className="member-label">{t("athletes.fields.schoolClass")}</label>
+                    <input className="member-input" name="schoolClass" value={values.schoolClass} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolClass")} />
                   </div>
                 </div>
 
@@ -266,14 +268,14 @@ export default function UpdateAthlete() {
                     <input type="checkbox" className="member-checkbox" name="hasFamilyInClub" checked={values.hasFamilyInClub} onChange={handleChange} />
                   </div>
                   <div>
-                    <span className="member-checkbox-title">Tem família no clube</span>
+                    <span className="member-checkbox-title">{t("athletes.register.family.title")}</span>
                   </div>
                 </label>
               </section>
 
               <div className="member-form-actions">
                 <button className="member-btn-primary" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "A guardar..." : "Guardar alterações"}
+                  {isSubmitting ? t("athletes.common.saving") : t("athletes.update.submit")}
                 </button>
               </div>
             </form>

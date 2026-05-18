@@ -1,4 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, Navigate } from "react-router-dom";
 import {
   defaultMemberFormValues,
@@ -12,9 +13,10 @@ import { useAuth } from "../../../shared/hooks/useAuth";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 export default function UpdateMember() {
+  const { t } = useTranslation();
   const { memberId } = useParams();
   const { role, activeMemberId } = useAuth();
-  
+
   const [member, setMember] = useState<Member | null>(null);
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
   const [isLoading, setIsLoading] = useState(true);
@@ -40,7 +42,7 @@ export default function UpdateMember() {
         }
       } catch {
         if (!ignore) {
-          setErrorMessage("Não foi possível carregar o sócio para atualização.");
+          setErrorMessage(t("members.update.errors.load"));
         }
       } finally {
         if (!ignore) {
@@ -56,16 +58,11 @@ export default function UpdateMember() {
     return () => {
       ignore = true;
     };
-  }, [memberId, isAdmin, isSelf]);
+  }, [memberId, isAdmin, isSelf, t]);
 
-  function handleChange(
-    event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-  ) {
+  function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const target = event.target;
-    const nextValue =
-      target instanceof HTMLInputElement && target.type === "checkbox"
-        ? target.checked
-        : target.value;
+    const nextValue = target instanceof HTMLInputElement && target.type === "checkbox" ? target.checked : target.value;
 
     setValues((current) => ({
       ...current,
@@ -87,50 +84,44 @@ export default function UpdateMember() {
     try {
       const updated = await updateMember(member.memberId, member, values);
       setMember(updated);
-      setSuccessMessage("Dados atualizados com sucesso.");
+      setSuccessMessage(t("members.update.success"));
     } catch {
-      setErrorMessage("Não foi possível atualizar esta ficha de sócio.");
+      setErrorMessage(t("members.update.errors.submit"));
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  // RBAC logic
   if (!isAdmin && !isSelf) {
     return <Navigate to="/" replace />;
   }
 
   return (
-    <>
-      <main className="member-form-page">
-        <div
-            className="member-form-bg"
-            style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }}
-        />
-        <div className="member-form-overlay" style={{ position: "fixed" }} />
-        
-        <div className="member-form-container">
-          {isLoading ? (
-            <div className="member-form-loading-container">
-               <div className="member-form-loading-spinner"></div>
-               <p className="member-loading-text">A carregar formulário de atualização...</p>
-            </div>
-          ) : (
-            <MemberForm
-              title="Atualizar sócio"
-              description="O formulário aparece pré-preenchido para o sócio rever e corrigir a sua informação."
-              values={values}
-              onChange={handleChange}
-              onSubmit={handleSubmit}
-              submitLabel="Guardar alterações"
-              isSubmitting={isSubmitting}
-              errorMessage={errorMessage}
-              successMessage={successMessage}
-              showBackendNotice
-            />
-          )}
-        </div>
-      </main>
-    </>
+    <main className="member-form-page">
+      <div className="member-form-bg" style={{ backgroundImage: `url(${HERO_IMG_SRC})`, position: "fixed" }} />
+      <div className="member-form-overlay" style={{ position: "fixed" }} />
+
+      <div className="member-form-container">
+        {isLoading ? (
+          <div className="member-form-loading-container">
+            <div className="member-form-loading-spinner"></div>
+            <p className="member-loading-text">{t("members.update.loading")}</p>
+          </div>
+        ) : (
+          <MemberForm
+            title={t("members.update.title")}
+            description={t("members.update.description")}
+            values={values}
+            onChange={handleChange}
+            onSubmit={handleSubmit}
+            submitLabel={t("members.update.submit")}
+            isSubmitting={isSubmitting}
+            errorMessage={errorMessage}
+            successMessage={successMessage}
+            showBackendNotice
+          />
+        )}
+      </div>
+    </main>
   );
 }

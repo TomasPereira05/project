@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import i18n from "../../../shared/i18n";
 import { fetchCatalogSnapshot, fetchSponsorById, fetchSponsorshipById } from "../api";
 import type { CatalogSnapshot, Sponsor, Sponsorship } from "../types";
 import { emptySponsorCatalogs, sortSponsorCatalogs } from "../utils";
@@ -16,7 +17,7 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
 
     async function loadSponsorship() {
       if (!Number.isFinite(parsedId)) {
-        setErrorMessage("Patrocinio invalido.");
+        setErrorMessage(i18n.t("sponsors.details.invalid"));
         setIsLoading(false);
         return;
       }
@@ -38,7 +39,7 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
         }
       } catch (error) {
         if (!ignore) {
-          setErrorMessage(error instanceof Error ? error.message : "Nao foi possivel carregar o patrocinio.");
+          setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.details.loadError"));
         }
       } finally {
         if (!ignore) {

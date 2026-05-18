@@ -6,6 +6,7 @@ import {useStatusHandler} from "../../../shared/hooks/useStatusHandler";
 import {StatusBox} from "../../../shared/components/MessageFormBox";
 import Form from "../../../shared/components/Form";
 import {LOGO_SRC} from "../../../shared/config/config";
+import { useTranslation } from "react-i18next";
 
 type State = {
     username: string;
@@ -43,6 +44,7 @@ function reducer(state: State, action: Action): State {
 }
 
 const SignUp: React.FC = () => {
+    const { t } = useTranslation();
     const {message, type, setError, clearMessage, handleError} = useStatusHandler();
     const navigate = useNavigate();
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -63,7 +65,7 @@ const SignUp: React.FC = () => {
         event.preventDefault();
 
         if (state.password !== state.repeatPassword) {
-            setError("Your repeated password does not match the original password. Please try again.");
+            setError(t("auth.signUp.errors.passwordMismatch"));
             return;
         }
         
@@ -73,7 +75,7 @@ const SignUp: React.FC = () => {
             navigate("/auth/login", {
                 state: {
                     username: state.username,
-                    message: "Registration successful. You can now log in.",
+                    message: t("auth.signUp.success"),
                 },
             });
         } catch (err) {
@@ -84,7 +86,7 @@ const SignUp: React.FC = () => {
     const fields = [
         {
             id: "username",
-            label: "Username",
+            label: t("auth.fields.username"),
             type: "text",
             value: state.username,
             onChange: (e: any) => dispatch({type: "SET_USERNAME", payload: e.target.value}),
@@ -93,7 +95,7 @@ const SignUp: React.FC = () => {
         },
         {
             id: "email",
-            label: "Email",
+            label: t("auth.fields.email"),
             type: "email",
             value: state.email,
             onChange: (e: any) => dispatch({type: "SET_EMAIL", payload: e.target.value}),
@@ -102,7 +104,7 @@ const SignUp: React.FC = () => {
         },
         {
             id: "password",
-            label: "Password",
+            label: t("auth.fields.password"),
             type: "password",
             value: state.password,
             onChange: (e: any) => dispatch({type: "SET_PASSWORD", payload: e.target.value}),
@@ -111,7 +113,7 @@ const SignUp: React.FC = () => {
         },
         {
             id: "repeatPassword",
-            label: "Repeat Password",
+            label: t("auth.fields.repeatPassword"),
             type: "password",
             value: state.repeatPassword,
             onChange: (e: any) => dispatch({type: "SET_REPEAT_PASSWORD", payload: e.target.value}),
@@ -125,11 +127,11 @@ const SignUp: React.FC = () => {
             <div className="auth-card">
                 <div className="auth-card-inner">
                 <Form
-                    title="Register to Jagoz"
+                    title={t("auth.signUp.title")}
                     fields={fields}
                     onSubmit={handleRegister}
                     logoSrc={LOGO_SRC}
-                    submitLabel="Register"
+                    submitLabel={t("auth.signUp.submit")}
                     disabled = {isFormButtonDisabled}
                 >
                     {/* Status Box */}

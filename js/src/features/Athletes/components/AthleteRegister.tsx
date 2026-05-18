@@ -1,6 +1,7 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ShieldAlert } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   createAthlete,
   fetchAllTeamCategories,
@@ -191,6 +192,7 @@ function toDto(values: RegisterValues): AthleteInput {
 }
 
 export default function AthleteRegister() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const auth = useAuth();
   const alreadyHasMember = auth.activeMemberId != null;
@@ -214,12 +216,12 @@ export default function AthleteRegister() {
         }
       })
       .catch(() => {
-        if (!ignore) setErrorMessage("Não foi possível carregar os escalões.");
+        if (!ignore) setErrorMessage(t("athletes.register.errors.loadCategories"));
       });
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [t]);
 
   function handleChange(
     event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
@@ -246,28 +248,28 @@ export default function AthleteRegister() {
     setSuccessMessage("");
 
     if (!values.privacyAccepted) {
-      setErrorMessage("É necessário aceitar o consentimento de privacidade.");
+      setErrorMessage(t("athletes.register.errors.privacy"));
       setIsSubmitting(false);
       return;
     }
     if (!values.teamCategoryId) {
-      setErrorMessage("Selecciona um escalão.");
+      setErrorMessage(t("athletes.register.errors.selectCategory"));
       setIsSubmitting(false);
       return;
     }
     if (values.birthDate && values.birthDate >= todayISO()) {
-      setErrorMessage("A data de nascimento tem de ser anterior a hoje.");
+      setErrorMessage(t("athletes.register.errors.birthDate"));
       setIsSubmitting(false);
       return;
     }
     if (values.biExpirationDate && values.biExpirationDate <= todayISO()) {
-      setErrorMessage("A validade do BI/CC/Passaporte tem de ser posterior a hoje.");
+      setErrorMessage(t("athletes.register.errors.biValidity"));
       setIsSubmitting(false);
       return;
     }
     if (values.isSelfRegistration && alreadyHasMember) {
       setErrorMessage(
-        "A tua conta já está associada a uma inscrição. Desmarca \"Esta inscrição é para mim\" para inscrever outra pessoa.",
+        t("athletes.register.errors.selfAlreadyMember"),
       );
       setIsSubmitting(false);
       return;
@@ -276,11 +278,11 @@ export default function AthleteRegister() {
     try {
       await createAthlete(toDto(values));
       setSuccessMessage(
-        "Inscrição submetida. A secretaria será notificada para validar a ficha junto da AFL.",
+        t("athletes.register.success"),
       );
       setValues({ ...initialValues, teamCategoryId: values.teamCategoryId });
     } catch (error) {
-      const fallback = "Não foi possível submeter o pedido de inscrição.";
+      const fallback = t("athletes.register.errors.submit");
       const message = error instanceof HttpError ? error.message || fallback : fallback;
       setErrorMessage(message);
     } finally {
@@ -302,16 +304,15 @@ export default function AthleteRegister() {
           <div className="member-card-padded">
             <div className="member-card-header">
               <div>
-                <h2 className="member-title">Inscrição de atleta</h2>
+                <h2 className="member-title">{t("athletes.register.title")}</h2>
                 <p className="member-desc">
-                  Formulário de inscrição. Após submissão, a secretaria recebe
-                  notificação para descarregar o dossier e reencaminhá-lo à AFL.
+                  {t("athletes.register.description")}
                 </p>
               </div>
 
               <button onClick={() => navigate(-1)} className="member-btn-back">
                 <ArrowLeft size={18} />
-                Voltar
+                {t("athletes.common.back")}
               </button>
             </div>
 
@@ -332,7 +333,7 @@ export default function AthleteRegister() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Quem está a ser inscrito
+                  {t("athletes.register.sections.who")}
                 </h3>
                 <label className="member-checkbox-group group">
                   <div className="mt-1">
@@ -347,16 +348,15 @@ export default function AthleteRegister() {
                   </div>
                   <div>
                     <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
-                      Esta inscrição é para mim
+                      {t("athletes.register.self.title")}
                     </span>
                     <p className="text-xs text-text-secondary mt-0.5">
-                      Marca esta opção se és tu o atleta a ser inscrito. Caso contrário (estás
-                      a inscrever um familiar ou outra pessoa), deixa por marcar.
+                      {t("athletes.register.self.help")}
                       {alreadyHasMember && (
                         <>
                           {" "}
                           <span className="font-semibold">
-                            Indisponível: a tua conta já está associada a uma inscrição.
+                            {t("athletes.register.self.unavailable")}
                           </span>
                         </>
                       )}
@@ -367,59 +367,59 @@ export default function AthleteRegister() {
 
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Dados pessoais
+                  {t("athletes.register.sections.personal")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="member-input-group md:col-span-2">
-                    <label className="member-label">Nome completo</label>
+                    <label className="member-label">{t("athletes.fields.completeName")}</label>
                     <input className="member-input" name="completeName" value={values.completeName} onChange={handleChange} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Data de nascimento</label>
+                    <label className="member-label">{t("athletes.fields.birthDate")}</label>
                     <input type="date" className="member-input" name="birthDate" value={values.birthDate} onChange={handleChange} max={todayISO()} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Naturalidade</label>
+                    <label className="member-label">{t("athletes.fields.birthplace")}</label>
                     <input className="member-input" name="birthplace" value={values.birthplace} onChange={handleChange} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Nacionalidade</label>
+                    <label className="member-label">{t("athletes.fields.nationality")}</label>
                     <input className="member-input" name="nationality" value={values.nationality} onChange={handleChange} required />
                   </div>
                   <div className="member-input-group">
                     <label className="member-label">NIF</label>
-                    <input className="member-input" name="nif" value={values.nif} onChange={handleChange} pattern="\d{9}" minLength={9} maxLength={9} title="9 dígitos" required />
+                    <input className="member-input" name="nif" value={values.nif} onChange={handleChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
                   </div>
                   <div className="member-input-group">
                     <label className="member-label">BI / CC / Passaporte</label>
-                    <input className="member-input" name="bi" value={values.bi} onChange={handleChange} pattern="[A-Za-z0-9]{8}" minLength={8} maxLength={8} title="8 caracteres alfanuméricos" required />
+                    <input className="member-input" name="bi" value={values.bi} onChange={handleChange} pattern="[A-Za-z0-9]{8}" minLength={8} maxLength={8} title={t("athletes.validation.eightAlphanumeric")} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Validade BI/CC/Passaporte</label>
+                    <label className="member-label">{t("athletes.fields.biValidityFull")}</label>
                     <input type="date" className="member-input" name="biExpirationDate" value={values.biExpirationDate} onChange={handleChange} min={tomorrowISO()} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Nº Utente</label>
-                    <input className="member-input" name="numeroUtente" value={values.numeroUtente} onChange={handleChange} pattern="\d{9}" minLength={9} maxLength={9} title="9 dígitos" required />
+                    <label className="member-label">{t("athletes.fields.healthNumber")}</label>
+                    <input className="member-input" name="numeroUtente" value={values.numeroUtente} onChange={handleChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
                   </div>
                   <div className="member-input-group">
                     <label className="member-label">NISS</label>
-                    <input className="member-input" name="niss" value={values.niss} onChange={handleChange} pattern="\d{11}" minLength={11} maxLength={11} title="11 dígitos" required />
+                    <input className="member-input" name="niss" value={values.niss} onChange={handleChange} pattern="\d{11}" minLength={11} maxLength={11} title={t("athletes.validation.elevenDigits")} required />
                   </div>
                   <div className="member-input-group">
                     <label className="member-label">Email</label>
                     <input type="email" className="member-input" name="email" value={values.email} onChange={handleChange} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Telemóvel</label>
-                    <input className="member-input" name="phone" value={values.phone} onChange={handleChange} pattern="\d{7,15}" title="7 a 15 dígitos" required />
+                    <label className="member-label">{t("athletes.fields.phone")}</label>
+                    <input className="member-input" name="phone" value={values.phone} onChange={handleChange} pattern="\d{7,15}" title={t("athletes.validation.sevenToFifteenDigits")} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Telefone fixo</label>
-                    <input className="member-input" name="homePhone" value={values.homePhone} onChange={handleChange} placeholder="Opcional" />
+                    <label className="member-label">{t("athletes.fields.homePhone")}</label>
+                    <input className="member-input" name="homePhone" value={values.homePhone} onChange={handleChange} placeholder={t("athletes.common.optional")} />
                   </div>
                   <div className="member-input-group md:col-span-2">
-                    <label className="member-label">Foto (URL)</label>
+                    <label className="member-label">{t("athletes.fields.photoUrl")}</label>
                     <input className="member-input" name="photoUrl" value={values.photoUrl} onChange={handleChange} placeholder="https://..." />
                   </div>
                 </div>
@@ -427,19 +427,19 @@ export default function AthleteRegister() {
 
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Morada
+                  {t("athletes.detail.sections.address")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="member-input-group md:col-span-2">
-                    <label className="member-label">Morada</label>
+                    <label className="member-label">{t("athletes.fields.address")}</label>
                     <input className="member-input" name="address" value={values.address} onChange={handleChange} required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Código postal</label>
-                    <input className="member-input" name="postalCode" value={values.postalCode} onChange={handleChange} pattern="\d{4}-\d{3}" title="Formato NNNN-NNN" placeholder="1500-123" required />
+                    <label className="member-label">{t("athletes.fields.postalCode")}</label>
+                    <input className="member-input" name="postalCode" value={values.postalCode} onChange={handleChange} pattern="\d{4}-\d{3}" title={t("athletes.validation.postalCode")} placeholder="1500-123" required />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Cidade</label>
+                    <label className="member-label">{t("athletes.fields.city")}</label>
                     <input className="member-input" name="city" value={values.city} onChange={handleChange} required />
                   </div>
                 </div>
@@ -447,13 +447,13 @@ export default function AthleteRegister() {
 
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Dados desportivos
+                  {t("athletes.detail.sections.sportsData")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="member-input-group">
-                    <label className="member-label">Escalão</label>
+                    <label className="member-label">{t("athletes.fields.category")}</label>
                     <select className="member-input" name="teamCategoryId" value={values.teamCategoryId} onChange={handleChange} required>
-                      <option value="" disabled>Selecciona...</option>
+                      <option value="" disabled>{t("athletes.common.select")}</option>
                       {categories.map((c) => (
                         <option key={c.teamId} value={c.teamId}>
                           {c.label}
@@ -462,12 +462,12 @@ export default function AthleteRegister() {
                     </select>
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Último clube</label>
-                    <input className="member-input" name="lastClub" value={values.lastClub} onChange={handleChange} placeholder="Sem clube anterior" />
+                    <label className="member-label">{t("athletes.fields.lastClub")}</label>
+                    <input className="member-input" name="lastClub" value={values.lastClub} onChange={handleChange} placeholder={t("athletes.register.placeholders.noPreviousClub")} />
                   </div>
                   <div className="member-input-group md:col-span-2">
-                    <label className="member-label">Época</label>
-                    <input className="member-input" name="season" value={values.season} onChange={handleChange} placeholder="Ex: 2025/2026" />
+                    <label className="member-label">{t("athletes.fields.season")}</label>
+                    <input className="member-input" name="season" value={values.season} onChange={handleChange} placeholder={t("athletes.register.placeholders.season")} />
                   </div>
                 </div>
 
@@ -477,10 +477,10 @@ export default function AthleteRegister() {
                   </div>
                   <div>
                     <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
-                      Tem familiares no clube
+                      {t("athletes.register.family.title")}
                     </span>
                     <p className="text-xs text-text-secondary mt-0.5">
-                      Indica se já existem outros sócios ou atletas da mesma família.
+                      {t("athletes.register.family.help")}
                     </p>
                   </div>
                 </label>
@@ -488,63 +488,63 @@ export default function AthleteRegister() {
 
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Dados escolares
+                  {t("athletes.detail.sections.schoolData")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="member-input-group md:col-span-2">
-                    <label className="member-label">Escola</label>
+                    <label className="member-label">{t("athletes.fields.school")}</label>
                     <input className="member-input" name="school" value={values.school} onChange={handleChange} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Ano</label>
-                    <input className="member-input" name="schoolYear" value={values.schoolYear} onChange={handleChange} placeholder="Ex: 8º ano" />
+                    <label className="member-label">{t("athletes.fields.schoolYear")}</label>
+                    <input className="member-input" name="schoolYear" value={values.schoolYear} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolYear")} />
                   </div>
                   <div className="member-input-group">
-                    <label className="member-label">Turma</label>
-                    <input className="member-input" name="schoolClass" value={values.schoolClass} onChange={handleChange} placeholder="Ex: B" />
+                    <label className="member-label">{t("athletes.fields.schoolClass")}</label>
+                    <input className="member-input" name="schoolClass" value={values.schoolClass} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolClass")} />
                   </div>
                 </div>
               </section>
 
               <GuardianSection
-                title="Pai"
+                title={t("athletes.guardians.father")}
                 fields={[
-                  { name: "fatherName", label: "Nome", value: values.fatherName, required: true },
-                  { name: "fatherWork", label: "Actividade profissional", value: values.fatherWork, required: true },
-                  { name: "fatherPhone", label: "Telemóvel", value: values.fatherPhone, type: "tel", pattern: "\\d{7,15}", required: true },
+                  { name: "fatherName", label: t("athletes.fields.name"), value: values.fatherName, required: true },
+                  { name: "fatherWork", label: t("athletes.fields.professionalActivity"), value: values.fatherWork, required: true },
+                  { name: "fatherPhone", label: t("athletes.fields.phone"), value: values.fatherPhone, type: "tel", pattern: "\\d{7,15}", required: true },
                   { name: "fatherEmail", label: "Email", value: values.fatherEmail, type: "email", required: true },
                 ]}
                 onChange={handleChange}
               />
 
               <GuardianSection
-                title="Mãe"
+                title={t("athletes.guardians.mother")}
                 fields={[
-                  { name: "motherName", label: "Nome", value: values.motherName, required: true },
-                  { name: "motherWork", label: "Actividade profissional", value: values.motherWork, required: true },
-                  { name: "motherPhone", label: "Telemóvel", value: values.motherPhone, type: "tel", pattern: "\\d{7,15}", required: true },
+                  { name: "motherName", label: t("athletes.fields.name"), value: values.motherName, required: true },
+                  { name: "motherWork", label: t("athletes.fields.professionalActivity"), value: values.motherWork, required: true },
+                  { name: "motherPhone", label: t("athletes.fields.phone"), value: values.motherPhone, type: "tel", pattern: "\\d{7,15}", required: true },
                   { name: "motherEmail", label: "Email", value: values.motherEmail, type: "email", required: true },
                 ]}
                 onChange={handleChange}
               />
 
               <GuardianSection
-                title="Encarregado de Educação"
+                title={t("athletes.guardians.legalGuardian")}
                 fields={[
-                  { name: "lgName", label: "Nome", value: values.lgName, required: true },
-                  { name: "lgKinship", label: "Grau de parentesco", value: values.lgKinship, required: true, placeholder: "Ex: Tio, Avó" },
+                  { name: "lgName", label: t("athletes.fields.name"), value: values.lgName, required: true },
+                  { name: "lgKinship", label: t("athletes.fields.kinship"), value: values.lgKinship, required: true, placeholder: t("athletes.register.placeholders.kinship") },
                   { name: "lgEmail", label: "Email", value: values.lgEmail, type: "email", required: true },
-                  { name: "lgPhone", label: "Telemóvel", value: values.lgPhone, type: "tel", pattern: "\\d{7,15}", required: true },
-                  { name: "lgContactPhone", label: "Telefone de contacto", value: values.lgContactPhone, type: "tel", pattern: "\\d{7,15}", required: true },
-                  { name: "lgWork", label: "Actividade profissional", value: values.lgWork, placeholder: "Opcional" },
-                  { name: "lgMemberNumber", label: "Nº Sócio (se aplicável)", value: values.lgMemberNumber, type: "number", placeholder: "Opcional" },
+                  { name: "lgPhone", label: t("athletes.fields.phone"), value: values.lgPhone, type: "tel", pattern: "\\d{7,15}", required: true },
+                  { name: "lgContactPhone", label: t("athletes.fields.contactPhone"), value: values.lgContactPhone, type: "tel", pattern: "\\d{7,15}", required: true },
+                  { name: "lgWork", label: t("athletes.fields.professionalActivity"), value: values.lgWork, placeholder: t("athletes.common.optional") },
+                  { name: "lgMemberNumber", label: t("athletes.fields.memberNumberIfApplicable"), value: values.lgMemberNumber, type: "number", placeholder: t("athletes.common.optional") },
                 ]}
                 onChange={handleChange}
               />
 
               <section className="space-y-4 pt-4 border-t border-border">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
-                  Consentimentos
+                  {t("athletes.register.sections.consents")}
                 </h3>
 
                 <label className="member-checkbox-group group">
@@ -553,10 +553,10 @@ export default function AthleteRegister() {
                   </div>
                   <div>
                     <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
-                      Consentimento de privacidade
+                      {t("athletes.register.consents.privacy")}
                     </span>
                     <p className="text-xs text-text-secondary mt-0.5">
-                      Obrigatório para submissão e validação da inscrição.
+                      {t("athletes.register.consents.privacyHelp")}
                     </p>
                   </div>
                 </label>
@@ -567,10 +567,10 @@ export default function AthleteRegister() {
                   </div>
                   <div>
                     <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
-                      Comunicações do clube
+                      {t("athletes.register.consents.communications")}
                     </span>
                     <p className="text-xs text-text-secondary mt-0.5">
-                      Permite receber avisos, eventos e mensagens institucionais.
+                      {t("athletes.register.consents.communicationsHelp")}
                     </p>
                   </div>
                 </label>
@@ -581,10 +581,10 @@ export default function AthleteRegister() {
                   </div>
                   <div>
                     <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
-                      Certificação escolar
+                      {t("athletes.register.consents.schoolCertification")}
                     </span>
                     <p className="text-xs text-text-secondary mt-0.5">
-                      Autoriza o clube a confirmar dados escolares junto da escola.
+                      {t("athletes.register.consents.schoolCertificationHelp")}
                     </p>
                   </div>
                 </label>
@@ -592,7 +592,7 @@ export default function AthleteRegister() {
 
               <div className="pt-6 border-t border-border">
                 <button className="member-btn-primary" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "A submeter..." : "Submeter inscrição"}
+                  {isSubmitting ? t("athletes.register.submitting") : t("athletes.register.submit")}
                 </button>
               </div>
             </form>
