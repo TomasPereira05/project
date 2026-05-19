@@ -5,6 +5,8 @@ import pt.isel.jagoz.domain.payment.Payment
 interface PaymentRepository {
     fun findByChargeId(chargeId: Long): List<Payment>
 
+    fun findByProviderRef(provider: String, providerRef: String): Payment?
+
     fun save(payment: Payment): Long
 
     fun update(payment: Payment)

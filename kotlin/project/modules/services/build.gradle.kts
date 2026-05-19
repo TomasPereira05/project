@@ -19,6 +19,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+    implementation("com.stripe:stripe-java:31.3.0")
 }
 
 tasks.test {
