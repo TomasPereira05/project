@@ -1,97 +1,21 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar } from "lucide-react";
 import { Link, useParams, Navigate } from "react-router-dom";
-import { approveMember, buildPaymentHistory, fetchMember, getDebtSummary, rejectMember, type Member } from "..";
+import { useMemberDetail } from "../hooks";
+import { memberStatusColor } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
-
-function statusColor(status: Member["status"]) {
-  switch (status) {
-    case "ATIVO":
-      return "member-status-active";
-    case "PENDENTE":
-      return "member-status-pending";
-    case "INATIVO":
-      return "member-status-inactive";
-    case "REJEITADO":
-      return "member-status-rejected";
-  }
-}
 
 export default function MemberPage() {
   const { t } = useTranslation();
   const { memberId } = useParams();
   const { role, activeMemberId } = useAuth();
 
-  const [member, setMember] = useState<Member | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [feedback, setFeedback] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
   const isAdmin = role === "ADMIN" || role === "SECRETARIA";
   const isSelf = activeMemberId === Number(memberId);
-
-  useEffect(() => {
-    let ignore = false;
-
-    async function loadMember() {
-      setIsLoading(true);
-      setErrorMessage("");
-
-      try {
-        const response = await fetchMember(Number(memberId));
-        if (!ignore) {
-          setMember(response);
-        }
-      } catch {
-        if (!ignore) {
-          setErrorMessage(t("members.detail.errors.load"));
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    if (memberId && (isAdmin || isSelf)) {
-      loadMember();
-    }
-
-    return () => {
-      ignore = true;
-    };
-  }, [memberId, isAdmin, isSelf, t]);
-
-  const paymentHistory = useMemo(() => (member ? buildPaymentHistory(member, t) : []), [member, t]);
-  const debtSummary = useMemo(() => getDebtSummary(paymentHistory), [paymentHistory]);
-
-  async function handleApprove() {
-    if (!member) return;
-
-    try {
-      const updated = await approveMember(member.memberId);
-      setMember(updated);
-      setFeedback(t("members.detail.feedback.approved"));
-      setErrorMessage("");
-    } catch {
-      setErrorMessage(t("members.detail.errors.approve"));
-    }
-  }
-
-  async function handleReject() {
-    if (!member) return;
-
-    try {
-      const updated = await rejectMember(member.memberId);
-      setMember(updated);
-      setFeedback(t("members.detail.feedback.rejected"));
-      setErrorMessage("");
-    } catch {
-      setErrorMessage(t("members.detail.errors.reject"));
-    }
-  }
+  const { debtSummary, errorMessage, feedback, handleApprove, handleReject, isLoading, member, paymentHistory } =
+    useMemberDetail(memberId, isAdmin || isSelf, t);
 
   if (!isAdmin && !isSelf) {
     return <Navigate to="/" replace />;
@@ -162,7 +86,7 @@ export default function MemberPage() {
               </div>
 
               <div className="member-profile-badges">
-                <span className={`member-status-badge ${statusColor(member.status)}`}>{t(`members.labels.statuses.${member.status}`)}</span>
+                <span className={`member-status-badge ${memberStatusColor(member.status)}`}>{t(`members.labels.statuses.${member.status}`)}</span>
                 <span className="member-category-badge">{t(`members.labels.categories.${member.category}`)}</span>
               </div>
             </div>
