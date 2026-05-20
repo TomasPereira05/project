@@ -24,7 +24,7 @@ class PaymentController(
         authenticatedUser: AuthenticatedUser,
         @RequestBody input: CreateCheckoutSessionInput,
     ): ResponseEntity<*> =
-        paymentService.createCheckoutSession(authenticatedUser, input.chargeId).handle(
+        paymentService.createCheckoutSession(authenticatedUser, input.chargeId, input.sponsorshipId).handle(
             onFailure = { handlePaymentError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it.toOutput()) },
         )

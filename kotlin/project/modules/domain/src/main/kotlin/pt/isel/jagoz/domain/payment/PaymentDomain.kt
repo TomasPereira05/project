@@ -1,7 +1,7 @@
 package pt.isel.jagoz.domain.payment
 
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import org.springframework.stereotype.Component
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.ValidationError
@@ -102,7 +102,7 @@ class PaymentDomain {
      */
     fun confirmPayment(
         payment: Payment,
-        confirmedAt: LocalDateTime,
+        confirmedAt: Instant,
     ): Either<PaymentError, Payment> {
         if (payment.status == PaymentStatus.PAID) return failure(PaymentError.InvalidOperation("already confirmed"))
         if (payment.status != PaymentStatus.PENDING) {

@@ -14,8 +14,8 @@ class JdbiChargeRepository(
             u_c.user_id as cu_user_id, u_c.email as cu_email, u_c.username as cu_username, u_c.password_validation as cu_password_validation, u_c.role as cu_role, u_c.active_member_id as cu_active_member_id,
             u_ch.user_id as ch_user_id, u_ch.email as ch_email, u_ch.username as ch_username, u_ch.password_validation as ch_password_validation, u_ch.role as ch_role, u_ch.active_member_id as ch_active_member_id
         FROM jagoz.charge c
-        JOIN users u_c ON c.creation_user_id = u_c.user_id
-        LEFT JOIN users u_ch ON c.charged_user_id = u_ch.user_id
+        JOIN jagoz.users u_c ON c.creation_user_id = u_c.user_id
+        LEFT JOIN jagoz.users u_ch ON c.charged_user_id = u_ch.user_id
         """.trimIndent()
 
     override fun findById(id: Long): Charge? =
@@ -43,6 +43,14 @@ class JdbiChargeRepository(
             .bind("memberId", memberId)
             .mapTo(Charge::class.java)
             .list()
+
+    override fun findPendingBySponsorship(sponsorshipId: Long): Charge? =
+        handle
+            .createQuery("$selectQuery WHERE c.sponsorship_id = :sponsorshipId AND c.status = 'PENDING' ORDER BY c.created_at DESC LIMIT 1")
+            .bind("sponsorshipId", sponsorshipId)
+            .mapTo(Charge::class.java)
+            .findOne()
+            .orElse(null)
 
     override fun existsByMemberSeasonMonth(
         memberId: Long,

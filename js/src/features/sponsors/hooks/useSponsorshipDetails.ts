@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import i18n from "../../../shared/i18n";
-import { fetchCatalogSnapshot, fetchSponsorById, fetchSponsorshipById } from "../api";
+import { createSponsorshipCheckoutSession, fetchCatalogSnapshot, fetchSponsorById, fetchSponsorshipById } from "../api";
 import type { CatalogSnapshot, Sponsor, Sponsorship } from "../types";
 import { emptySponsorCatalogs, sortSponsorCatalogs } from "../utils";
 
@@ -9,6 +9,7 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
   const [sponsor, setSponsor] = useState<Sponsor | null>(null);
   const [catalogs, setCatalogs] = useState<CatalogSnapshot>(emptySponsorCatalogs);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPaying, setIsPaying] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -55,10 +56,29 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
     };
   }, [sponsorshipId]);
 
+  async function handlePay() {
+    if (!sponsorship) {
+      return;
+    }
+
+    setIsPaying(true);
+    setErrorMessage("");
+
+    try {
+      const session = await createSponsorshipCheckoutSession(sponsorship.sponsorshipId);
+      window.location.assign(session.checkoutUrl);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.details.paymentError"));
+      setIsPaying(false);
+    }
+  }
+
   return {
     catalogs,
     errorMessage,
+    handlePay,
     isLoading,
+    isPaying,
     sponsor,
     sponsorship,
   };

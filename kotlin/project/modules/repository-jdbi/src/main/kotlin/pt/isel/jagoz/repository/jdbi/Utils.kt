@@ -30,6 +30,7 @@ import pt.isel.jagoz.repository.jdbi.mappers.GuardianMapper
 import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
 import pt.isel.jagoz.repository.jdbi.mappers.LocalDateArgumentFactory
+import pt.isel.jagoz.repository.jdbi.mappers.LocalDateTimeArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.MemberMapper
 import pt.isel.jagoz.repository.jdbi.mappers.OtherSportMapper
 import pt.isel.jagoz.repository.jdbi.mappers.PaymentMapper
@@ -52,6 +53,7 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 
     registerArgument(InstantArgumentFactory())
     registerArgument(LocalDateArgumentFactory())
+    registerArgument(LocalDateTimeArgumentFactory())
 
     registerRowMapper(Athlete::class.java, AthleteMapper())
     registerRowMapper(Guardian::class.java, GuardianMapper())

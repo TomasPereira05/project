@@ -1,13 +1,14 @@
 package pt.isel.jagoz.service
 
 import com.stripe.exception.SignatureVerificationException
+import com.google.gson.JsonParser
+import com.stripe.model.Event
 import com.stripe.model.checkout.Session
 import com.stripe.net.RequestOptions
 import com.stripe.net.Webhook
 import com.stripe.param.checkout.SessionCreateParams
 import jakarta.inject.Named
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pt.isel.jagoz.domain.payment.Charge
@@ -17,6 +18,7 @@ import pt.isel.jagoz.domain.payment.Payment
 import pt.isel.jagoz.domain.payment.PaymentDomain
 import pt.isel.jagoz.domain.payment.PaymentError
 import pt.isel.jagoz.domain.payment.PaymentStatus
+import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
 import pt.isel.jagoz.domain.user.AuthenticatedUser
@@ -60,12 +62,24 @@ class PaymentService(
 
     fun createCheckoutSession(
         authenticatedUser: AuthenticatedUser,
-        chargeId: Long,
+        chargeId: Long?,
+        sponsorshipId: Long?,
     ): CheckoutSessionCreationResult =
         transactionManager.run { transaction ->
             val charge =
-                transaction.chargeRepository.findById(chargeId)
-                    ?: return@run failure(PaymentError.DomainError("Charge $chargeId not found"))
+                when {
+                    chargeId != null ->
+                        transaction.chargeRepository.findById(chargeId)
+                            ?: return@run failure(PaymentError.DomainError("Charge $chargeId not found"))
+
+                    sponsorshipId != null ->
+                        when (val result = getOrCreateSponsorshipCharge(transaction, authenticatedUser, sponsorshipId)) {
+                            is Either.Left -> return@run failure(result.value)
+                            is Either.Right -> result.value
+                        }
+
+                    else -> return@run failure(PaymentError.Validation("chargeId or sponsorshipId is required"))
+                }
 
             if (!canPayCharge(authenticatedUser, charge)) {
                 return@run failure(PaymentError.DomainError("Not authorized"))
@@ -76,7 +90,7 @@ class PaymentService(
             }
 
             val session = createStripeSession(charge)
-            val now = nowLocalDateTime()
+            val now = Clock.System.now()
             val payment =
                 Payment(
                     paymentId = 0,
@@ -123,11 +137,11 @@ class PaymentService(
         return when (event.type) {
             "checkout.session.completed",
             "checkout.session.async_payment_succeeded",
-            -> handleCheckoutSessionPaid(event.dataObjectDeserializer.getObject().orElse(null) as? Session)
+            -> handleCheckoutSessionPaid(checkoutSessionId(event))
 
             "checkout.session.async_payment_failed",
             "checkout.session.expired",
-            -> handleCheckoutSessionFailed(event.dataObjectDeserializer.getObject().orElse(null) as? Session)
+            -> handleCheckoutSessionFailed(checkoutSessionId(event))
 
             else -> success(Unit)
         }
@@ -165,13 +179,12 @@ class PaymentService(
         return Session.create(params, requestOptions)
     }
 
-    private fun handleCheckoutSessionPaid(session: Session?): StripeWebhookResult {
-        val sessionId = session?.id ?: return failure(PaymentError.DomainError("Stripe session missing"))
-
+    private fun handleCheckoutSessionPaid(sessionId: String?): StripeWebhookResult {
+        val stripeSessionId = sessionId ?: return failure(PaymentError.DomainError("Stripe session missing"))
         return transactionManager.run { transaction ->
             val payment =
-                transaction.paymentRepository.findByProviderRef(STRIPE_PROVIDER, sessionId)
-                    ?: return@run failure(PaymentError.DomainError("Payment for Stripe session $sessionId not found"))
+                transaction.paymentRepository.findByProviderRef(STRIPE_PROVIDER, stripeSessionId)
+                    ?: return@run failure(PaymentError.DomainError("Payment for Stripe session $stripeSessionId not found"))
 
             if (payment.status == PaymentStatus.PAID) {
                 return@run success(Unit)
@@ -181,14 +194,15 @@ class PaymentService(
                 transaction.chargeRepository.findById(payment.chargeId)
                     ?: return@run failure(PaymentError.DomainError("Charge ${payment.chargeId} not found"))
 
-            val confirmedAt = nowLocalDateTime()
+            val confirmedAt = Clock.System.now()
             when (val confirmedPayment = paymentDomain.confirmPayment(payment, confirmedAt)) {
                 is Either.Left -> return@run failure(confirmedPayment.value)
                 is Either.Right -> transaction.paymentRepository.update(confirmedPayment.value)
             }
 
             if (charge.status == ChargeStatus.PENDING) {
-                when (val paidCharge = paymentDomain.markChargePaid(charge, confirmedAt.date)) {
+                val paidAt = confirmedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
+                when (val paidCharge = paymentDomain.markChargePaid(charge, paidAt)) {
                     is Either.Left -> return@run failure(PaymentError.DomainError(paidCharge.value.toString()))
                     is Either.Right -> transaction.chargeRepository.update(paidCharge.value)
                 }
@@ -210,12 +224,11 @@ class PaymentService(
         }
     }
 
-    private fun handleCheckoutSessionFailed(session: Session?): StripeWebhookResult {
-        val sessionId = session?.id ?: return failure(PaymentError.DomainError("Stripe session missing"))
-
+    private fun handleCheckoutSessionFailed(sessionId: String?): StripeWebhookResult {
+        val stripeSessionId = sessionId ?: return failure(PaymentError.DomainError("Stripe session missing"))
         return transactionManager.run { transaction ->
             val payment =
-                transaction.paymentRepository.findByProviderRef(STRIPE_PROVIDER, sessionId)
+                transaction.paymentRepository.findByProviderRef(STRIPE_PROVIDER, stripeSessionId)
                     ?: return@run success(Unit)
 
             if (payment.status == PaymentStatus.PENDING) {
@@ -241,6 +254,62 @@ class PaymentService(
             (charge.memberId != null && charge.memberId == authenticatedUser.activeMemberId)
     }
 
+    private fun getOrCreateSponsorshipCharge(
+        transaction: Transaction,
+        authenticatedUser: AuthenticatedUser,
+        sponsorshipId: Long,
+    ): Either<PaymentError, Charge> {
+        val sponsorship =
+            transaction.sponsorshipRepository.findById(sponsorshipId)
+                ?: return failure(PaymentError.DomainError("Sponsorship $sponsorshipId not found"))
+
+        if (sponsorship.status != SponsorshipStatus.APROVADO) {
+            return failure(PaymentError.InvalidOperation("Sponsorship must be approved before payment"))
+        }
+
+        val sponsor =
+            transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                ?: return failure(PaymentError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+        if (!canPaySponsorship(authenticatedUser, sponsor)) {
+            return failure(PaymentError.DomainError("Not authorized"))
+        }
+
+        transaction.chargeRepository.findPendingBySponsorship(sponsorshipId)?.let { return success(it) }
+
+        val creationUser =
+            transaction.userRepository.findById(authenticatedUser.userId)
+                ?: return failure(PaymentError.DomainError("User ${authenticatedUser.userId} not found"))
+        val chargedUser = sponsor.userId?.let { transaction.userRepository.findById(it) }
+
+        val charge =
+            Charge(
+                chargeId = 0,
+                type = ChargeType.SPONSORSHIP_FEE,
+                memberId = null,
+                sponsorshipId = sponsorship.sponsorshipId,
+                value = sponsorship.price,
+                status = ChargeStatus.PENDING,
+                season = sponsorship.season,
+                month = null,
+                createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                creationUser = creationUser,
+                chargeUser = chargedUser,
+                paidAt = null,
+            )
+
+        val chargeId = transaction.chargeRepository.save(charge)
+        return success(charge.copy(chargeId = chargeId))
+    }
+
+    private fun canPaySponsorship(
+        authenticatedUser: AuthenticatedUser,
+        sponsor: Sponsor,
+    ): Boolean =
+        authenticatedUser.canManageBackoffice() ||
+            sponsor.userId == authenticatedUser.userId ||
+            sponsor.email.equals(authenticatedUser.email, ignoreCase = true)
+
     private fun chargeProductName(charge: Charge): String =
         when (charge.type) {
             ChargeType.MEMBER_FEE -> "Quota de sócio"
@@ -248,8 +317,18 @@ class PaymentService(
             ChargeType.SPONSORSHIP_FEE -> "Patrocínio"
         }
 
-    private fun nowLocalDateTime(): LocalDateTime =
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+    private fun checkoutSessionId(event: Event): String? {
+        val session = event.dataObjectDeserializer.getObject().orElse(null) as? Session
+        if (session?.id != null) return session.id
+
+        return runCatching {
+            JsonParser
+                .parseString(event.dataObjectDeserializer.getRawJson())
+                .asJsonObject
+                .get("id")
+                ?.asString
+        }.getOrNull()
+    }
 
     private fun validationErrorMessage(error: ValidationError): String =
         when (error) {

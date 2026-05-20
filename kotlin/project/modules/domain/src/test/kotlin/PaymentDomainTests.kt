@@ -1,7 +1,7 @@
 package pt.isel.jagoz.payment
 
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import pt.isel.jagoz.domain.payment.Charge
 import pt.isel.jagoz.domain.payment.ChargeError
 import pt.isel.jagoz.domain.payment.ChargeStatus
@@ -65,7 +65,7 @@ class PaymentDomainTests {
             provider = "stripe",
             providerRef = "sess_123",
             status = status,
-            createdAt = LocalDateTime.parse("2025-05-01T10:00:00"),
+            createdAt = Instant.parse("2025-05-01T10:00:00Z"),
             confirmedAt = null,
         )
 
@@ -196,7 +196,7 @@ class PaymentDomainTests {
 
     @Test
     fun `confirmPayment transitions PENDING to PAID`() {
-        val ts = LocalDateTime.parse("2025-05-02T12:00:00")
+        val ts = Instant.parse("2025-05-02T12:00:00Z")
         val res = domain.confirmPayment(samplePayment(), ts)
         assertTrue(res is Either.Right)
         assertEquals(PaymentStatus.PAID, res.value.status)
@@ -205,14 +205,14 @@ class PaymentDomainTests {
 
     @Test
     fun `confirmPayment rejects already PAID`() {
-        val res = domain.confirmPayment(samplePayment(PaymentStatus.PAID), LocalDateTime.parse("2025-05-02T12:00:00"))
+        val res = domain.confirmPayment(samplePayment(PaymentStatus.PAID), Instant.parse("2025-05-02T12:00:00Z"))
         assertTrue(res is Either.Left)
         assertIs<PaymentError.InvalidOperation>(res.value)
     }
 
     @Test
     fun `confirmPayment rejects FAILED`() {
-        val res = domain.confirmPayment(samplePayment(PaymentStatus.FAILED), LocalDateTime.parse("2025-05-02T12:00:00"))
+        val res = domain.confirmPayment(samplePayment(PaymentStatus.FAILED), Instant.parse("2025-05-02T12:00:00Z"))
         assertTrue(res is Either.Left)
         assertIs<PaymentError.InvalidOperation>(res.value)
     }

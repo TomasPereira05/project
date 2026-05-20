@@ -466,7 +466,10 @@
       "loading": "A carregar patrocínio...",
       "contract": "Contrato",
       "invalid": "Patrocínio inválido.",
-      "loadError": "Não foi possível carregar o patrocínio."
+      "loadError": "Não foi possível carregar o patrocínio.",
+      "pay": "Pagar patrocínio",
+      "paymentStarting": "A preparar pagamento...",
+      "paymentError": "Não foi possível iniciar o pagamento."
     },
     "approvals": {
       "eyebrow": "Aprovações",
@@ -566,6 +569,23 @@
       "errors": {
         "passwordMismatch": "A password repetida não coincide com a password original. Tenta novamente."
       }
+    }
+  },
+  "payments": {
+    "success": {
+      "eyebrow": "Pagamento concluído",
+      "title": "Pagamento recebido",
+      "description": "O pagamento foi processado pelo Stripe. O estado do patrocínio será atualizado assim que o backend receber a confirmação.",
+      "session": "Sessão Stripe:",
+      "backToSponsorships": "Ver os meus patrocínios",
+      "home": "Voltar ao início"
+    },
+    "cancel": {
+      "eyebrow": "Pagamento cancelado",
+      "title": "O pagamento não foi concluído",
+      "description": "Pode voltar aos seus patrocínios e tentar novamente quando quiser.",
+      "backToSponsorships": "Ver os meus patrocínios",
+      "home": "Voltar ao início"
     }
   },
   "athletes": {
