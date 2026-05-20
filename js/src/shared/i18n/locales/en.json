@@ -296,7 +296,13 @@
         "quotaOf": "{{month}} fee",
         "paymentMeta": "Season {{season}} • Due {{dueDate}}",
         "paidAt": "Paid on {{date}}",
-        "overdue": "Overdue"
+        "overdue": "Overdue",
+        "selectTitle": "Select fees",
+        "selectDescription": "Choose overdue, current, or future fees to pay in a single checkout.",
+        "selectedTotal": "Selected total",
+        "paySelected": "Pay selected",
+        "paymentStarting": "Preparing payment...",
+        "paymentError": "Could not start the fee payment."
       }
     }
   },

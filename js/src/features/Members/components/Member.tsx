@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar } from "lucide-react";
+import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar, CreditCard } from "lucide-react";
 import { Link, useParams, Navigate } from "react-router-dom";
 import { useMemberDetail } from "../hooks";
-import { memberStatusColor } from "../utils";
+import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 
@@ -14,7 +14,23 @@ export default function MemberPage() {
 
   const isAdmin = role === "ADMIN" || role === "SECRETARIA";
   const isSelf = activeMemberId === Number(memberId);
-  const { debtSummary, errorMessage, feedback, handleApprove, handleReject, isLoading, member, paymentHistory } =
+  const {
+    debtSummary,
+    errorMessage,
+    feedback,
+    feeOptions,
+    handleApprove,
+    handlePaySelectedFees,
+    handleReject,
+    isLoading,
+    isPaying,
+    member,
+    paymentHistory,
+    selectedFees,
+    selectedFeeOptions,
+    selectedTotalCents,
+    toggleFee,
+  } =
     useMemberDetail(memberId, isAdmin || isSelf, t);
 
   if (!isAdmin && !isSelf) {
@@ -206,6 +222,54 @@ export default function MemberPage() {
               </div>
 
               <h3 className="member-payment-title">{t("members.detail.finance.paymentHistory")}</h3>
+
+              {feeOptions.length > 0 && (
+                <div className="member-fee-selector">
+                  <div className="member-fee-selector-header">
+                    <div>
+                      <h3 className="member-payment-title">{t("members.detail.finance.selectTitle")}</h3>
+                      <p className="member-helper-text-spaced">{t("members.detail.finance.selectDescription")}</p>
+                    </div>
+                    <div className="member-fee-total">
+                      <span>{t("members.detail.finance.selectedTotal")}</span>
+                      <strong>{formatCurrency(selectedTotalCents)}</strong>
+                    </div>
+                  </div>
+
+                  <div className="member-fee-grid">
+                    {feeOptions.map((option) => {
+                      const key = `${option.season}-${option.month}`;
+                      const checked = selectedFees.has(key);
+                      return (
+                        <label className={`member-fee-option ${!option.selectable ? "member-fee-option-disabled" : ""}`} key={key}>
+                          <input
+                            checked={checked}
+                            className="member-checkbox"
+                            disabled={!option.selectable}
+                            onChange={() => toggleFee(option)}
+                            type="checkbox"
+                          />
+                          <span>
+                            <strong>{monthName(option.month, t)}</strong>
+                            <small>{option.season}</small>
+                          </span>
+                          <span className="member-fee-option-price">{formatCurrency(option.amount)}</span>
+                        </label>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    className="member-btn-primary-sm"
+                    disabled={isPaying || selectedFeeOptions.length === 0}
+                    onClick={handlePaySelectedFees}
+                    type="button"
+                  >
+                    <CreditCard size={18} />
+                    {isPaying ? t("members.detail.finance.paymentStarting") : t("members.detail.finance.paySelected")}
+                  </button>
+                </div>
+              )}
 
               {paymentHistory.length === 0 ? (
                 <div className="member-empty-history">

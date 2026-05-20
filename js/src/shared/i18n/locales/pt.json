@@ -296,7 +296,13 @@
         "quotaOf": "Quota de {{month}}",
         "paymentMeta": "Época {{season}} • Vencimento {{dueDate}}",
         "paidAt": "Pago em {{date}}",
-        "overdue": "Em atraso"
+        "overdue": "Em atraso",
+        "selectTitle": "Selecionar quotas",
+        "selectDescription": "Escolha as quotas em atraso, atuais ou futuras que pretende pagar num único checkout.",
+        "selectedTotal": "Total selecionado",
+        "paySelected": "Pagar selecionadas",
+        "paymentStarting": "A preparar pagamento...",
+        "paymentError": "Não foi possível iniciar o pagamento das quotas."
       }
     }
   },

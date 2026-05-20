@@ -9,11 +9,15 @@ import com.stripe.net.Webhook
 import com.stripe.param.checkout.SessionCreateParams
 import jakarta.inject.Named
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import pt.isel.jagoz.domain.payment.Charge
+import pt.isel.jagoz.domain.payment.ChargeItem
 import pt.isel.jagoz.domain.payment.ChargeStatus
 import pt.isel.jagoz.domain.payment.ChargeType
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.payment.Payment
 import pt.isel.jagoz.domain.payment.PaymentDomain
 import pt.isel.jagoz.domain.payment.PaymentError
@@ -44,8 +48,23 @@ data class CheckoutSessionResult(
     val checkoutUrl: String,
 )
 
+data class MembershipFeeSelection(
+    val season: String,
+    val month: Int,
+)
+
+data class MembershipFeeOption(
+    val season: String,
+    val month: Int,
+    val amount: Int,
+    val dueDate: LocalDate,
+    val status: ChargeStatus?,
+    val selectable: Boolean,
+)
+
 typealias CheckoutSessionCreationResult = Either<PaymentError, CheckoutSessionResult>
 typealias StripeWebhookResult = Either<PaymentError, Unit>
+typealias MembershipFeeOptionsResult = Either<PaymentError, List<MembershipFeeOption>>
 
 @Named
 class PaymentService(
@@ -64,8 +83,11 @@ class PaymentService(
         authenticatedUser: AuthenticatedUser,
         chargeId: Long?,
         sponsorshipId: Long?,
+        memberId: Long?,
+        membershipFees: List<MembershipFeeSelection>?,
     ): CheckoutSessionCreationResult =
         transactionManager.run { transaction ->
+            val chargeItems = mutableListOf<ChargeItem>()
             val charge =
                 when {
                     chargeId != null ->
@@ -78,7 +100,16 @@ class PaymentService(
                             is Either.Right -> result.value
                         }
 
-                    else -> return@run failure(PaymentError.Validation("chargeId or sponsorshipId is required"))
+                    memberId != null ->
+                        when (val result = createMembershipFeeCharge(transaction, authenticatedUser, memberId, membershipFees.orEmpty())) {
+                            is Either.Left -> return@run failure(result.value)
+                            is Either.Right -> {
+                                chargeItems.addAll(transaction.chargeItemRepository.findByChargeId(result.value.chargeId))
+                                result.value
+                            }
+                        }
+
+                    else -> return@run failure(PaymentError.Validation("chargeId, sponsorshipId or memberId is required"))
                 }
 
             if (!canPayCharge(authenticatedUser, charge)) {
@@ -89,7 +120,11 @@ class PaymentService(
                 return@run failure(PaymentError.InvalidOperation("Charge is not pending"))
             }
 
-            val session = createStripeSession(charge)
+            if (chargeItems.isEmpty()) {
+                chargeItems.addAll(transaction.chargeItemRepository.findByChargeId(charge.chargeId))
+            }
+
+            val session = createStripeSession(charge, chargeItems)
             val now = Clock.System.now()
             val payment =
                 Payment(
@@ -121,6 +156,22 @@ class PaymentService(
             }
         }
 
+    fun getMembershipFeeOptions(
+        authenticatedUser: AuthenticatedUser,
+        memberId: Long,
+    ): MembershipFeeOptionsResult =
+        transactionManager.run { transaction ->
+            val member =
+                transaction.memberRepository.findById(memberId)
+                    ?: return@run failure(PaymentError.DomainError("Member $memberId not found"))
+
+            if (!canPayMember(authenticatedUser, member)) {
+                return@run failure(PaymentError.DomainError("Not authorized"))
+            }
+
+            success(buildMembershipFeeOptions(member, transaction))
+        }
+
     fun handleStripeWebhook(
         payload: String,
         signature: String,
@@ -147,17 +198,23 @@ class PaymentService(
         }
     }
 
-    private fun createStripeSession(charge: Charge): Session {
+    private fun createStripeSession(
+        charge: Charge,
+        chargeItems: List<ChargeItem>,
+    ): Session {
         val appUrl = stripeProperties.publicUrl.trimEnd('/')
-        val params =
+        val builder =
             SessionCreateParams
-                .builder()
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl("$appUrl/payments/success?session_id={CHECKOUT_SESSION_ID}")
-                .setCancelUrl("$appUrl/payments/cancel")
-                .setCustomerEmail(charge.chargeUser?.email)
-                .putMetadata("chargeId", charge.chargeId.toString())
-                .putMetadata("chargeType", charge.type.name)
+            .builder()
+            .setMode(SessionCreateParams.Mode.PAYMENT)
+            .setSuccessUrl("$appUrl/payments/success?session_id={CHECKOUT_SESSION_ID}")
+            .setCancelUrl("$appUrl/payments/cancel")
+            .setCustomerEmail(charge.chargeUser?.email)
+            .putMetadata("chargeId", charge.chargeId.toString())
+            .putMetadata("chargeType", charge.type.name)
+
+        if (chargeItems.isEmpty()) {
+            builder
                 .addLineItem(
                     SessionCreateParams.LineItem
                         .builder()
@@ -174,9 +231,30 @@ class PaymentService(
                                         .build(),
                                 ).build(),
                         ).build(),
-                ).build()
+                )
+        } else {
+            chargeItems.forEach { item ->
+                builder.addLineItem(
+                    SessionCreateParams.LineItem
+                        .builder()
+                        .setQuantity(1)
+                        .setPriceData(
+                            SessionCreateParams.LineItem.PriceData
+                                .builder()
+                                .setCurrency("eur")
+                                .setUnitAmount(item.amount.toLong())
+                                .setProductData(
+                                    SessionCreateParams.LineItem.PriceData.ProductData
+                                        .builder()
+                                        .setName(item.description)
+                                        .build(),
+                                ).build(),
+                        ).build(),
+                )
+            }
+        }
 
-        return Session.create(params, requestOptions)
+        return Session.create(builder.build(), requestOptions)
     }
 
     private fun handleCheckoutSessionPaid(sessionId: String?): StripeWebhookResult {
@@ -254,6 +332,88 @@ class PaymentService(
             (charge.memberId != null && charge.memberId == authenticatedUser.activeMemberId)
     }
 
+    private fun canPayMember(
+        authenticatedUser: AuthenticatedUser,
+        member: Member,
+    ): Boolean =
+        authenticatedUser.canManageBackoffice() ||
+            member.userId == authenticatedUser.userId ||
+            member.memberId == authenticatedUser.activeMemberId
+
+    private fun createMembershipFeeCharge(
+        transaction: Transaction,
+        authenticatedUser: AuthenticatedUser,
+        memberId: Long,
+        selections: List<MembershipFeeSelection>,
+    ): Either<PaymentError, Charge> {
+        if (selections.isEmpty()) {
+            return failure(PaymentError.Validation("At least one membership fee must be selected"))
+        }
+
+        val member =
+            transaction.memberRepository.findById(memberId)
+                ?: return failure(PaymentError.DomainError("Member $memberId not found"))
+
+        if (!canPayMember(authenticatedUser, member)) {
+            return failure(PaymentError.DomainError("Not authorized"))
+        }
+
+        if (member.status != MemberStatus.ATIVO) {
+            return failure(PaymentError.InvalidOperation("Member must be active before payment"))
+        }
+
+        if (member.membershipQuota <= 0) {
+            return failure(PaymentError.InvalidOperation("Member does not have membership fees to pay"))
+        }
+
+        val uniqueSelections = selections.distinct()
+        uniqueSelections.forEach { selection ->
+            if (selection.month !in 1..12) {
+                return failure(PaymentError.Validation("Month must be between 1 and 12"))
+            }
+            if (transaction.chargeItemRepository.existsPaidOrPending(member.memberId, selection.season, selection.month)) {
+                return failure(PaymentError.InvalidOperation("Membership fee ${selection.season}/${selection.month} is already pending or paid"))
+            }
+        }
+
+        val creationUser =
+            transaction.userRepository.findById(authenticatedUser.userId)
+                ?: return failure(PaymentError.DomainError("User ${authenticatedUser.userId} not found"))
+        val chargedUser = member.userId?.let { transaction.userRepository.findById(it) }
+        val total = uniqueSelections.sumOf { member.membershipQuota }
+        val charge =
+            Charge(
+                chargeId = 0,
+                type = ChargeType.MEMBER_FEE,
+                memberId = member.memberId,
+                sponsorshipId = null,
+                value = total,
+                status = ChargeStatus.PENDING,
+                season = uniqueSelections.singleOrNull()?.season,
+                month = uniqueSelections.singleOrNull()?.month,
+                createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                creationUser = creationUser,
+                chargeUser = chargedUser,
+                paidAt = null,
+            )
+
+        val chargeId = transaction.chargeRepository.save(charge)
+        uniqueSelections.forEach { selection ->
+            transaction.chargeItemRepository.save(
+                ChargeItem(
+                    chargeItemId = 0,
+                    chargeId = chargeId,
+                    season = selection.season,
+                    month = selection.month,
+                    amount = member.membershipQuota,
+                    description = "Quota ${monthLabel(selection.month)} ${selection.season}",
+                ),
+            )
+        }
+
+        return success(charge.copy(chargeId = chargeId))
+    }
+
     private fun getOrCreateSponsorshipCharge(
         transaction: Transaction,
         authenticatedUser: AuthenticatedUser,
@@ -315,6 +475,86 @@ class PaymentService(
             ChargeType.MEMBER_FEE -> "Quota de sócio"
             ChargeType.ATHLETE_MONTHLY_FEE -> "Mensalidade de atleta"
             ChargeType.SPONSORSHIP_FEE -> "Patrocínio"
+        }
+
+    private fun buildMembershipFeeOptions(
+        member: Member,
+        transaction: Transaction,
+    ): List<MembershipFeeOption> {
+        if (member.membershipQuota <= 0 || member.status != MemberStatus.ATIVO) {
+            return emptyList()
+        }
+
+        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val startDate = member.approvalDate ?: member.registrationDate
+        val start = YearMonth(startDate.year, startDate.monthNumber)
+        val end = addMonths(YearMonth(today.year, today.monthNumber), 6)
+        val statusByFee =
+            transaction.chargeItemRepository
+                .findWithStatusByMember(member.memberId)
+                .associate { "${it.item.season}-${it.item.month}" to it.chargeStatus }
+
+        return generateSequence(start) { current ->
+            val next = addMonths(current, 1)
+            if (compareYearMonth(next, end) <= 0) next else null
+        }.map { yearMonth ->
+            val season = seasonFor(yearMonth.year, yearMonth.month)
+            val status = statusByFee["$season-${yearMonth.month}"]
+            MembershipFeeOption(
+                season = season,
+                month = yearMonth.month,
+                amount = member.membershipQuota,
+                dueDate = LocalDate(yearMonth.year, yearMonth.month, 8),
+                status = status,
+                selectable = status == null || status == ChargeStatus.CANCELLED,
+            )
+        }.toList()
+    }
+
+    private data class YearMonth(
+        val year: Int,
+        val month: Int,
+    )
+
+    private fun addMonths(
+        yearMonth: YearMonth,
+        months: Int,
+    ): YearMonth {
+        val zeroBased = yearMonth.year * 12 + (yearMonth.month - 1) + months
+        return YearMonth(year = zeroBased / 12, month = zeroBased % 12 + 1)
+    }
+
+    private fun compareYearMonth(
+        left: YearMonth,
+        right: YearMonth,
+    ): Int =
+        (left.year * 12 + left.month).compareTo(right.year * 12 + right.month)
+
+    private fun seasonFor(
+        year: Int,
+        month: Int,
+    ): String =
+        if (month >= 8) {
+            "$year/${year + 1}"
+        } else {
+            "${year - 1}/$year"
+        }
+
+    private fun monthLabel(month: Int): String =
+        when (month) {
+            1 -> "Janeiro"
+            2 -> "Fevereiro"
+            3 -> "Marco"
+            4 -> "Abril"
+            5 -> "Maio"
+            6 -> "Junho"
+            7 -> "Julho"
+            8 -> "Agosto"
+            9 -> "Setembro"
+            10 -> "Outubro"
+            11 -> "Novembro"
+            12 -> "Dezembro"
+            else -> month.toString()
         }
 
     private fun checkoutSessionId(event: Event): String? {

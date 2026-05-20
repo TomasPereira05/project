@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../shared/config/config";
-import type { Member, MemberFormValues, PaginatedResponse } from "./types";
+import type { CheckoutSession, Member, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
 
@@ -113,5 +113,19 @@ export function approveMember(memberId: number) {
 export function rejectMember(memberId: number) {
   return request<Member>(`/members/${memberId}/reject`, {
     method: "PUT",
+  });
+}
+
+export function fetchMembershipFeeOptions(memberId: number) {
+  return request<MembershipFeeOption[]>(`/members/${memberId}/fees/options`);
+}
+
+export function createMembershipFeesCheckoutSession(
+  memberId: number,
+  membershipFees: Array<{ season: string; month: number }>,
+) {
+  return request<CheckoutSession>("/payments/checkout-session", {
+    method: "POST",
+    body: JSON.stringify({ memberId, membershipFees }),
   });
 }

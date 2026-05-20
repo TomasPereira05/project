@@ -1,4 +1,4 @@
-import type { Member, PaymentHistoryItem } from "../types";
+import type { Member, MembershipFeeOption, PaymentHistoryItem } from "../types";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
@@ -62,4 +62,44 @@ export function getDebtSummary(history: PaymentHistoryItem[]) {
     pendingCount: pending.length,
     pendingCents,
   };
+}
+
+export function buildPaymentHistoryFromFeeOptions(
+  options: MembershipFeeOption[],
+  t?: Translate,
+): PaymentHistoryItem[] {
+  return options.map((option) => {
+    const month = monthName(option.month, t);
+
+    return {
+      id: `${option.season}-${option.month}`,
+      label: t ? t("members.detail.finance.quotaOf", { month }) : `Quota de ${month}`,
+      season: option.season,
+      amountCents: option.amount,
+      status: option.status ?? "PENDING",
+      dueDate: option.dueDate,
+      paidDate: option.status === "PAID" ? option.dueDate : null,
+    };
+  });
+}
+
+export function monthName(month: number, t?: Translate) {
+  const keys = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+  ];
+  const key = keys[month - 1];
+  if (key && t) return t(`members.months.${key}`);
+
+  return String(month).padStart(2, "0");
 }

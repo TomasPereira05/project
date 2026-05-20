@@ -3,6 +3,7 @@ package pt.isel.jagoz.repository.jdbi
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.repository.AthleteRepository
 import pt.isel.jagoz.repository.ChargeRepository
+import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.MemberRepository
@@ -28,6 +29,7 @@ class JdbiTransaction(
     override val eventRepository: EventRepository = JdbiEventRepository(handle)
     override val ticketRepository: TicketRepository = JdbiTicketRepository(handle)
     override val chargeRepository: ChargeRepository = JdbiChargeRepository(handle)
+    override val chargeItemRepository: ChargeItemRepository = JdbiChargeItemRepository(handle)
     override val paymentRepository: PaymentRepository = JdbiPaymentRepository(handle)
     override val sponsorRepository: SponsorRepository = JdbiSponsorRepository(handle)
     override val sponsorshipRepository: SponsorshipRepository = JdbiSponsorshipRepository(handle)

@@ -17,6 +17,8 @@ interface Transaction {
 
     val chargeRepository: ChargeRepository
 
+    val chargeItemRepository: ChargeItemRepository
+
     val paymentRepository: PaymentRepository
 
     val sponsorRepository: SponsorRepository

@@ -2,6 +2,8 @@ package pt.isel.jagoz.http
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -11,6 +13,7 @@ import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.payment.CreateCheckoutSessionInput
 import pt.isel.jagoz.http.model.payment.toOutput
+import pt.isel.jagoz.http.model.payment.toService
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.PaymentService
@@ -24,9 +27,25 @@ class PaymentController(
         authenticatedUser: AuthenticatedUser,
         @RequestBody input: CreateCheckoutSessionInput,
     ): ResponseEntity<*> =
-        paymentService.createCheckoutSession(authenticatedUser, input.chargeId, input.sponsorshipId).handle(
+        paymentService.createCheckoutSession(
+            authenticatedUser,
+            input.chargeId,
+            input.sponsorshipId,
+            input.memberId,
+            input.membershipFees?.map { it.toService() },
+        ).handle(
             onFailure = { handlePaymentError(it) },
             onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it.toOutput()) },
+        )
+
+    @GetMapping(Uris.Payments.MEMBERSHIP_FEE_OPTIONS)
+    fun getMembershipFeeOptions(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable memberId: Long,
+    ): ResponseEntity<*> =
+        paymentService.getMembershipFeeOptions(authenticatedUser, memberId).handle(
+            onFailure = { handlePaymentError(it) },
+            onSuccess = { options -> ResponseEntity.ok(options.map { it.toOutput() }) },
         )
 
     @PostMapping(Uris.Payments.STRIPE_WEBHOOK)
