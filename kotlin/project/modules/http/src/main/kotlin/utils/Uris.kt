@@ -101,6 +101,12 @@ object Uris {
         const val OTHER_SPORTS_REORDER = "$PREFIX/sponsorship-catalog/other-sports/reorder"
     }
 
+    object Payments {
+        const val CREATE_CHECKOUT_SESSION = "$PREFIX/payments/checkout-session"
+        const val MEMBERSHIP_FEE_OPTIONS = "$PREFIX/members/{memberId}/fees/options"
+        const val STRIPE_WEBHOOK = "$PREFIX/payments/stripe/webhook"
+    }
+
     object Team {
         const val GROUPS_ACTIVE = "$PREFIX/teams/groups/active"
         const val GROUPS = "$PREFIX/teams/groups"

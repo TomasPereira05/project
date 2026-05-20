@@ -1,6 +1,6 @@
 package pt.isel.jagoz.domain.payment
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 
 data class Payment(
     val paymentId: Long,
@@ -12,6 +12,6 @@ data class Payment(
     // sessionId/intentId
     val providerRef: String?,
     val status: PaymentStatus,
-    val createdAt: LocalDateTime,
-    val confirmedAt: LocalDateTime? = null,
+    val createdAt: Instant,
+    val confirmedAt: Instant? = null,
 )

@@ -56,7 +56,23 @@ export type PaymentHistoryItem = {
   label: string;
   season: string;
   amountCents: number;
-  status: "PAID" | "PENDING";
+  status: "PAID" | "PENDING" | "CANCELLED";
   dueDate: string;
   paidDate: string | null;
+};
+
+export type MembershipFeeOption = {
+  season: string;
+  month: number;
+  amount: number;
+  dueDate: string;
+  status: "PAID" | "PENDING" | "CANCELLED" | null;
+  selectable: boolean;
+};
+
+export type CheckoutSession = {
+  paymentId: number;
+  chargeId: number;
+  sessionId: string;
+  checkoutUrl: string;
 };

@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.domain.payment.Payment
@@ -19,7 +19,7 @@ class PaymentMapper : RowMapper<Payment> {
             provider = rs.getString("provider"),
             providerRef = rs.getString("provider_ref"),
             status = PaymentStatus.valueOf(rs.getString("status")),
-            createdAt = LocalDateTime.parse(rs.getString("created_at").replace(" ", "T")),
-            confirmedAt = rs.getString("confirmed_at")?.let { LocalDateTime.parse(it.replace(" ", "T")) },
+            createdAt = rs.getTimestamp("created_at").toInstant().let { Instant.fromEpochMilliseconds(it.toEpochMilli()) },
+            confirmedAt = rs.getTimestamp("confirmed_at")?.toInstant()?.let { Instant.fromEpochMilliseconds(it.toEpochMilli()) },
         )
 }

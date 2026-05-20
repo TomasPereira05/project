@@ -14,6 +14,15 @@ class JdbiPaymentRepository(
             .mapTo(Payment::class.java)
             .list()
 
+    override fun findByProviderRef(provider: String, providerRef: String): Payment? =
+        handle
+            .createQuery("SELECT * FROM jagoz.payment WHERE provider = :provider AND provider_ref = :providerRef")
+            .bind("provider", provider)
+            .bind("providerRef", providerRef)
+            .mapTo(Payment::class.java)
+            .findOne()
+            .orElse(null)
+
     override fun save(payment: Payment): Long =
         handle
             .createUpdate(

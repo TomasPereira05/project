@@ -33,6 +33,7 @@ import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
 import { UserPage } from "./features/User";
+import { PaymentCancel, PaymentSuccess } from "./features/payments";
 
 const router = createBrowserRouter([
   {
@@ -205,6 +206,14 @@ const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "/payments/success",
+    element: <PaymentSuccess />,
+  },
+  {
+    path: "/payments/cancel",
+    element: <PaymentCancel />,
   },
 ]);
 

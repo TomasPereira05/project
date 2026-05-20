@@ -12,7 +12,8 @@ import {
 export default function SponsorshipDetails() {
   const { t } = useTranslation();
   const { sponsorshipId } = useParams();
-  const { catalogs, errorMessage, isLoading, sponsor, sponsorship } = useSponsorshipDetails(sponsorshipId);
+  const { catalogs, errorMessage, handlePay, isLoading, isPaying, sponsor, sponsorship } = useSponsorshipDetails(sponsorshipId);
+  const canPay = sponsorship?.status === "APROVADO";
 
   return (
     <main className="sponsor-page">
@@ -61,6 +62,14 @@ export default function SponsorshipDetails() {
                   <strong className="sponsor-stat-value">{formatCurrency(sponsorship.price)}</strong>
                 </div>
               </div>
+
+              {canPay ? (
+                <div className="sponsor-form-actions">
+                  <button className="sponsor-button-primary" disabled={isPaying} onClick={handlePay} type="button">
+                    {isPaying ? t("sponsors.details.paymentStarting") : t("sponsors.details.pay")}
+                  </button>
+                </div>
+              ) : null}
             </article>
 
             <aside className="sponsor-panel">

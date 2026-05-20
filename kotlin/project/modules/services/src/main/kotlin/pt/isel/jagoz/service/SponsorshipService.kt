@@ -15,7 +15,7 @@ import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
 
 data class SponsorshipWithSponsor(
-    val sponsor: pt.isel.jagoz.domain.sponsor.Sponsor,
+    val sponsor: Sponsor,
     val sponsorship: Sponsorship,
 )
 

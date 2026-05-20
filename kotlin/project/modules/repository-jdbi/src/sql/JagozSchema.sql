@@ -275,6 +275,17 @@ CREATE TABLE charge (
     )
 );
 
+CREATE TABLE charge_item (
+    charge_item_id SERIAL PRIMARY KEY,
+    charge_id INT NOT NULL REFERENCES charge(charge_id) ON DELETE CASCADE,
+    season VARCHAR(50) NOT NULL,
+    month INT NOT NULL CHECK (month BETWEEN 1 AND 12),
+    amount INT NOT NULL CHECK (amount > 0),
+    description VARCHAR(255) NOT NULL,
+
+    UNIQUE (charge_id, season, month)
+);
+
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,
     charge_id INT NOT NULL REFERENCES charge(charge_id) ON DELETE CASCADE,

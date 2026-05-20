@@ -26,6 +26,13 @@ export type SponsorUserSummary = {
   activeMemberId: number | null;
 };
 
+export type CheckoutSession = {
+  paymentId: number;
+  chargeId: number;
+  sessionId: string;
+  checkoutUrl: string;
+};
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: {
@@ -110,6 +117,13 @@ export function fetchMySponsorships(page = 1, size = 8) {
 
 export function fetchSponsorshipById(sponsorshipId: number) {
   return request<Sponsorship>(`/sponsorships/${sponsorshipId}`);
+}
+
+export function createSponsorshipCheckoutSession(sponsorshipId: number) {
+  return request<CheckoutSession>("/payments/checkout-session", {
+    method: "POST",
+    body: JSON.stringify({ sponsorshipId }),
+  });
 }
 
 export function fetchAllSponsorships(page = 1, size = 8) {

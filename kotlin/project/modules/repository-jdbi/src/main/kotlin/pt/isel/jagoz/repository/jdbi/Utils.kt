@@ -10,6 +10,7 @@ import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.domain.event.Ticket
 import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.payment.Charge
+import pt.isel.jagoz.domain.payment.ChargeItem
 import pt.isel.jagoz.domain.payment.Payment
 import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
 import pt.isel.jagoz.domain.sponsor.OtherSport
@@ -24,12 +25,14 @@ import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
+import pt.isel.jagoz.repository.jdbi.mappers.ChargeItemMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EquipmentPlacementMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
 import pt.isel.jagoz.repository.jdbi.mappers.GuardianMapper
 import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
 import pt.isel.jagoz.repository.jdbi.mappers.LocalDateArgumentFactory
+import pt.isel.jagoz.repository.jdbi.mappers.LocalDateTimeArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.MemberMapper
 import pt.isel.jagoz.repository.jdbi.mappers.OtherSportMapper
 import pt.isel.jagoz.repository.jdbi.mappers.PaymentMapper
@@ -52,10 +55,12 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
 
     registerArgument(InstantArgumentFactory())
     registerArgument(LocalDateArgumentFactory())
+    registerArgument(LocalDateTimeArgumentFactory())
 
     registerRowMapper(Athlete::class.java, AthleteMapper())
     registerRowMapper(Guardian::class.java, GuardianMapper())
     registerRowMapper(Charge::class.java, ChargeMapper())
+    registerRowMapper(ChargeItem::class.java, ChargeItemMapper())
     registerRowMapper(Event::class.java, EventMapper())
     registerRowMapper(Member::class.java, MemberMapper())
     registerRowMapper(Payment::class.java, PaymentMapper())

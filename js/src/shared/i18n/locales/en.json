@@ -296,7 +296,13 @@
         "quotaOf": "{{month}} fee",
         "paymentMeta": "Season {{season}} • Due {{dueDate}}",
         "paidAt": "Paid on {{date}}",
-        "overdue": "Overdue"
+        "overdue": "Overdue",
+        "selectTitle": "Select fees",
+        "selectDescription": "Choose overdue, current, or future fees to pay in a single checkout.",
+        "selectedTotal": "Selected total",
+        "paySelected": "Pay selected",
+        "paymentStarting": "Preparing payment...",
+        "paymentError": "Could not start the fee payment."
       }
     }
   },
@@ -466,7 +472,10 @@
       "loading": "Loading sponsorship...",
       "contract": "Contract",
       "invalid": "Invalid sponsorship.",
-      "loadError": "Could not load the sponsorship."
+      "loadError": "Could not load the sponsorship.",
+      "pay": "Pay sponsorship",
+      "paymentStarting": "Preparing payment...",
+      "paymentError": "Could not start the payment."
     },
     "approvals": {
       "eyebrow": "Approvals",
@@ -566,6 +575,23 @@
       "errors": {
         "passwordMismatch": "Your repeated password does not match the original password. Please try again."
       }
+    }
+  },
+  "payments": {
+    "success": {
+      "eyebrow": "Payment completed",
+      "title": "Payment received",
+      "description": "The payment was processed by Stripe. The sponsorship status will update once the backend receives the confirmation.",
+      "session": "Stripe session:",
+      "backToSponsorships": "View my sponsorships",
+      "home": "Back home"
+    },
+    "cancel": {
+      "eyebrow": "Payment cancelled",
+      "title": "The payment was not completed",
+      "description": "You can return to your sponsorships and try again whenever you want.",
+      "backToSponsorships": "View my sponsorships",
+      "home": "Back home"
     }
   },
   "athletes": {
