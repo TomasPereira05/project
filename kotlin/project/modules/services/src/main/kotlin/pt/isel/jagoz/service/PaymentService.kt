@@ -489,24 +489,24 @@ class PaymentService(
         val startDate = member.approvalDate ?: member.registrationDate
         val start = YearMonth(startDate.year, startDate.monthNumber)
         val end = addMonths(YearMonth(today.year, today.monthNumber), 6)
-        val statusByFee =
+        val itemByFee =
             transaction.chargeItemRepository
                 .findWithStatusByMember(member.memberId)
-                .associate { "${it.item.season}-${it.item.month}" to it.chargeStatus }
+                .associateBy { "${it.item.season}-${it.item.month}" }
 
         return generateSequence(start) { current ->
             val next = addMonths(current, 1)
             if (compareYearMonth(next, end) <= 0) next else null
         }.map { yearMonth ->
             val season = seasonFor(yearMonth.year, yearMonth.month)
-            val status = statusByFee["$season-${yearMonth.month}"]
+            val existingItem = itemByFee["$season-${yearMonth.month}"]
             MembershipFeeOption(
                 season = season,
                 month = yearMonth.month,
-                amount = member.membershipQuota,
+                amount = existingItem?.item?.amount ?: member.membershipQuota,
                 dueDate = LocalDate(yearMonth.year, yearMonth.month, 8),
-                status = status,
-                selectable = status == null || status == ChargeStatus.CANCELLED,
+                status = existingItem?.chargeStatus,
+                selectable = existingItem == null || existingItem.chargeStatus == ChargeStatus.CANCELLED,
             )
         }.toList()
     }

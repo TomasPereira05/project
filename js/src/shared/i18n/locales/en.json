@@ -293,6 +293,9 @@
         "debtTotal": "Total Debt",
         "paymentHistory": "Payment History",
         "emptyHistory": "This member has no fees to show in the history.",
+        "emptyFilteredHistory": "There are no payments for the selected season.",
+        "filterSeason": "Filter by season",
+        "allSeasons": "All seasons",
         "quotaOf": "{{month}} fee",
         "paymentMeta": "Season {{season}} • Due {{dueDate}}",
         "paidAt": "Paid on {{date}}",
@@ -302,7 +305,25 @@
         "selectedTotal": "Selected total",
         "paySelected": "Pay selected",
         "paymentStarting": "Preparing payment...",
-        "paymentError": "Could not start the fee payment."
+        "paymentError": "Could not start the fee payment.",
+        "selectOverdue": "Select overdue",
+        "selectSeason": "Select {{season}}",
+        "select": "Select",
+        "selectFee": "Select {{month}} fee for season {{season}}",
+        "month": "Month",
+        "season": "Season",
+        "dueDate": "Due date",
+        "value": "Value",
+        "status": "Status",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page {{page}} of {{totalPages}}",
+        "statuses": {
+          "OPEN": "Open",
+          "PENDING": "Pending",
+          "PAID": "Paid",
+          "CANCELLED": "Cancelled"
+        }
       }
     }
   },

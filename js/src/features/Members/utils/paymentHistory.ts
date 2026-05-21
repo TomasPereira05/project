@@ -55,13 +55,18 @@ export function buildPaymentHistory(member: Member, t?: Translate): PaymentHisto
 }
 
 export function getDebtSummary(history: PaymentHistoryItem[]) {
-  const pending = history.filter((item) => item.status === "PENDING");
+  const today = new Date().toISOString().slice(0, 10);
+  const pending = history.filter((item) => item.status === "PENDING" && item.dueDate <= today);
   const pendingCents = pending.reduce((sum, item) => sum + item.amountCents, 0);
 
   return {
     pendingCount: pending.length,
     pendingCents,
   };
+}
+
+export function isFeeOverdue(option: Pick<MembershipFeeOption, "dueDate" | "selectable">) {
+  return option.selectable && option.dueDate <= new Date().toISOString().slice(0, 10);
 }
 
 export function buildPaymentHistoryFromFeeOptions(

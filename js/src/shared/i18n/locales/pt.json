@@ -293,6 +293,9 @@
         "debtTotal": "Total em Dívida",
         "paymentHistory": "Histórico de Pagamentos",
         "emptyHistory": "Este sócio não tem quotas para apresentar no histórico.",
+        "emptyFilteredHistory": "Não existem pagamentos para a época selecionada.",
+        "filterSeason": "Filtrar por época",
+        "allSeasons": "Todas as épocas",
         "quotaOf": "Quota de {{month}}",
         "paymentMeta": "Época {{season}} • Vencimento {{dueDate}}",
         "paidAt": "Pago em {{date}}",
@@ -302,7 +305,25 @@
         "selectedTotal": "Total selecionado",
         "paySelected": "Pagar selecionadas",
         "paymentStarting": "A preparar pagamento...",
-        "paymentError": "Não foi possível iniciar o pagamento das quotas."
+        "paymentError": "Não foi possível iniciar o pagamento das quotas.",
+        "selectOverdue": "Selecionar atrasadas",
+        "selectSeason": "Selecionar {{season}}",
+        "select": "Selecionar",
+        "selectFee": "Selecionar quota de {{month}} da época {{season}}",
+        "month": "Mês",
+        "season": "Época",
+        "dueDate": "Vencimento",
+        "value": "Valor",
+        "status": "Estado",
+        "previous": "Anterior",
+        "next": "Seguinte",
+        "page": "Página {{page}} de {{totalPages}}",
+        "statuses": {
+          "OPEN": "Por pagar",
+          "PENDING": "Pendente",
+          "PAID": "Pago",
+          "CANCELLED": "Cancelado"
+        }
       }
     }
   },

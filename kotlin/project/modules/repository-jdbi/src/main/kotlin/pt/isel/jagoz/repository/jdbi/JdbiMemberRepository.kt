@@ -144,6 +144,7 @@ class JdbiMemberRepository(
                 address = :address,
                 postal_code = :postalCode,
                 city = :city,
+                nif = :nif,
                 category = CAST(:category AS jagoz.member_category),
                 status = CAST(:status AS jagoz.member_status),
                 former_member = :formerMember,
@@ -166,6 +167,7 @@ class JdbiMemberRepository(
             .bind("address", member.address)
             .bind("postalCode", member.postalCode)
             .bind("city", member.city)
+            .bind("nif", member.nif)
             .bind("category", member.category.name)
             .bind("status", member.status.name)
             .bind("formerMember", member.formerMember)

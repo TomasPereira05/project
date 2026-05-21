@@ -325,6 +325,32 @@ class MemberService(
         }
     }
 
+    fun updateMember(
+        memberId: Long,
+        candidate: Member,
+    ): MemberResult {
+        LOG.info("Updating member ID: $memberId")
+
+        return transactionManager.run { transaction ->
+            val memberResult = getMemberOrFail(transaction, memberId)
+            if (memberResult is Either.Left) return@run memberResult
+
+            val current = (memberResult as Either.Right).value
+            when (val result = memberDomain.update(current, candidate)) {
+                is Either.Left -> {
+                    LOG.warn("Member update validation failed: ${result.value}")
+                    result
+                }
+                is Either.Right -> {
+                    val updated = result.value
+                    transaction.memberRepository.update(updated)
+                    LOG.info("Successfully updated member: ${updated.completeName}")
+                    success(updated)
+                }
+            }
+        }
+    }
+
     /**
      * Changes the category of a member.
      * Updates monthly quota according to category rules.
