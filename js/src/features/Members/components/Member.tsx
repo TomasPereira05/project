@@ -6,6 +6,7 @@ import { useMemberDetail } from "../hooks";
 import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 const ALL_HISTORY_SEASONS = "all";
 
@@ -71,6 +72,7 @@ export default function MemberPage() {
   if (isLoading) {
     return (
       <main className="member-page-centered">
+        <MemberPageBackground />
         <div className="member-loading-container">
           <div className="member-loading-spinner"></div>
           <p className="member-loading-text">{t("members.detail.loading")}</p>
@@ -82,9 +84,10 @@ export default function MemberPage() {
   if (errorMessage && !member) {
     return (
       <main className="member-page">
+        <MemberPageBackground />
         <div className="member-detail-container">
           <div className="member-alert-error">{errorMessage}</div>
-          <button onClick={() => window.history.back()} className="member-btn-back">
+          <button onClick={() => window.history.back()} className="member-btn-back member-detail-back">
             <ArrowLeft size={16} />
             {t("members.common.back")}
           </button>
@@ -99,9 +102,10 @@ export default function MemberPage() {
 
   return (
     <main className="member-page">
+      <MemberPageBackground />
       <div className="member-detail-container">
         <div className="member-topbar">
-          <button onClick={() => window.history.back()} className="member-btn-back">
+          <button onClick={() => window.history.back()} className="member-btn-back member-detail-back">
             <ArrowLeft size={18} />
             {t("members.common.back")}
           </button>
@@ -402,6 +406,15 @@ export default function MemberPage() {
         )}
       </div>
     </main>
+  );
+}
+
+function MemberPageBackground() {
+  return (
+    <>
+      <div className="member-form-bg" style={{ backgroundImage: `url(${HERO_IMG_SRC})` }} />
+      <div className="member-form-overlay" />
+    </>
   );
 }
 

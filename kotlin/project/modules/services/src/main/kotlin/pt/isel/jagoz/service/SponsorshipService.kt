@@ -6,6 +6,7 @@ import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.sponsor.SponsorType
 import pt.isel.jagoz.domain.sponsor.Sponsorship
+import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.Either
@@ -114,6 +115,23 @@ class SponsorshipService(
                                     ?: return failure(SponsorError.ValidationError("pubOptionId required for PUB"))
                             if (!transaction.pubOptionRepository.reserve(pubOptionId)) {
                                 return failure(SponsorError.DomainError("No free spaces for pub option $pubOptionId"))
+                            }
+                        }
+                        if (validated.value.type == SponsorType.TEAM) {
+                            val isOccupied =
+                                transaction.sponsorshipRepository.findAll().any {
+                                    it.type == SponsorType.TEAM &&
+                                        it.season == validated.value.season &&
+                                        it.teamCategoryId == validated.value.teamCategoryId &&
+                                        it.placementId == validated.value.placementId &&
+                                        it.status in setOf(
+                                            SponsorshipStatus.APROVADO,
+                                            SponsorshipStatus.PAGO,
+                                            SponsorshipStatus.ATIVO,
+                                        )
+                                }
+                            if (isOccupied) {
+                                return failure(SponsorError.ValidationError("team sponsorship option already approved for this season"))
                             }
                         }
                         val sponsorshipId = transaction.sponsorshipRepository.save(validated.value)
@@ -303,6 +321,65 @@ class SponsorshipService(
         if (!authenticatedUser.canManageBackoffice()) return failure(SponsorError.DomainError("Not authorized"))
         return transitionSponsorship(sponsorshipId) { sponsorDomain.cancelSponsorship(it) }
     }
+
+    fun updateSponsorshipDetails(
+        authenticatedUser: AuthenticatedUser,
+        sponsorshipId: Long,
+        email: String,
+        phone: String,
+        nif: String,
+        price: Int?,
+        otherDetails: String?,
+    ): SponsorshipResult =
+        transactionManager.run { transaction ->
+            val sponsorship =
+                transaction.sponsorshipRepository.findById(sponsorshipId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsorship $sponsorshipId not found"))
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+            if (!canAccessSponsorship(transaction, authenticatedUser, sponsorship)) {
+                return@run failure(SponsorError.DomainError("Sponsorship $sponsorshipId not found"))
+            }
+
+            val updatedSponsor =
+                sponsor.copy(
+                    email = email.trim(),
+                    phone = phone.trim(),
+                    nif = nif.trim(),
+                )
+            when (val validatedSponsor = sponsorDomain.validateForCreation(updatedSponsor)) {
+                is Either.Left -> return@run validatedSponsor
+                is Either.Right -> Unit
+            }
+
+            val nextSponsorship =
+                if (authenticatedUser.canManageBackoffice()) {
+                    sponsorship.copy(
+                        price = price ?: sponsorship.price,
+                        otherDetails =
+                            if (sponsorship.type == SponsorType.OTHER) {
+                                otherDetails?.trim() ?: sponsorship.otherDetails
+                            } else {
+                                sponsorship.otherDetails
+                            },
+                    )
+                } else {
+                    sponsorship.copy(
+                        status = SponsorshipStatus.SUBMETIDO,
+                    )
+                }
+
+            when (val validatedSponsorship = sponsorDomain.validateForCreation(nextSponsorship)) {
+                is Either.Left -> return@run validatedSponsorship
+                is Either.Right -> Unit
+            }
+
+            transaction.sponsorRepository.update(updatedSponsor)
+            transaction.sponsorshipRepository.update(nextSponsorship)
+            success(nextSponsorship)
+        }
 
     private fun transitionSponsorship(
         sponsorshipId: Long,

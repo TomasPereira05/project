@@ -80,6 +80,9 @@ class SponsorshipCatalogController(
     @GetMapping(Uris.SponsorshipCatalog.EQUIPMENT_PLACEMENTS_ACTIVE)
     fun getActiveEquipmentPlacements() = ResponseEntity.ok(catalogService.getActiveEquipmentPlacements())
 
+    @GetMapping(Uris.SponsorshipCatalog.OCCUPIED_TEAM_OPTIONS)
+    fun getOccupiedTeamSponsorshipOptions() = ResponseEntity.ok(catalogService.getOccupiedTeamSponsorshipOptions())
+
     @PostMapping(Uris.SponsorshipCatalog.EQUIPMENT_PLACEMENTS)
     fun createEquipmentPlacement(
         authenticatedUser: AuthenticatedUser,

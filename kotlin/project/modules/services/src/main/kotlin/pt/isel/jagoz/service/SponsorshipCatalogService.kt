@@ -5,9 +5,17 @@ import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
 import pt.isel.jagoz.domain.sponsor.OtherSport
 import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.SponsorError
+import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
+import pt.isel.jagoz.domain.sponsor.SponsorType
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager
+
+data class OccupiedTeamSponsorshipOption(
+    val season: String,
+    val teamCategoryId: Long,
+    val placementId: Long,
+)
 
 @Named
 class SponsorshipCatalogService(
@@ -19,6 +27,24 @@ class SponsorshipCatalogService(
         transactionManager.run { transaction -> transaction.equipmentPlacementRepository.findActive() }
 
     fun getActiveOtherSports(): List<OtherSport> = transactionManager.run { transaction -> transaction.otherSportRepository.findActive() }
+
+    fun getOccupiedTeamSponsorshipOptions(): List<OccupiedTeamSponsorshipOption> =
+        transactionManager.run { transaction ->
+            transaction.sponsorshipRepository
+                .findAll()
+                .filter {
+                    it.type == SponsorType.TEAM &&
+                        it.status in setOf(SponsorshipStatus.APROVADO, SponsorshipStatus.PAGO, SponsorshipStatus.ATIVO) &&
+                        it.teamCategoryId != null &&
+                        it.placementId != null
+                }.map {
+                    OccupiedTeamSponsorshipOption(
+                        season = it.season,
+                        teamCategoryId = it.teamCategoryId!!,
+                        placementId = it.placementId!!,
+                    )
+                }.distinct()
+        }
 
     fun createPubOption(pubOption: PubOption) =
         transactionManager.run { transaction ->

@@ -186,6 +186,7 @@ CREATE TABLE sponsorship (
     team_category_id INT REFERENCES team_category(team_category_id),
     placement_id INT REFERENCES equipment_placement(placement_id),
     sport_id INT REFERENCES other_sport(sport_id),
+    other_details TEXT,
 
     CONSTRAINT chk_sponsorship_type CHECK (
         (type = 'PUB'
@@ -193,6 +194,7 @@ CREATE TABLE sponsorship (
         AND team_category_id IS NULL
         AND placement_id IS NULL
         AND sport_id IS NULL
+        AND other_details IS NULL
         )
         OR
         (type = 'TEAM'
@@ -200,6 +202,7 @@ CREATE TABLE sponsorship (
         AND placement_id IS NOT NULL
         AND pub_option_id IS NULL
         AND sport_id IS NULL
+        AND other_details IS NULL
         )
         OR
         (type = 'OTHER'
@@ -207,6 +210,8 @@ CREATE TABLE sponsorship (
         AND pub_option_id IS NULL
         AND team_category_id IS NULL
         AND placement_id IS NULL
+        AND other_details IS NOT NULL
+        AND length(trim(other_details)) > 0
         )
     )
 );

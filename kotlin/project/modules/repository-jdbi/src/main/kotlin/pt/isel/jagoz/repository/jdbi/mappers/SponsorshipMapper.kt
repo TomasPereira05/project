@@ -23,5 +23,6 @@ class SponsorshipMapper : RowMapper<Sponsorship> {
             teamCategoryId = (rs.getObject("team_category_id") as? Number)?.toLong(),
             placementId = (rs.getObject("placement_id") as? Number)?.toLong(),
             sportId = (rs.getObject("sport_id") as? Number)?.toLong(),
+            otherDetails = rs.getString("other_details"),
         )
 }

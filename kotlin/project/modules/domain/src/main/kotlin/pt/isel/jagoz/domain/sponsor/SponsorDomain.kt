@@ -169,6 +169,7 @@ class SponsorDomain {
                     ValidationUtils.requireNull(s.teamCategoryId, "teamCategoryId", "must be null for PUB type"),
                     ValidationUtils.requireNull(s.placementId, "placementId", "must be null for PUB type"),
                     ValidationUtils.requireNotNull(s.sportId, "sportId", "must be null for PUB type"),
+                    ValidationUtils.requireNotBlank(s.otherDetails.orEmpty(), "otherDetails"),
                 )
             }
         }

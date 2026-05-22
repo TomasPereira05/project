@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import i18n from "../../../shared/i18n";
-import { createSponsorshipCheckoutSession, fetchCatalogSnapshot, fetchSponsorById, fetchSponsorshipById } from "../api";
+import { createSponsorshipCheckoutSession, fetchCatalogSnapshot, fetchSponsorById, fetchSponsorshipById, updateSponsorshipDetails } from "../api";
 import type { CatalogSnapshot, Sponsor, Sponsorship } from "../types";
 import { emptySponsorCatalogs, sortSponsorCatalogs } from "../utils";
 
@@ -10,7 +10,9 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
   const [catalogs, setCatalogs] = useState<CatalogSnapshot>(emptySponsorCatalogs);
   const [isLoading, setIsLoading] = useState(true);
   const [isPaying, setIsPaying] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     let ignore = false;
@@ -25,6 +27,7 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
 
       setIsLoading(true);
       setErrorMessage("");
+      setFeedback("");
 
       try {
         const [sponsorshipResult, catalogSnapshot] = await Promise.all([
@@ -73,12 +76,39 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
     }
   }
 
+  async function handleSave(values: { email: string; phone: string; nif: string; price?: number | null; otherDetails?: string | null }) {
+    if (!sponsorship) {
+      return false;
+    }
+
+    setIsSaving(true);
+    setErrorMessage("");
+    setFeedback("");
+
+    try {
+      const updated = await updateSponsorshipDetails(sponsorship.sponsorshipId, values);
+      const updatedSponsor = await fetchSponsorById(updated.sponsorId);
+      setSponsorship(updated);
+      setSponsor(updatedSponsor);
+      setFeedback(i18n.t("sponsors.details.updateSuccess"));
+      return true;
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.details.updateError"));
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
   return {
     catalogs,
     errorMessage,
+    feedback,
     handlePay,
+    handleSave,
     isLoading,
     isPaying,
+    isSaving,
     sponsor,
     sponsorship,
   };

@@ -15,11 +15,18 @@ export function buildPubSponsorshipCards(catalogs: CatalogSnapshot) {
     .filter((item) => item.price != null && item.free > 0);
 }
 
-export function buildTeamSponsorshipGroups(catalogs: CatalogSnapshot) {
+export function buildTeamSponsorshipGroups(catalogs: CatalogSnapshot, season: string) {
+  const occupiedKeys = new Set(
+    catalogs.occupiedTeamOptions
+      .filter((item) => item.season === season)
+      .map((item) => `${item.teamCategoryId}-${item.placementId}`),
+  );
+
   return catalogs.teamCategories
     .map((team) => ({
       team,
       options: catalogs.equipmentPlacements
+        .filter((placement) => !occupiedKeys.has(`${team.teamId}-${placement.equipmentId}`))
         .map((placement) => ({
           key: `TEAM-${team.teamId}-${placement.equipmentId}`,
           type: "TEAM" as const,

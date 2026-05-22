@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate } from "react-router-dom";
-import { ChevronLeft, ChevronRight, ShieldAlert } from "lucide-react";
+import { ChevronLeft, ChevronRight, Eye, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatCurrency } from "../../../shared/utils";
 import { useSponsorApprovals } from "../hooks";
@@ -76,6 +76,10 @@ export default function SponsorApprovals() {
                       </p>
                     </div>
                     <div className="sponsor-contract-actions">
+                      <Link className="sponsor-button-secondary" to={`/sponsors/my/${sponsorship.sponsorshipId}`}>
+                        <Eye size={16} />
+                        {t("sponsors.approvals.actions.details")}
+                      </Link>
                       {sponsorship.status === "SUBMETIDO" ? (
                         <button className="sponsor-button-primary" onClick={() => void runAction(sponsorship.sponsorshipId, "approve")} type="button">
                           {t("sponsors.approvals.actions.approve")}

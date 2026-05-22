@@ -352,6 +352,7 @@
       "name": "Nome",
       "nif": "NIF",
       "occupied": "Ocupado",
+      "otherDetails": "Detalhes",
       "phone": "Telefone",
       "price": "Preço",
       "season": "Época",
@@ -451,6 +452,7 @@
       "usernamePlaceholder": "username",
       "search": "Procurar",
       "selectedUser": "Selecionado: {{username}} ({{email}})",
+      "otherDetailsPlaceholder": "Descreve os detalhes pretendidos para este patrocínio.",
       "submit": "Submeter patrocínio",
       "availableOptions": "Opções disponíveis",
       "choose": "Escolher patrocínio",
@@ -505,7 +507,13 @@
       "loadError": "Não foi possível carregar o patrocínio.",
       "pay": "Pagar patrocínio",
       "paymentStarting": "A preparar pagamento...",
-      "paymentError": "Não foi possível iniciar o pagamento."
+      "paymentError": "Não foi possível iniciar o pagamento.",
+      "edit": "Editar",
+      "save": "Guardar",
+      "saving": "A guardar...",
+      "cancelEdit": "Cancelar",
+      "updateSuccess": "Patrocínio atualizado com sucesso.",
+      "updateError": "Não foi possível atualizar o patrocínio."
     },
     "approvals": {
       "eyebrow": "Aprovações",
@@ -517,7 +525,8 @@
       "actions": {
         "approve": "Aprovar",
         "markPaid": "Marcar pago",
-        "cancel": "Cancelar"
+        "cancel": "Cancelar",
+        "details": "Ver detalhes"
       }
     },
     "settings": {
