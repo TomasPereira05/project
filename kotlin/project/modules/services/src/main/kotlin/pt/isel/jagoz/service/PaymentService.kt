@@ -1,7 +1,7 @@
 package pt.isel.jagoz.service
 
-import com.stripe.exception.SignatureVerificationException
 import com.google.gson.JsonParser
+import com.stripe.exception.SignatureVerificationException
 import com.stripe.model.Event
 import com.stripe.model.checkout.Session
 import com.stripe.net.RequestOptions
@@ -12,12 +12,12 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.payment.Charge
 import pt.isel.jagoz.domain.payment.ChargeItem
 import pt.isel.jagoz.domain.payment.ChargeStatus
 import pt.isel.jagoz.domain.payment.ChargeType
-import pt.isel.jagoz.domain.member.Member
-import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.payment.Payment
 import pt.isel.jagoz.domain.payment.PaymentDomain
 import pt.isel.jagoz.domain.payment.PaymentError
@@ -205,13 +205,13 @@ class PaymentService(
         val appUrl = stripeProperties.publicUrl.trimEnd('/')
         val builder =
             SessionCreateParams
-            .builder()
-            .setMode(SessionCreateParams.Mode.PAYMENT)
-            .setSuccessUrl("$appUrl/payments/success?session_id={CHECKOUT_SESSION_ID}")
-            .setCancelUrl("$appUrl/payments/cancel")
-            .setCustomerEmail(charge.chargeUser?.email)
-            .putMetadata("chargeId", charge.chargeId.toString())
-            .putMetadata("chargeType", charge.type.name)
+                .builder()
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl("$appUrl/payments/success?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl("$appUrl/payments/cancel")
+                .setCustomerEmail(charge.chargeUser?.email)
+                .putMetadata("chargeId", charge.chargeId.toString())
+                .putMetadata("chargeType", charge.type.name)
 
         if (chargeItems.isEmpty()) {
             builder
@@ -372,7 +372,9 @@ class PaymentService(
                 return failure(PaymentError.Validation("Month must be between 1 and 12"))
             }
             if (transaction.chargeItemRepository.existsPaidOrPending(member.memberId, selection.season, selection.month)) {
-                return failure(PaymentError.InvalidOperation("Membership fee ${selection.season}/${selection.month} is already pending or paid"))
+                return failure(
+                    PaymentError.InvalidOperation("Membership fee ${selection.season}/${selection.month} is already pending or paid"),
+                )
             }
         }
 
@@ -391,7 +393,11 @@ class PaymentService(
                 status = ChargeStatus.PENDING,
                 season = uniqueSelections.singleOrNull()?.season,
                 month = uniqueSelections.singleOrNull()?.month,
-                createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                createdAt =
+                    Clock.System
+                        .now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                        .date,
                 creationUser = creationUser,
                 chargeUser = chargedUser,
                 paidAt = null,
@@ -452,7 +458,11 @@ class PaymentService(
                 status = ChargeStatus.PENDING,
                 season = sponsorship.season,
                 month = null,
-                createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                createdAt =
+                    Clock.System
+                        .now()
+                        .toLocalDateTime(TimeZone.currentSystemDefault())
+                        .date,
                 creationUser = creationUser,
                 chargeUser = chargedUser,
                 paidAt = null,
@@ -485,7 +495,11 @@ class PaymentService(
             return emptyList()
         }
 
-        val today = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val today =
+            Clock.System
+                .now()
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
         val startDate = member.approvalDate ?: member.registrationDate
         val start = YearMonth(startDate.year, startDate.monthNumber)
         val end = addMonths(YearMonth(today.year, today.monthNumber), 6)
@@ -527,8 +541,7 @@ class PaymentService(
     private fun compareYearMonth(
         left: YearMonth,
         right: YearMonth,
-    ): Int =
-        (left.year * 12 + left.month).compareTo(right.year * 12 + right.month)
+    ): Int = (left.year * 12 + left.month).compareTo(right.year * 12 + right.month)
 
     private fun seasonFor(
         year: Int,

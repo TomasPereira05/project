@@ -2,6 +2,7 @@ import { BASE_URL } from "../../shared/config/config";
 import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
+import { todayISO } from "../../shared/utils/dateInputs";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -42,7 +43,7 @@ export function fetchMember(memberId: number) {
 }
 
 export function createMember(values: MemberFormValues, userId: number | null) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = todayISO();
   const membershipQuota =
     values.category === "ATLETA_SOCIO"
       ? 0
@@ -110,7 +111,7 @@ export async function updateMember(
 }
 
 export function approveMember(memberId: number) {
-  const approvalDate = new Date().toISOString().slice(0, 10);
+  const approvalDate = todayISO();
   return request<Member>(`/members/${memberId}/approve`, {
     method: "PUT",
     body: JSON.stringify({ approvalDate }),

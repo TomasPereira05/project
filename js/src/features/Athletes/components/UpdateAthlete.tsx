@@ -11,8 +11,6 @@ import {
   type AthleteUpdateRequest,
   type TeamCatalogCategory,
 } from "..";
-import Header from "../../../shared/components/Header";
-import Footer from "../../../shared/components/Footer";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
 
 type FormState = {
@@ -145,7 +143,6 @@ export default function UpdateAthlete() {
   if (isLoading || !athlete || !values) {
     return (
       <>
-        <Header />
         <main className="member-form-page">
           <div
             className="member-form-bg"
@@ -161,14 +158,12 @@ export default function UpdateAthlete() {
             </div>
           </div>
         </main>
-        <Footer />
       </>
     );
   }
 
   return (
     <>
-      <Header />
       <main className="member-form-page">
         <div
           className="member-form-bg"
@@ -282,7 +277,6 @@ export default function UpdateAthlete() {
           </div>
         </div>
       </main>
-      <Footer />
     </>
   );
 }

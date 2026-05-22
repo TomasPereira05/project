@@ -19,7 +19,9 @@ import kotlin.test.assertTrue
 class EventDomainTests {
     private val domain = EventDomain()
 
-    private class FixedClock(private val instant: Instant) : Clock {
+    private class FixedClock(
+        private val instant: Instant,
+    ) : Clock {
         override fun now(): Instant = instant
     }
 

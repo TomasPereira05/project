@@ -103,7 +103,7 @@ INSERT INTO jagoz.member (
     privacy_accepted, coms_accepted
 ) VALUES
     -- 1: SOCIO ativo (sem atleta)
-    (1001, 'João Silva', '1985-03-12', 'joao.silva@example.pt', '912345001', NULL,
+    (1001, 'Tomás', '1985-03-12', 'tomas@example.pt', '912345001', NULL,
      'Rua das Flores 12', '2655-001', 'Ericeira','111111111','SOCIO', 'ATIVO', false,
      150, NULL, '2024-09-01', '2024-09-05', true, true),
     -- 2: SOCIO ativo (sem atleta)

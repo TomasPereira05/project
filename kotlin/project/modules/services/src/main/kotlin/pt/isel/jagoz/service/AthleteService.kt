@@ -44,7 +44,6 @@ data class AthleteRegistrationInput(
     val privacyAccepted: Boolean,
     val comsAccepted: Boolean,
     val registrationDate: LocalDate,
-    // Dados atléticos (vão para Athlete)
     val nationality: String,
     val niss: String,
     val numeroUtente: String,
@@ -59,7 +58,6 @@ data class AthleteRegistrationInput(
     val photoUrl: String?,
     val hasFamilyInClub: Boolean,
     val schoolCertificationAccepted: Boolean,
-    // Agregado familiar
     val guardians: List<GuardianInput>,
 )
 
@@ -98,7 +96,7 @@ class AthleteService(
      * Tudo na mesma transacção. Rollback automático se qualquer validação ou INSERT falhar.
      */
     fun registerAthlete(input: AthleteRegistrationInput): AthleteResult {
-        LOG.info("Registering new athlete for nif=${input.nif}")
+        LOG.info("Registering new athlete ${input.completeName} for nif=${input.nif}")
 
         return transactionManager.run { tx ->
             val teamCategory =
@@ -378,7 +376,10 @@ class AthleteService(
 
             val athlete = (athleteRes as Either.Right).value
             when (val updatedRes = athleteDomain.changeTeamCategory(athlete, newCategory)) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -464,7 +465,10 @@ class AthleteService(
 
             val athlete = (athleteRes as Either.Right).value
             when (val updatedRes = athleteDomain.markInactive(athlete)) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)
@@ -483,7 +487,10 @@ class AthleteService(
 
             val athlete = (athleteRes as Either.Right).value
             when (val updatedRes = athleteDomain.reactivate(athlete)) {
-                is Either.Left -> updatedRes
+                is Either.Left -> {
+                    updatedRes
+                }
+
                 is Either.Right -> {
                     val updated = updatedRes.value
                     tx.athleteRepository.update(updated)

@@ -8,8 +8,6 @@ import {
   type Athlete,
   type TeamCatalogCategory,
 } from "..";
-import Header from "../../../shared/components/Header";
-import Footer from "../../../shared/components/Footer";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
 import { getInitials } from "../../../shared/utils";
 
@@ -80,7 +78,6 @@ export default function AthleteByTeamCategory() {
 
   return (
     <>
-      <Header />
       <main className="member-form-page">
         <div
           className="member-form-bg"
@@ -187,7 +184,6 @@ export default function AthleteByTeamCategory() {
           )}
         </div>
       </main>
-      <Footer />
     </>
   );
 }

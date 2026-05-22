@@ -14,9 +14,10 @@ import {
 } from "./features/Members";
 import {
   Athletes,
+  AthletesLayout,
   AthleteByTeamCategory,
   AthletePage,
-  AthleteRegister,
+  CreateAthlete,
   TeamSettings,
   UpdateAthlete,
 } from "./features/Athletes";
@@ -106,49 +107,55 @@ const router = createBrowserRouter([
   },
   {
     path: "/athletes",
-    element: (
-      <AuthRequire>
-        <Require allowAdmin allowSecretaria>
-          <Athletes />
-        </Require>
-      </AuthRequire>
-    ),
-  },
-  {
-    path: "/athletes/register",
-    element: (
-      <AuthRequire>
-        <AthleteRegister />
-      </AuthRequire>
-    ),
-  },
-  {
-    path: "/athletes/settings",
-    element: (
-      <AuthRequire>
-        <Require allowAdmin allowSecretaria>
-          <TeamSettings />
-        </Require>
-      </AuthRequire>
-    ),
-  },
-  {
-    path: "/athletes/category/:teamCategory",
-    element: <AthleteByTeamCategory />,
-  },
-  {
-    path: "/athletes/:athleteId",
-    element: <AthletePage />,
-  },
-  {
-    path: "/athletes/:athleteId/edit",
-    element: (
-      <AuthRequire>
-        <Require allowAdmin allowSecretaria>
-          <UpdateAthlete />
-        </Require>
-      </AuthRequire>
-    ),
+    element: <AthletesLayout />,
+    children: [
+      {
+        index: true,
+        element: (
+          <AuthRequire>
+            <Require allowAdmin allowSecretaria>
+              <Athletes />
+            </Require>
+          </AuthRequire>
+        ),
+      },
+      {
+        path: "register",
+        element: (
+          <AuthRequire>
+            <CreateAthlete />
+          </AuthRequire>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <AuthRequire>
+            <Require allowAdmin allowSecretaria>
+              <TeamSettings />
+            </Require>
+          </AuthRequire>
+        ),
+      },
+      {
+        path: "category/:teamCategory",
+        element: <AthleteByTeamCategory />,
+      },
+      {
+        path: ":athleteId",
+        element: <AthletePage />,
+      },
+      {
+        path: ":athleteId/edit",
+        element: (
+          <AuthRequire>
+            <Require allowAdmin allowSecretaria>
+              <UpdateAthlete />
+            </Require>
+          </AuthRequire>
+        ),
+      },
+    ],
   },
   {
     path: "/sponsors",

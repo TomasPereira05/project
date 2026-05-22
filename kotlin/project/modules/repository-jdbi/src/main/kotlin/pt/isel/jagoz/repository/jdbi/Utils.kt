@@ -24,8 +24,8 @@ import pt.isel.jagoz.domain.team.TeamGroupPrice
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
-import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeItemMapper
+import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EquipmentPlacementMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
 import pt.isel.jagoz.repository.jdbi.mappers.GuardianMapper
