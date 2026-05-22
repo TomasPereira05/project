@@ -31,6 +31,7 @@ export type Sponsorship = {
   teamCategoryId: number | null;
   placementId: number | null;
   sportId: number | null;
+  otherDetails: string | null;
 };
 
 export type SponsorshipRow = {
@@ -109,6 +110,7 @@ export type CatalogSnapshot = {
   otherSports: OtherSport[];
   teamGroupPrices: TeamGroupPrice[];
   teamCategoryPriceOverrides: TeamCategoryPriceOverride[];
+  occupiedTeamOptions: OccupiedTeamSponsorshipOption[];
 };
 
 export type SponsorFormValues = {
@@ -127,4 +129,11 @@ export type SponsorshipFormValues = {
   teamCategoryId: string;
   placementId: string;
   sportId: string;
+  otherDetails: string;
+};
+
+export type OccupiedTeamSponsorshipOption = {
+  season: string;
+  teamCategoryId: number;
+  placementId: number;
 };

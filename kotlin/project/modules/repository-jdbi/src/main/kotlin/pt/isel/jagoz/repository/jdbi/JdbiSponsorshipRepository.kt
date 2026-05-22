@@ -108,7 +108,8 @@ class JdbiSponsorshipRepository(
             pub_option_id,
             team_category_id,
             placement_id,
-            sport_id
+            sport_id,
+            other_details
         )
         VALUES (
             :sponsorId,
@@ -119,7 +120,8 @@ class JdbiSponsorshipRepository(
             :pubOptionId,
             :teamCategoryId,
             :placementId,
-            :sportId
+            :sportId,
+            :otherDetails
         )
         """,
             ).bind("sponsorId", sponsorship.sponsorId)
@@ -131,6 +133,7 @@ class JdbiSponsorshipRepository(
             .bind("teamCategoryId", sponsorship.teamCategoryId)
             .bind("placementId", sponsorship.placementId)
             .bind("sportId", sponsorship.sportId)
+            .bind("otherDetails", sponsorship.otherDetails)
             .executeAndReturnGeneratedKeys()
             .mapTo(Long::class.java)
             .one()
@@ -164,7 +167,8 @@ class JdbiSponsorshipRepository(
             pub_option_id = :pubOptionId,
             team_category_id = :teamCategoryId,
             placement_id = :placementId,
-            sport_id = :sportId
+            sport_id = :sportId,
+            other_details = :otherDetails
         WHERE sponsorship_id = :id
         """,
             ).bind("id", sponsorship.sponsorshipId)
@@ -177,6 +181,7 @@ class JdbiSponsorshipRepository(
             .bind("teamCategoryId", sponsorship.teamCategoryId)
             .bind("placementId", sponsorship.placementId)
             .bind("sportId", sponsorship.sportId)
+            .bind("otherDetails", sponsorship.otherDetails)
             .execute()
     }
 

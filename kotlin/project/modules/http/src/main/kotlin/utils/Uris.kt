@@ -79,6 +79,7 @@ object Uris {
         const val MY = "$PREFIX/sponsorships/my"
         const val GET_BY_ID = "$PREFIX/sponsorships/{sponsorshipId}"
         const val GET_BY_SPONSOR = "$PREFIX/sponsors/{sponsorId}/sponsorships"
+        const val UPDATE_DETAILS = "$PREFIX/sponsorships/{sponsorshipId}/details"
         const val APPROVE = "$PREFIX/sponsorships/{sponsorshipId}/approve"
         const val MARK_PAID = "$PREFIX/sponsorships/{sponsorshipId}/paid"
         const val CANCEL = "$PREFIX/sponsorships/{sponsorshipId}/cancel"
@@ -94,6 +95,7 @@ object Uris {
         const val EQUIPMENT_PLACEMENTS = "$PREFIX/sponsorship-catalog/equipment-placements"
         const val EQUIPMENT_PLACEMENT_BY_ID = "$PREFIX/sponsorship-catalog/equipment-placements/{placementId}"
         const val EQUIPMENT_PLACEMENTS_REORDER = "$PREFIX/sponsorship-catalog/equipment-placements/reorder"
+        const val OCCUPIED_TEAM_OPTIONS = "$PREFIX/sponsorship-catalog/team-options/occupied"
 
         const val OTHER_SPORTS_ACTIVE = "$PREFIX/sponsorship-catalog/other-sports/active"
         const val OTHER_SPORTS = "$PREFIX/sponsorship-catalog/other-sports"

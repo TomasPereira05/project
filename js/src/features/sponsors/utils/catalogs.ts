@@ -9,6 +9,7 @@ export const emptySponsorCatalogs: CatalogSnapshot = {
   otherSports: [],
   teamGroupPrices: [],
   teamCategoryPriceOverrides: [],
+  occupiedTeamOptions: [],
 };
 
 export function sortSponsorCatalogs(catalogs: CatalogSnapshot): CatalogSnapshot {

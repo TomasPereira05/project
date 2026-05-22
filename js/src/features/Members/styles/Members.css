@@ -1,7 +1,7 @@
 @layer components {
   /* Layout & Wrappers */
   .member-page {
-    @apply min-h-screen bg-background py-10;
+    @apply relative min-h-screen overflow-hidden bg-background py-10;
   }
 
   .member-page-centered {
@@ -13,7 +13,7 @@
   }
 
   .member-detail-container {
-    @apply w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
   }
 
   /* Form Background Layout */
@@ -174,6 +174,10 @@
     @apply text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide;
   }
 
+  .member-detail-back {
+    @apply rounded-full border border-white/30 bg-white/15 px-4 py-2 text-white shadow-soft backdrop-blur transition hover:border-white/70 hover:bg-white hover:text-primary;
+  }
+
   .member-btn-primary-sm {
     @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md;
   }
@@ -226,7 +230,11 @@
   /* Status Badges */
   /* Loading States */
   .member-loading-container {
-    @apply flex flex-col items-center gap-3 text-text-secondary;
+    @apply relative z-20 flex flex-col items-center gap-3 text-text-secondary;
+  }
+
+  .member-page-centered .member-loading-container {
+    @apply text-white;
   }
 
   .member-table-loading {

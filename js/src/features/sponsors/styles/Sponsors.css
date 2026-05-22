@@ -1,10 +1,10 @@
 @layer components {
   .sponsor-page {
-    @apply min-h-screen bg-background py-10;
+    @apply relative min-h-screen overflow-hidden bg-background py-10;
   }
 
   .sponsor-shell {
-    @apply mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8;
+    @apply relative z-20 mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8;
   }
 
   .sponsor-hero {
@@ -53,6 +53,22 @@
 
   .sponsor-page-header {
     @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .sponsor-detail-glass {
+    @apply rounded-[28px] border border-white/25 bg-white/15 p-5 shadow-card backdrop-blur-md sm:p-8;
+  }
+
+  .sponsor-detail-glass .sponsor-page-header {
+    @apply mb-6 border-b border-white/20 pb-5 text-white;
+  }
+
+  .sponsor-detail-glass .sponsor-muted-text {
+    @apply text-white/75;
+  }
+
+  .sponsor-detail-back {
+    @apply border-white/30 bg-white/15 text-white backdrop-blur hover:border-white/70 hover:bg-white hover:text-primary;
   }
 
   .sponsor-info-grid {
@@ -208,6 +224,10 @@
     @apply grid gap-4 md:grid-cols-3;
   }
 
+  .sponsor-detail-description {
+    @apply mt-5;
+  }
+
   .sponsor-stat-card {
     @apply rounded-2xl border border-border bg-white p-5 shadow-soft;
   }
@@ -272,6 +292,10 @@
     @apply h-11 rounded-xl border border-border bg-muted/40 px-3 text-sm font-normal text-text-primary outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10;
   }
 
+  .sponsor-textarea {
+    @apply min-h-28 resize-y py-3;
+  }
+
   .sponsor-input-price {
     @apply min-w-[120px];
   }
@@ -281,15 +305,15 @@
   }
 
   .sponsor-button-primary {
-    @apply inline-flex items-center justify-center rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover;
   }
 
   .sponsor-button-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-primary hover:text-primary;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-primary hover:text-primary;
   }
 
   .sponsor-button-ghost {
-    @apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-semibold text-text-secondary transition hover:bg-muted hover:text-text-primary;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-text-secondary transition hover:bg-muted hover:text-text-primary;
   }
 
   .sponsor-link-button {

@@ -1,3 +1,9 @@
 export const BASE_URL = "/api";
 export const LOGO_SRC = '/images/logo_GDUE.png';
 export const HERO_IMG_SRC = '/images/hero_Background.jpg';
+export const FPF_LOGO_SRC = '/images/FPF_LOGO.png';
+export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/ihG13cuBswEBygjz9";
+export const TWITTER_URL = "https://x.com/GEriceirense";
+export const YOUTUBE_URL = "https://www.youtube.com/channel/UCEFxBYkA5n4slapcE2JNZjQ";
+export const FACEBOOK_URL = "https://www.facebook.com/gdueoficial";
+export const INSTAGRAM_URL = "https://www.instagram.com/academia.gduericeirense/";

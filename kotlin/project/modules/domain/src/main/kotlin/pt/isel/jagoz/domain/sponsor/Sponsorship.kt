@@ -16,4 +16,5 @@ data class Sponsorship(
     val teamCategoryId: Long? = null,
     val placementId: Long? = null,
     val sportId: Long? = null,
+    val otherDetails: String? = null,
 )

@@ -6,6 +6,7 @@ import { createSponsorshipWithSponsor, fetchUserByUsername } from "..";
 import type { SponsorFormValues, SponsorshipFormValues } from "..";
 import { formatCurrency } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
+import { HERO_IMG_SRC } from "../../../shared/config/config";
 import { useSponsorCatalogs } from "../hooks";
 import { buildOtherSponsorshipCards, buildPubSponsorshipCards, buildTeamSponsorshipGroups } from "../utils";
 
@@ -24,6 +25,7 @@ const initialSponsorshipForm: SponsorshipFormValues = {
   teamCategoryId: "",
   placementId: "",
   sportId: "",
+  otherDetails: "",
 };
 
 export default function SponsorCreate() {
@@ -46,7 +48,7 @@ export default function SponsorCreate() {
 
   const pubCards = useMemo(() => buildPubSponsorshipCards(catalogs), [catalogs]);
 
-  const teamOptionGroups = useMemo(() => buildTeamSponsorshipGroups(catalogs), [catalogs]);
+  const teamOptionGroups = useMemo(() => buildTeamSponsorshipGroups(catalogs, selection.season.trim()), [catalogs, selection.season]);
 
   const otherCards = useMemo(() => buildOtherSponsorshipCards(catalogs), [catalogs]);
 
@@ -141,6 +143,7 @@ export default function SponsorCreate() {
         teamCategoryId: "",
         placementId: "",
         sportId: "",
+        otherDetails: "",
       }));
     } else if (option.type === "TEAM") {
       setSelection((current) => ({
@@ -150,6 +153,7 @@ export default function SponsorCreate() {
         teamCategoryId: String(option.teamCategoryId),
         placementId: String(option.placementId),
         sportId: "",
+        otherDetails: "",
       }));
     } else {
       setSelection((current) => ({
@@ -171,6 +175,7 @@ export default function SponsorCreate() {
       teamCategoryId: "",
       placementId: "",
       sportId: "",
+      otherDetails: "",
     }));
   }
 
@@ -184,6 +189,8 @@ export default function SponsorCreate() {
 
   return (
     <main className="sponsor-page">
+      <div className="member-form-bg" style={{ backgroundImage: `url(${HERO_IMG_SRC})` }} />
+      <div className="member-form-overlay" />
       <div className="sponsor-shell">
         <section className="sponsor-page-header">
           <div>
@@ -269,6 +276,18 @@ export default function SponsorCreate() {
                     <p className="sponsor-muted-text">{t("sponsors.create.selectedUser", { username: selectedUser.username, email: selectedUser.email })}</p>
                   ) : null}
                 </div>
+              ) : null}
+              {selection.type === "OTHER" ? (
+                <label className="sponsor-field sponsor-field-span">
+                  <span>{t("sponsors.fields.otherDetails")}</span>
+                  <textarea
+                    className="sponsor-input sponsor-textarea"
+                    required
+                    value={selection.otherDetails}
+                    onChange={(e) => setSelection((c) => ({ ...c, otherDetails: e.target.value }))}
+                    placeholder={t("sponsors.create.otherDetailsPlaceholder")}
+                  />
+                </label>
               ) : null}
               <div className="sponsor-form-actions sponsor-field-span">
                 <button className="sponsor-button-primary" disabled={!selectedCard} type="submit">

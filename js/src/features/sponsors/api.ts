@@ -3,6 +3,7 @@ import type {
   CatalogSnapshot,
   EquipmentPlacement,
   OtherSport,
+  OccupiedTeamSponsorshipOption,
   PubOption,
   PaginatedResponse,
   Sponsor,
@@ -119,6 +120,22 @@ export function fetchSponsorshipById(sponsorshipId: number) {
   return request<Sponsorship>(`/sponsorships/${sponsorshipId}`);
 }
 
+export function updateSponsorshipDetails(
+  sponsorshipId: number,
+  values: { email: string; phone: string; nif: string; price?: number | null; otherDetails?: string | null },
+) {
+  return request<Sponsorship>(`/sponsorships/${sponsorshipId}/details`, {
+    method: "PUT",
+    body: JSON.stringify({
+      email: values.email.trim(),
+      phone: values.phone.trim(),
+      nif: values.nif.trim(),
+      price: values.price ?? null,
+      otherDetails: values.otherDetails?.trim() || null,
+    }),
+  });
+}
+
 export function createSponsorshipCheckoutSession(sponsorshipId: number) {
   return request<CheckoutSession>("/payments/checkout-session", {
     method: "POST",
@@ -148,6 +165,7 @@ export function createSponsorship(values: SponsorshipFormValues, price: number) 
       teamCategoryId: values.teamCategoryId ? Number.parseInt(values.teamCategoryId, 10) : null,
       placementId: values.placementId ? Number.parseInt(values.placementId, 10) : null,
       sportId: values.sportId ? Number.parseInt(values.sportId, 10) : null,
+      otherDetails: values.type === "OTHER" ? values.otherDetails.trim() : null,
     }),
   });
 }
@@ -214,6 +232,7 @@ export function createSponsorshipWithSponsor(sponsor: SponsorFormValues, values:
         teamCategoryId: values.teamCategoryId ? Number.parseInt(values.teamCategoryId, 10) : null,
         placementId: values.placementId ? Number.parseInt(values.placementId, 10) : null,
         sportId: values.sportId ? Number.parseInt(values.sportId, 10) : null,
+        otherDetails: values.type === "OTHER" ? values.otherDetails.trim() : null,
       },
       userId: userId ?? sponsor.userId ?? null,
     }),
@@ -318,6 +337,10 @@ export function fetchEquipmentPlacements() {
   return request<EquipmentPlacement[]>("/sponsorship-catalog/equipment-placements/active");
 }
 
+export function fetchOccupiedTeamSponsorshipOptions() {
+  return request<OccupiedTeamSponsorshipOption[]>("/sponsorship-catalog/team-options/occupied");
+}
+
 export function createEquipmentPlacement(payload: { code: string; label: string; sortOrder: number }) {
   return request<EquipmentPlacement>("/sponsorship-catalog/equipment-placements", {
     method: "POST",
@@ -417,6 +440,7 @@ export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
     otherSports,
     teamGroupPrices,
     teamCategoryPriceOverrides,
+    occupiedTeamOptions,
   ] = await Promise.all([
     fetchPubOptions(),
     fetchTeamGroups(),
@@ -425,6 +449,7 @@ export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
     fetchOtherSports(),
     fetchTeamGroupSponsorshipPrices(),
     fetchTeamCategoryPriceOverrides(),
+    fetchOccupiedTeamSponsorshipOptions(),
   ]);
 
   return {
@@ -435,5 +460,6 @@ export async function fetchCatalogSnapshot(): Promise<CatalogSnapshot> {
     otherSports,
     teamGroupPrices,
     teamCategoryPriceOverrides,
+    occupiedTeamOptions,
   };
 }

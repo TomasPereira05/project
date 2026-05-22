@@ -352,6 +352,7 @@
       "name": "Name",
       "nif": "Tax ID",
       "occupied": "Occupied",
+      "otherDetails": "Details",
       "phone": "Phone",
       "price": "Price",
       "season": "Season",
@@ -451,6 +452,7 @@
       "usernamePlaceholder": "username",
       "search": "Search",
       "selectedUser": "Selected: {{username}} ({{email}})",
+      "otherDetailsPlaceholder": "Describe the details you want for this sponsorship.",
       "submit": "Submit sponsorship",
       "availableOptions": "Available options",
       "choose": "Choose sponsorship",
@@ -505,7 +507,13 @@
       "loadError": "Could not load the sponsorship.",
       "pay": "Pay sponsorship",
       "paymentStarting": "Preparing payment...",
-      "paymentError": "Could not start the payment."
+      "paymentError": "Could not start the payment.",
+      "edit": "Edit",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancelEdit": "Cancel",
+      "updateSuccess": "Sponsorship updated successfully.",
+      "updateError": "Could not update the sponsorship."
     },
     "approvals": {
       "eyebrow": "Approvals",
@@ -517,7 +525,8 @@
       "actions": {
         "approve": "Approve",
         "markPaid": "Mark paid",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "details": "View details"
       }
     },
     "settings": {

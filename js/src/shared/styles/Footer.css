@@ -10,7 +10,7 @@
   }
 
   .footer-grid {
-    @apply grid grid-cols-1 md:grid-cols-4 gap-8;
+    @apply grid grid-cols-1 md:grid-cols-5 gap-8;
   }
 
   /* LOGO */
@@ -59,6 +59,14 @@
 
   .footer-social-text {
     @apply text-sm font-bold;
+  }
+
+  .footer-location-link {
+    @apply flex items-start gap-2 text-sm text-white/70 no-underline transition-colors hover:text-white;
+  }
+
+  .footer-location-link svg {
+    @apply mt-0.5 shrink-0 text-primary;
   }
 
   /* BOTTOM */

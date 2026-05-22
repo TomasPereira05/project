@@ -14,6 +14,7 @@ import pt.isel.jagoz.domain.sponsor.Sponsorship
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.sponsor.SponsorSponsorshipRequest
+import pt.isel.jagoz.http.model.sponsor.SponsorshipDetailUpdateRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.SponsorshipService
@@ -82,6 +83,25 @@ class SponsorshipController(
         @RequestParam(defaultValue = "8") size: Int,
     ): ResponseEntity<*> =
         sponsorshipService.getSponsorshipsBySponsorIdForUserPage(sponsorId, authenticatedUser, page, size).handle(
+            onFailure = { handleSponsorError(it) },
+            onSuccess = { ResponseEntity.ok(it) },
+        )
+
+    @PutMapping(Uris.Sponsorships.UPDATE_DETAILS)
+    fun updateSponsorshipDetails(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable sponsorshipId: Long,
+        @RequestBody request: SponsorshipDetailUpdateRequest,
+    ): ResponseEntity<*> =
+        sponsorshipService.updateSponsorshipDetails(
+            authenticatedUser = authenticatedUser,
+            sponsorshipId = sponsorshipId,
+            email = request.email,
+            phone = request.phone,
+            nif = request.nif,
+            price = request.price,
+            otherDetails = request.otherDetails,
+        ).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )
