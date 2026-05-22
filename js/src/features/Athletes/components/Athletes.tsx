@@ -4,8 +4,6 @@ import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, ShieldAlert, Users 
 import { useTranslation } from "react-i18next";
 import { listAllAdmin } from "..";
 import type { AthleteAdmin, AthleteStatus } from "..";
-import Header from "../../../shared/components/Header";
-import Footer from "../../../shared/components/Footer";
 import { formatDate } from "../../../shared/utils";
 
 const PAGE_SIZE = 8;
@@ -88,7 +86,6 @@ export default function Athletes() {
 
   return (
     <>
-      <Header />
       <main className="member-page">
         <div className="member-container">
           <header className="member-header-container">
@@ -261,7 +258,6 @@ export default function Athletes() {
           </section>
         </div>
       </main>
-      <Footer />
     </>
   );
 }
