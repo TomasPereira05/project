@@ -138,4 +138,12 @@
   .user-claim-error {
     @apply text-sm font-medium text-red-700;
   }
+
+  .user-form-bg {
+    @apply absolute inset-0 bg-cover bg-center bg-no-repeat z-0;
+  }
+
+  .user-form-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10;
+  }
 }
