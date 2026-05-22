@@ -711,6 +711,14 @@
       "title": "Athlete Management",
       "description": "Approve or reject pending registrations and check each athlete status.",
       "newRegistration": "New registration",
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Member number or name",
+        "button": "Filters",
+        "clear": "Clear filters",
+        "noCategories": "No age groups available.",
+        "empty": "There are no athletes for the selected filters."
+      },
       "errors": {
         "load": "Could not load the athlete list."
       },
