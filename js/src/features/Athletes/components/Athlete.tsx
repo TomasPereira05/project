@@ -13,6 +13,7 @@ import {
 import type { AthleteAdmin, AthleteDetail, AthleteStatus } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatDate, getInitials, todayISO } from "../../../shared/utils";
+import AthletePageBackground from "./AthletePageBackground";
 
 function isAdminLike(role?: string) {
   return role === "ADMIN" || role === "SECRETARIA";
@@ -34,20 +35,21 @@ function statusLabel(status: AthleteStatus, t: (key: string) => string): string 
 function statusColor(status: AthleteStatus): string {
   switch (status) {
     case "ATIVO":
-      return "member-status-active";
+      return "athlete-status-active";
     case "PENDENTE":
-      return "member-status-pending";
+      return "athlete-status-pending";
     case "INATIVO":
-      return "member-status-inactive";
+      return "athlete-status-inactive";
     case "REJEITADO":
-      return "member-status-rejected";
+      return "athlete-status-rejected";
   }
 }
 
 function PageWrapper({ children }: { children: ReactNode }) {
   return (
-    <main className="member-page">
-      <div className="member-detail-container">{children}</div>
+    <main className="athlete-page">
+      <AthletePageBackground />
+      <div className="athlete-detail-container">{children}</div>
     </main>
   );
 }
@@ -136,9 +138,9 @@ export default function AthletePage() {
   if (isLoading) {
     return (
       <PageWrapper>
-        <div className="member-loading-container py-10">
-          <div className="member-loading-spinner"></div>
-          <p className="member-loading-text">{t("athletes.detail.loading")}</p>
+        <div className="athlete-loading-container py-10">
+          <div className="athlete-loading-spinner"></div>
+          <p className="athlete-loading-text">{t("athletes.detail.loading")}</p>
         </div>
       </PageWrapper>
     );
@@ -147,10 +149,10 @@ export default function AthletePage() {
   if (errorMessage && !adminDto && !publicDto) {
     return (
       <PageWrapper>
-        <div className="member-alert-error">
-          <p className="member-alert-text">{errorMessage}</p>
+        <div className="athlete-alert-error">
+          <p className="athlete-alert-text">{errorMessage}</p>
         </div>
-        <Link className="member-btn-back" to="/athletes">
+        <Link className="athlete-btn-back" to="/athletes">
           <ArrowLeft size={16} />
           {t("athletes.common.back")}
         </Link>
@@ -205,71 +207,71 @@ function renderAdminContent({
   const isPending = athlete.status === "PENDENTE";
   return (
     <>
-      <div className="member-topbar">
-        <Link to="/athletes" className="member-btn-back">
+      <div className="athlete-topbar">
+        <Link to="/athletes" className="athlete-btn-back">
           <ArrowLeft size={18} />
           {t("athletes.common.back")}
         </Link>
       </div>
 
       {feedback && (
-        <div className="member-alert-success">
-          <CheckCircle2 size={20} className="member-alert-icon-success" />
-          <p className="member-alert-text">{feedback}</p>
+        <div className="athlete-alert-success">
+          <CheckCircle2 size={20} className="athlete-alert-icon-success" />
+          <p className="athlete-alert-text">{feedback}</p>
         </div>
       )}
       {errorMessage && (
-        <div className="member-alert-error">
-          <XCircle size={20} className="member-alert-icon-error" />
-          <p className="member-alert-text">{errorMessage}</p>
+        <div className="athlete-alert-error">
+          <XCircle size={20} className="athlete-alert-icon-error" />
+          <p className="athlete-alert-text">{errorMessage}</p>
         </div>
       )}
 
-      <section className="member-section-card">
-        <div className="member-profile-cover"></div>
-        <div className="member-profile-body">
-          <div className="member-profile-header">
-            <div className="member-profile-info">
-              <div className="member-profile-avatar">
+      <section className="athlete-section-card">
+        <div className="athlete-profile-cover"></div>
+        <div className="athlete-profile-body">
+          <div className="athlete-profile-header">
+            <div className="athlete-profile-info">
+              <div className="athlete-profile-avatar">
                 {athlete.photoUrl ? (
                   <img src={athlete.photoUrl} alt={athlete.member.completeName} className="w-full h-full rounded-full object-cover" />
                 ) : (
                   getInitials(athlete.member.completeName)
                 )}
               </div>
-              <div className="member-profile-name-block">
-                <h1 className="member-profile-name">{athlete.member.completeName}</h1>
-                <p className="member-profile-number">{t("athletes.detail.memberAthlete", { memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}</p>
+              <div className="athlete-profile-name-block">
+                <h1 className="athlete-profile-name">{athlete.member.completeName}</h1>
+                <p className="athlete-profile-number">{t("athletes.detail.memberAthlete", { memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}</p>
               </div>
             </div>
-            <div className="member-profile-badges">
-              <span className={`member-status-badge ${statusColor(athlete.status)}`}>
+            <div className="athlete-profile-badges">
+              <span className={`athlete-status-badge ${statusColor(athlete.status)}`}>
                 {statusLabel(athlete.status, t)}
               </span>
-              <span className="member-category-badge">{athlete.teamCategoryLabel}</span>
+              <span className="athlete-category-badge">{athlete.teamCategoryLabel}</span>
             </div>
           </div>
 
-          <div className="member-profile-actions">
+          <div className="athlete-profile-actions">
             {isPending ? (
               <>
-                <button className="member-btn-approve" onClick={onApprove} type="button">
+                <button className="athlete-btn-approve" onClick={onApprove} type="button">
                   <CheckCircle2 size={18} />
                   {t("athletes.detail.actions.approve")}
                 </button>
-                <button className="member-btn-reject" onClick={onReject} type="button">
+                <button className="athlete-btn-reject" onClick={onReject} type="button">
                   <XCircle size={18} />
                   {t("athletes.detail.actions.reject")}
                 </button>
               </>
             ) : (
               <>
-                <Link className="member-btn-primary-sm" to={`/athletes/${athlete.athleteId}/edit`}>
+                <Link className="athlete-btn-primary-sm" to={`/athletes/${athlete.athleteId}/edit`}>
                   <PencilLine size={18} />
                   {t("athletes.detail.actions.update")}
                 </Link>
                 <button
-                  className={athlete.active ? "member-btn-reject" : "member-btn-approve"}
+                  className={athlete.active ? "athlete-btn-reject" : "athlete-btn-approve"}
                   onClick={onToggle}
                   type="button"
                 >
@@ -291,12 +293,12 @@ function renderAdminContent({
         </div>
       </section>
 
-      <section className="member-section-card">
-        <div className="member-section-header">
-          <h2 className="member-section-title">{t("athletes.detail.sections.identity")}</h2>
+      <section className="athlete-section-card">
+        <div className="athlete-section-header">
+          <h2 className="athlete-section-title">{t("athletes.detail.sections.identity")}</h2>
         </div>
-        <div className="member-section-body">
-          <div className="member-admin-grid">
+        <div className="athlete-section-body">
+          <div className="athlete-admin-grid">
             <Field label={t("athletes.fields.birthDate")} value={formatDate(athlete.member.birthDate)} />
             <Field label={t("athletes.fields.birthplace")} value={athlete.member.birthplace ?? t("athletes.common.empty")} />
             <Field label={t("athletes.fields.nationality")} value={athlete.nationality} />
@@ -308,12 +310,12 @@ function renderAdminContent({
         </div>
       </section>
 
-      <section className="member-section-card">
-        <div className="member-section-header">
-          <h2 className="member-section-title">{t("athletes.detail.sections.documents")}</h2>
+      <section className="athlete-section-card">
+        <div className="athlete-section-header">
+          <h2 className="athlete-section-title">{t("athletes.detail.sections.documents")}</h2>
         </div>
-        <div className="member-section-body">
-          <div className="member-admin-grid">
+        <div className="athlete-section-body">
+          <div className="athlete-admin-grid">
             <Field label="NIF" value={athlete.member.nif} />
             <Field label="NISS" value={athlete.niss} />
             <Field label={t("athletes.fields.healthNumber")} value={athlete.numeroUtente} />
@@ -323,12 +325,12 @@ function renderAdminContent({
         </div>
       </section>
 
-      <section className="member-section-card">
-        <div className="member-section-header">
-          <h2 className="member-section-title">{t("athletes.detail.sections.address")}</h2>
+      <section className="athlete-section-card">
+        <div className="athlete-section-header">
+          <h2 className="athlete-section-title">{t("athletes.detail.sections.address")}</h2>
         </div>
-        <div className="member-section-body">
-          <div className="member-admin-grid">
+        <div className="athlete-section-body">
+          <div className="athlete-admin-grid">
             <Field label={t("athletes.fields.address")} value={athlete.member.address} />
             <Field label={t("athletes.fields.city")} value={athlete.member.city} />
             <Field label={t("athletes.fields.postalCode")} value={athlete.member.postalCode} />
@@ -336,12 +338,12 @@ function renderAdminContent({
         </div>
       </section>
 
-      <section className="member-section-card">
-        <div className="member-section-header">
-          <h2 className="member-section-title">{t("athletes.detail.sections.school")}</h2>
+      <section className="athlete-section-card">
+        <div className="athlete-section-header">
+          <h2 className="athlete-section-title">{t("athletes.detail.sections.school")}</h2>
         </div>
-        <div className="member-section-body">
-          <div className="member-admin-grid">
+        <div className="athlete-section-body">
+          <div className="athlete-admin-grid">
             <Field label={t("athletes.fields.school")} value={athlete.school ?? t("athletes.common.empty")} />
             <Field label={t("athletes.fields.schoolYear")} value={athlete.schoolYear ?? t("athletes.common.empty")} />
             <Field label={t("athletes.fields.schoolClass")} value={athlete.schoolClass ?? t("athletes.common.empty")} />
@@ -352,17 +354,17 @@ function renderAdminContent({
       </section>
 
       {athlete.guardians.length > 0 && (
-        <section className="member-section-card">
-          <div className="member-section-header">
-            <h2 className="member-section-title">{t("athletes.detail.sections.guardians")}</h2>
+        <section className="athlete-section-card">
+          <div className="athlete-section-header">
+            <h2 className="athlete-section-title">{t("athletes.detail.sections.guardians")}</h2>
           </div>
-          <div className="member-section-body">
-            <div className="member-form-grid">
+          <div className="athlete-section-body">
+            <div className="athlete-form-grid">
               {athlete.guardians.map((g) => (
-                <div key={g.guardianId} className="member-privacy-box">
-                  <div className="member-privacy-head">
-                    <span className="member-privacy-title">{g.name}</span>
-                    <span className="member-category-badge">
+                <div key={g.guardianId} className="athlete-privacy-box">
+                  <div className="athlete-privacy-head">
+                    <span className="athlete-privacy-title">{g.name}</span>
+                    <span className="athlete-category-badge">
                       {g.role === "FATHER" && t("athletes.guardians.father")}
                       {g.role === "MOTHER" && t("athletes.guardians.mother")}
                       {g.role === "LEGAL_GUARDIAN" && t("athletes.guardians.legalGuardianWithKinship", { kinship: g.kinship ? ` (${g.kinship})` : "" })}
@@ -387,43 +389,43 @@ function renderAdminContent({
 function renderPublicContent(athlete: AthleteDetail, t: (key: string, options?: Record<string, unknown>) => string) {
   return (
     <>
-      <div className="member-topbar">
-        <Link to={`/athletes/category/${athlete.teamCategoryCode}`} className="member-btn-back">
+      <div className="athlete-topbar">
+        <Link to={`/athletes/category/${athlete.teamCategoryCode}`} className="athlete-btn-back">
           <ArrowLeft size={18} />
           {t("athletes.detail.backToCategory")}
         </Link>
       </div>
 
-      <section className="member-section-card">
-        <div className="member-profile-cover"></div>
-        <div className="member-profile-body">
-          <div className="member-profile-header">
-            <div className="member-profile-info">
-              <div className="member-profile-avatar">
+      <section className="athlete-section-card">
+        <div className="athlete-profile-cover"></div>
+        <div className="athlete-profile-body">
+          <div className="athlete-profile-header">
+            <div className="athlete-profile-info">
+              <div className="athlete-profile-avatar">
                 {athlete.fotoUrl ? (
                   <img src={athlete.fotoUrl} alt={athlete.nome} className="w-full h-full rounded-full object-cover" />
                 ) : (
                   getInitials(athlete.nome)
                 )}
               </div>
-              <div className="member-profile-name-block">
-                <h1 className="member-profile-name">{athlete.nome}</h1>
-                <p className="member-profile-number">{athlete.teamCategoryLabel}</p>
+              <div className="athlete-profile-name-block">
+                <h1 className="athlete-profile-name">{athlete.nome}</h1>
+                <p className="athlete-profile-number">{athlete.teamCategoryLabel}</p>
               </div>
             </div>
-            <div className="member-profile-badges">
-              <span className="member-category-badge">{athlete.nacionalidade}</span>
+            <div className="athlete-profile-badges">
+              <span className="athlete-category-badge">{athlete.nacionalidade}</span>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="member-section-card">
-        <div className="member-section-header">
-          <h2 className="member-section-title">{t("athletes.detail.sections.sportsProfile")}</h2>
+      <section className="athlete-section-card">
+        <div className="athlete-section-header">
+          <h2 className="athlete-section-title">{t("athletes.detail.sections.sportsProfile")}</h2>
         </div>
-        <div className="member-section-body">
-          <div className="member-admin-grid">
+        <div className="athlete-section-body">
+          <div className="athlete-admin-grid">
             <Field label={t("athletes.fields.number")} value={athlete.numero !== null ? String(athlete.numero) : t("athletes.common.empty")} />
             <Field label={t("athletes.fields.position")} value={athlete.posicao ?? t("athletes.common.empty")} />
             <Field label={t("athletes.fields.age")} value={athlete.idade !== null ? t("athletes.detail.ageValue", { count: athlete.idade }) : t("athletes.common.empty")} />
@@ -432,14 +434,14 @@ function renderPublicContent(athlete: AthleteDetail, t: (key: string, options?: 
       </section>
 
       {athlete.epocasRepresentadas.length > 0 && (
-        <section className="member-section-card">
-          <div className="member-section-header">
-            <h2 className="member-section-title">{t("athletes.detail.sections.representedSeasons")}</h2>
+        <section className="athlete-section-card">
+          <div className="athlete-section-header">
+            <h2 className="athlete-section-title">{t("athletes.detail.sections.representedSeasons")}</h2>
           </div>
-          <div className="member-section-body">
+          <div className="athlete-section-body">
             <div className="flex flex-wrap gap-2">
               {athlete.epocasRepresentadas.map((e) => (
-                <span key={e} className="member-category-badge">
+                <span key={e} className="athlete-category-badge">
                   {e}
                 </span>
               ))}
@@ -454,8 +456,8 @@ function renderPublicContent(athlete: AthleteDetail, t: (key: string, options?: 
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="member-field-title-spaced">{label}</span>
-      <p className="member-field-value">{value}</p>
+      <span className="athlete-field-title-spaced">{label}</span>
+      <p className="athlete-field-value">{value}</p>
     </div>
   );
 }

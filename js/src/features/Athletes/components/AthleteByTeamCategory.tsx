@@ -8,7 +8,7 @@ import {
   type Athlete,
   type TeamCatalogCategory,
 } from "..";
-import { HERO_IMG_SRC } from "../../../shared/config/config";
+import AthletePageBackground from "./AthletePageBackground";
 import { getInitials } from "../../../shared/utils";
 
 export default function AthleteByTeamCategory() {
@@ -78,45 +78,41 @@ export default function AthleteByTeamCategory() {
 
   return (
     <>
-      <main className="member-form-page">
-        <div
-          className="member-form-bg"
-          style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
-        />
-        <div className="member-form-overlay" />
+      <main className="athlete-form-page">
+        <AthletePageBackground />
 
         <div className="relative z-20 flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="member-card-padded">
-            <div className="member-card-header">
+          <div className="athlete-card-padded">
+            <div className="athlete-card-header">
               <div>
-                <h2 className="member-title">{heading}</h2>
-                <p className="member-desc">{t("athletes.category.description")}</p>
+                <h2 className="athlete-title">{heading}</h2>
+                <p className="athlete-desc">{t("athletes.category.description")}</p>
               </div>
 
-              <button onClick={() => navigate(-1)} className="member-btn-back">
+              <button onClick={() => navigate(-1)} className="athlete-btn-back">
                 <ArrowLeft size={18} />
                 {t("athletes.common.back")}
               </button>
             </div>
 
             {categoryUnknown && (
-              <div className="member-alert-error">
+              <div className="athlete-alert-error">
                 <ShieldAlert size={20} className="text-red-500" />
                 <p className="text-sm font-medium">{t("athletes.category.notFound")}</p>
               </div>
             )}
 
             {errorMessage && (
-              <div className="member-alert-error">
+              <div className="athlete-alert-error">
                 <ShieldAlert size={20} className="text-red-500" />
                 <p className="text-sm font-medium">{errorMessage}</p>
               </div>
             )}
 
             {isLoading && (
-              <div className="member-loading-container py-8">
-                <div className="member-loading-spinner" />
-                <p className="member-loading-text">{t("athletes.common.loadingAthletes")}</p>
+              <div className="athlete-loading-container py-8">
+                <div className="athlete-loading-spinner" />
+                <p className="athlete-loading-text">{t("athletes.common.loadingAthletes")}</p>
               </div>
             )}
 
@@ -175,7 +171,7 @@ export default function AthleteByTeamCategory() {
           </div>
 
           {!isLoading && !errorMessage && category && (
-            <div className="member-card-padded">
+            <div className="athlete-card-padded">
               <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border mb-4">
                 {t("athletes.category.trainingSchedules")}
               </h3>

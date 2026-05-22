@@ -7,8 +7,9 @@
 @import "./features/auth/styles/Form.css";
 @import "./shared/styles/FormBox.css";
 @import "./features/Members/styles/Members.css";
+@import "./features/Athletes/styles/Athletes.css";
 @import "./features/sponsors/styles/Sponsors.css";
-@import "./features/User/styles/user.css";
+@import "./features/User/styles/User.css";
 
 @tailwind base;
 @tailwind components;

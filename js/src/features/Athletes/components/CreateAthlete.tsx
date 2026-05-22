@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { useCreateAthlete } from "../hooks";
 import { AthleteForm } from "./AthleteForm";
-import { HERO_IMG_SRC } from "../../../shared/config/config";
+import AthletePageBackground from "./AthletePageBackground";
 
 export default function CreateAthlete() {
   const { t } = useTranslation();
@@ -18,14 +18,10 @@ export default function CreateAthlete() {
 
   return (
     <>
-      <main className="member-form-page">
-        <div
-          className="member-form-bg"
-          style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
-        />
-        <div className="member-form-overlay" />
+      <main className="athlete-form-page">
+        <AthletePageBackground />
 
-        <div className="member-form-container">
+        <div className="athlete-form-container">
           <AthleteForm
             title={t("athletes.register.title")}
             description={t("athletes.register.description")}

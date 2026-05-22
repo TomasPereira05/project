@@ -21,12 +21,12 @@ export function statusLabel(status: AthleteStatus, t: TFunction<"translation", u
 export function statusColor(status: AthleteStatus): string {
   switch (status) {
     case "ATIVO":
-      return "member-status-active";
+      return "athlete-status-active";
     case "PENDENTE":
-      return "member-status-pending";
+      return "athlete-status-pending";
     case "INATIVO":
-      return "member-status-inactive";
+      return "athlete-status-inactive";
     case "REJEITADO":
-      return "member-status-rejected";
+      return "athlete-status-rejected";
   }
 }

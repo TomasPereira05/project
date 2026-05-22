@@ -1,6 +1,7 @@
 package pt.isel.jagoz.repository
 
 import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.AthleteStatus
 import pt.isel.jagoz.domain.athlete.Guardian
 
 interface AthleteRepository {
@@ -26,6 +27,25 @@ interface AthleteRepository {
 
     /** Total para cálculo de páginas. */
     fun countAll(): Long
+
+    /**
+     * Página filtrada da listagem admin. Pesquisa por nº de sócio ou nome, e filtra por
+     * conjuntos de escalões e/ou estados (OR dentro de cada dimensão, AND entre dimensões).
+     * Listas vazias = sem filtro nessa dimensão. Mantém a ordem: pendentes primeiro.
+     */
+    fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+        teamCategoryIds: List<Long>,
+        statuses: List<AthleteStatus>,
+    ): List<Athlete>
+
+    fun countFiltered(
+        search: String?,
+        teamCategoryIds: List<Long>,
+        statuses: List<AthleteStatus>,
+    ): Long
 
     fun findByTeamCategory(
         teamCategoryId: Long,

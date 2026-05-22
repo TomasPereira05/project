@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.AthleteDomain
 import pt.isel.jagoz.domain.athlete.AthleteError
+import pt.isel.jagoz.domain.athlete.AthleteStatus
 import pt.isel.jagoz.domain.athlete.Guardian
 import pt.isel.jagoz.domain.athlete.GuardianRole
 import pt.isel.jagoz.domain.member.Member
@@ -246,17 +247,31 @@ class AthleteService(
             tx.athleteRepository.findAll()
         }
 
-    /** Página da listagem admin. Pendentes primeiro, depois os mais recentes. */
+    /**
+     * Página da listagem admin. Pendentes primeiro, depois os mais recentes.
+     * Suporta pesquisa (nº de sócio ou nome) e filtros por escalão e/ou estado.
+     */
     fun getAthletesPage(
         page: Int,
         size: Int,
+        search: String? = null,
+        teamCategoryIds: List<Long> = emptyList(),
+        statuses: List<AthleteStatus> = emptyList(),
     ): Page<Athlete> {
         val request = pageRequest(page, size)
+        val normalizedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
         return transactionManager.run { tx ->
             pageOf(
-                items = tx.athleteRepository.findPage(request.size, request.offset),
+                items =
+                    tx.athleteRepository.findPageFiltered(
+                        request.size,
+                        request.offset,
+                        normalizedSearch,
+                        teamCategoryIds,
+                        statuses,
+                    ),
                 request = request,
-                total = tx.athleteRepository.countAll(),
+                total = tx.athleteRepository.countFiltered(normalizedSearch, teamCategoryIds, statuses),
             )
         }
     }

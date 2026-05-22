@@ -5,6 +5,7 @@ import type {
   AthleteAdmin,
   AthleteDetail,
   AthleteInput,
+  AthleteStatus,
   AthleteUpdateRequest,
   PaginatedResponse,
   TeamCatalogCategory,
@@ -79,10 +80,23 @@ export function createAthlete(input: AthleteInput) {
 /**
  * Lista admin paginada (com dados sensíveis). GET /api/athletes?page&size
  * Pendentes vêm sempre na página 1 (ordenação no backend).
+ *
+ * Filtros opcionais: `search` (nº de sócio ou nome), `teamCategoryIds` (escalões) e
+ * `statuses` (estados). Cada escalão/estado vai como um query param repetido — OR dentro
+ * de cada dimensão, AND entre dimensões (resolvido no backend).
  */
-export function listAllAdmin(page = 1, size = 8) {
-  const search = new URLSearchParams({ page: String(page), size: String(size) });
-  return request<PaginatedResponse<AthleteAdmin>>(`/athletes?${search.toString()}`);
+export function listAllAdmin(
+  page = 1,
+  size = 8,
+  filters: { search?: string; teamCategoryIds?: number[]; statuses?: AthleteStatus[] } = {},
+) {
+  const params = new URLSearchParams({ page: String(page), size: String(size) });
+  if (filters.search?.trim()) {
+    params.set("search", filters.search.trim());
+  }
+  filters.teamCategoryIds?.forEach((id) => params.append("teamCategory", String(id)));
+  filters.statuses?.forEach((status) => params.append("status", status));
+  return request<PaginatedResponse<AthleteAdmin>>(`/athletes?${params.toString()}`);
 }
 
 /** Detalhe admin (incluindo guardians completos). GET /api/athletes/{id}/admin */

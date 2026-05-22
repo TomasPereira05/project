@@ -34,28 +34,28 @@ export function AthleteForm({
   const { t } = useTranslation();
 
   return (
-    <div className="member-card-padded">
-      <div className="member-card-header">
+    <div className="athlete-card-padded">
+      <div className="athlete-card-header">
         <div>
-          <h2 className="member-title">{title}</h2>
-          <p className="member-desc">{description}</p>
+          <h2 className="athlete-title">{title}</h2>
+          <p className="athlete-desc">{description}</p>
         </div>
 
-        <button onClick={() => window.history.back()} className="member-btn-back">
+        <button onClick={() => window.history.back()} className="athlete-btn-back">
           <ArrowLeft size={18} />
           {t("athletes.common.back")}
         </button>
       </div>
 
       {errorMessage && (
-        <div className="member-alert-error">
+        <div className="athlete-alert-error">
           <ShieldAlert size={20} className="text-red-500" />
           <p className="text-sm font-medium">{errorMessage}</p>
         </div>
       )}
 
       {successMessage && (
-        <div className="member-alert-success">
+        <div className="athlete-alert-success">
           <CheckCircle2 size={20} className="text-green-500" />
           <p className="text-sm font-medium">{successMessage}</p>
         </div>
@@ -66,11 +66,11 @@ export function AthleteForm({
           <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
             {t("athletes.register.sections.who")}
           </h3>
-          <label className="member-checkbox-group group">
+          <label className="athlete-checkbox-group group">
             <div className="mt-1">
               <input
                 type="checkbox"
-                className="member-checkbox"
+                className="athlete-checkbox"
                 name="isSelfRegistration"
                 checked={values.isSelfRegistration}
                 onChange={onChange}
@@ -101,57 +101,57 @@ export function AthleteForm({
             {t("athletes.register.sections.personal")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="member-input-group md:col-span-2">
-              <label className="member-label">{t("athletes.fields.completeName")}</label>
-              <input className="member-input" name="completeName" value={values.completeName} onChange={onChange} required />
+            <div className="athlete-input-group md:col-span-2">
+              <label className="athlete-label">{t("athletes.fields.completeName")}</label>
+              <input className="athlete-input" name="completeName" value={values.completeName} onChange={onChange} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.birthDate")}</label>
-              <input type="date" className="member-input" name="birthDate" value={values.birthDate} onChange={onChange} max={todayISO()} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.birthDate")}</label>
+              <input type="date" className="athlete-input" name="birthDate" value={values.birthDate} onChange={onChange} max={todayISO()} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.birthplace")}</label>
-              <input className="member-input" name="birthplace" value={values.birthplace} onChange={onChange} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.birthplace")}</label>
+              <input className="athlete-input" name="birthplace" value={values.birthplace} onChange={onChange} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.nationality")}</label>
-              <input className="member-input" name="nationality" value={values.nationality} onChange={onChange} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.nationality")}</label>
+              <input className="athlete-input" name="nationality" value={values.nationality} onChange={onChange} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">NIF</label>
-              <input className="member-input" name="nif" value={values.nif} onChange={onChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">NIF</label>
+              <input className="athlete-input" name="nif" value={values.nif} onChange={onChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">BI / CC / Passaporte</label>
-              <input className="member-input" name="bi" value={values.bi} onChange={onChange} pattern="[A-Za-z0-9]{8}" minLength={8} maxLength={8} title={t("athletes.validation.eightAlphanumeric")} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">BI / CC / Passaporte</label>
+              <input className="athlete-input" name="bi" value={values.bi} onChange={onChange} pattern="[A-Za-z0-9]{8}" minLength={8} maxLength={8} title={t("athletes.validation.eightAlphanumeric")} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.biValidityFull")}</label>
-              <input type="date" className="member-input" name="biExpirationDate" value={values.biExpirationDate} onChange={onChange} min={tomorrowISO()} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.biValidityFull")}</label>
+              <input type="date" className="athlete-input" name="biExpirationDate" value={values.biExpirationDate} onChange={onChange} min={tomorrowISO()} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.healthNumber")}</label>
-              <input className="member-input" name="numeroUtente" value={values.numeroUtente} onChange={onChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.healthNumber")}</label>
+              <input className="athlete-input" name="numeroUtente" value={values.numeroUtente} onChange={onChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">NISS</label>
-              <input className="member-input" name="niss" value={values.niss} onChange={onChange} pattern="\d{11}" minLength={11} maxLength={11} title={t("athletes.validation.elevenDigits")} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">NISS</label>
+              <input className="athlete-input" name="niss" value={values.niss} onChange={onChange} pattern="\d{11}" minLength={11} maxLength={11} title={t("athletes.validation.elevenDigits")} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">Email</label>
-              <input type="email" className="member-input" name="email" value={values.email} onChange={onChange} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">Email</label>
+              <input type="email" className="athlete-input" name="email" value={values.email} onChange={onChange} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.phone")}</label>
-              <input className="member-input" name="phone" value={values.phone} onChange={onChange} pattern="\d{7,15}" title={t("athletes.validation.sevenToFifteenDigits")} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.phone")}</label>
+              <input className="athlete-input" name="phone" value={values.phone} onChange={onChange} pattern="\d{7,15}" title={t("athletes.validation.sevenToFifteenDigits")} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.homePhone")}</label>
-              <input className="member-input" name="homePhone" value={values.homePhone} onChange={onChange} placeholder={t("athletes.common.optional")} />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.homePhone")}</label>
+              <input className="athlete-input" name="homePhone" value={values.homePhone} onChange={onChange} placeholder={t("athletes.common.optional")} />
             </div>
-            <div className="member-input-group md:col-span-2">
-              <label className="member-label">{t("athletes.fields.photoUrl")}</label>
-              <input className="member-input" name="photoUrl" value={values.photoUrl} onChange={onChange} placeholder="https://..." />
+            <div className="athlete-input-group md:col-span-2">
+              <label className="athlete-label">{t("athletes.fields.photoUrl")}</label>
+              <input className="athlete-input" name="photoUrl" value={values.photoUrl} onChange={onChange} placeholder="https://..." />
             </div>
           </div>
         </section>
@@ -161,17 +161,17 @@ export function AthleteForm({
             {t("athletes.detail.sections.address")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="member-input-group md:col-span-2">
-              <label className="member-label">{t("athletes.fields.address")}</label>
-              <input className="member-input" name="address" value={values.address} onChange={onChange} required />
+            <div className="athlete-input-group md:col-span-2">
+              <label className="athlete-label">{t("athletes.fields.address")}</label>
+              <input className="athlete-input" name="address" value={values.address} onChange={onChange} required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.postalCode")}</label>
-              <input className="member-input" name="postalCode" value={values.postalCode} onChange={onChange} pattern="\d{4}-\d{3}" title={t("athletes.validation.postalCode")} placeholder="1500-123" required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.postalCode")}</label>
+              <input className="athlete-input" name="postalCode" value={values.postalCode} onChange={onChange} pattern="\d{4}-\d{3}" title={t("athletes.validation.postalCode")} placeholder="1500-123" required />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.city")}</label>
-              <input className="member-input" name="city" value={values.city} onChange={onChange} required />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.city")}</label>
+              <input className="athlete-input" name="city" value={values.city} onChange={onChange} required />
             </div>
           </div>
         </section>
@@ -181,9 +181,9 @@ export function AthleteForm({
             {t("athletes.detail.sections.sportsData")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.category")}</label>
-              <select className="member-input" name="teamCategoryId" value={values.teamCategoryId} onChange={onChange} required>
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.category")}</label>
+              <select className="athlete-input" name="teamCategoryId" value={values.teamCategoryId} onChange={onChange} required>
                 <option value="" disabled>{t("athletes.common.select")}</option>
                 {categories.map((c) => (
                   <option key={c.teamId} value={c.teamId}>
@@ -192,19 +192,19 @@ export function AthleteForm({
                 ))}
               </select>
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.lastClub")}</label>
-              <input className="member-input" name="lastClub" value={values.lastClub} onChange={onChange} placeholder={t("athletes.register.placeholders.noPreviousClub")} />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.lastClub")}</label>
+              <input className="athlete-input" name="lastClub" value={values.lastClub} onChange={onChange} placeholder={t("athletes.register.placeholders.noPreviousClub")} />
             </div>
-            <div className="member-input-group md:col-span-2">
-              <label className="member-label">{t("athletes.fields.season")}</label>
-              <input className="member-input" name="season" value={values.season} onChange={onChange} placeholder={t("athletes.register.placeholders.season")} />
+            <div className="athlete-input-group md:col-span-2">
+              <label className="athlete-label">{t("athletes.fields.season")}</label>
+              <input className="athlete-input" name="season" value={values.season} onChange={onChange} placeholder={t("athletes.register.placeholders.season")} />
             </div>
           </div>
 
-          <label className="member-checkbox-group group">
+          <label className="athlete-checkbox-group group">
             <div className="mt-1">
-              <input type="checkbox" className="member-checkbox" name="hasFamilyInClub" checked={values.hasFamilyInClub} onChange={onChange} />
+              <input type="checkbox" className="athlete-checkbox" name="hasFamilyInClub" checked={values.hasFamilyInClub} onChange={onChange} />
             </div>
             <div>
               <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
@@ -222,17 +222,17 @@ export function AthleteForm({
             {t("athletes.detail.sections.schoolData")}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="member-input-group md:col-span-2">
-              <label className="member-label">{t("athletes.fields.school")}</label>
-              <input className="member-input" name="school" value={values.school} onChange={onChange} />
+            <div className="athlete-input-group md:col-span-2">
+              <label className="athlete-label">{t("athletes.fields.school")}</label>
+              <input className="athlete-input" name="school" value={values.school} onChange={onChange} />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.schoolYear")}</label>
-              <input className="member-input" name="schoolYear" value={values.schoolYear} onChange={onChange} placeholder={t("athletes.register.placeholders.schoolYear")} />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.schoolYear")}</label>
+              <input className="athlete-input" name="schoolYear" value={values.schoolYear} onChange={onChange} placeholder={t("athletes.register.placeholders.schoolYear")} />
             </div>
-            <div className="member-input-group">
-              <label className="member-label">{t("athletes.fields.schoolClass")}</label>
-              <input className="member-input" name="schoolClass" value={values.schoolClass} onChange={onChange} placeholder={t("athletes.register.placeholders.schoolClass")} />
+            <div className="athlete-input-group">
+              <label className="athlete-label">{t("athletes.fields.schoolClass")}</label>
+              <input className="athlete-input" name="schoolClass" value={values.schoolClass} onChange={onChange} placeholder={t("athletes.register.placeholders.schoolClass")} />
             </div>
           </div>
         </section>
@@ -278,9 +278,9 @@ export function AthleteForm({
             {t("athletes.register.sections.consents")}
           </h3>
 
-          <label className="member-checkbox-group group">
+          <label className="athlete-checkbox-group group">
             <div className="mt-1">
-              <input type="checkbox" className="member-checkbox" name="privacyAccepted" checked={values.privacyAccepted} onChange={onChange} />
+              <input type="checkbox" className="athlete-checkbox" name="privacyAccepted" checked={values.privacyAccepted} onChange={onChange} />
             </div>
             <div>
               <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
@@ -292,9 +292,9 @@ export function AthleteForm({
             </div>
           </label>
 
-          <label className="member-checkbox-group group">
+          <label className="athlete-checkbox-group group">
             <div className="mt-1">
-              <input type="checkbox" className="member-checkbox" name="comsAccepted" checked={values.comsAccepted} onChange={onChange} />
+              <input type="checkbox" className="athlete-checkbox" name="comsAccepted" checked={values.comsAccepted} onChange={onChange} />
             </div>
             <div>
               <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
@@ -306,9 +306,9 @@ export function AthleteForm({
             </div>
           </label>
 
-          <label className="member-checkbox-group group">
+          <label className="athlete-checkbox-group group">
             <div className="mt-1">
-              <input type="checkbox" className="member-checkbox" name="schoolCertificationAccepted" checked={values.schoolCertificationAccepted} onChange={onChange} />
+              <input type="checkbox" className="athlete-checkbox" name="schoolCertificationAccepted" checked={values.schoolCertificationAccepted} onChange={onChange} />
             </div>
             <div>
               <span className="text-sm font-bold text-text-primary group-hover:text-primary transition-colors">
@@ -322,7 +322,7 @@ export function AthleteForm({
         </section>
 
         <div className="pt-6 border-t border-border">
-          <button className="member-btn-primary" type="submit" disabled={isSubmitting}>
+          <button className="athlete-btn-primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? t("athletes.register.submitting") : submitLabel}
           </button>
         </div>
@@ -357,10 +357,10 @@ function GuardianSection({
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {fields.map((f) => (
-          <div key={f.name} className="member-input-group">
-            <label className="member-label">{f.label}</label>
+          <div key={f.name} className="athlete-input-group">
+            <label className="athlete-label">{f.label}</label>
             <input
-              className="member-input"
+              className="athlete-input"
               type={f.type ?? "text"}
               name={f.name}
               value={f.value}

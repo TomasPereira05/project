@@ -2,6 +2,7 @@ package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.athlete.AthleteStatus
 import pt.isel.jagoz.domain.athlete.Guardian
 import pt.isel.jagoz.repository.AthleteRepository
 
@@ -79,6 +80,102 @@ class JdbiAthleteRepository(
             .createQuery("SELECT COUNT(*) FROM jagoz.athlete")
             .mapTo(Long::class.java)
             .one()
+
+    override fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+        teamCategoryIds: List<Long>,
+        statuses: List<AthleteStatus>,
+    ): List<Athlete> {
+        val sql =
+            StringBuilder(
+                """
+                $SELECT_ATHLETE_BASE
+                JOIN jagoz.member m ON m.member_id = a.member_id
+                """.trimIndent(),
+            ).appendAthleteFilters(search, teamCategoryIds, statuses)
+                .append(" ORDER BY (m.status = 'PENDENTE') DESC, a.athlete_id DESC")
+                .append(" LIMIT :limit OFFSET :offset")
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .bindAthleteFilters(search, teamCategoryIds)
+            .mapTo(Athlete::class.java)
+            .list()
+    }
+
+    override fun countFiltered(
+        search: String?,
+        teamCategoryIds: List<Long>,
+        statuses: List<AthleteStatus>,
+    ): Long {
+        val sql =
+            StringBuilder(
+                """
+                SELECT COUNT(*) FROM jagoz.athlete a
+                JOIN jagoz.member m ON m.member_id = a.member_id
+                """.trimIndent(),
+            ).appendAthleteFilters(search, teamCategoryIds, statuses)
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bindAthleteFilters(search, teamCategoryIds)
+            .mapTo(Long::class.java)
+            .one()
+    }
+
+    /**
+     * Constrói o WHERE da listagem filtrada. Dentro de cada dimensão (escalão, estado) as
+     * opções combinam-se com OR; entre dimensões com AND. Os predicados de estado traduzem
+     * o estado visual derivado para condições sobre `member.status` e `athlete.active`.
+     */
+    private fun StringBuilder.appendAthleteFilters(
+        search: String?,
+        teamCategoryIds: List<Long>,
+        statuses: List<AthleteStatus>,
+    ): StringBuilder {
+        val clauses = mutableListOf<String>()
+        if (!search.isNullOrBlank()) {
+            clauses += "(m.member_number::text ILIKE :search OR m.complete_name ILIKE :search)"
+        }
+        if (teamCategoryIds.isNotEmpty()) {
+            clauses += "a.team_category_id IN (<teamCategoryIds>)"
+        }
+        if (statuses.isNotEmpty()) {
+            clauses += statuses.joinToString(" OR ", prefix = "(", postfix = ")") { it.toSqlPredicate() }
+        }
+        if (clauses.isNotEmpty()) {
+            append(" WHERE ")
+            append(clauses.joinToString(" AND "))
+        }
+        return this
+    }
+
+    private fun <T : org.jdbi.v3.core.statement.SqlStatement<T>> T.bindAthleteFilters(
+        search: String?,
+        teamCategoryIds: List<Long>,
+    ): T {
+        if (!search.isNullOrBlank()) {
+            bind("search", "%${search.trim()}%")
+        }
+        if (teamCategoryIds.isNotEmpty()) {
+            bindList("teamCategoryIds", teamCategoryIds)
+        }
+        return this
+    }
+
+    private fun AthleteStatus.toSqlPredicate(): String =
+        when (this) {
+            AthleteStatus.PENDENTE -> "m.status = 'PENDENTE'"
+            AthleteStatus.REJEITADO -> "m.status = 'REJEITADO'"
+            AthleteStatus.ATIVO -> "(m.status = 'ATIVO' AND a.active = TRUE)"
+            AthleteStatus.INATIVO -> "((m.status = 'ATIVO' AND a.active = FALSE) OR m.status = 'INATIVO')"
+        }
 
     override fun findByTeamCategory(
         teamCategoryId: Long,
