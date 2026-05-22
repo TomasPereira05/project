@@ -139,7 +139,8 @@
       "phone": "Phone",
       "submit": "Link Sponsor",
       "success": "Account linked to sponsor {{sponsorName}}.",
-      "error": "Could not link the account to the sponsor."
+      "error": "Could not link the account to the sponsor.",
+      "viewMine": "My Sponsorships"
     }
   },
   "members": {

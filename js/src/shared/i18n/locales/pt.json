@@ -139,7 +139,8 @@
       "phone": "Telemóvel",
       "submit": "Associar Patrocinador",
       "success": "Conta associada ao patrocinador {{sponsorName}}.",
-      "error": "Não foi possível associar a conta ao patrocinador."
+      "error": "Não foi possível associar a conta ao patrocinador.",
+      "viewMine": "Meus Patrocínios"
     }
   },
   "members": {
