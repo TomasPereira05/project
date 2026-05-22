@@ -1,6 +1,5 @@
 package pt.isel.jagoz.http.model.payment
 
-import kotlinx.datetime.LocalDate
 import pt.isel.jagoz.domain.payment.ChargeStatus
 import pt.isel.jagoz.service.MembershipFeeOption
 

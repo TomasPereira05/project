@@ -2,8 +2,8 @@ package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.repository.AthleteRepository
-import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
+import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.MemberRepository
