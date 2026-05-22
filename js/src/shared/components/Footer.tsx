@@ -1,7 +1,7 @@
-import { Waves } from "lucide-react";
+import { MapPin, Waves } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook, faInstagram } from "@fortawesome/free-brands-svg-icons";
-import {LOGO_SRC} from "../config/config";
+import { faFacebook, faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { LOGO_SRC, GOOGLE_MAPS_URL, TWITTER_URL, YOUTUBE_URL, FACEBOOK_URL, INSTAGRAM_URL, FPF_LOGO_SRC} from "../config/config";
 import { useTranslation } from "react-i18next";
 
 export default function Footer() {
@@ -10,7 +10,6 @@ export default function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        
         <div className="footer-grid">
           <div>
             <div className="footer-logo-row">
@@ -23,9 +22,15 @@ export default function Footer() {
               </div>
             </div>
             <p className="footer-tagline">
-              <Waves className="w-4 h-4" style={{ color: '#00A3E0' }} />
+              <Waves className="w-4 h-4" style={{ color: "#00A3E0" }} />
               {t("footer.tagline")}
             </p>
+          </div>
+
+          <div>
+            <div className="footer-contact-list">
+              <img src={FPF_LOGO_SRC} alt="Logo" className="footer-contact-logo" />
+            </div>
           </div>
 
           <div>
@@ -40,29 +45,37 @@ export default function Footer() {
           <div>
             <h4 className="footer-heading">{t("footer.socials")}</h4>
             <div className="footer-socials">
-              <a href="https://www.facebook.com/gdueoficial" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Facebook">
+              <a href={FACEBOOK_URL} target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Facebook">
                 <FontAwesomeIcon icon={faFacebook} style={{ width: 18, height: 18 }} />
               </a>
-              <a href="https://www.instagram.com/academia.gduericeirense/" target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Instagram">
+              <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Instagram">
                 <FontAwesomeIcon icon={faInstagram} style={{ width: 18, height: 18 }} />
+              </a>
+              <a href={TWITTER_URL} target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="Twitter">
+                <FontAwesomeIcon icon={faTwitter} style={{ width: 18, height: 18 }} />
+              </a>
+              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="footer-social-link" aria-label="YouTube">
+                <FontAwesomeIcon icon={faYoutube} style={{ width: 18, height: 18 }} />
               </a>
             </div>
           </div>
 
           <div>
             <h4 className="footer-heading">{t("footer.location")}</h4>
-            <div className="footer-contact-list">
-              <p>Campo Henrique Tomás Frade</p>
-              <p>Urbanização da Camacha</p>
-              <p>2655-302 Ericeira</p>
-            </div>
+            <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="footer-location-link" aria-label="Google Maps">
+              <MapPin size={18} />
+              <span>
+                Campo Henrique Tomas Frade<br />
+                Urbanizacao da Camacha<br />
+                2655-302 Ericeira
+              </span>
+            </a>
           </div>
         </div>
 
         <div className="footer-bottom">
           <p>{t("footer.copyright")}</p>
         </div>
-
       </div>
     </footer>
   );
