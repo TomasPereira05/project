@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
 import { fetchMembers } from "../api";
-import type { Member } from "../types";
+import type { Member, MemberCategory } from "../types";
 
 export const MEMBERS_PAGE_SIZE = 8;
+const SEARCH_DEBOUNCE_MS = 500;
 
 export function useMembersList(role?: string, t?: TFunction<"translation", undefined>) {
   const [members, setMembers] = useState<Member[]>([]);
@@ -12,6 +13,18 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<MemberCategory | "">("");
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+      setPage(1);
+    }, SEARCH_DEBOUNCE_MS);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchTerm]);
 
   useEffect(() => {
     let ignore = false;
@@ -21,7 +34,10 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
       setErrorMessage("");
 
       try {
-        const response = await fetchMembers(page, MEMBERS_PAGE_SIZE);
+        const response = await fetchMembers(page, MEMBERS_PAGE_SIZE, {
+          search: debouncedSearchTerm,
+          category: categoryFilter,
+        });
 
         if (!ignore) {
           setMembers(response.items);
@@ -46,7 +62,7 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
     return () => {
       ignore = true;
     };
-  }, [page, role, t]);
+  }, [categoryFilter, debouncedSearchTerm, page, role, t]);
 
   const pendingMembers = useMemo(
     () => members.filter((member) => member.status === "PENDENTE"),
@@ -60,12 +76,21 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
   }, [page, totalPages]);
 
   return {
+    categoryFilter,
     errorMessage,
     isLoading,
     members,
     page,
     pendingMembers,
+    searchTerm,
+    setCategoryFilter: (category: MemberCategory | "") => {
+      setCategoryFilter(category);
+      setPage(1);
+    },
     setPage,
+    setSearchTerm: (search: string) => {
+      setSearchTerm(search);
+    },
     totalMembers,
     totalPages,
   };

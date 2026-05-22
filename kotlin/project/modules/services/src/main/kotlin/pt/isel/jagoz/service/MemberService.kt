@@ -30,10 +30,10 @@ class MemberService(
 
     /**
      * Creates a new member registration.
-     * Validates the member data and persists it with a generated member number.
+     * Validates the member data and persists it without consuming a member number until approval.
      *
-     * @param member the member data to register (memberId will be ignored, memberNumber will be generated)
-     * @return Either a [MemberError] if validation fails or the created [Member] with assigned ID and number
+     * @param member the member data to register (memberId and memberNumber will be ignored)
+     * @return Either a [MemberError] if validation fails or the created [Member] with assigned ID
      */
     fun createMember(member: Member): MemberResult {
         LOG.info("Creating new member registration for: ${member.email}")
@@ -46,12 +46,7 @@ class MemberService(
                 return@run validationResult
             }
 
-            // Generate member number
-            val memberNumber = transaction.memberRepository.nextMemberNumber()
-            LOG.debug("Generated member number: $memberNumber")
-
-            // Create member with generated number (ID will be assigned by DB)
-            val memberToSave = member.copy(memberNumber = memberNumber)
+            val memberToSave = member.copy(memberNumber = 0)
 
             // Save to repository
             val memberId = transaction.memberRepository.save(memberToSave)
@@ -62,7 +57,7 @@ class MemberService(
                 transaction.userRepository.update(user!!.copy(activeMemberId = savedMember.memberId))
             }
 
-            LOG.info("Successfully created member with ID: $memberId and number: $memberNumber")
+            LOG.info("Successfully created pending member with ID: $memberId")
             success(savedMember)
         }
     }
@@ -120,15 +115,24 @@ class MemberService(
     fun getMembersPage(
         page: Int,
         size: Int,
+        search: String? = null,
+        category: MemberCategory? = null,
     ): Page<Member> {
         LOG.debug("Retrieving members page $page with size $size")
 
         val request = pageRequest(page, size)
+        val normalizedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
         return transactionManager.run { transaction ->
             pageOf(
-                items = transaction.memberRepository.findPage(request.size, request.offset),
+                items =
+                    transaction.memberRepository.findPageFiltered(
+                        request.size,
+                        request.offset,
+                        normalizedSearch,
+                        category,
+                    ),
                 request = request,
-                total = transaction.memberRepository.countAll(),
+                total = transaction.memberRepository.countFiltered(normalizedSearch, category),
             )
         }
     }
@@ -168,11 +172,19 @@ class MemberService(
 
             val member = (memberResult as Either.Right).value
 
-            val result = memberDomain.approve(member, approvalDate)
+            val memberNumber =
+                if (member.memberNumber > 0) {
+                    member.memberNumber
+                } else {
+                    transaction.memberRepository.nextMemberNumber()
+                }
+            val memberForApproval = member.copy(memberNumber = memberNumber)
+
+            val result = memberDomain.approve(memberForApproval, approvalDate)
             if (result is Either.Right) {
                 val updatedMember = result.value
                 transaction.memberRepository.update(updatedMember)
-                LOG.info("Successfully approved member: ${updatedMember.completeName}")
+                LOG.info("Successfully approved member: ${updatedMember.completeName} with number ${updatedMember.memberNumber}")
                 success(updatedMember)
             } else {
                 LOG.warn("Failed to approve member: ${(result as Either.Left).value}")

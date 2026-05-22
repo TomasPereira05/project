@@ -220,7 +220,7 @@
       "title": "Create new member",
       "description": "Application form with the data needed for evaluation by the club.",
       "submit": "Submit request",
-      "success": "Request submitted successfully. Number #{{memberNumber}} was assigned.",
+      "success": "Request submitted successfully. The member number will be assigned on approval.",
       "errors": {
         "privacy": "You must accept the privacy consent before submitting.",
         "minimumQuota": "The minimum monthly fee is 1.50 EUR.",
@@ -244,12 +244,20 @@
       "description": "Manage club members. Approve or reject pending requests and check each member's status.",
       "newMember": "New Member",
       "loading": "Loading members...",
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Member number or name",
+        "category": "Category",
+        "allCategories": "All categories",
+        "empty": "There are no members for the selected filters."
+      },
       "errors": {
         "load": "Could not load the member list."
       },
       "pending": {
         "title": "Pending Requests",
         "empty": "There are no pending requests right now.",
+        "withoutNumber": "No no.",
         "registeredAt": "Registered on {{date}}",
         "evaluate": "Evaluate Request"
       },
@@ -262,6 +270,7 @@
     "detail": {
       "loading": "Loading member profile...",
       "memberNumber": "Member #{{memberNumber}}",
+      "pendingNumber": "Member number pending assignment",
       "memberSince": "Member since {{date}}",
       "editProfile": "Edit Profile",
       "actions": {

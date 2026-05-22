@@ -127,12 +127,11 @@ class AthleteService(
                     }
                 }
 
-            val memberNumber = tx.memberRepository.nextMemberNumber()
             val member =
                 Member(
                     memberId = 0,
                     userId = input.userId,
-                    memberNumber = memberNumber,
+                    memberNumber = 0,
                     completeName = input.completeName,
                     birthDate = input.birthDate,
                     birthplace = input.birthplace,
@@ -285,7 +284,14 @@ class AthleteService(
                 tx.memberRepository.findById(athlete.memberId)
                     ?: return@run failure(AthleteError.NotFound("memberId", athlete.memberId))
 
-            when (val res = memberDomain.approve(member, approvalDate)) {
+            val memberForApproval =
+                if (member.memberNumber > 0) {
+                    member
+                } else {
+                    member.copy(memberNumber = tx.memberRepository.nextMemberNumber())
+                }
+
+            when (val res = memberDomain.approve(memberForApproval, approvalDate)) {
                 is Either.Left -> return@run failure(memberErrorToAthleteError(res.value))
                 is Either.Right -> tx.memberRepository.update(res.value)
             }

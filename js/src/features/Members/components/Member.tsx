@@ -128,7 +128,9 @@ export default function MemberPage() {
                 <div className="member-profile-avatar">{getInitials(member.completeName)}</div>
                 <div className="member-profile-name-block">
                   <h1 className="member-profile-name">{member.completeName}</h1>
-                  <p className="member-profile-number">{t("members.detail.memberNumber", { memberNumber: member.memberNumber })}</p>
+                  <p className="member-profile-number">
+                    {member.memberNumber > 0 ? t("members.detail.memberNumber", { memberNumber: member.memberNumber }) : t("members.detail.pendingNumber")}
+                  </p>
                 </div>
               </div>
 

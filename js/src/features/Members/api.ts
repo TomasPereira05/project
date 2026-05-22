@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../shared/config/config";
-import type { CheckoutSession, Member, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
+import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
 
@@ -19,11 +19,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function fetchMembers(page = 1, size = 8) {
+export function fetchMembers(
+  page = 1,
+  size = 8,
+  filters: { search?: string; category?: MemberCategory | "" } = {},
+) {
   const search = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
+  if (filters.search?.trim()) {
+    search.set("search", filters.search.trim());
+  }
+  if (filters.category) {
+    search.set("category", filters.category);
+  }
   return request<PaginatedResponse<Member>>(`/members?${search.toString()}`);
 }
 

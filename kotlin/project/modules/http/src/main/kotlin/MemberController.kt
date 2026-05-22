@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.model.member.CategoryRequest
@@ -44,8 +45,10 @@ class MemberController(
     fun getAllMembers(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "8") size: Int,
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) category: MemberCategory?,
     ): ResponseEntity<Page<MemberOutput>> {
-        val members = memberService.getMembersPage(page, size)
+        val members = memberService.getMembersPage(page, size, search, category)
         return ResponseEntity.ok(
             Page(
                 items = members.items.map { it.tooutput() },

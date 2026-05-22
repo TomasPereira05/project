@@ -522,6 +522,23 @@
     @apply bg-white border border-border shadow-sm rounded-xl overflow-hidden mt-8 overflow-x-auto;
   }
 
+  .member-list-filters {
+    @apply grid grid-cols-1 gap-4 border-b border-border bg-gray-50/50 p-5 md:grid-cols-[1fr_220px];
+  }
+
+  .member-list-search,
+  .member-list-filter {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .member-list-search-control {
+    @apply flex h-10 items-center gap-2 rounded-md border border-border bg-white px-3 text-text-secondary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary;
+  }
+
+  .member-list-search-input {
+    @apply h-full flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-secondary;
+  }
+
   .member-table-scroll {
     @apply overflow-x-auto;
   }
@@ -540,6 +557,10 @@
 
   .member-table-body {
     @apply divide-y divide-border;
+  }
+
+  .member-table-empty {
+    @apply px-6 py-10 text-center text-sm font-medium text-text-secondary;
   }
 
   .member-th {

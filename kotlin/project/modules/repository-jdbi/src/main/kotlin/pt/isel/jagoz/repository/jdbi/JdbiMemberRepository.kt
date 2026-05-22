@@ -2,6 +2,7 @@ package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.repository.MemberRepository
 
 class JdbiMemberRepository(
@@ -71,6 +72,44 @@ class JdbiMemberRepository(
             .mapTo(Long::class.java)
             .one()
 
+    override fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+        category: MemberCategory?,
+    ): List<Member> {
+        val sql =
+            StringBuilder("SELECT * FROM jagoz.member")
+                .appendMemberFilters(search, category)
+                .append(" ORDER BY (status = 'PENDENTE') DESC, registration_date DESC, member_id DESC")
+                .append(" LIMIT :limit OFFSET :offset")
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .bindMemberFilters(search, category)
+            .mapTo(Member::class.java)
+            .list()
+    }
+
+    override fun countFiltered(
+        search: String?,
+        category: MemberCategory?,
+    ): Long {
+        val sql =
+            StringBuilder("SELECT COUNT(*) FROM jagoz.member")
+                .appendMemberFilters(search, category)
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bindMemberFilters(search, category)
+            .mapTo(Long::class.java)
+            .one()
+    }
+
     override fun findAllActive(): List<Member> =
         handle
             .createQuery("SELECT * FROM jagoz.member WHERE status = 'ATIVO' ORDER BY member_number ASC")
@@ -85,6 +124,37 @@ class JdbiMemberRepository(
                 .findOne()
                 .orElse(0)
         return (maxNumber ?: 0) + 1
+    }
+
+    private fun StringBuilder.appendMemberFilters(
+        search: String?,
+        category: MemberCategory?,
+    ): StringBuilder {
+        val clauses = mutableListOf<String>()
+        if (!search.isNullOrBlank()) {
+            clauses += "(member_number::text ILIKE :search OR complete_name ILIKE :search)"
+        }
+        if (category != null) {
+            clauses += "category = CAST(:category AS jagoz.member_category)"
+        }
+        if (clauses.isNotEmpty()) {
+            append(" WHERE ")
+            append(clauses.joinToString(" AND "))
+        }
+        return this
+    }
+
+    private fun <T : org.jdbi.v3.core.statement.SqlStatement<T>> T.bindMemberFilters(
+        search: String?,
+        category: MemberCategory?,
+    ): T {
+        if (!search.isNullOrBlank()) {
+            bind("search", "%${search.trim()}%")
+        }
+        if (category != null) {
+            bind("category", category.name)
+        }
+        return this
     }
 
     override fun save(member: Member): Long =
