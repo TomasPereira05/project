@@ -93,18 +93,19 @@ class SponsorshipController(
         @PathVariable sponsorshipId: Long,
         @RequestBody request: SponsorshipDetailUpdateRequest,
     ): ResponseEntity<*> =
-        sponsorshipService.updateSponsorshipDetails(
-            authenticatedUser = authenticatedUser,
-            sponsorshipId = sponsorshipId,
-            email = request.email,
-            phone = request.phone,
-            nif = request.nif,
-            price = request.price,
-            otherDetails = request.otherDetails,
-        ).handle(
-            onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
-        )
+        sponsorshipService
+            .updateSponsorshipDetails(
+                authenticatedUser = authenticatedUser,
+                sponsorshipId = sponsorshipId,
+                email = request.email,
+                phone = request.phone,
+                nif = request.nif,
+                price = request.price,
+                otherDetails = request.otherDetails,
+            ).handle(
+                onFailure = { handleSponsorError(it) },
+                onSuccess = { ResponseEntity.ok(it) },
+            )
 
     @PutMapping(Uris.Sponsorships.APPROVE)
     fun approveSponsorship(
