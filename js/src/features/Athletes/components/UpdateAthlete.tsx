@@ -11,7 +11,7 @@ import {
   type AthleteUpdateRequest,
   type TeamCatalogCategory,
 } from "..";
-import { HERO_IMG_SRC } from "../../../shared/config/config";
+import AthletePageBackground from "./AthletePageBackground";
 
 type FormState = {
   teamCategoryId: number;
@@ -143,16 +143,12 @@ export default function UpdateAthlete() {
   if (isLoading || !athlete || !values) {
     return (
       <>
-        <main className="member-form-page">
-          <div
-            className="member-form-bg"
-            style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
-          />
-          <div className="member-form-overlay" />
-          <div className="member-form-container">
-            <div className="member-card-padded">
-              <div className="member-form-loading-container">
-                <div className="member-form-loading-spinner"></div>
+        <main className="athlete-form-page">
+          <AthletePageBackground />
+          <div className="athlete-form-container">
+            <div className="athlete-card-padded">
+              <div className="athlete-form-loading-container">
+                <div className="athlete-form-loading-spinner"></div>
                 <p>{t("athletes.update.loading")}</p>
               </div>
             </div>
@@ -164,39 +160,35 @@ export default function UpdateAthlete() {
 
   return (
     <>
-      <main className="member-form-page">
-        <div
-          className="member-form-bg"
-          style={{ backgroundImage: `url(${HERO_IMG_SRC})` }}
-        />
-        <div className="member-form-overlay" />
+      <main className="athlete-form-page">
+        <AthletePageBackground />
 
-        <div className="member-form-container">
-          <div className="member-card-padded">
-            <div className="member-card-header">
+        <div className="athlete-form-container">
+          <div className="athlete-card-padded">
+            <div className="athlete-card-header">
               <div>
-                <h2 className="member-title">{t("athletes.update.title")}</h2>
-                <p className="member-desc">
+                <h2 className="athlete-title">{t("athletes.update.title")}</h2>
+                <p className="athlete-desc">
                   {t("athletes.update.description", { name: athlete.member.completeName, memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}
                 </p>
               </div>
-              <Link className="member-btn-back" to={`/athletes/${athlete.athleteId}`}>
+              <Link className="athlete-btn-back" to={`/athletes/${athlete.athleteId}`}>
                 <ArrowLeft size={18} />
                 {t("athletes.update.backToProfile")}
               </Link>
             </div>
 
             {errorMessage && (
-              <div className="member-alert-error">
-                <ShieldAlert size={20} className="member-alert-icon-error" />
-                <p className="member-alert-text">{errorMessage}</p>
+              <div className="athlete-alert-error">
+                <ShieldAlert size={20} className="athlete-alert-icon-error" />
+                <p className="athlete-alert-text">{errorMessage}</p>
               </div>
             )}
 
             {successMessage && (
-              <div className="member-alert-success">
-                <CheckCircle2 size={20} className="member-alert-icon-success" />
-                <p className="member-alert-text">{successMessage}</p>
+              <div className="athlete-alert-success">
+                <CheckCircle2 size={20} className="athlete-alert-icon-success" />
+                <p className="athlete-alert-text">{successMessage}</p>
               </div>
             )}
 
@@ -205,10 +197,10 @@ export default function UpdateAthlete() {
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
                   {t("athletes.detail.sections.sportsData")}
                 </h3>
-                <div className="member-form-grid">
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.category")}</label>
-                    <select className="member-input" name="teamCategoryId" value={values.teamCategoryId} onChange={handleChange}>
+                <div className="athlete-form-grid">
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.category")}</label>
+                    <select className="athlete-input" name="teamCategoryId" value={values.teamCategoryId} onChange={handleChange}>
                       {categories.map((c) => (
                         <option key={c.teamId} value={c.teamId}>
                           {c.label}
@@ -216,25 +208,25 @@ export default function UpdateAthlete() {
                       ))}
                     </select>
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.number")}</label>
-                    <input className="member-input" type="number" name="jerseyNumber" value={values.jerseyNumber} onChange={handleChange} placeholder={t("athletes.update.placeholders.number")} />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.number")}</label>
+                    <input className="athlete-input" type="number" name="jerseyNumber" value={values.jerseyNumber} onChange={handleChange} placeholder={t("athletes.update.placeholders.number")} />
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.position")}</label>
-                    <input className="member-input" name="position" value={values.position} onChange={handleChange} placeholder={t("athletes.update.placeholders.position")} />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.position")}</label>
+                    <input className="athlete-input" name="position" value={values.position} onChange={handleChange} placeholder={t("athletes.update.placeholders.position")} />
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.photoUrl")}</label>
-                    <input className="member-input" name="photoUrl" value={values.photoUrl} onChange={handleChange} placeholder="https://..." />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.photoUrl")}</label>
+                    <input className="athlete-input" name="photoUrl" value={values.photoUrl} onChange={handleChange} placeholder="https://..." />
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.lastClub")}</label>
-                    <input className="member-input" name="lastClub" value={values.lastClub} onChange={handleChange} placeholder={t("athletes.update.placeholders.previousClub")} />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.lastClub")}</label>
+                    <input className="athlete-input" name="lastClub" value={values.lastClub} onChange={handleChange} placeholder={t("athletes.update.placeholders.previousClub")} />
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.season")}</label>
-                    <input className="member-input" name="season" value={values.season} onChange={handleChange} placeholder={t("athletes.register.placeholders.season")} />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.season")}</label>
+                    <input className="athlete-input" name="season" value={values.season} onChange={handleChange} placeholder={t("athletes.register.placeholders.season")} />
                   </div>
                 </div>
               </section>
@@ -243,33 +235,33 @@ export default function UpdateAthlete() {
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
                   {t("athletes.detail.sections.schoolData")}
                 </h3>
-                <div className="member-form-grid">
-                  <div className="member-input-group member-input-group-span">
-                    <label className="member-label">{t("athletes.fields.school")}</label>
-                    <input className="member-input" name="school" value={values.school} onChange={handleChange} placeholder={t("athletes.update.placeholders.school")} />
+                <div className="athlete-form-grid">
+                  <div className="athlete-input-group athlete-input-group-span">
+                    <label className="athlete-label">{t("athletes.fields.school")}</label>
+                    <input className="athlete-input" name="school" value={values.school} onChange={handleChange} placeholder={t("athletes.update.placeholders.school")} />
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.schoolYear")}</label>
-                    <input className="member-input" name="schoolYear" value={values.schoolYear} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolYear")} />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.schoolYear")}</label>
+                    <input className="athlete-input" name="schoolYear" value={values.schoolYear} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolYear")} />
                   </div>
-                  <div className="member-input-group">
-                    <label className="member-label">{t("athletes.fields.schoolClass")}</label>
-                    <input className="member-input" name="schoolClass" value={values.schoolClass} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolClass")} />
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.schoolClass")}</label>
+                    <input className="athlete-input" name="schoolClass" value={values.schoolClass} onChange={handleChange} placeholder={t("athletes.register.placeholders.schoolClass")} />
                   </div>
                 </div>
 
-                <label className="member-checkbox-group group">
-                  <div className="member-checkbox-offset">
-                    <input type="checkbox" className="member-checkbox" name="hasFamilyInClub" checked={values.hasFamilyInClub} onChange={handleChange} />
+                <label className="athlete-checkbox-group group">
+                  <div className="athlete-checkbox-offset">
+                    <input type="checkbox" className="athlete-checkbox" name="hasFamilyInClub" checked={values.hasFamilyInClub} onChange={handleChange} />
                   </div>
                   <div>
-                    <span className="member-checkbox-title">{t("athletes.register.family.title")}</span>
+                    <span className="athlete-checkbox-title">{t("athletes.register.family.title")}</span>
                   </div>
                 </label>
               </section>
 
-              <div className="member-form-actions">
-                <button className="member-btn-primary" type="submit" disabled={isSubmitting}>
+              <div className="athlete-form-actions">
+                <button className="athlete-btn-primary" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? t("athletes.common.saving") : t("athletes.update.submit")}
                 </button>
               </div>

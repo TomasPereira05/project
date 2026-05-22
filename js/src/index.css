@@ -1,7 +1,6 @@
 @import "./shared/styles/Header.css";
 @import "./shared/styles/Footer.css";
 @import "./shared/styles/LabeledField.css";
-@import "./shared/styles/PageBackground.css";
 @import "./features/home/styles/Hero.css";
 @import "./features/home/styles/NewsGrid.css";
 @import "./features/home/styles/StandingTable.css";

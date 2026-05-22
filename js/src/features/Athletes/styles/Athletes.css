@@ -1,0 +1,723 @@
+@layer components {
+  /*
+   * Estilos próprios da feature Atletas. A feature é autónoma: todos os componentes
+   * do package usam classes `athlete-*` (migradas de Members.css) / `athlete-cfg-*` e
+   * `athlete-tcfg-*` (migradas de Sponsors.css, página de Definições), sem depender dos
+   * stylesheets de outras features. Esta primeira secção cobre a barra de pesquisa e o
+   * painel de filtros da listagem.
+   */
+
+  /* Barra de pesquisa + filtros */
+  .athlete-list-filters {
+    @apply grid grid-cols-1 gap-4 border-b border-border bg-gray-50/50 p-5 md:grid-cols-[1fr_220px];
+  }
+
+  .athlete-list-search {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .athlete-filter-label {
+    @apply text-xs font-semibold uppercase tracking-wider text-text-secondary;
+  }
+
+  .athlete-list-search-control {
+    @apply flex h-10 items-center gap-2 rounded-md border border-border bg-white px-3 text-text-secondary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary;
+  }
+
+  .athlete-list-search-input {
+    @apply h-full flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-secondary;
+  }
+
+  /* Coluna do botão "Filtros" — alinha o botão ao fundo, à altura do input de pesquisa */
+  .athlete-filter-col {
+    @apply flex flex-col justify-end;
+  }
+
+  .athlete-filter-dropdown {
+    @apply relative;
+  }
+
+  .athlete-filter-toggle {
+    @apply flex h-10 w-full items-center justify-between gap-2 rounded-md border border-border bg-white px-3 text-sm font-medium text-text-primary transition-colors hover:border-primary;
+  }
+
+  .athlete-filter-toggle-label {
+    @apply flex items-center gap-2;
+  }
+
+  .athlete-filter-badge {
+    @apply inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-primary px-1.5 text-xs font-semibold text-white;
+  }
+
+  .athlete-filter-chevron {
+    @apply text-text-secondary transition-transform;
+  }
+
+  .athlete-filter-chevron-open {
+    @apply rotate-180;
+  }
+
+  /* Painel aberto */
+  .athlete-filter-panel {
+    @apply absolute right-0 top-full z-30 mt-2 max-h-80 w-64 overflow-y-auto rounded-lg border border-border bg-white p-3 shadow-lg;
+  }
+
+  .athlete-filter-section {
+    @apply space-y-1;
+  }
+
+  .athlete-filter-section-title {
+    @apply mb-1.5 text-xs font-semibold uppercase tracking-wider text-text-secondary;
+  }
+
+  .athlete-filter-option {
+    @apply flex cursor-pointer items-center gap-2 py-1 text-sm text-text-primary;
+  }
+
+  .athlete-filter-checkbox {
+    @apply h-4 w-4 rounded border-border text-primary focus:ring-1 focus:ring-primary;
+  }
+
+  .athlete-filter-empty {
+    @apply py-1 text-xs italic text-text-secondary;
+  }
+
+  .athlete-filter-divider {
+    @apply my-3 border-t border-border;
+  }
+
+  .athlete-filter-clear {
+    @apply mt-3 w-full rounded-md border border-border py-1.5 text-center text-sm font-medium text-primary transition-colors hover:bg-muted;
+  }
+}
+
+@layer components {
+  /*
+   * Estilos migrados de Members.css (member-* → athlete-*) para tornar a feature
+   * Atletas autónoma — sem depender do Members.css. Cobre a página de listagem
+   * (Gestão de Atletas). O fundo hero usa AthletePageBackground.
+   */
+
+  /* Layout */
+  .athlete-page {
+    @apply relative min-h-screen overflow-hidden bg-background py-10;
+  }
+
+  .athlete-container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Fundo hero (componente AthletePageBackground) */
+  .athlete-page-bg {
+    @apply absolute inset-0 bg-cover bg-center bg-no-repeat z-0;
+  }
+
+  .athlete-page-overlay {
+    @apply absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10;
+  }
+
+  /* Cabeçalho da página */
+  .athlete-header-container {
+    @apply flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8;
+  }
+
+  .athlete-kicker {
+    @apply flex items-center gap-2 text-primary font-semibold tracking-wider text-sm mb-1 uppercase;
+  }
+
+  .athlete-page-title {
+    @apply font-heading text-3xl text-text-primary uppercase tracking-tight;
+  }
+
+  .athlete-page-desc {
+    @apply text-text-secondary mt-1;
+  }
+
+  .athlete-header-actions {
+    @apply flex gap-3;
+  }
+
+  .athlete-btn-primary {
+    @apply w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-12 px-8 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md disabled:opacity-70 disabled:cursor-not-allowed;
+  }
+
+  .athlete-primary-link-compact {
+    @apply athlete-btn-primary shadow-sm h-10 px-5;
+  }
+
+  /* Alertas */
+  .athlete-alert-error {
+    @apply mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md flex items-center gap-3 text-sm;
+  }
+
+  .athlete-alert-icon-error {
+    @apply text-red-500;
+  }
+
+  .athlete-alert-text {
+    @apply text-sm font-medium;
+  }
+
+  /* Cartão de pendentes */
+  .athlete-pending-card {
+    @apply mb-8 bg-white border border-border shadow-sm rounded-lg overflow-hidden;
+  }
+
+  .athlete-pending-toggle {
+    @apply w-full flex items-center justify-between p-5 hover:bg-muted/50 transition-colors focus:outline-none;
+  }
+
+  .athlete-pending-summary {
+    @apply flex items-center gap-3;
+  }
+
+  .athlete-pending-icon {
+    @apply p-2 bg-yellow-100 text-yellow-700 rounded-full;
+  }
+
+  .athlete-pending-title {
+    @apply font-semibold text-text-primary text-lg;
+  }
+
+  .athlete-pending-count {
+    @apply bg-yellow-500 text-white text-xs font-bold px-2 py-0.5 rounded-full;
+  }
+
+  .athlete-pending-chevron {
+    @apply text-text-secondary transition-transform duration-300;
+  }
+
+  .athlete-pending-chevron-open {
+    @apply rotate-180;
+  }
+
+  .athlete-pending-panel {
+    @apply border-t border-border bg-gray-50/50 p-5;
+  }
+
+  .athlete-pending-empty {
+    @apply text-text-secondary text-sm italic;
+  }
+
+  .athlete-pending-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .athlete-pending-item {
+    @apply bg-white border border-border p-4 rounded-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm;
+  }
+
+  .athlete-pending-item-head {
+    @apply flex items-center gap-2 mb-1;
+  }
+
+  .athlete-pending-number {
+    @apply font-bold text-primary;
+  }
+
+  .athlete-pending-meta {
+    @apply text-xs text-text-secondary flex items-center gap-2;
+  }
+
+  .athlete-btn-evaluate {
+    @apply inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide h-8 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors rounded-md;
+  }
+
+  /* Tabela */
+  .athlete-table-wrapper {
+    @apply bg-white border border-border shadow-sm rounded-xl overflow-hidden mt-8 overflow-x-auto;
+  }
+
+  .athlete-loading-container {
+    @apply relative z-20 flex flex-col items-center gap-3 text-text-secondary;
+  }
+
+  .athlete-table-loading {
+    @apply athlete-loading-container py-10;
+  }
+
+  .athlete-loading-spinner {
+    @apply w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin;
+  }
+
+  .athlete-loading-text {
+    @apply font-medium animate-pulse;
+  }
+
+  .athlete-table-scroll {
+    @apply overflow-x-auto;
+  }
+
+  .athlete-table {
+    @apply w-full text-left border-collapse;
+  }
+
+  .athlete-table-wide {
+    @apply athlete-table min-w-[800px];
+  }
+
+  .athlete-table-head {
+    @apply bg-muted text-text-secondary uppercase text-xs font-semibold tracking-wider border-b border-border;
+  }
+
+  .athlete-table-body {
+    @apply divide-y divide-border;
+  }
+
+  .athlete-table-empty {
+    @apply px-6 py-10 text-center text-sm font-medium text-text-secondary;
+  }
+
+  .athlete-th {
+    @apply px-6 py-4 border-b border-border bg-gray-50/50 text-xs font-semibold text-text-secondary uppercase tracking-wider;
+  }
+
+  .athlete-th-right {
+    @apply athlete-th text-right;
+  }
+
+  .athlete-tr {
+    @apply hover:bg-muted/30 transition-colors border-b border-border last:border-0;
+  }
+
+  .athlete-tr-interactive {
+    @apply athlete-tr;
+  }
+
+  .athlete-tr-interactive:hover .athlete-row-actions {
+    @apply opacity-100;
+  }
+
+  .athlete-td {
+    @apply px-6 py-4 text-sm text-text-primary whitespace-nowrap;
+  }
+
+  .athlete-text-right {
+    @apply text-right;
+  }
+
+  .athlete-td-number {
+    @apply athlete-td athlete-pending-number;
+  }
+
+  .athlete-td-right {
+    @apply athlete-td athlete-text-right;
+  }
+
+  .athlete-cell-primary {
+    @apply text-text-primary;
+  }
+
+  .athlete-cell-email {
+    @apply text-xs text-text-secondary truncate max-w-[200px];
+  }
+
+  .athlete-helper-text {
+    @apply text-xs text-text-secondary;
+  }
+
+  .athlete-category-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200;
+  }
+
+  .athlete-status-badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border;
+  }
+
+  .athlete-status-active {
+    @apply bg-green-100 text-green-800 border-green-200;
+  }
+
+  .athlete-status-pending {
+    @apply bg-yellow-100 text-yellow-800 border-yellow-200;
+  }
+
+  .athlete-status-inactive {
+    @apply bg-gray-100 text-gray-800 border-gray-200;
+  }
+
+  .athlete-status-rejected {
+    @apply bg-red-100 text-red-800 border-red-200;
+  }
+
+  .athlete-row-actions {
+    @apply flex items-center justify-end gap-2 opacity-0 transition-opacity;
+  }
+
+  .athlete-btn-table-edit {
+    @apply text-xs font-medium text-text-secondary hover:text-primary transition-colors px-2 py-1;
+  }
+
+  .athlete-action-btn {
+    @apply text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors px-3 py-1.5 rounded;
+  }
+
+  /* Paginação */
+  .athlete-pagination {
+    @apply flex items-center justify-between px-6 py-4 border-t border-border bg-gray-50/50;
+  }
+
+  .athlete-pagination-text {
+    @apply text-sm text-text-secondary;
+  }
+
+  .athlete-pagination-strong {
+    @apply font-semibold text-text-primary;
+  }
+
+  .athlete-pagination-controls {
+    @apply flex items-center gap-2;
+  }
+
+  .athlete-pagination-current {
+    @apply text-sm font-medium text-text-primary px-2;
+  }
+
+  .athlete-icon-btn {
+    @apply inline-flex items-center justify-center p-2 rounded-md border border-border bg-white text-text-secondary hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+}
+
+@layer components {
+  /*
+   * Estilos migrados de Members.css para a ficha do atleta, formulários (inscrição/
+   * atualização) e listagem pública por escalão. Completam a autonomia da feature.
+   */
+
+  /* Layout de formulário / detalhe */
+  .athlete-form-page {
+    @apply relative min-h-screen flex flex-col py-10;
+  }
+
+  .athlete-form-container {
+    @apply relative z-20 flex-1 flex justify-center items-center w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .athlete-detail-container {
+    @apply relative z-20 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Cartões / secções */
+  .athlete-card {
+    @apply bg-white border border-border shadow-sm rounded-xl overflow-hidden;
+  }
+
+  .athlete-card-padded {
+    @apply athlete-card p-6 sm:p-10;
+  }
+
+  .athlete-card-header {
+    @apply flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-6 border-b border-border;
+  }
+
+  .athlete-topbar {
+    @apply flex items-center justify-between mb-6;
+  }
+
+  .athlete-section-card {
+    @apply athlete-card mb-8;
+  }
+
+  .athlete-section-header {
+    @apply px-6 py-5 border-b border-border bg-gray-50/50 flex items-center gap-3;
+  }
+
+  .athlete-section-title {
+    @apply font-heading text-xl text-text-primary uppercase tracking-tight;
+  }
+
+  .athlete-section-body {
+    @apply p-6;
+  }
+
+  /* Tipografia */
+  .athlete-title {
+    @apply font-heading text-2xl text-text-primary uppercase tracking-tight;
+  }
+
+  .athlete-desc {
+    @apply text-text-secondary mt-1 text-sm;
+  }
+
+  .athlete-field-title {
+    @apply text-xs font-semibold text-text-secondary uppercase tracking-wider;
+  }
+
+  .athlete-field-title-spaced {
+    @apply athlete-field-title mb-1;
+  }
+
+  .athlete-field-value {
+    @apply font-medium text-text-primary mt-1;
+  }
+
+  /* Elementos de formulário */
+  .athlete-input-group {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .athlete-input-group-span {
+    @apply athlete-input-group md:col-span-2;
+  }
+
+  .athlete-label {
+    @apply text-sm font-semibold text-text-primary uppercase tracking-wider;
+  }
+
+  .athlete-input {
+    @apply h-10 px-3 bg-muted/50 border border-border rounded-md text-sm text-text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .athlete-form-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+
+  .athlete-form-actions {
+    @apply pt-6 border-t border-border;
+  }
+
+  /* Checkboxes */
+  .athlete-checkbox-group {
+    @apply flex items-start gap-3 cursor-pointer;
+  }
+
+  .athlete-checkbox-row {
+    @apply athlete-checkbox-group;
+  }
+
+  .athlete-checkbox {
+    @apply w-4 h-4 text-primary bg-muted border-border rounded focus:ring-primary focus:ring-2;
+  }
+
+  .athlete-checkbox-offset {
+    @apply mt-1;
+  }
+
+  .athlete-checkbox-title {
+    @apply text-sm font-bold text-text-primary transition-colors;
+  }
+
+  .athlete-checkbox-row:hover .athlete-checkbox-title {
+    @apply text-primary;
+  }
+
+  /* Botões */
+  .athlete-btn-primary-sm {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md;
+  }
+
+  .athlete-btn-approve {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-green-600 text-white hover:bg-green-700 transition-colors rounded-md;
+  }
+
+  .athlete-btn-reject {
+    @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-red-600 text-white hover:bg-red-700 transition-colors rounded-md;
+  }
+
+  .athlete-btn-back {
+    @apply text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide;
+  }
+
+  /* Alertas (sucesso) */
+  .athlete-alert-success {
+    @apply mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3 text-sm;
+  }
+
+  .athlete-alert-icon-success {
+    @apply text-green-500;
+  }
+
+  /* Loading de formulário */
+  .athlete-form-loading-container {
+    @apply flex flex-col items-center justify-center py-20 text-white gap-3;
+  }
+
+  .athlete-form-loading-spinner {
+    @apply w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin;
+  }
+
+  /* Grelha admin / privacidade */
+  .athlete-admin-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10;
+  }
+
+  .athlete-privacy-box {
+    @apply p-3 rounded-md border border-border bg-muted/30;
+  }
+
+  .athlete-privacy-head {
+    @apply flex items-center justify-between gap-3 mb-2;
+  }
+
+  .athlete-privacy-title {
+    @apply text-sm font-bold text-text-primary;
+  }
+
+  /* Perfil */
+  .athlete-profile-cover {
+    @apply bg-gradient-to-r from-[#001D4A] to-primary h-32;
+  }
+
+  .athlete-profile-body {
+    @apply px-6 sm:px-10 pb-8 relative;
+  }
+
+  .athlete-profile-header {
+    @apply flex flex-col sm:flex-row justify-between sm:items-end gap-6 -mt-12 sm:-mt-16 mb-6;
+  }
+
+  .athlete-profile-info {
+    @apply flex items-end gap-5;
+  }
+
+  .athlete-profile-avatar {
+    @apply w-24 h-24 sm:w-32 sm:h-32 bg-white rounded-full flex items-center justify-center text-3xl sm:text-4xl font-heading text-primary border-4 border-white shadow-md;
+  }
+
+  .athlete-profile-name {
+    @apply font-heading text-2xl sm:text-3xl text-text-primary uppercase tracking-tight;
+  }
+
+  .athlete-profile-number {
+    @apply text-text-secondary font-medium mt-1;
+  }
+
+  .athlete-profile-name-block {
+    @apply pb-2;
+  }
+
+  .athlete-profile-badges {
+    @apply flex flex-wrap gap-2 pb-2;
+  }
+
+  .athlete-profile-actions {
+    @apply mt-8 flex flex-wrap gap-3;
+  }
+}
+
+@layer components {
+  /*
+   * Migrado de Sponsors.css para a página de Definições (TeamSettings):
+   *   sponsor-*        → athlete-cfg-*
+   *   team-settings-*  → athlete-tcfg-*
+   * Os athlete-cfg-* vêm antes dos athlete-tcfg-* para o override do grid do
+   * formulário inline (athlete-tcfg-inline-form) prevalecer, como no original.
+   */
+
+  .athlete-cfg-page {
+    @apply relative min-h-screen overflow-hidden bg-background py-10;
+  }
+
+  .athlete-cfg-shell {
+    @apply relative z-20 mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 sm:px-6 lg:px-8;
+  }
+
+  .athlete-cfg-page-header {
+    @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .athlete-cfg-section-eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-secondary;
+  }
+
+  .athlete-cfg-panel-title {
+    @apply font-heading text-3xl uppercase tracking-tight text-text-primary;
+  }
+
+  .athlete-cfg-muted-text {
+    @apply text-sm text-text-secondary;
+  }
+
+  .athlete-cfg-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover;
+  }
+
+  .athlete-cfg-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-primary hover:text-primary;
+  }
+
+  .athlete-cfg-button-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-text-secondary transition hover:bg-muted hover:text-text-primary;
+  }
+
+  .athlete-cfg-feedback {
+    @apply flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-medium shadow-soft;
+  }
+
+  .athlete-cfg-feedback-error {
+    @apply border-red-200 bg-red-50 text-red-700;
+  }
+
+  .athlete-cfg-feedback-success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .athlete-cfg-inline-form {
+    @apply mt-4 grid gap-3 md:grid-cols-[0.8fr_1.4fr_auto];
+  }
+
+  .athlete-cfg-input {
+    @apply h-11 rounded-xl border border-border bg-muted/40 px-3 text-sm font-normal text-text-primary outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10;
+  }
+
+  .athlete-cfg-panel {
+    @apply rounded-[24px] border border-border bg-white p-6 shadow-soft;
+  }
+
+  .athlete-cfg-panel-header {
+    @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .athlete-cfg-empty-card {
+    @apply rounded-2xl border border-dashed border-border bg-muted/40 px-5 py-6 text-sm text-text-secondary;
+  }
+
+  .athlete-cfg-catalog-list {
+    @apply mt-4 flex flex-col gap-3;
+  }
+
+  .athlete-cfg-catalog-row {
+    @apply flex flex-col gap-3 rounded-2xl border border-border bg-white p-4 md:flex-row md:items-center;
+  }
+
+  .athlete-cfg-catalog-row.is-muted {
+    @apply bg-slate-50 opacity-75;
+  }
+
+  .athlete-cfg-catalog-reorder {
+    @apply flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-text-secondary;
+  }
+
+  .athlete-cfg-catalog-fields {
+    @apply grid flex-1 gap-3 md:grid-cols-2;
+  }
+
+  .athlete-cfg-catalog-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  /* team-settings-* → athlete-tcfg-* (override do grid e linha arrastável) */
+  .athlete-tcfg-management-grid {
+    @apply grid items-start gap-5 xl:auto-rows-max;
+  }
+
+  .athlete-tcfg-inline-form {
+    @apply md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.3fr)_minmax(0,1fr)_auto];
+  }
+
+  .athlete-tcfg-row-fields {
+    @apply md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .athlete-tcfg-draggable-row {
+    @apply cursor-grab transition;
+  }
+
+  .athlete-tcfg-draggable-row:active {
+    @apply cursor-grabbing;
+  }
+
+  .athlete-tcfg-draggable-row.is-dragging {
+    @apply border-primary bg-primary/5 opacity-80;
+  }
+}
