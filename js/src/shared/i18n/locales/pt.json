@@ -220,7 +220,7 @@
       "title": "Criar novo sócio",
       "description": "Formulário de candidatura com os dados necessários para avaliação por parte do clube.",
       "submit": "Submeter pedido",
-      "success": "Pedido submetido com sucesso. Foi atribuído o número #{{memberNumber}}.",
+      "success": "Pedido submetido com sucesso. O número de sócio será atribuído na aprovação.",
       "errors": {
         "privacy": "Tem de aceitar o consentimento de privacidade para submeter.",
         "minimumQuota": "A quota mensal mínima é 1,50 EUR.",
@@ -244,12 +244,20 @@
       "description": "Gere os sócios do clube. Aprova ou rejeita pedidos pendentes e consulta o estado de cada membro.",
       "newMember": "Novo Sócio",
       "loading": "A carregar sócios...",
+      "filters": {
+        "search": "Pesquisar",
+        "searchPlaceholder": "Nº de sócio ou nome",
+        "category": "Categoria",
+        "allCategories": "Todas as categorias",
+        "empty": "Não existem sócios para os filtros selecionados."
+      },
       "errors": {
         "load": "Não foi possível carregar a lista de sócios."
       },
       "pending": {
         "title": "Pedidos Pendentes",
         "empty": "Sem pedidos pendentes neste momento.",
+        "withoutNumber": "Sem nº",
         "registeredAt": "Registo em {{date}}",
         "evaluate": "Avaliar Pedido"
       },
@@ -262,6 +270,7 @@
     "detail": {
       "loading": "A carregar ficha do sócio...",
       "memberNumber": "Sócio #{{memberNumber}}",
+      "pendingNumber": "Número de sócio por atribuir",
       "memberSince": "Membro desde {{date}}",
       "editProfile": "Editar Perfil",
       "actions": {
@@ -293,6 +302,9 @@
         "debtTotal": "Total em Dívida",
         "paymentHistory": "Histórico de Pagamentos",
         "emptyHistory": "Este sócio não tem quotas para apresentar no histórico.",
+        "emptyFilteredHistory": "Não existem pagamentos para a época selecionada.",
+        "filterSeason": "Filtrar por época",
+        "allSeasons": "Todas as épocas",
         "quotaOf": "Quota de {{month}}",
         "paymentMeta": "Época {{season}} • Vencimento {{dueDate}}",
         "paidAt": "Pago em {{date}}",
@@ -302,7 +314,25 @@
         "selectedTotal": "Total selecionado",
         "paySelected": "Pagar selecionadas",
         "paymentStarting": "A preparar pagamento...",
-        "paymentError": "Não foi possível iniciar o pagamento das quotas."
+        "paymentError": "Não foi possível iniciar o pagamento das quotas.",
+        "selectOverdue": "Selecionar atrasadas",
+        "selectSeason": "Selecionar {{season}}",
+        "select": "Selecionar",
+        "selectFee": "Selecionar quota de {{month}} da época {{season}}",
+        "month": "Mês",
+        "season": "Época",
+        "dueDate": "Vencimento",
+        "value": "Valor",
+        "status": "Estado",
+        "previous": "Anterior",
+        "next": "Seguinte",
+        "page": "Página {{page}} de {{totalPages}}",
+        "statuses": {
+          "OPEN": "Por pagar",
+          "PENDING": "Pendente",
+          "PAID": "Pago",
+          "CANCELLED": "Cancelado"
+        }
       }
     }
   },

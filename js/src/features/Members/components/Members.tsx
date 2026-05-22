@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Users, ShieldAlert } from "lucide-react";
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Search, Users, ShieldAlert } from "lucide-react";
 import { Link, Navigate } from "react-router-dom";
 import { MEMBERS_PAGE_SIZE, useMembersList } from "../hooks";
 import { memberStatusColor } from "../utils";
@@ -12,7 +12,20 @@ export default function Members() {
   const { role, activeMemberId } = useAuth();
 
   const [pendingOpen, setPendingOpen] = useState(false);
-  const { errorMessage, isLoading, members, page, pendingMembers, setPage, totalMembers, totalPages } =
+  const {
+    categoryFilter,
+    errorMessage,
+    isLoading,
+    members,
+    page,
+    pendingMembers,
+    searchTerm,
+    setCategoryFilter,
+    setPage,
+    setSearchTerm,
+    totalMembers,
+    totalPages,
+  } =
     useMembersList(role, t);
 
   if (role === "NORMAL") {
@@ -72,7 +85,7 @@ export default function Members() {
                     <div className="member-pending-item" key={member.memberId}>
                       <div>
                         <div className="member-pending-item-head">
-                          <span className="member-pending-number">#{member.memberNumber}</span>
+                          <span className="member-pending-number">{member.memberNumber > 0 ? `#${member.memberNumber}` : t("members.list.pending.withoutNumber")}</span>
                           <span className="member-pagination-strong">{member.completeName}</span>
                         </div>
                         <div className="member-pending-meta">
@@ -93,6 +106,35 @@ export default function Members() {
         </section>
 
         <section className="member-table-wrapper">
+          <div className="member-list-filters">
+            <label className="member-list-search">
+              <span className="member-label">{t("members.list.filters.search")}</span>
+              <div className="member-list-search-control">
+                <Search size={18} />
+                <input
+                  className="member-list-search-input"
+                  onChange={(event) => setSearchTerm(event.target.value)}
+                  placeholder={t("members.list.filters.searchPlaceholder")}
+                  type="search"
+                  value={searchTerm}
+                />
+              </div>
+            </label>
+
+            <label className="member-list-filter">
+              <span className="member-label">{t("members.list.filters.category")}</span>
+              <select
+                className="member-input"
+                onChange={(event) => setCategoryFilter(event.target.value as typeof categoryFilter)}
+                value={categoryFilter}
+              >
+                <option value="">{t("members.list.filters.allCategories")}</option>
+                <option value="SOCIO">{t("members.labels.categories.SOCIO")}</option>
+                <option value="ATLETA_SOCIO">{t("members.labels.categories.ATLETA_SOCIO")}</option>
+              </select>
+            </label>
+          </div>
+
           {isLoading ? (
             <div className="member-table-loading">
               <div className="member-loading-spinner"></div>
@@ -113,35 +155,41 @@ export default function Members() {
                     </tr>
                   </thead>
                   <tbody className="member-table-body">
-                    {members.map((member) => (
-                      <tr className="member-tr-interactive" key={member.memberId}>
-                        <td className="member-td-number">#{member.memberNumber}</td>
-                        <td className="member-td">
-                          <div className="member-pagination-strong">{member.completeName}</div>
-                          <div className="member-cell-email">{member.email}</div>
-                        </td>
-                        <td className="member-td">
-                          <span className="member-category-badge">{t(`members.labels.categories.${member.category}`)}</span>
-                        </td>
-                        <td className="member-td">
-                          <span className={`member-status-badge ${memberStatusColor(member.status)}`}>{t(`members.labels.statuses.${member.status}`)}</span>
-                        </td>
-                        <td className="member-td">
-                          <div className="member-cell-primary">{formatDate(member.registrationDate)}</div>
-                          <div className="member-helper-text">{member.city}</div>
-                        </td>
-                        <td className="member-td-right">
-                          <div className="member-row-actions">
-                            <Link to={`/members/${member.memberId}/edit`} className="member-btn-table-edit">
-                              {t("members.common.edit")}
-                            </Link>
-                            <Link to={`/members/${member.memberId}`} className="member-action-btn">
-                              {t("members.common.view")}
-                            </Link>
-                          </div>
-                        </td>
+                    {members.length === 0 ? (
+                      <tr>
+                        <td className="member-table-empty" colSpan={6}>{t("members.list.filters.empty")}</td>
                       </tr>
-                    ))}
+                    ) : (
+                      members.map((member) => (
+                        <tr className="member-tr-interactive" key={member.memberId}>
+                          <td className="member-td-number">{member.memberNumber > 0 ? `#${member.memberNumber}` : t("members.list.pending.withoutNumber")}</td>
+                          <td className="member-td">
+                            <div className="member-pagination-strong">{member.completeName}</div>
+                            <div className="member-cell-email">{member.email}</div>
+                          </td>
+                          <td className="member-td">
+                            <span className="member-category-badge">{t(`members.labels.categories.${member.category}`)}</span>
+                          </td>
+                          <td className="member-td">
+                            <span className={`member-status-badge ${memberStatusColor(member.status)}`}>{t(`members.labels.statuses.${member.status}`)}</span>
+                          </td>
+                          <td className="member-td">
+                            <div className="member-cell-primary">{formatDate(member.registrationDate)}</div>
+                            <div className="member-helper-text">{member.city}</div>
+                          </td>
+                          <td className="member-td-right">
+                            <div className="member-row-actions">
+                              <Link to={`/members/${member.memberId}/edit`} className="member-btn-table-edit">
+                                {t("members.common.edit")}
+                              </Link>
+                              <Link to={`/members/${member.memberId}`} className="member-action-btn">
+                                {t("members.common.view")}
+                              </Link>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>

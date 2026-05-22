@@ -43,8 +43,8 @@ export function useCreateMember(userId: number | null | undefined, role: string 
 
     try {
       const linkedUserId = role === "ADMIN" ? null : userId ?? null;
-      const created = await createMember(values, linkedUserId);
-      setSuccessMessage(t("members.create.success", { memberNumber: created.memberNumber }));
+      await createMember(values, linkedUserId);
+      setSuccessMessage(t("members.create.success"));
       setValues(defaultMemberFormValues());
     } catch {
       setErrorMessage(t("members.create.errors.submit"));

@@ -186,6 +186,10 @@
     @apply inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-10 px-6 bg-red-600 text-white hover:bg-red-700 transition-colors rounded-md;
   }
 
+  .member-btn-outline-compact {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary transition-colors hover:border-primary hover:text-primary;
+  }
+
   .member-btn-evaluate {
     @apply inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide h-8 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors rounded-md;
   }
@@ -324,6 +328,22 @@
     @apply text-sm font-semibold text-text-primary uppercase tracking-wider mb-4 border-b border-border pb-2;
   }
 
+  .member-payment-title-inline {
+    @apply mb-0 flex-1 border-b-0 pb-0;
+  }
+
+  .member-payment-history-header {
+    @apply mb-4 flex flex-col gap-3 border-b border-border pb-2 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .member-history-filter {
+    @apply flex flex-col gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary sm:min-w-48;
+  }
+
+  .member-history-select {
+    @apply h-10 rounded-md border border-border bg-white px-3 text-sm font-medium normal-case tracking-normal text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
+  }
+
   .member-empty-history {
     @apply py-10 text-center flex flex-col items-center justify-center text-text-secondary;
   }
@@ -352,28 +372,44 @@
     @apply ml-2 text-base text-primary;
   }
 
-  .member-fee-grid {
-    @apply mb-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3;
+  .member-fee-actions {
+    @apply mb-4 flex flex-wrap gap-2;
   }
 
-  .member-fee-option {
-    @apply flex min-h-16 cursor-pointer items-center gap-3 rounded-md border border-border bg-muted/20 px-3 py-2 text-sm transition-colors hover:border-primary hover:bg-primary/5;
+  .member-fee-table-wrap {
+    @apply mb-4 overflow-x-auto rounded-lg border border-border;
   }
 
-  .member-fee-option span {
-    @apply flex min-w-0 flex-1 flex-col;
+  .member-fee-table {
+    @apply min-w-full divide-y divide-border text-sm;
   }
 
-  .member-fee-option small {
-    @apply text-xs text-text-secondary;
+  .member-fee-table th {
+    @apply bg-muted/40 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-text-secondary;
   }
 
-  .member-fee-option-disabled {
-    @apply cursor-not-allowed opacity-55 hover:border-border hover:bg-muted/20;
+  .member-fee-table td {
+    @apply px-4 py-3 text-text-primary;
   }
 
-  .member-fee-option-price {
-    @apply flex-none font-semibold text-text-primary;
+  .member-fee-table tbody tr {
+    @apply border-t border-border bg-white;
+  }
+
+  .member-fee-row-disabled {
+    @apply opacity-55;
+  }
+
+  .member-fee-table-value {
+    @apply font-semibold;
+  }
+
+  .member-fee-pagination {
+    @apply mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-text-secondary;
+  }
+
+  .member-fee-pagination button:disabled {
+    @apply cursor-not-allowed opacity-50 hover:border-border hover:text-text-secondary;
   }
 
   .member-payment-row {
@@ -486,6 +522,23 @@
     @apply bg-white border border-border shadow-sm rounded-xl overflow-hidden mt-8 overflow-x-auto;
   }
 
+  .member-list-filters {
+    @apply grid grid-cols-1 gap-4 border-b border-border bg-gray-50/50 p-5 md:grid-cols-[1fr_220px];
+  }
+
+  .member-list-search,
+  .member-list-filter {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .member-list-search-control {
+    @apply flex h-10 items-center gap-2 rounded-md border border-border bg-white px-3 text-text-secondary focus-within:border-primary focus-within:ring-1 focus-within:ring-primary;
+  }
+
+  .member-list-search-input {
+    @apply h-full flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-secondary;
+  }
+
   .member-table-scroll {
     @apply overflow-x-auto;
   }
@@ -504,6 +557,10 @@
 
   .member-table-body {
     @apply divide-y divide-border;
+  }
+
+  .member-table-empty {
+    @apply px-6 py-10 text-center text-sm font-medium text-text-secondary;
   }
 
   .member-th {

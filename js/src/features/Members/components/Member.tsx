@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar, CreditCard } from "lucide-react";
 import { Link, useParams, Navigate } from "react-router-dom";
@@ -7,6 +7,8 @@ import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 
+const ALL_HISTORY_SEASONS = "all";
+
 export default function MemberPage() {
   const { t } = useTranslation();
   const { memberId } = useParams();
@@ -14,11 +16,17 @@ export default function MemberPage() {
 
   const isAdmin = role === "ADMIN" || role === "SECRETARIA";
   const isSelf = activeMemberId === Number(memberId);
+  const [historySeasonFilter, setHistorySeasonFilter] = useState("");
   const {
+    availableSeasons,
     debtSummary,
     errorMessage,
+    feePage,
+    feeTotalPages,
     feedback,
     feeOptions,
+    goToNextFeePage,
+    goToPreviousFeePage,
     handleApprove,
     handlePaySelectedFees,
     handleReject,
@@ -29,9 +37,32 @@ export default function MemberPage() {
     selectedFees,
     selectedFeeOptions,
     selectedTotalCents,
+    selectOverdueFees,
+    selectSeasonFees,
     toggleFee,
+    visibleFeeOptions,
   } =
     useMemberDetail(memberId, isAdmin || isSelf, t);
+
+  const paidPaymentHistory = useMemo(
+    () => paymentHistory.filter((item) => item.status === "PAID"),
+    [paymentHistory],
+  );
+  const historySeasons = useMemo(
+    () => Array.from(new Set(paidPaymentHistory.map((item) => item.season))).sort((a, b) => b.localeCompare(a)),
+    [paidPaymentHistory],
+  );
+  const selectedHistorySeason = historySeasonFilter || historySeasons[0] || ALL_HISTORY_SEASONS;
+  const filteredPaymentHistory = useMemo(
+    () => selectedHistorySeason === ALL_HISTORY_SEASONS
+      ? paidPaymentHistory
+      : paidPaymentHistory.filter((item) => item.season === selectedHistorySeason),
+    [selectedHistorySeason, paidPaymentHistory],
+  );
+
+  useEffect(() => {
+    setHistorySeasonFilter("");
+  }, [memberId]);
 
   if (!isAdmin && !isSelf) {
     return <Navigate to="/" replace />;
@@ -97,7 +128,9 @@ export default function MemberPage() {
                 <div className="member-profile-avatar">{getInitials(member.completeName)}</div>
                 <div className="member-profile-name-block">
                   <h1 className="member-profile-name">{member.completeName}</h1>
-                  <p className="member-profile-number">{t("members.detail.memberNumber", { memberNumber: member.memberNumber })}</p>
+                  <p className="member-profile-number">
+                    {member.memberNumber > 0 ? t("members.detail.memberNumber", { memberNumber: member.memberNumber }) : t("members.detail.pendingNumber")}
+                  </p>
                 </div>
               </div>
 
@@ -221,8 +254,6 @@ export default function MemberPage() {
                 </div>
               </div>
 
-              <h3 className="member-payment-title">{t("members.detail.finance.paymentHistory")}</h3>
-
               {feeOptions.length > 0 && (
                 <div className="member-fee-selector">
                   <div className="member-fee-selector-header">
@@ -236,28 +267,68 @@ export default function MemberPage() {
                     </div>
                   </div>
 
-                  <div className="member-fee-grid">
-                    {feeOptions.map((option) => {
-                      const key = `${option.season}-${option.month}`;
-                      const checked = selectedFees.has(key);
-                      return (
-                        <label className={`member-fee-option ${!option.selectable ? "member-fee-option-disabled" : ""}`} key={key}>
-                          <input
-                            checked={checked}
-                            className="member-checkbox"
-                            disabled={!option.selectable}
-                            onChange={() => toggleFee(option)}
-                            type="checkbox"
-                          />
-                          <span>
-                            <strong>{monthName(option.month, t)}</strong>
-                            <small>{option.season}</small>
-                          </span>
-                          <span className="member-fee-option-price">{formatCurrency(option.amount)}</span>
-                        </label>
-                      );
-                    })}
+                  <div className="member-fee-actions">
+                    <button className="member-btn-outline-compact" onClick={selectOverdueFees} type="button">
+                      {t("members.detail.finance.selectOverdue")}
+                    </button>
+                    {availableSeasons.map((season) => (
+                      <button className="member-btn-outline-compact" key={season} onClick={() => selectSeasonFees(season)} type="button">
+                        {t("members.detail.finance.selectSeason", { season })}
+                      </button>
+                    ))}
                   </div>
+
+                  <div className="member-fee-table-wrap">
+                    <table className="member-fee-table">
+                      <thead>
+                        <tr>
+                          <th>{t("members.detail.finance.select")}</th>
+                          <th>{t("members.detail.finance.month")}</th>
+                          <th>{t("members.detail.finance.season")}</th>
+                          <th>{t("members.detail.finance.dueDate")}</th>
+                          <th>{t("members.detail.finance.value")}</th>
+                          <th>{t("members.detail.finance.status")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {visibleFeeOptions.map((option) => {
+                          const key = `${option.season}-${option.month}`;
+                          const checked = selectedFees.has(key);
+                          return (
+                            <tr className={!option.selectable ? "member-fee-row-disabled" : ""} key={key}>
+                              <td>
+                                <input
+                                  aria-label={t("members.detail.finance.selectFee", { month: monthName(option.month, t), season: option.season })}
+                                  checked={checked}
+                                  className="member-checkbox"
+                                  disabled={!option.selectable}
+                                  onChange={() => toggleFee(option)}
+                                  type="checkbox"
+                                />
+                              </td>
+                              <td>{monthName(option.month, t)}</td>
+                              <td>{option.season}</td>
+                              <td>{formatDate(option.dueDate)}</td>
+                              <td className="member-fee-table-value">{formatCurrency(option.amount)}</td>
+                              <td>{option.status ? t(`members.detail.finance.statuses.${option.status}`) : t("members.detail.finance.statuses.OPEN")}</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {feeTotalPages > 1 && (
+                    <div className="member-fee-pagination">
+                      <button className="member-btn-outline-compact" disabled={feePage === 1} onClick={goToPreviousFeePage} type="button">
+                        {t("members.detail.finance.previous")}
+                      </button>
+                      <span>{t("members.detail.finance.page", { page: feePage, totalPages: feeTotalPages })}</span>
+                      <button className="member-btn-outline-compact" disabled={feePage === feeTotalPages} onClick={goToNextFeePage} type="button">
+                        {t("members.detail.finance.next")}
+                      </button>
+                    </div>
+                  )}
 
                   <button
                     className="member-btn-primary-sm"
@@ -271,28 +342,59 @@ export default function MemberPage() {
                 </div>
               )}
 
-              {paymentHistory.length === 0 ? (
+              <div className="member-payment-history-header">
+                <h3 className="member-payment-title member-payment-title-inline">{t("members.detail.finance.paymentHistory")}</h3>
+                {paidPaymentHistory.length > 0 && (
+                  <label className="member-history-filter">
+                    <span>{t("members.detail.finance.filterSeason")}</span>
+                    <select
+                      className="member-history-select"
+                      onChange={(event) => setHistorySeasonFilter(event.target.value)}
+                      value={selectedHistorySeason}
+                    >
+                      <option value={ALL_HISTORY_SEASONS}>{t("members.detail.finance.allSeasons")}</option>
+                      {historySeasons.map((season) => (
+                        <option key={season} value={season}>{season}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+              </div>
+
+              {paidPaymentHistory.length === 0 ? (
                 <div className="member-empty-history">
                   <User size={32} className="member-empty-history-icon" />
                   <p className="member-alert-text">{t("members.detail.finance.emptyHistory")}</p>
                 </div>
+              ) : filteredPaymentHistory.length === 0 ? (
+                <div className="member-empty-history">
+                  <User size={32} className="member-empty-history-icon" />
+                  <p className="member-alert-text">{t("members.detail.finance.emptyFilteredHistory")}</p>
+                </div>
               ) : (
-                <div className="member-payment-list">
-                  {paymentHistory.map((item) => (
-                    <div className={`member-payment-row ${item.status === "PENDING" ? "member-payment-row-pending" : "member-payment-row-paid"}`} key={item.id}>
-                      <div>
-                        <p className="member-payment-label">{item.label}</p>
-                        <p className="member-helper-text-spaced">{t("members.detail.finance.paymentMeta", { season: item.season, dueDate: formatDate(item.dueDate) })}</p>
-                      </div>
-
-                      <div className="member-text-right">
-                        <p className={`member-payment-value ${item.status === "PENDING" ? "member-negative-text" : "member-positive-text"}`}>{formatCurrency(item.amountCents)}</p>
-                        <p className="member-helper-text-spaced">
-                          {item.status === "PAID" ? t("members.detail.finance.paidAt", { date: formatDate(item.paidDate) }) : t("members.detail.finance.overdue")}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                <div className="member-fee-table-wrap">
+                  <table className="member-fee-table">
+                    <thead>
+                      <tr>
+                        <th>{t("members.detail.finance.month")}</th>
+                        <th>{t("members.detail.finance.season")}</th>
+                        <th>{t("members.detail.finance.dueDate")}</th>
+                        <th>{t("members.detail.finance.value")}</th>
+                        <th>{t("members.detail.finance.status")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPaymentHistory.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.label}</td>
+                          <td>{item.season}</td>
+                          <td>{formatDate(item.dueDate)}</td>
+                          <td className="member-fee-table-value">{formatCurrency(item.amountCents)}</td>
+                          <td>{t("members.detail.finance.statuses.PAID")}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>

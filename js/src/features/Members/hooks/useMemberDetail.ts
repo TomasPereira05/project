@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
 import { approveMember, createMembershipFeesCheckoutSession, fetchMember, fetchMembershipFeeOptions, rejectMember } from "../api";
 import type { Member, MembershipFeeOption } from "../types";
-import { buildPaymentHistoryFromFeeOptions, getDebtSummary } from "../utils";
+import { buildPaymentHistoryFromFeeOptions, getDebtSummary, isFeeOverdue } from "../utils";
+
+const FEE_OPTIONS_PAGE_SIZE = 8;
 
 export function useMemberDetail(
   memberId: string | undefined,
@@ -14,6 +16,7 @@ export function useMemberDetail(
   const [feedback, setFeedback] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [feeOptions, setFeeOptions] = useState<MembershipFeeOption[]>([]);
+  const [feePage, setFeePage] = useState(1);
   const [selectedFees, setSelectedFees] = useState<Set<string>>(new Set());
   const [isPaying, setIsPaying] = useState(false);
 
@@ -30,7 +33,8 @@ export function useMemberDetail(
         if (!ignore) {
           setMember(response);
           setFeeOptions(fees);
-          setSelectedFees(new Set(fees.filter((fee) => fee.selectable && fee.status !== "PAID").map(feeKey)));
+          setFeePage(1);
+          setSelectedFees(new Set(fees.filter(isFeeOverdue).map(feeKey)));
         }
       } catch {
         if (!ignore) {
@@ -62,6 +66,36 @@ export function useMemberDetail(
     () => selectedFeeOptions.reduce((sum, fee) => sum + fee.amount, 0),
     [selectedFeeOptions],
   );
+  const availableSeasons = useMemo(
+    () => Array.from(new Set(feeOptions.filter((fee) => fee.status !== "PAID").map((fee) => fee.season))),
+    [feeOptions],
+  );
+  const unpaidFeeOptions = useMemo(
+    () => feeOptions.filter((fee) => fee.status !== "PAID"),
+    [feeOptions],
+  );
+  const feeTotalPages = Math.max(1, Math.ceil(unpaidFeeOptions.length / FEE_OPTIONS_PAGE_SIZE));
+  const safeFeePage = Math.min(feePage, feeTotalPages);
+  const visibleFeeOptions = useMemo(
+    () => unpaidFeeOptions.slice((safeFeePage - 1) * FEE_OPTIONS_PAGE_SIZE, safeFeePage * FEE_OPTIONS_PAGE_SIZE),
+    [safeFeePage, unpaidFeeOptions],
+  );
+
+  function goToPreviousFeePage() {
+    setFeePage((current) => Math.max(1, current - 1));
+  }
+
+  function goToNextFeePage() {
+    setFeePage((current) => Math.min(feeTotalPages, current + 1));
+  }
+
+  function selectOverdueFees() {
+    setSelectedFees(new Set(feeOptions.filter(isFeeOverdue).map(feeKey)));
+  }
+
+  function selectSeasonFees(season: string) {
+    setSelectedFees(new Set(feeOptions.filter((fee) => fee.selectable && fee.season === season).map(feeKey)));
+  }
 
   function toggleFee(option: MembershipFeeOption) {
     if (!option.selectable) return;
@@ -121,9 +155,14 @@ export function useMemberDetail(
   }
 
   return {
+    availableSeasons,
     debtSummary,
     errorMessage,
+    feePage: safeFeePage,
+    feeTotalPages,
     feedback,
+    goToNextFeePage,
+    goToPreviousFeePage,
     handleApprove,
     handlePaySelectedFees,
     handleReject,
@@ -135,7 +174,10 @@ export function useMemberDetail(
     selectedFees,
     selectedFeeOptions,
     selectedTotalCents,
+    selectOverdueFees,
+    selectSeasonFees,
     toggleFee,
+    visibleFeeOptions,
   };
 }
 

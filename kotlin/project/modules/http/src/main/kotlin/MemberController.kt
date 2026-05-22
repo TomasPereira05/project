@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.model.member.CategoryRequest
 import pt.isel.jagoz.http.model.member.MemberCreateInput
 import pt.isel.jagoz.http.model.member.MemberOutput
+import pt.isel.jagoz.http.model.member.MemberUpdateInput
 import pt.isel.jagoz.http.model.member.ReactivationRequest
+import pt.isel.jagoz.http.model.member.toCandidate
 import pt.isel.jagoz.http.model.member.toMember
 import pt.isel.jagoz.http.model.member.tooutput
 import pt.isel.jagoz.http.utils.Problem
@@ -42,8 +45,10 @@ class MemberController(
     fun getAllMembers(
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "8") size: Int,
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) category: MemberCategory?,
     ): ResponseEntity<Page<MemberOutput>> {
-        val members = memberService.getMembersPage(page, size)
+        val members = memberService.getMembersPage(page, size, search, category)
         return ResponseEntity.ok(
             Page(
                 items = members.items.map { it.tooutput() },
@@ -71,30 +76,14 @@ class MemberController(
         )
 
     @PutMapping(Uris.Members.UPDATE_MEMBER)
-    fun updateMemberContact(
+    fun updateMember(
         @PathVariable memberId: Long,
-        @RequestParam email: String,
-        @RequestParam phone: String,
-        @RequestParam address: String,
-        @RequestParam postalCode: String,
-        @RequestParam city: String,
-        @RequestParam(required = false) homePhone: String?,
-        @RequestParam(required = false) billingLocation: String?,
+        @RequestBody input: MemberUpdateInput,
     ): ResponseEntity<*> =
-        memberService
-            .updateMemberContact(
-                memberId,
-                email,
-                phone,
-                address,
-                postalCode,
-                city,
-                homePhone,
-                billingLocation,
-            ).handle(
-                onFailure = { error -> handleMemberError(error) },
-                onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
-            )
+        memberService.updateMember(memberId, input.toCandidate()).handle(
+            onFailure = { error -> handleMemberError(error) },
+            onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
+        )
 
     @DeleteMapping(Uris.Members.DELETE_MEMBER)
     fun deactivateMember(

@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../shared/config/config";
-import type { CheckoutSession, Member, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
+import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
 
@@ -19,11 +19,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
-export function fetchMembers(page = 1, size = 8) {
+export function fetchMembers(
+  page = 1,
+  size = 8,
+  filters: { search?: string; category?: MemberCategory | "" } = {},
+) {
   const search = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
+  if (filters.search?.trim()) {
+    search.set("search", filters.search.trim());
+  }
+  if (filters.category) {
+    search.set("category", filters.category);
+  }
   return request<PaginatedResponse<Member>>(`/members?${search.toString()}`);
 }
 
@@ -68,38 +78,35 @@ export function createMember(values: MemberFormValues, userId: number | null) {
 
 export async function updateMember(
   memberId: number,
-  initialMember: Member,
+  _initialMember: Member,
   values: MemberFormValues,
 ) {
-  const search = new URLSearchParams({
-    email: values.email,
-    phone: values.phone,
-    address: values.address,
-    postalCode: values.postalCode,
-    city: values.city,
+  const membershipQuota =
+    values.category === "ATLETA_SOCIO"
+      ? 0
+      : centsFromEuroInput(values.membershipQuotaEuros);
+
+  return request<Member>(`/members/${memberId}`, {
+    method: "PUT",
+    body: JSON.stringify({
+      completeName: values.completeName,
+      birthDate: values.birthDate,
+      birthplace: null,
+      email: values.email,
+      phone: values.phone,
+      homePhone: values.homePhone.trim() || null,
+      address: values.address,
+      postalCode: values.postalCode,
+      city: values.city,
+      nif: values.nif,
+      category: values.category,
+      formerMember: values.formerMember,
+      membershipQuota,
+      billingLocation: values.billingLocation.trim() || null,
+      privacyAccepted: values.privacyAccepted,
+      comsAccepted: values.comsAccepted,
+    }),
   });
-
-  if (values.homePhone.trim()) {
-    search.set("homePhone", values.homePhone.trim());
-  }
-
-  if (values.billingLocation.trim()) {
-    search.set("billingLocation", values.billingLocation.trim());
-  }
-
-  const updatedMember = await request<Member>(
-    `/members/${memberId}?${search.toString()}`,
-    { method: "PUT" },
-  );
-
-  if (initialMember.category !== values.category) {
-    return request<Member>(`/members/${memberId}/category`, {
-      method: "PUT",
-      body: JSON.stringify({ category: values.category }),
-    });
-  }
-
-  return updatedMember;
 }
 
 export function approveMember(memberId: number) {

@@ -1,6 +1,7 @@
 package pt.isel.jagoz.repository
 
 import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.member.MemberCategory
 
 interface MemberRepository {
     fun save(member: Member): Long
@@ -23,6 +24,18 @@ interface MemberRepository {
     ): List<Member>
 
     fun countAll(): Long
+
+    fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+        category: MemberCategory?,
+    ): List<Member>
+
+    fun countFiltered(
+        search: String?,
+        category: MemberCategory?,
+    ): Long
 
     fun findAllActive(): List<Member>
 

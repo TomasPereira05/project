@@ -198,6 +198,33 @@ class MemberDomain {
         )
     }
 
+    fun update(
+        current: Member,
+        candidate: Member,
+    ): Either<MemberError, Member> {
+        val updated =
+            current.copy(
+                completeName = candidate.completeName,
+                birthDate = candidate.birthDate,
+                birthplace = candidate.birthplace,
+                email = candidate.email,
+                phone = candidate.phone,
+                homePhone = candidate.homePhone,
+                address = candidate.address,
+                postalCode = candidate.postalCode,
+                city = candidate.city,
+                nif = candidate.nif,
+                category = candidate.category,
+                formerMember = candidate.formerMember,
+                membershipQuota = calculateMembershipQuota(candidate),
+                billingLocation = candidate.billingLocation,
+                privacyAccepted = candidate.privacyAccepted,
+                comsAccepted = candidate.comsAccepted,
+            )
+
+        return validateForCreation(updated)
+    }
+
     /**
      * Change the member category between [MemberCategory.SOCIO] and [MemberCategory.ATLETA_SOCIO].
      *
