@@ -27,16 +27,17 @@ class PaymentController(
         authenticatedUser: AuthenticatedUser,
         @RequestBody input: CreateCheckoutSessionInput,
     ): ResponseEntity<*> =
-        paymentService.createCheckoutSession(
-            authenticatedUser,
-            input.chargeId,
-            input.sponsorshipId,
-            input.memberId,
-            input.membershipFees?.map { it.toService() },
-        ).handle(
-            onFailure = { handlePaymentError(it) },
-            onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it.toOutput()) },
-        )
+        paymentService
+            .createCheckoutSession(
+                authenticatedUser,
+                input.chargeId,
+                input.sponsorshipId,
+                input.memberId,
+                input.membershipFees?.map { it.toService() },
+            ).handle(
+                onFailure = { handlePaymentError(it) },
+                onSuccess = { ResponseEntity.status(HttpStatus.CREATED).body(it.toOutput()) },
+            )
 
     @GetMapping(Uris.Payments.MEMBERSHIP_FEE_OPTIONS)
     fun getMembershipFeeOptions(

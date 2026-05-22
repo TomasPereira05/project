@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -15,74 +14,26 @@ import {
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import { fetchMember, type Member } from "../../Members";
 import { getInitials } from "../../../shared/utils";
-import { getMyAthlete, type AthleteAdmin } from "../../Athletes";
-import { claimSponsorAccount } from "../../sponsors";
-import { roleBadgeColor } from "../utils";
+import { useSponsorClaim, useUserProfile } from "../hooks";
+import { isStaffRole, roleBadgeColor } from "../utils";
 
 export default function UserPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { username, email, role, activeMemberId, clearAuth } = useAuth();
 
-  const [member, setMember] = useState<Member | null>(null);
-  const [athlete, setAthlete] = useState<AthleteAdmin | null>(null);
-  const [claimForm, setClaimForm] = useState({ nif: "", email: "", phone: "" });
-  const [claimMessage, setClaimMessage] = useState("");
-  const [claimError, setClaimError] = useState("");
-
-  useEffect(() => {
-    let ignore = false;
-
-    if (!activeMemberId) {
-      setMember(null);
-      setAthlete(null);
-      return;
-    }
-
-    fetchMember(activeMemberId)
-      .then((res) => {
-        if (!ignore) setMember(res);
-      })
-      .catch(() => {
-        if (!ignore) setMember(null);
-      });
-
-    getMyAthlete()
-      .then((res) => {
-        if (!ignore) setAthlete(res);
-      })
-      .catch(() => {
-        if (!ignore) setAthlete(null);
-      });
-
-    return () => {
-      ignore = true;
-    };
-  }, [activeMemberId]);
+  const { member, athlete } = useUserProfile(activeMemberId);
+  const { claimError, claimForm, claimMessage, claimed, handleSponsorClaim, setClaimForm } =
+    useSponsorClaim(t);
 
   const handleLogout = () => {
     if (clearAuth) clearAuth();
     navigate("/");
   };
 
-  async function handleSponsorClaim(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setClaimMessage("");
-    setClaimError("");
-
-    try {
-      const sponsor = await claimSponsorAccount(claimForm);
-      setClaimMessage(t("userPage.sponsorClaim.success", { sponsorName: sponsor.name }));
-      setClaimForm({ nif: "", email: "", phone: "" });
-    } catch (error) {
-      setClaimError(error instanceof Error ? error.message : t("userPage.sponsorClaim.error"));
-    }
-  }
-
   const displayName = username ?? t("userPage.profile.defaultName");
-  const hasSpecialRole = role === "ADMIN" || role === "SECRETARIA";
+  const hasSpecialRole = isStaffRole(role);
   const roleText = role ? t(`userPage.roles.${role}`, { defaultValue: role }) : t("userPage.emptyValue");
 
   return (
@@ -239,44 +190,53 @@ export default function UserPage() {
               </div>
             </div>
 
-            <form className="user-claim-form" onSubmit={handleSponsorClaim}>
-              <label className="user-claim-label">
-                {t("userPage.sponsorClaim.nif")}
-                <input
-                  className="member-input"
-                  required
-                  value={claimForm.nif}
-                  onChange={(event) => setClaimForm((current) => ({ ...current, nif: event.target.value }))}
-                />
-              </label>
-              <label className="user-claim-label">
-                {t("userPage.sponsorClaim.email")}
-                <input
-                  className="member-input"
-                  required
-                  type="email"
-                  value={claimForm.email}
-                  onChange={(event) => setClaimForm((current) => ({ ...current, email: event.target.value }))}
-                />
-              </label>
-              <label className="user-claim-label">
-                {t("userPage.sponsorClaim.phone")}
-                <input
-                  className="member-input"
-                  required
-                  value={claimForm.phone}
-                  onChange={(event) => setClaimForm((current) => ({ ...current, phone: event.target.value }))}
-                />
-              </label>
-              <div className="user-claim-actions">
-                <button type="submit" className="user-button-primary">
-                  <Phone size={18} />
-                  {t("userPage.sponsorClaim.submit")}
-                </button>
+            {claimed ? (
+              <div className="user-link-actions">
                 {claimMessage ? <p className="user-claim-success">{claimMessage}</p> : null}
-                {claimError ? <p className="user-claim-error">{claimError}</p> : null}
+                <Link to="/sponsors/my" className="user-button-primary">
+                  <IdCard size={18} />
+                  {t("userPage.sponsorClaim.viewMine")}
+                </Link>
               </div>
-            </form>
+            ) : (
+              <form className="user-claim-form" onSubmit={handleSponsorClaim}>
+                <label className="user-claim-label">
+                  {t("userPage.sponsorClaim.nif")}
+                  <input
+                    className="member-input"
+                    required
+                    value={claimForm.nif}
+                    onChange={(event) => setClaimForm((current) => ({ ...current, nif: event.target.value }))}
+                  />
+                </label>
+                <label className="user-claim-label">
+                  {t("userPage.sponsorClaim.email")}
+                  <input
+                    className="member-input"
+                    required
+                    type="email"
+                    value={claimForm.email}
+                    onChange={(event) => setClaimForm((current) => ({ ...current, email: event.target.value }))}
+                  />
+                </label>
+                <label className="user-claim-label">
+                  {t("userPage.sponsorClaim.phone")}
+                  <input
+                    className="member-input"
+                    required
+                    value={claimForm.phone}
+                    onChange={(event) => setClaimForm((current) => ({ ...current, phone: event.target.value }))}
+                  />
+                </label>
+                <div className="user-claim-actions">
+                  <button type="submit" className="user-button-primary">
+                    <Phone size={18} />
+                    {t("userPage.sponsorClaim.submit")}
+                  </button>
+                  {claimError ? <p className="user-claim-error">{claimError}</p> : null}
+                </div>
+              </form>
+            )}
           </section>
         </div>
       </main>
