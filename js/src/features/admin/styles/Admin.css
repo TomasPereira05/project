@@ -36,11 +36,13 @@
   }
 
   .admin-content .member-page,
+  .admin-content .athlete-page,
   .admin-content .sponsor-page {
     @apply min-h-0 bg-transparent;
   }
 
   .admin-content .member-container,
+  .admin-content .athlete-container,
   .admin-content .sponsor-shell {
     @apply max-w-none;
   }

@@ -96,7 +96,7 @@ export default function AthletePage() {
     return () => {
       ignore = true;
     };
-  }, [athleteId, adminView]);
+  }, [athleteId, adminView, t]);
 
   async function handleToggleActive() {
     if (!adminDto) return;

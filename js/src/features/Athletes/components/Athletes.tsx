@@ -297,13 +297,13 @@ export default function Athletes() {
                             <td className="athlete-td-right">
                               <div className="athlete-row-actions">
                                 <Link
-                                  to={`/athletes/${athlete.athleteId}/edit`}
+                                  to={`${athleteBasePath}/${athlete.athleteId}/edit`}
                                   className="athlete-btn-table-edit"
                                 >
                                   {t("athletes.common.edit")}
                                 </Link>
                                 <Link
-                                  to={`/athletes/${athlete.athleteId}`}
+                                  to={`${athleteBasePath}/${athlete.athleteId}`}
                                   className="athlete-action-btn"
                                 >
                                   {t("athletes.common.view")}
