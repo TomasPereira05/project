@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, User } from "lucide-react";
+import { ChevronDown, Menu, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchAllTeamCategories, type TeamCatalogCategory } from "../../features/Athletes";
 import { LOGO_SRC } from "../config/config";
@@ -96,10 +96,10 @@ export default function Header() {
                     </Link>
 
                     <nav className="nav">
-                        <button className={`nav-link ${sectionActive.socios ? "is-active" : ""}`} onClick={() => toggleMenu("socios")}>{t("header.nav.members")}</button>
-                        <button className={`nav-link ${sectionActive.patrocinios ? "is-active" : ""}`} onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
-                        <button className={`nav-link ${sectionActive.equipas ? "is-active" : ""}`} onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
-                        <button className={`nav-link ${sectionActive.outrasModalidades ? "is-active" : ""}`} onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
+                        <HeaderDropdownButton active={activeMenu === "socios"} currentSection={sectionActive.socios} label={t("header.nav.members")} onClick={() => toggleMenu("socios")} variant="nav" />
+                        <HeaderDropdownButton active={activeMenu === "patrocinios"} currentSection={sectionActive.patrocinios} label={t("header.nav.sponsors")} onClick={() => toggleMenu("patrocinios")} variant="nav" />
+                        <HeaderDropdownButton active={activeMenu === "equipas"} currentSection={sectionActive.equipas} label={t("header.nav.teams")} onClick={() => toggleMenu("equipas")} variant="nav" />
+                        <HeaderDropdownButton active={activeMenu === "outras-modalidades"} currentSection={sectionActive.outrasModalidades} label={t("header.nav.otherSports")} onClick={() => toggleMenu("outras-modalidades")} variant="nav" />
                         {isStaff && (
                             <Link className={`nav-link ${sectionActive.admin ? "is-active" : ""}`} to="/admin" onClick={closeMenus}>
                                 {t("header.nav.admin")}
@@ -133,10 +133,10 @@ export default function Header() {
 
             <div className={`dropdown ${activeMenu === "mobile" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
-                    <button className={`dropdown-link ${sectionActive.socios ? "is-active" : ""}`} onClick={() => toggleMenu("socios")}>{t("header.nav.members")}</button>
-                    <button className={`dropdown-link ${sectionActive.patrocinios ? "is-active" : ""}`} onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
-                    <button className={`dropdown-link ${sectionActive.equipas ? "is-active" : ""}`} onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
-                    <button className={`dropdown-link ${sectionActive.outrasModalidades ? "is-active" : ""}`} onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
+                    <HeaderDropdownButton active={activeMenu === "socios"} currentSection={sectionActive.socios} label={t("header.nav.members")} onClick={() => toggleMenu("socios")} variant="dropdown" />
+                    <HeaderDropdownButton active={activeMenu === "patrocinios"} currentSection={sectionActive.patrocinios} label={t("header.nav.sponsors")} onClick={() => toggleMenu("patrocinios")} variant="dropdown" />
+                    <HeaderDropdownButton active={activeMenu === "equipas"} currentSection={sectionActive.equipas} label={t("header.nav.teams")} onClick={() => toggleMenu("equipas")} variant="dropdown" />
+                    <HeaderDropdownButton active={activeMenu === "outras-modalidades"} currentSection={sectionActive.outrasModalidades} label={t("header.nav.otherSports")} onClick={() => toggleMenu("outras-modalidades")} variant="dropdown" />
                     {isStaff && (
                         <Link className={`dropdown-link ${sectionActive.admin ? "is-active" : ""}`} to="/admin" onClick={closeMenus}>
                             {t("header.nav.admin")}
@@ -242,6 +242,27 @@ export default function Header() {
                 </nav>
             </div>
         </header>
+    );
+}
+
+function HeaderDropdownButton({
+    active,
+    currentSection,
+    label,
+    onClick,
+    variant,
+}: {
+    active: boolean;
+    currentSection: boolean;
+    label: string;
+    onClick: () => void;
+    variant: "nav" | "dropdown";
+}) {
+    return (
+        <button className={`${variant === "nav" ? "nav-link" : "dropdown-link"} header-dropdown-trigger ${currentSection ? "is-active" : ""}`} onClick={onClick} type="button">
+            <span>{label}</span>
+            <ChevronDown className={`header-dropdown-chevron ${active ? "is-open" : ""}`} size={15} aria-hidden="true" />
+        </button>
     );
 }
 
