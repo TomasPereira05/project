@@ -30,12 +30,12 @@ INSERT INTO jagoz.equipment_placement (
 INSERT INTO jagoz.pub_option (
     code, label, available, free, occupied, price, sort_order
 ) VALUES
-    ('LONA_3X0_8', 'Lona 3x0.8', 37, 32, 5, 30000, 1),
-    ('LONA_5X2_3', 'Lona 5x2.3', 10, 10, 0, 75000, 2),
-    ('LONA_3_80X1_3', 'Lona 3.8x1.3', 6, 5, 1, 60000, 3),
-    ('OUTDOOR_2_8X1_3', 'Outdoor 2.8x1.3', 12, 10, 2, 120000, 4),
-    ('OUTDOOR_3_8X1_3', 'Outdoor 3.8x1.3', 4, 4, 0, 135000, 5),
-    ('OUTDOOR_3_8X1_8', 'Outdoor 3.8x1.8', 4, 3, 1, 150000, 6);
+    ('LONA_3X0_8', 'Lona 3mx0.8m', 37, 32, 5, 30000, 1),
+    ('LONA_5X2_3', 'Lona 5mx2.3m', 10, 10, 0, 75000, 2),
+    ('LONA_3_80X1_3', 'Lona 3.8mx1.3m', 6, 5, 1, 60000, 3),
+    ('OUTDOOR_2_8X1_3', 'Outdoor 2.8mx1.3m', 12, 10, 2, 120000, 4),
+    ('OUTDOOR_3_8X1_3', 'Outdoor 3.8mx1.3m', 4, 4, 0, 135000, 5),
+    ('OUTDOOR_3_8X1_8', 'Outdoor 3.8mx1.8m', 4, 3, 1, 150000, 6);
 
 -- =========================
 -- TEAM CATEGORIES

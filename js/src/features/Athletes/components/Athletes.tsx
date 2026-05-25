@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   Bell,
   ChevronDown,
@@ -45,6 +45,8 @@ function statusColor(status: AthleteStatus): string {
 
 export default function Athletes() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const athleteBasePath = location.pathname.startsWith("/admin") ? "/admin/athletes" : "/athletes";
   const [pendingOpen, setPendingOpen] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
@@ -100,7 +102,7 @@ export default function Athletes() {
               </p>
             </div>
             <div className="athlete-header-actions">
-              <Link to="/athletes/register" className="athlete-primary-link-compact">
+              <Link to={`${athleteBasePath}/register`} className="athlete-primary-link-compact">
                 <Plus size={18} />
                 {t("athletes.list.newRegistration")}
               </Link>
@@ -152,7 +154,7 @@ export default function Athletes() {
                             <span>{athlete.teamCategoryLabel}</span>
                           </div>
                         </div>
-                        <Link className="athlete-btn-evaluate" to={`/athletes/${athlete.athleteId}`}>
+                        <Link className="athlete-btn-evaluate" to={`${athleteBasePath}/${athlete.athleteId}`}>
                           {t("athletes.list.pending.evaluate")}
                         </Link>
                       </div>
@@ -295,13 +297,13 @@ export default function Athletes() {
                             <td className="athlete-td-right">
                               <div className="athlete-row-actions">
                                 <Link
-                                  to={`/athletes/${athlete.athleteId}/edit`}
+                                  to={`${athleteBasePath}/${athlete.athleteId}/edit`}
                                   className="athlete-btn-table-edit"
                                 >
                                   {t("athletes.common.edit")}
                                 </Link>
                                 <Link
-                                  to={`/athletes/${athlete.athleteId}`}
+                                  to={`${athleteBasePath}/${athlete.athleteId}`}
                                   className="athlete-action-btn"
                                 >
                                   {t("athletes.common.view")}

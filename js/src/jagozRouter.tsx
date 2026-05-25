@@ -35,6 +35,7 @@ import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
 import { UserPage, UsersLayout } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
+import { AdminHome, AdminLayout } from "./features/admin";
 
 const router = createBrowserRouter([
   {
@@ -217,6 +218,74 @@ const router = createBrowserRouter([
             </Require>
           </AuthRequire>
         ),
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: (
+      <AuthRequire>
+        <Require allowAdmin allowSecretaria>
+          <AdminLayout />
+        </Require>
+      </AuthRequire>
+    ),
+    children: [
+      {
+        index: true,
+        element: <AdminHome />,
+      },
+      {
+        path: "members",
+        element: <Members />,
+      },
+      {
+        path: "members/create",
+        element: <CreateMembers />,
+      },
+      {
+        path: "members/:memberId",
+        element: <MemberPage />,
+      },
+      {
+        path: "members/:memberId/edit",
+        element: <UpdateMember />,
+      },
+      {
+        path: "athletes",
+        element: <Athletes />,
+      },
+      {
+        path: "athletes/register",
+        element: <CreateAthlete />,
+      },
+      {
+        path: "athletes/:athleteId",
+        element: <AthletePage />,
+      },
+      {
+        path: "athletes/:athleteId/edit",
+        element: <UpdateAthlete />,
+      },
+      {
+        path: "team-settings",
+        element: <TeamSettings />,
+      },
+      {
+        path: "sponsors/approvals",
+        element: <SponsorApprovals />,
+      },
+      {
+        path: "sponsors/settings",
+        element: <SponsorSettings />,
+      },
+      {
+        path: "sponsors/create",
+        element: <SponsorCreate />,
+      },
+      {
+        path: "sponsors/details/:sponsorshipId",
+        element: <SponsorshipDetails />,
       },
     ],
   },

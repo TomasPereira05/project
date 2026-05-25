@@ -49,6 +49,18 @@
     @apply text-sm font-semibold uppercase tracking-wide text-slate-700 hover:text-primary transition-colors;
   }
 
+  .header-dropdown-trigger {
+    @apply inline-flex items-center gap-1.5;
+  }
+
+  .header-dropdown-chevron {
+    @apply transition-transform duration-200 ease-out;
+  }
+
+  .header-dropdown-chevron.is-open {
+    @apply rotate-180;
+  }
+
   .nav-link.is-active,
   .dropdown-link.is-active {
     @apply text-primary;

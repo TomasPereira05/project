@@ -14,7 +14,8 @@
       "members": "Members",
       "sponsors": "Sponsorships",
       "teams": "Teams",
-      "otherSports": "Other sports"
+      "otherSports": "Sports",
+      "admin": "Administration"
     },
     "auth": {
       "login": "Sign in",
@@ -898,6 +899,44 @@
         "toggleCategory": "Could not change the category status.",
         "reorderGroups": "Could not reorder the groups.",
         "reorderCategories": "Could not reorder the categories."
+      }
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "eyebrow": "Back office",
+      "title": "Administration",
+      "aria": "Administration navigation"
+    },
+    "nav": {
+      "overview": "Overview",
+      "members": "Members",
+      "athletes": "Athletes",
+      "teams": "Teams",
+      "sponsorApprovals": "Sponsorships",
+      "sponsorSettings": "Sponsorship table"
+    },
+    "home": {
+      "eyebrow": "Back office",
+      "title": "Administration",
+      "description": "Club management area."
+    },
+    "cards": {
+      "members": {
+        "title": "Members",
+        "description": "Manage requests, profiles, and member status."
+      },
+      "athletes": {
+        "title": "Athletes",
+        "description": "Review registrations and inspect registered athletes."
+      },
+      "sponsors": {
+        "title": "Sponsorships",
+        "description": "Approve requests, mark payments, and view details."
+      },
+      "settings": {
+        "title": "Settings",
+        "description": "Update available options, prices, and placements."
       }
     }
   }

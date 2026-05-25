@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Eye, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatCurrency } from "../../../shared/utils";
@@ -10,7 +10,9 @@ import { orderSponsorApprovalItems, sponsorshipStatusClass, sponsorshipStatusLab
 export default function SponsorApprovals() {
   const { t } = useTranslation();
   const { role } = useAuth();
+  const location = useLocation();
   const canManage = role === "ADMIN" || role === "SECRETARIA";
+  const sponsorAdminBasePath = location.pathname.startsWith("/admin") ? "/admin/sponsors" : "/sponsors";
   const [page, setPage] = useState(1);
   const { errorMessage, isLoading, items, pageSize, runAction, totalItems, totalPages } = useSponsorApprovals(canManage, page);
   const orderedItems = useMemo(() => orderSponsorApprovalItems(items), [items]);
@@ -38,7 +40,7 @@ export default function SponsorApprovals() {
             <h1 className="sponsor-panel-title">{t("sponsors.approvals.title")}</h1>
             <p className="sponsor-muted-text">{t("sponsors.approvals.description")}</p>
           </div>
-          <Link className="sponsor-button-secondary" to="/sponsors/settings">
+          <Link className="sponsor-button-secondary" to={`${sponsorAdminBasePath}/settings`}>
             {t("sponsors.approvals.settingsLink")}
           </Link>
         </section>
@@ -76,7 +78,7 @@ export default function SponsorApprovals() {
                       </p>
                     </div>
                     <div className="sponsor-contract-actions">
-                      <Link className="sponsor-button-secondary" to={`/sponsors/my/${sponsorship.sponsorshipId}`}>
+                      <Link className="sponsor-button-secondary" to={`${sponsorAdminBasePath}/details/${sponsorship.sponsorshipId}`}>
                         <Eye size={16} />
                         {t("sponsors.approvals.actions.details")}
                       </Link>

@@ -10,6 +10,7 @@
 @import "./features/Athletes/styles/Athletes.css";
 @import "./features/sponsors/styles/Sponsors.css";
 @import "./features/User/styles/User.css";
+@import "./features/admin/styles/Admin.css";
 
 @tailwind base;
 @tailwind components;

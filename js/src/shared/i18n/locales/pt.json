@@ -14,7 +14,8 @@
       "members": "Sócios",
       "sponsors": "Patrocínios",
       "teams": "Equipas",
-      "otherSports": "Outras modalidades"
+      "otherSports": "Modalidades",
+      "admin": "Administração"
     },
     "auth": {
       "login": "Entrar",
@@ -898,6 +899,44 @@
         "toggleCategory": "Não foi possível alterar o estado da categoria.",
         "reorderGroups": "Não foi possível reordenar os grupos.",
         "reorderCategories": "Não foi possível reordenar as categorias."
+      }
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "eyebrow": "Backoffice",
+      "title": "Administração",
+      "aria": "Navegação de administração"
+    },
+    "nav": {
+      "overview": "Visão geral",
+      "members": "Sócios",
+      "athletes": "Atletas",
+      "teams": "Equipas",
+      "sponsorApprovals": "Patrocínios",
+      "sponsorSettings": "Tabela de patrocínios"
+    },
+    "home": {
+      "eyebrow": "Backoffice",
+      "title": "Administração",
+      "description": "Área de gestão do clube."
+    },
+    "cards": {
+      "members": {
+        "title": "Sócios",
+        "description": "Gerir pedidos, fichas e estado dos sócios."
+      },
+      "athletes": {
+        "title": "Atletas",
+        "description": "Avaliar inscrições e consultar atletas registados."
+      },
+      "sponsors": {
+        "title": "Patrocínios",
+        "description": "Aprovar pedidos, marcar pagamentos e ver detalhes."
+      },
+      "settings": {
+        "title": "Configurações",
+        "description": "Atualizar opções, preços e colocações disponíveis."
       }
     }
   }
