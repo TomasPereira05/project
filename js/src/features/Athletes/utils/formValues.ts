@@ -4,7 +4,6 @@ export type AthleteUpdateForm = {
   teamCategoryId: number;
   jerseyNumber: string;
   position: string;
-  photoUrl: string;
   school: string;
   schoolYear: string;
   schoolClass: string;
@@ -18,7 +17,6 @@ export function stateFromAthlete(a: AthleteAdmin): AthleteUpdateForm {
     teamCategoryId: a.teamCategoryId,
     jerseyNumber: a.jerseyNumber !== null ? String(a.jerseyNumber) : "",
     position: a.position ?? "",
-    photoUrl: a.photoUrl ?? "",
     school: a.school ?? "",
     schoolYear: a.schoolYear ?? "",
     schoolClass: a.schoolClass ?? "",
@@ -33,7 +31,6 @@ export function toUpdateRequest(values: AthleteUpdateForm): AthleteUpdateRequest
   return {
     jerseyNumber: Number.isFinite(parsedJersey) ? (parsedJersey as number) : null,
     position: values.position.trim() || null,
-    photoUrl: values.photoUrl.trim() || null,
     school: values.school.trim() || null,
     schoolYear: values.schoolYear.trim() || null,
     schoolClass: values.schoolClass.trim() || null,
@@ -59,7 +56,6 @@ export type RegisterValues = {
   numeroUtente: string;
   bi: string;
   biExpirationDate: string;
-  photoUrl: string;
   teamCategoryId: string;
   lastClub: string;
   season: string;
@@ -106,7 +102,6 @@ export const initialRegisterValues: RegisterValues = {
   numeroUtente: "",
   bi: "",
   biExpirationDate: "",
-  photoUrl: "",
   teamCategoryId: "",
   lastClub: "",
   season: "",
@@ -194,7 +189,6 @@ export function toAthleteInput(values: RegisterValues): AthleteInput {
     lastClub: values.lastClub.trim() || null,
     season: values.season.trim() || null,
     teamCategoryId: Number(values.teamCategoryId),
-    photoUrl: values.photoUrl.trim() || null,
     hasFamilyInClub: values.hasFamilyInClub,
     schoolCertificationAccepted: values.schoolCertificationAccepted,
     guardians: buildGuardians(values),

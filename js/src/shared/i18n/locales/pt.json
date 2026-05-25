@@ -2,6 +2,18 @@
   "common": {
     "soon": "em breve"
   },
+  "files": {
+    "empty": "Ainda nao foi carregado nenhum ficheiro.",
+    "actions": {
+      "upload": "Carregar",
+      "uploading": "A carregar...",
+      "uploadPhoto": "Carregar foto"
+    },
+    "kinds": {
+      "ATHLETE_ID_CARD": "Cartao de cidadao",
+      "ATHLETE_MEDICAL_EXAM": "Exame medico"
+    }
+  },
   "header": {
     "logoAlt": "Logotipo",
     "clubSubtitle": "Grupo Desportivo União Ericeirense",

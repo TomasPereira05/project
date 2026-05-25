@@ -109,6 +109,14 @@ object Uris {
         const val STRIPE_WEBHOOK = "$PREFIX/payments/stripe/webhook"
     }
 
+    object Files {
+        const val LIST = "$PREFIX/files"
+        const val UPLOAD = "$PREFIX/files"
+        const val CONTENT = "$PREFIX/files/{fileId}/content"
+        const val PUBLIC_ATHLETE_PHOTO = "$PREFIX/files/{fileId}/public-athlete-photo"
+        const val DELETE = "$PREFIX/files/{fileId}"
+    }
+
     object Team {
         const val GROUPS_ACTIVE = "$PREFIX/teams/groups/active"
         const val GROUPS = "$PREFIX/teams/groups"

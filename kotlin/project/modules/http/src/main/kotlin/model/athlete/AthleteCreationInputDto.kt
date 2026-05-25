@@ -41,7 +41,6 @@ data class AthleteCreationInputDto(
     val lastClub: String?,
     val season: String?,
     val teamCategoryId: Long,
-    val photoUrl: String?,
     val hasFamilyInClub: Boolean,
     val schoolCertificationAccepted: Boolean,
     // Agregado familiar
@@ -90,7 +89,6 @@ fun AthleteCreationInputDto.toRegistrationInput(
         lastClub = lastClub,
         season = season,
         teamCategoryId = teamCategoryId,
-        photoUrl = photoUrl,
         hasFamilyInClub = hasFamilyInClub,
         schoolCertificationAccepted = schoolCertificationAccepted,
         guardians = guardians.map { it.toServiceInput() },

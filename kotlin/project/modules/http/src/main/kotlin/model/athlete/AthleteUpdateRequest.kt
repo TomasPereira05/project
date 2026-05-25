@@ -10,7 +10,6 @@ package pt.isel.jagoz.http.model.athlete
 data class AthleteUpdateRequest(
     val jerseyNumber: Int?,
     val position: String?,
-    val photoUrl: String?,
     val school: String?,
     val schoolYear: String?,
     val schoolClass: String?,
