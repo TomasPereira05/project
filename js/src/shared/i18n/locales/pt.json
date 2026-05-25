@@ -712,6 +712,14 @@
       "title": "Gestão de Atletas",
       "description": "Aprove ou rejeite inscrições pendentes e consulte o estado de cada atleta.",
       "newRegistration": "Nova inscrição",
+      "filters": {
+        "search": "Pesquisar",
+        "searchPlaceholder": "Nº de sócio ou nome",
+        "button": "Filtros",
+        "clear": "Limpar filtros",
+        "noCategories": "Sem escalões disponíveis.",
+        "empty": "Não existem atletas para os filtros selecionados."
+      },
       "errors": {
         "load": "Não foi possível carregar a lista de atletas."
       },

@@ -124,7 +124,8 @@ class SponsorshipService(
                                         it.season == validated.value.season &&
                                         it.teamCategoryId == validated.value.teamCategoryId &&
                                         it.placementId == validated.value.placementId &&
-                                        it.status in setOf(
+                                        it.status in
+                                        setOf(
                                             SponsorshipStatus.APROVADO,
                                             SponsorshipStatus.PAGO,
                                             SponsorshipStatus.ATIVO,

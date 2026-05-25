@@ -5,8 +5,8 @@ import pt.isel.jagoz.domain.sponsor.EquipmentPlacement
 import pt.isel.jagoz.domain.sponsor.OtherSport
 import pt.isel.jagoz.domain.sponsor.PubOption
 import pt.isel.jagoz.domain.sponsor.SponsorError
-import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
 import pt.isel.jagoz.domain.sponsor.SponsorType
+import pt.isel.jagoz.domain.sponsor.SponsorshipStatus
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager

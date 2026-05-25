@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import LabeledField from "../../../shared/components/LabeledField";
 import type { TeamCatalogCategory, TeamGroup } from "../types";
 import { useTeamSettings } from "../hooks";
+import AthletePageBackground from "./AthletePageBackground";
 
 export default function TeamSettings() {
   const { t } = useTranslation();
@@ -35,16 +36,17 @@ export default function TeamSettings() {
   } = useTeamSettings();
 
   return (
-    <main className="sponsor-page">
-      <div className="sponsor-shell">
-        <section className="sponsor-page-header">
+    <main className="athlete-cfg-page">
+      <AthletePageBackground />
+      <div className="athlete-cfg-shell">
+        <section className="athlete-cfg-page-header">
           <div>
-            <p className="sponsor-section-eyebrow">{t("athletes.teamSettings.eyebrow")}</p>
-            <h1 className="sponsor-panel-title">{t("athletes.teamSettings.title")}</h1>
-            <p className="sponsor-muted-text">{t("athletes.teamSettings.description")}</p>
+            <p className="athlete-cfg-section-eyebrow">{t("athletes.teamSettings.eyebrow")}</p>
+            <h1 className="athlete-cfg-panel-title">{t("athletes.teamSettings.title")}</h1>
+            <p className="athlete-cfg-muted-text">{t("athletes.teamSettings.description")}</p>
           </div>
           <button
-            className="sponsor-button-secondary"
+            className="athlete-cfg-button-secondary"
             onClick={() => setShowInactive((current) => !current)}
             type="button"
           >
@@ -54,14 +56,14 @@ export default function TeamSettings() {
         </section>
 
         {errorMessage ? (
-          <div className="sponsor-feedback sponsor-feedback-error">
+          <div className="athlete-cfg-feedback athlete-cfg-feedback-error">
             <ShieldAlert size={18} />
             <span>{errorMessage}</span>
           </div>
         ) : null}
-        {notice ? <div className="sponsor-feedback sponsor-feedback-success">{notice}</div> : null}
+        {notice ? <div className="athlete-cfg-feedback athlete-cfg-feedback-success">{notice}</div> : null}
 
-        <section className="team-settings-management-grid">
+        <section className="athlete-tcfg-management-grid">
           <SettingsPanel
             emptyMessage={t("athletes.teamSettings.emptyGroups")}
             isLoading={isLoading}
@@ -69,22 +71,22 @@ export default function TeamSettings() {
             title={t("athletes.teamSettings.groups")}
             eyebrow={t("athletes.teamSettings.teamGroups")}
             form={
-              <div className="sponsor-inline-form team-settings-inline-form">
+              <div className="athlete-cfg-inline-form athlete-tcfg-inline-form">
                 <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
                   <input
-                    className="sponsor-input"
+                    className="athlete-cfg-input"
                     value={groupDraft.code}
                     onChange={(event) => setGroupDraft((current) => ({ ...current, code: event.target.value }))}
                   />
                 </LabeledField>
                 <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
                   <input
-                    className="sponsor-input"
+                    className="athlete-cfg-input"
                     value={groupDraft.label}
                     onChange={(event) => setGroupDraft((current) => ({ ...current, label: event.target.value }))}
                   />
                 </LabeledField>
-                <button className="sponsor-button-primary" onClick={handleCreateGroup} type="button">
+                <button className="athlete-cfg-button-primary" onClick={handleCreateGroup} type="button">
                   {t("athletes.teamSettings.actions.add")}
                 </button>
               </div>
@@ -110,24 +112,24 @@ export default function TeamSettings() {
             title={t("athletes.teamSettings.categoriesTitle")}
             eyebrow={t("athletes.teamSettings.categories")}
             form={
-              <div className="sponsor-inline-form team-settings-inline-form">
+              <div className="athlete-cfg-inline-form athlete-tcfg-inline-form">
                 <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
                   <input
-                    className="sponsor-input"
+                    className="athlete-cfg-input"
                     value={categoryDraft.code}
                     onChange={(event) => setCategoryDraft((current) => ({ ...current, code: event.target.value }))}
                   />
                 </LabeledField>
                 <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
                   <input
-                    className="sponsor-input"
+                    className="athlete-cfg-input"
                     value={categoryDraft.label}
                     onChange={(event) => setCategoryDraft((current) => ({ ...current, label: event.target.value }))}
                   />
                 </LabeledField>
                 <LabeledField label={t("athletes.teamSettings.group")}>
                   <select
-                    className="sponsor-input"
+                    className="athlete-cfg-input"
                     value={categoryDraft.teamGroupId}
                     onChange={(event) => setCategoryDraft((current) => ({ ...current, teamGroupId: event.target.value }))}
                   >
@@ -140,7 +142,7 @@ export default function TeamSettings() {
                     ))}
                   </select>
                 </LabeledField>
-                <button className="sponsor-button-primary" onClick={handleCreateCategory} type="button">
+                <button className="athlete-cfg-button-primary" onClick={handleCreateCategory} type="button">
                   {t("athletes.teamSettings.actions.add")}
                 </button>
               </div>
@@ -183,22 +185,22 @@ function SettingsPanel({
   title: string;
 }) {
   return (
-    <section className="sponsor-panel">
-      <div className="sponsor-panel-header">
+    <section className="athlete-cfg-panel">
+      <div className="athlete-cfg-panel-header">
         <div>
-          <p className="sponsor-section-eyebrow">{eyebrow}</p>
-          <h2 className="sponsor-panel-title">{title}</h2>
+          <p className="athlete-cfg-section-eyebrow">{eyebrow}</p>
+          <h2 className="athlete-cfg-panel-title">{title}</h2>
         </div>
       </div>
 
       {form}
 
       {isLoading ? (
-        <div className="sponsor-empty-card">{loadingMessage}</div>
+        <div className="athlete-cfg-empty-card">{loadingMessage}</div>
       ) : children.length === 0 ? (
-        <div className="sponsor-empty-card">{emptyMessage}</div>
+        <div className="athlete-cfg-empty-card">{emptyMessage}</div>
       ) : (
-        <div className="sponsor-catalog-list">{children}</div>
+        <div className="athlete-cfg-catalog-list">{children}</div>
       )}
     </section>
   );
@@ -238,26 +240,26 @@ function TeamGroupRow({
 
   return (
     <div
-      className={`sponsor-catalog-row team-settings-draggable-row ${group.active ? "" : "is-muted"} ${isDragging ? "is-dragging" : ""}`}
+      className={`athlete-cfg-catalog-row athlete-tcfg-draggable-row ${group.active ? "" : "is-muted"} ${isDragging ? "is-dragging" : ""}`}
       draggable
       onDragOver={(event) => event.preventDefault()}
       onDragStart={onDragStart}
       onDrop={onDrop}
     >
-      <div className="sponsor-catalog-reorder" title={t("athletes.teamSettings.dragToReorder")}>
+      <div className="athlete-cfg-catalog-reorder" title={t("athletes.teamSettings.dragToReorder")}>
         <GripVertical size={16} />
       </div>
-      <div className="sponsor-catalog-fields team-settings-row-fields">
+      <div className="athlete-cfg-catalog-fields athlete-tcfg-row-fields">
         <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
-          <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
+          <input className="athlete-cfg-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         </LabeledField>
         <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
-          <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
+          <input className="athlete-cfg-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
         </LabeledField>
       </div>
-      <div className="sponsor-catalog-actions">
+      <div className="athlete-cfg-catalog-actions">
         <button
-          className="sponsor-button-secondary"
+          className="athlete-cfg-button-secondary"
           onClick={() => {
             if (isEditing) {
               resetEdit();
@@ -270,7 +272,7 @@ function TeamGroupRow({
         </button>
         {isEditing ? (
           <button
-            className="sponsor-button-primary"
+            className="athlete-cfg-button-primary"
             onClick={() => {
               onSave({ ...group, code, label });
               setIsEditing(false);
@@ -280,7 +282,7 @@ function TeamGroupRow({
             {t("athletes.teamSettings.actions.save")}
           </button>
         ) : null}
-        <button className="sponsor-button-ghost" onClick={onToggleActive} type="button">
+        <button className="athlete-cfg-button-ghost" onClick={onToggleActive} type="button">
           {group.active ? t("athletes.teamSettings.actions.deactivate") : t("athletes.teamSettings.actions.activate")}
         </button>
       </div>
@@ -327,24 +329,24 @@ function TeamCategoryRow({
 
   return (
     <div
-      className={`sponsor-catalog-row team-settings-draggable-row ${category.active ? "" : "is-muted"} ${isDragging ? "is-dragging" : ""}`}
+      className={`athlete-cfg-catalog-row athlete-tcfg-draggable-row ${category.active ? "" : "is-muted"} ${isDragging ? "is-dragging" : ""}`}
       draggable
       onDragOver={(event) => event.preventDefault()}
       onDragStart={onDragStart}
       onDrop={onDrop}
     >
-      <div className="sponsor-catalog-reorder" title={t("athletes.teamSettings.dragToReorder")}>
+      <div className="athlete-cfg-catalog-reorder" title={t("athletes.teamSettings.dragToReorder")}>
         <GripVertical size={16} />
       </div>
-      <div className="sponsor-catalog-fields team-settings-row-fields">
+      <div className="athlete-cfg-catalog-fields athlete-tcfg-row-fields">
         <LabeledField label={t("athletes.teamSettings.code")} tooltip={codeTooltip}>
-          <input className="sponsor-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
+          <input className="athlete-cfg-input" disabled={!isEditing} value={code} onChange={(event) => setCode(event.target.value)} />
         </LabeledField>
         <LabeledField label={t("athletes.teamSettings.label")} tooltip={labelTooltip}>
-          <input className="sponsor-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
+          <input className="athlete-cfg-input" disabled={!isEditing} value={label} onChange={(event) => setLabel(event.target.value)} />
         </LabeledField>
         <LabeledField label={t("athletes.teamSettings.group")}>
-          <select className="sponsor-input" disabled={!isEditing} value={teamGroupId} onChange={(event) => setTeamGroupId(event.target.value)}>
+          <select className="athlete-cfg-input" disabled={!isEditing} value={teamGroupId} onChange={(event) => setTeamGroupId(event.target.value)}>
             {groups.map((group) => (
               <option key={group.teamGroupId} value={group.teamGroupId}>
                 {group.label}
@@ -354,9 +356,9 @@ function TeamCategoryRow({
           </select>
         </LabeledField>
       </div>
-      <div className="sponsor-catalog-actions">
+      <div className="athlete-cfg-catalog-actions">
         <button
-          className="sponsor-button-secondary"
+          className="athlete-cfg-button-secondary"
           onClick={() => {
             if (isEditing) {
               resetEdit();
@@ -369,7 +371,7 @@ function TeamCategoryRow({
         </button>
         {isEditing ? (
           <button
-            className="sponsor-button-primary"
+            className="athlete-cfg-button-primary"
             onClick={() => {
               const parsedGroupId = Number.parseInt(teamGroupId, 10);
               if (Number.isNaN(parsedGroupId)) {
@@ -383,7 +385,7 @@ function TeamCategoryRow({
             {t("athletes.teamSettings.actions.save")}
           </button>
         ) : null}
-        <button className="sponsor-button-ghost" onClick={onToggleActive} type="button">
+        <button className="athlete-cfg-button-ghost" onClick={onToggleActive} type="button">
           {category.active ? t("athletes.teamSettings.actions.deactivate") : t("athletes.teamSettings.actions.activate")}
         </button>
       </div>

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.AthleteError
+import pt.isel.jagoz.domain.athlete.AthleteStatus
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.utils.handle
@@ -131,9 +132,19 @@ class AthleteController(
         user: AuthenticatedUser,
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "8") size: Int,
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) teamCategory: List<Long>?,
+        @RequestParam(required = false) status: List<AthleteStatus>?,
     ): ResponseEntity<*> {
         requireSecretariaOrAdmin(user)?.let { return it }
-        val athletesPage = athleteService.getAthletesPage(page, size)
+        val athletesPage =
+            athleteService.getAthletesPage(
+                page,
+                size,
+                search,
+                teamCategory ?: emptyList(),
+                status ?: emptyList(),
+            )
         val membersById = athleteService.loadMembersFor(athletesPage.items)
         val itemDtos =
             athletesPage.items.mapNotNull { a ->
