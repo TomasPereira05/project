@@ -24,6 +24,7 @@ export default function Header() {
         patrocinios: location.pathname.startsWith("/sponsors"),
         equipas: location.pathname.startsWith("/athletes"),
         outrasModalidades: location.pathname.startsWith("/other-sports"),
+        admin: location.pathname.startsWith("/admin"),
     };
 
     useEffect(() => {
@@ -99,6 +100,11 @@ export default function Header() {
                         <button className={`nav-link ${sectionActive.patrocinios ? "is-active" : ""}`} onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
                         <button className={`nav-link ${sectionActive.equipas ? "is-active" : ""}`} onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
                         <button className={`nav-link ${sectionActive.outrasModalidades ? "is-active" : ""}`} onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
+                        {isStaff && (
+                            <Link className={`nav-link ${sectionActive.admin ? "is-active" : ""}`} to="/admin" onClick={closeMenus}>
+                                {t("header.nav.admin")}
+                            </Link>
+                        )}
                     </nav>
 
                     <div className="header-actions">
@@ -131,6 +137,11 @@ export default function Header() {
                     <button className={`dropdown-link ${sectionActive.patrocinios ? "is-active" : ""}`} onClick={() => toggleMenu("patrocinios")}>{t("header.nav.sponsors")}</button>
                     <button className={`dropdown-link ${sectionActive.equipas ? "is-active" : ""}`} onClick={() => toggleMenu("equipas")}>{t("header.nav.teams")}</button>
                     <button className={`dropdown-link ${sectionActive.outrasModalidades ? "is-active" : ""}`} onClick={() => toggleMenu("outras-modalidades")}>{t("header.nav.otherSports")}</button>
+                    {isStaff && (
+                        <Link className={`dropdown-link ${sectionActive.admin ? "is-active" : ""}`} to="/admin" onClick={closeMenus}>
+                            {t("header.nav.admin")}
+                        </Link>
+                    )}
                 </nav>
                 <div className="dropdown-actions">
                     <LanguageSwitcher language={language} onChange={handleLanguageChange} label={t("header.aria.language")} />

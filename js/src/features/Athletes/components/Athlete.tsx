@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, CheckCircle2, PencilLine, XCircle } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   approveAthlete,
@@ -55,8 +55,10 @@ function PageWrapper({ children }: { children: ReactNode }) {
 export default function AthletePage() {
   const { t } = useTranslation();
   const { athleteId } = useParams();
+  const location = useLocation();
   const { role } = useAuth();
   const adminView = isAdminLike(role);
+  const athleteBasePath = location.pathname.startsWith("/admin") ? "/admin/athletes" : "/athletes";
 
   const [publicDto, setPublicDto] = useState<AthleteDetail | null>(null);
   const [adminDto, setAdminDto] = useState<AthleteAdmin | null>(null);
@@ -150,7 +152,7 @@ export default function AthletePage() {
         <div className="member-alert-error">
           <p className="member-alert-text">{errorMessage}</p>
         </div>
-        <Link className="member-btn-back" to="/athletes">
+        <Link className="member-btn-back" to={athleteBasePath}>
           <ArrowLeft size={16} />
           {t("athletes.common.back")}
         </Link>
@@ -165,6 +167,7 @@ export default function AthletePage() {
           athlete: adminDto,
           feedback,
           errorMessage,
+          athleteBasePath,
           onToggle: handleToggleActive,
           onApprove: handleApprove,
           onReject: handleReject,
@@ -189,6 +192,7 @@ function renderAdminContent({
   athlete,
   feedback,
   errorMessage,
+  athleteBasePath,
   onToggle,
   onApprove,
   onReject,
@@ -197,6 +201,7 @@ function renderAdminContent({
   athlete: AthleteAdmin;
   feedback: string;
   errorMessage: string;
+  athleteBasePath: string;
   onToggle: () => void;
   onApprove: () => void;
   onReject: () => void;
@@ -206,7 +211,7 @@ function renderAdminContent({
   return (
     <>
       <div className="member-topbar">
-        <Link to="/athletes" className="member-btn-back">
+        <Link to={athleteBasePath} className="member-btn-back">
           <ArrowLeft size={18} />
           {t("athletes.common.back")}
         </Link>
@@ -264,7 +269,7 @@ function renderAdminContent({
               </>
             ) : (
               <>
-                <Link className="member-btn-primary-sm" to={`/athletes/${athlete.athleteId}/edit`}>
+                <Link className="member-btn-primary-sm" to={`${athleteBasePath}/${athlete.athleteId}/edit`}>
                   <PencilLine size={18} />
                   {t("athletes.detail.actions.update")}
                 </Link>

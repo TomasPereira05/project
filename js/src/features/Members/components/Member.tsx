@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, PencilLine, Shield, User, Wallet, XCircle, ArrowLeft, Building2, MapPin, Mail, Phone, Calendar, CreditCard } from "lucide-react";
-import { Link, useParams, Navigate } from "react-router-dom";
+import { Link, useLocation, useParams, Navigate } from "react-router-dom";
 import { useMemberDetail } from "../hooks";
 import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
@@ -13,9 +13,11 @@ const ALL_HISTORY_SEASONS = "all";
 export default function MemberPage() {
   const { t } = useTranslation();
   const { memberId } = useParams();
+  const location = useLocation();
   const { role, activeMemberId } = useAuth();
 
   const isAdmin = role === "ADMIN" || role === "SECRETARIA";
+  const memberBasePath = location.pathname.startsWith("/admin") ? "/admin/members" : "/members";
   const isSelf = activeMemberId === Number(memberId);
   const [historySeasonFilter, setHistorySeasonFilter] = useState("");
   const {
@@ -156,7 +158,7 @@ export default function MemberPage() {
             </div>
 
             <div className="member-profile-actions">
-              <Link className="member-btn-primary-sm" to={`/members/${member.memberId}/edit`}>
+              <Link className="member-btn-primary-sm" to={`${memberBasePath}/${member.memberId}/edit`}>
                 <PencilLine size={18} />
                 {t("members.detail.editProfile")}
               </Link>

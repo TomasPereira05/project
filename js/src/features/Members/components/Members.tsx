@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Search, Users, ShieldAlert } from "lucide-react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { MEMBERS_PAGE_SIZE, useMembersList } from "../hooks";
 import { memberStatusColor } from "../utils";
 import { formatDate } from "../../../shared/utils";
@@ -10,6 +10,8 @@ import { useAuth } from "../../../shared/hooks/useAuth";
 export default function Members() {
   const { t } = useTranslation();
   const { role, activeMemberId } = useAuth();
+  const location = useLocation();
+  const memberBasePath = location.pathname.startsWith("/admin") ? "/admin/members" : "/members";
 
   const [pendingOpen, setPendingOpen] = useState(false);
   const {
@@ -49,7 +51,7 @@ export default function Members() {
           </div>
 
           <div className="member-header-actions">
-            <Link to="/members/create" className="member-primary-link-compact">
+            <Link to={`${memberBasePath}/create`} className="member-primary-link-compact">
               <Plus size={18} />
               {t("members.list.newMember")}
             </Link>
@@ -94,7 +96,7 @@ export default function Members() {
                           <span>{member.city}</span>
                         </div>
                       </div>
-                      <Link className="member-btn-evaluate" to={`/members/${member.memberId}`}>
+                      <Link className="member-btn-evaluate" to={`${memberBasePath}/${member.memberId}`}>
                         {t("members.list.pending.evaluate")}
                       </Link>
                     </div>
@@ -179,10 +181,10 @@ export default function Members() {
                           </td>
                           <td className="member-td-right">
                             <div className="member-row-actions">
-                              <Link to={`/members/${member.memberId}/edit`} className="member-btn-table-edit">
+                              <Link to={`${memberBasePath}/${member.memberId}/edit`} className="member-btn-table-edit">
                                 {t("members.common.edit")}
                               </Link>
-                              <Link to={`/members/${member.memberId}`} className="member-action-btn">
+                              <Link to={`${memberBasePath}/${member.memberId}`} className="member-action-btn">
                                 {t("members.common.view")}
                               </Link>
                             </div>

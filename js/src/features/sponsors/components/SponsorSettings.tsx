@@ -1,7 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { GripVertical, ShieldAlert } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   upsertTeamCategoryPriceOverride,
   upsertTeamGroupSponsorshipPrice,
@@ -16,6 +16,8 @@ type CatalogItem = PubOption | EquipmentPlacement | OtherSport;
 
 export default function SponsorSettings() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const sponsorAdminBasePath = location.pathname.startsWith("/admin") ? "/admin/sponsors" : "/sponsors";
   const { catalogs, errorMessage: catalogErrorMessage, isLoading, refreshCatalogs } = useSponsorCatalogs({
     errorMessage: t("sponsors.settings.errors.load"),
   });
@@ -48,7 +50,7 @@ export default function SponsorSettings() {
             <h1 className="sponsor-panel-title">{t("sponsors.settings.title")}</h1>
             <p className="sponsor-muted-text">{t("sponsors.settings.description")}</p>
           </div>
-          <Link className="sponsor-button-secondary" to="/sponsors/approvals">
+          <Link className="sponsor-button-secondary" to={`${sponsorAdminBasePath}/approvals`}>
             {t("sponsors.settings.approvalsLink")}
           </Link>
         </section>

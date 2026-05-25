@@ -1,0 +1,87 @@
+@layer components {
+  .admin-layout {
+    @apply grid min-h-screen bg-slate-100 lg:grid-cols-[280px_minmax(0,1fr)];
+  }
+
+  .admin-sidebar {
+    @apply sticky top-0 z-20 flex max-h-screen flex-col gap-6 border-b border-border bg-white px-4 py-5 shadow-soft lg:border-b-0 lg:border-r;
+  }
+
+  .admin-sidebar-header {
+    @apply rounded-2xl border border-border bg-slate-50 p-4;
+  }
+
+  .admin-sidebar-header p {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-secondary;
+  }
+
+  .admin-sidebar-header strong {
+    @apply mt-1 block font-heading text-3xl uppercase tracking-tight text-text-primary;
+  }
+
+  .admin-sidebar-nav {
+    @apply flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0;
+  }
+
+  .admin-sidebar-link {
+    @apply inline-flex min-w-max items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-text-secondary transition hover:bg-muted hover:text-primary;
+  }
+
+  .admin-sidebar-link.active {
+    @apply bg-primary text-white shadow-soft hover:bg-primary hover:text-white;
+  }
+
+  .admin-content {
+    @apply min-w-0;
+  }
+
+  .admin-content .member-page,
+  .admin-content .sponsor-page {
+    @apply min-h-0 bg-transparent;
+  }
+
+  .admin-content .member-container,
+  .admin-content .sponsor-shell {
+    @apply max-w-none;
+  }
+
+  .admin-home {
+    @apply mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
+  }
+
+  .admin-home-header {
+    @apply rounded-[24px] border border-border bg-white p-6 shadow-soft;
+  }
+
+  .admin-home-header h1 {
+    @apply font-heading text-5xl uppercase tracking-tight text-text-primary;
+  }
+
+  .admin-home-header p:last-child {
+    @apply mt-2 max-w-3xl text-sm leading-6 text-text-secondary;
+  }
+
+  .admin-eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-secondary;
+  }
+
+  .admin-card-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
+  }
+
+  .admin-card {
+    @apply flex min-h-40 flex-col justify-between rounded-2xl border border-border bg-white p-5 text-text-primary shadow-soft transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card;
+  }
+
+  .admin-card svg {
+    @apply text-primary;
+  }
+
+  .admin-card strong {
+    @apply font-heading text-2xl uppercase tracking-tight;
+  }
+
+  .admin-card p {
+    @apply mt-2 text-sm leading-6 text-text-secondary;
+  }
+}

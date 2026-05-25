@@ -9,6 +9,7 @@
 @import "./features/Members/styles/Members.css";
 @import "./features/sponsors/styles/Sponsors.css";
 @import "./features/User/styles/user.css";
+@import "./features/admin/styles/Admin.css";
 
 @tailwind base;
 @tailwind components;

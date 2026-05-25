@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Edit3, Save, X } from "lucide-react";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { centsFromEuroInput, euroInputFromCents, formatCurrency } from "../../../shared/utils";
@@ -17,11 +17,17 @@ import {
 export default function SponsorshipDetails() {
   const { t } = useTranslation();
   const { sponsorshipId } = useParams();
+  const location = useLocation();
   const { role } = useAuth();
   const { catalogs, errorMessage, feedback, handlePay, handleSave, isLoading, isPaying, isSaving, sponsor, sponsorship } =
     useSponsorshipDetails(sponsorshipId);
   const canManage = role === "ADMIN" || role === "SECRETARIA";
   const canPay = sponsorship?.status === "APROVADO";
+  const backPath = location.pathname.startsWith("/admin")
+    ? "/admin/sponsors/approvals"
+    : canManage
+      ? "/sponsors/approvals"
+      : "/sponsors/my";
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     email: "",
@@ -84,7 +90,7 @@ export default function SponsorshipDetails() {
               <h1 className="sponsor-panel-title">{t("sponsors.details.title")}</h1>
               <p className="sponsor-muted-text">{t("sponsors.details.description")}</p>
             </div>
-            <Link className="sponsor-button-secondary sponsor-detail-back" to={canManage ? "/sponsors/approvals" : "/sponsors/my"}>
+            <Link className="sponsor-button-secondary sponsor-detail-back" to={backPath}>
               {t("sponsors.common.back")}
             </Link>
           </header>

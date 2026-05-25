@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, ShieldAlert, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { listAllAdmin } from "..";
@@ -36,6 +36,8 @@ function statusColor(status: AthleteStatus): string {
 
 export default function Athletes() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const athleteBasePath = location.pathname.startsWith("/admin") ? "/admin/athletes" : "/athletes";
   const [athletes, setAthletes] = useState<AthleteAdmin[]>([]);
   const [page, setPage] = useState(1);
   const [totalAthletes, setTotalAthletes] = useState(0);
@@ -100,7 +102,7 @@ export default function Athletes() {
               </p>
             </div>
             <div className="member-header-actions">
-              <Link to="/athletes/register" className="member-primary-link-compact">
+              <Link to={`${athleteBasePath}/register`} className="member-primary-link-compact">
                 <Plus size={18} />
                 {t("athletes.list.newRegistration")}
               </Link>
@@ -152,7 +154,7 @@ export default function Athletes() {
                             <span>{athlete.teamCategoryLabel}</span>
                           </div>
                         </div>
-                        <Link className="member-btn-evaluate" to={`/athletes/${athlete.athleteId}`}>
+                        <Link className="member-btn-evaluate" to={`${athleteBasePath}/${athlete.athleteId}`}>
                           {t("athletes.list.pending.evaluate")}
                         </Link>
                       </div>
@@ -206,13 +208,13 @@ export default function Athletes() {
                           <td className="member-td-right">
                             <div className="member-row-actions">
                               <Link
-                                to={`/athletes/${athlete.athleteId}/edit`}
+                                to={`${athleteBasePath}/${athlete.athleteId}/edit`}
                                 className="member-btn-table-edit"
                               >
                                 {t("athletes.common.edit")}
                               </Link>
                               <Link
-                                to={`/athletes/${athlete.athleteId}`}
+                                to={`${athleteBasePath}/${athlete.athleteId}`}
                                 className="member-action-btn"
                               >
                                 {t("athletes.common.view")}

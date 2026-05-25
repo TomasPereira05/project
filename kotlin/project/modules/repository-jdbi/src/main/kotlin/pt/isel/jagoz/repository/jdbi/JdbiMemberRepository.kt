@@ -1,6 +1,7 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.statement.SqlStatement
 import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.repository.MemberRepository
@@ -144,7 +145,7 @@ class JdbiMemberRepository(
         return this
     }
 
-    private fun <T : org.jdbi.v3.core.statement.SqlStatement<T>> T.bindMemberFilters(
+    private fun <T : SqlStatement<T>> T.bindMemberFilters(
         search: String?,
         category: MemberCategory?,
     ): T {

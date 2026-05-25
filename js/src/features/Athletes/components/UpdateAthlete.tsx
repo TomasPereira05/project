@@ -1,5 +1,5 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { ArrowLeft, CheckCircle2, ShieldAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
@@ -59,6 +59,8 @@ function toUpdateRequest(values: FormState): AthleteUpdateRequest {
 export default function UpdateAthlete() {
   const { t } = useTranslation();
   const { athleteId } = useParams();
+  const location = useLocation();
+  const athleteBasePath = location.pathname.startsWith("/admin") ? "/admin/athletes" : "/athletes";
   const [athlete, setAthlete] = useState<AthleteAdmin | null>(null);
   const [categories, setCategories] = useState<TeamCatalogCategory[]>([]);
   const [values, setValues] = useState<FormState | null>(null);
@@ -180,7 +182,7 @@ export default function UpdateAthlete() {
                   {t("athletes.update.description", { name: athlete.member.completeName, memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}
                 </p>
               </div>
-              <Link className="member-btn-back" to={`/athletes/${athlete.athleteId}`}>
+              <Link className="member-btn-back" to={`${athleteBasePath}/${athlete.athleteId}`}>
                 <ArrowLeft size={18} />
                 {t("athletes.update.backToProfile")}
               </Link>
