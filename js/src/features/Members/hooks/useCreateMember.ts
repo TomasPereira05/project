@@ -4,11 +4,13 @@ import { createMember } from "../api";
 import type { MemberFormValues } from "../types";
 import { defaultMemberFormValues } from "../utils";
 import { centsFromEuroInput } from "../../../shared/utils";
+import { uploadFile } from "../../files";
 
 export function useCreateMember(userId: number | null | undefined, role: string | undefined, t: TFunction<"translation", undefined>) {
   const [values, setValues] = useState<MemberFormValues>(defaultMemberFormValues());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
 
   function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
@@ -43,8 +45,12 @@ export function useCreateMember(userId: number | null | undefined, role: string 
 
     try {
       const linkedUserId = role === "ADMIN" ? null : userId ?? null;
-      await createMember(values, linkedUserId);
+      const created = await createMember(values, linkedUserId);
+      if (photoFile) {
+        await uploadFile("MEMBER", created.memberId, "MEMBER_PHOTO", photoFile);
+      }
       setSuccessMessage(t("members.create.success"));
+      setPhotoFile(null);
       setValues(defaultMemberFormValues());
     } catch {
       setErrorMessage(t("members.create.errors.submit"));
@@ -58,6 +64,8 @@ export function useCreateMember(userId: number | null | undefined, role: string 
     handleChange,
     handleSubmit,
     isSubmitting,
+    photoFile,
+    setPhotoFile,
     successMessage,
     values,
   };

@@ -1,6 +1,6 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, CheckCircle2, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2, ShieldAlert } from "lucide-react";
 import type { MemberFormValues } from "..";
 
 type MemberFormProps = {
@@ -13,6 +13,8 @@ type MemberFormProps = {
   isSubmitting: boolean;
   errorMessage: string;
   successMessage: string;
+  photoFile?: File | null;
+  onPhotoChange?: (file: File | null) => void;
   readonlyIdentity?: boolean;
   showBackendNotice?: boolean;
 };
@@ -27,16 +29,26 @@ export function MemberForm({
   isSubmitting,
   errorMessage,
   successMessage,
+  photoFile,
+  onPhotoChange,
   readonlyIdentity = false,
 }: MemberFormProps) {
   const { t } = useTranslation();
   const [hasReadPrivacyText, setHasReadPrivacyText] = useState(values.privacyAccepted);
+  const photoPreviewUrl = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
 
   useEffect(() => {
     if (values.privacyAccepted) {
       setHasReadPrivacyText(true);
     }
   }, [values.privacyAccepted]);
+
+  useEffect(
+    () => () => {
+      if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    },
+    [photoPreviewUrl],
+  );
 
   return (
     <div className="member-card-padded">
@@ -67,6 +79,39 @@ export function MemberForm({
       )}
 
       <form onSubmit={onSubmit} className="member-form-stack">
+        {onPhotoChange && (
+          <div className="member-photo-picker">
+            <div className="member-photo-preview">
+              {photoPreviewUrl ? (
+                <img src={photoPreviewUrl} alt={photoFile?.name ?? t("members.form.photoTitle")} />
+              ) : (
+                <Camera size={28} />
+              )}
+            </div>
+            <div>
+              <p className="member-photo-title">{t("members.form.photoTitle")}</p>
+              <p className="member-helper-text-spaced">{t("members.form.photoHelp")}</p>
+              <div className="member-photo-actions">
+                <label className="member-btn-outline-compact">
+                  <Camera size={16} />
+                  {photoFile ? t("files.actions.changePhoto") : t("files.actions.choosePhoto")}
+                  <input
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(event) => onPhotoChange(event.target.files?.[0] ?? null)}
+                    type="file"
+                  />
+                </label>
+                {photoFile && (
+                  <button className="member-link-action" onClick={() => onPhotoChange(null)} type="button">
+                    {t("members.form.removePhoto")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="member-form-grid">
           <div className="member-input-group">
             <label className="member-label">{t("members.fields.completeName")}</label>

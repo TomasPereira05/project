@@ -3,8 +3,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Menu, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchAllTeamCategories, type TeamCatalogCategory } from "../../features/Athletes";
+import { ProfilePhoto } from "../../features/files";
 import { LOGO_SRC } from "../config/config";
 import { useAuth } from "../hooks/useAuth";
+import { getInitials } from "../utils";
 
 type MenuType = "mobile" | "socios" | "equipas" | "outras-modalidades" | "user" | "patrocinios" | null;
 
@@ -14,7 +16,7 @@ export default function Header() {
     const [teamCategories, setTeamCategories] = useState<TeamCatalogCategory[]>([]);
     const navigate = useNavigate();
     const location = useLocation();
-    const { role, activeMemberId, username, clearAuth } = useAuth();
+    const { id, role, activeMemberId, username, clearAuth } = useAuth();
     const ref = useRef<HTMLDivElement>(null);
     const isAuthenticated = Boolean(username);
     const isStaff = role === "ADMIN" || role === "SECRETARIA";
@@ -64,7 +66,11 @@ export default function Header() {
     };
 
     const otherSports = ["Patinagem", "Voleibol", "Futebol Praia", "Golf"];
-    const userIcon = <User size={20} aria-hidden="true" />;
+    const userIcon = (
+        <ProfilePhoto activeMemberId={activeMemberId} alt={username ?? t("header.aria.userAccount")} className="header-user-avatar" userId={id}>
+            {username ? getInitials(username) : <User size={18} aria-hidden="true" />}
+        </ProfilePhoto>
+    );
     const language = i18n.resolvedLanguage?.startsWith("en") ? "en" : "pt";
 
     const handleLanguageChange = (nextLanguage: "pt" | "en") => {

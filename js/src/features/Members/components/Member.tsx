@@ -135,6 +135,7 @@ export default function MemberPage() {
                 <FileAvatar
                   alt={member.completeName}
                   className="member-profile-avatar"
+                  editable={false}
                   kind="MEMBER_PHOTO"
                   ownerId={member.memberId}
                   ownerType="MEMBER"

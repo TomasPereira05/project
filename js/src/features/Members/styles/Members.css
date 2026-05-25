@@ -489,6 +489,26 @@
     @apply mt-8 flex flex-wrap gap-3;
   }
 
+  .member-photo-picker {
+    @apply flex flex-col gap-4 rounded-md border border-border bg-white/80 p-4 sm:flex-row sm:items-center;
+  }
+
+  .member-photo-preview {
+    @apply flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gray-100 text-primary shadow-md;
+  }
+
+  .member-photo-preview img {
+    @apply h-full w-full object-cover;
+  }
+
+  .member-photo-title {
+    @apply font-heading text-lg uppercase tracking-tight text-text-primary;
+  }
+
+  .member-photo-actions {
+    @apply mt-3 flex flex-wrap items-center gap-3;
+  }
+
   .member-admin-grid {
     @apply grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-10;
   }

@@ -7,7 +7,10 @@
     "actions": {
       "upload": "Carregar",
       "uploading": "A carregar...",
-      "uploadPhoto": "Carregar foto"
+      "uploadPhoto": "Carregar foto",
+      "changePhoto": "Alterar foto",
+      "choosePhoto": "Escolher foto",
+      "useMemberPhoto": "Usar foto de sócio"
     },
     "kinds": {
       "ATHLETE_ID_CARD": "Cartao de cidadao",
@@ -221,6 +224,9 @@
       "billingPlaceholder": "Ex: Sede do clube",
       "formerMember": "Já foi sócio anteriormente",
       "formerMemberHelp": "Ajuda a secretaria a perceber se a inscrição é nova ou uma reentrada.",
+      "photoTitle": "Foto de sócio",
+      "photoHelp": "Esta foto será usada como imagem principal do perfil.",
+      "removePhoto": "Remover foto",
       "privacyTitle": "Texto de privacidade obrigatório",
       "readPrivacy": "Li o texto",
       "privacyText": "Os dados pessoais recolhidos neste formulário serão tratados pelo Grupo Desportivo União Ericeirense para efeitos de inscrição como sócio do clube e para envio de comunicações relacionadas com a atividade desportiva. Poderá exercer, a qualquer momento, os direitos de acesso, retificação, anulação, oposição ou eliminação dos seus dados pessoais, nos casos legalmente admitidos, incluindo a revogação do consentimento quando aplicável. O não fornecimento destes dados inviabiliza a inscrição. Os seus dados pessoais não serão partilhados com terceiros, exceto mediante consentimento, quando exigido por lei ou para responder a processo legal.",

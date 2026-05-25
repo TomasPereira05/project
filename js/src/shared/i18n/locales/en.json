@@ -7,7 +7,10 @@
     "actions": {
       "upload": "Upload",
       "uploading": "Uploading...",
-      "uploadPhoto": "Upload photo"
+      "uploadPhoto": "Upload photo",
+      "changePhoto": "Change photo",
+      "choosePhoto": "Choose photo",
+      "useMemberPhoto": "Use member photo"
     },
     "kinds": {
       "ATHLETE_ID_CARD": "Citizen card",
@@ -221,6 +224,9 @@
       "billingPlaceholder": "Ex: Club headquarters",
       "formerMember": "Has been a member before",
       "formerMemberHelp": "Helps the office understand whether this is a new registration or a re-entry.",
+      "photoTitle": "Member photo",
+      "photoHelp": "This photo will be used as the main profile image.",
+      "removePhoto": "Remove photo",
       "privacyTitle": "Required privacy text",
       "readPrivacy": "I read the text",
       "privacyText": "The personal data collected in this form will be processed by Grupo Desportivo União Ericeirense for club membership registration and for sending communications related to sporting activity. You may exercise your rights of access, rectification, cancellation, opposition, or deletion of your personal data whenever legally permitted, including withdrawal of consent where applicable. Not providing this data prevents registration. Your personal data will not be shared with third parties except with consent, when required by law, or to respond to legal process.",

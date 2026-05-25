@@ -92,6 +92,14 @@
     @apply inline-flex items-center justify-center w-10 h-10 rounded-full border-2 border-primary text-primary bg-transparent shadow-soft transition-all cursor-pointer hover:bg-primary hover:text-white;
   }
 
+  .header-user-avatar {
+    @apply flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-white font-heading text-sm text-primary;
+  }
+
+  .header-user-btn .file-avatar-block {
+    @apply gap-0;
+  }
+
   .language-switcher {
     @apply inline-flex h-9 items-center rounded-full border border-border bg-muted/50 p-0.5 shadow-soft;
   }
