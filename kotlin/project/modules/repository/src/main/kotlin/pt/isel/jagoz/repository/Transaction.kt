@@ -38,4 +38,6 @@ interface Transaction {
     val teamGroupPriceRepository: TeamGroupPriceRepository
 
     val teamGroupRepository: TeamGroupRepository
+
+    val fileRepository: FileRepository
 }

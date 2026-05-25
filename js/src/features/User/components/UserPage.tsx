@@ -16,11 +16,12 @@ import { getInitials } from "../../../shared/utils";
 import { useSponsorClaim, useUserProfile } from "../hooks";
 import { isStaffRole, roleBadgeColor } from "../utils";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
+import { FileAvatar, FileUploadList } from "../../files";
 
 export default function UserPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { username, email, role, activeMemberId, clearAuth } = useAuth();
+  const { id, username, email, role, activeMemberId, clearAuth } = useAuth();
 
   const { member, athlete } = useUserProfile(activeMemberId);
   const { claimError, claimForm, claimMessage, claimed, handleSponsorClaim, setClaimForm } =
@@ -52,7 +53,15 @@ export default function UserPage() {
           <div className="user-profile-body">
             <div className="user-profile-main">
               <div className="user-profile-identity">
-                <div className="user-avatar">{getInitials(displayName)}</div>
+                <FileAvatar
+                  alt={displayName}
+                  className="user-avatar"
+                  kind="USER_PROFILE_PHOTO"
+                  ownerId={id}
+                  ownerType="USER"
+                >
+                  {getInitials(displayName)}
+                </FileAvatar>
                 <div className="user-profile-title-group">
                   <h1 className="user-profile-title">{displayName}</h1>
                   <p className="user-profile-subtitle">{t("userPage.profile.subtitle")}</p>
@@ -174,6 +183,24 @@ export default function UserPage() {
                 <UserPlus size={18} />
                 {t("userPage.athlete.view")}
               </Link>
+            </div>
+            <div className="user-section-body pt-0">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <FileUploadList
+                  accept="application/pdf,image/png,image/jpeg,image/webp"
+                  kind="ATHLETE_ID_CARD"
+                  ownerId={athlete.athleteId}
+                  ownerType="ATHLETE"
+                  title={t("files.kinds.ATHLETE_ID_CARD")}
+                />
+                <FileUploadList
+                  accept="application/pdf,image/png,image/jpeg,image/webp"
+                  kind="ATHLETE_MEDICAL_EXAM"
+                  ownerId={athlete.athleteId}
+                  ownerType="ATHLETE"
+                  title={t("files.kinds.ATHLETE_MEDICAL_EXAM")}
+                />
+              </div>
             </div>
           </section>
         )}

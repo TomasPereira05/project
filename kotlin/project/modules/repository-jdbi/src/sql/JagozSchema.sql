@@ -8,6 +8,8 @@ drop type if exists charge_type cascade;
 drop type if exists charge_status cascade;
 drop type if exists payment_status cascade;
 drop type if exists guardian_role cascade;
+drop type if exists file_owner_type cascade;
+drop type if exists file_kind cascade;
 
 create schema if not exists jagoz;
 set search_path to jagoz;
@@ -220,6 +222,14 @@ CREATE TYPE user_role AS ENUM ('ADMIN', 'SECRETARIA', 'NORMAL');
 CREATE TYPE charge_type AS ENUM ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE', 'SPONSORSHIP_FEE');
 CREATE TYPE charge_status AS ENUM ('PAID', 'PENDING', 'CANCELLED');
 CREATE TYPE payment_status AS ENUM ('PENDING', 'PAID', 'FAILED');
+CREATE TYPE file_owner_type AS ENUM ('USER', 'MEMBER', 'ATHLETE');
+CREATE TYPE file_kind AS ENUM (
+    'USER_PROFILE_PHOTO',
+    'MEMBER_PHOTO',
+    'ATHLETE_PHOTO',
+    'ATHLETE_ID_CARD',
+    'ATHLETE_MEDICAL_EXAM'
+);
 
 CREATE TABLE users (
     user_id SERIAL PRIMARY KEY,
@@ -301,3 +311,18 @@ CREATE TABLE payment (
     created_at TIMESTAMPTZ NOT NULL,
     confirmed_at TIMESTAMPTZ
 );
+
+CREATE TABLE uploaded_file (
+    file_id SERIAL PRIMARY KEY,
+    owner_type file_owner_type NOT NULL,
+    owner_id INT NOT NULL,
+    kind file_kind NOT NULL,
+    original_name VARCHAR(255) NOT NULL,
+    content_type VARCHAR(120) NOT NULL,
+    size BIGINT NOT NULL,
+    storage_key VARCHAR(700) UNIQUE NOT NULL,
+    uploaded_at TIMESTAMPTZ NOT NULL,
+    uploaded_by INT REFERENCES users(user_id) ON DELETE SET NULL
+);
+
+CREATE INDEX uploaded_file_owner_idx ON uploaded_file(owner_type, owner_id, kind, uploaded_at DESC);

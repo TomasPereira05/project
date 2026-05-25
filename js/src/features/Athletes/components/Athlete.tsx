@@ -14,6 +14,7 @@ import type { AthleteAdmin, AthleteDetail, AthleteStatus } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatDate, getInitials, todayISO } from "../../../shared/utils";
 import AthletePageBackground from "./AthletePageBackground";
+import { FileAvatar, FileUploadList } from "../../files";
 
 function isAdminLike(role?: string) {
   return role === "ADMIN" || role === "SECRETARIA";
@@ -237,13 +238,15 @@ function renderAdminContent({
         <div className="athlete-profile-body">
           <div className="athlete-profile-header">
             <div className="athlete-profile-info">
-              <div className="athlete-profile-avatar">
-                {athlete.photoUrl ? (
-                  <img src={athlete.photoUrl} alt={athlete.member.completeName} className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  getInitials(athlete.member.completeName)
-                )}
-              </div>
+              <FileAvatar
+                alt={athlete.member.completeName}
+                className="athlete-profile-avatar"
+                kind="ATHLETE_PHOTO"
+                ownerId={athlete.athleteId}
+                ownerType="ATHLETE"
+              >
+                {getInitials(athlete.member.completeName)}
+              </FileAvatar>
               <div className="athlete-profile-name-block">
                 <h1 className="athlete-profile-name">{athlete.member.completeName}</h1>
                 <p className="athlete-profile-number">{t("athletes.detail.memberAthlete", { memberNumber: athlete.member.memberNumber, athleteId: athlete.athleteId })}</p>
@@ -327,6 +330,22 @@ function renderAdminContent({
             <Field label="BI / CC / Passaporte" value={athlete.bi} />
             <Field label={t("athletes.fields.biValidity")} value={formatDate(athlete.biExpirationDate)} />
           </div>
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <FileUploadList
+              accept="application/pdf,image/png,image/jpeg,image/webp"
+              kind="ATHLETE_ID_CARD"
+              ownerId={athlete.athleteId}
+              ownerType="ATHLETE"
+              title={t("files.kinds.ATHLETE_ID_CARD")}
+            />
+            <FileUploadList
+              accept="application/pdf,image/png,image/jpeg,image/webp"
+              kind="ATHLETE_MEDICAL_EXAM"
+              ownerId={athlete.athleteId}
+              ownerType="ATHLETE"
+              title={t("files.kinds.ATHLETE_MEDICAL_EXAM")}
+            />
+          </div>
         </div>
       </section>
 
@@ -408,7 +427,7 @@ function renderPublicContent(athlete: AthleteDetail, t: (key: string, options?: 
             <div className="athlete-profile-info">
               <div className="athlete-profile-avatar">
                 {athlete.fotoUrl ? (
-                  <img src={athlete.fotoUrl} alt={athlete.nome} className="w-full h-full rounded-full object-cover" />
+                  <img src={athlete.fotoUrl} alt={athlete.nome} className="file-avatar-image" />
                 ) : (
                   getInitials(athlete.nome)
                 )}

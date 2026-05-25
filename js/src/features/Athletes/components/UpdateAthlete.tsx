@@ -17,7 +17,6 @@ type FormState = {
   teamCategoryId: number;
   jerseyNumber: string;
   position: string;
-  photoUrl: string;
   school: string;
   schoolYear: string;
   schoolClass: string;
@@ -31,7 +30,6 @@ function stateFromAthlete(a: AthleteAdmin): FormState {
     teamCategoryId: a.teamCategoryId,
     jerseyNumber: a.jerseyNumber !== null ? String(a.jerseyNumber) : "",
     position: a.position ?? "",
-    photoUrl: a.photoUrl ?? "",
     school: a.school ?? "",
     schoolYear: a.schoolYear ?? "",
     schoolClass: a.schoolClass ?? "",
@@ -46,7 +44,6 @@ function toUpdateRequest(values: FormState): AthleteUpdateRequest {
   return {
     jerseyNumber: Number.isFinite(parsedJersey) ? (parsedJersey as number) : null,
     position: values.position.trim() || null,
-    photoUrl: values.photoUrl.trim() || null,
     school: values.school.trim() || null,
     schoolYear: values.schoolYear.trim() || null,
     schoolClass: values.schoolClass.trim() || null,
@@ -217,10 +214,6 @@ export default function UpdateAthlete() {
                   <div className="athlete-input-group">
                     <label className="athlete-label">{t("athletes.fields.position")}</label>
                     <input className="athlete-input" name="position" value={values.position} onChange={handleChange} placeholder={t("athletes.update.placeholders.position")} />
-                  </div>
-                  <div className="athlete-input-group">
-                    <label className="athlete-label">{t("athletes.fields.photoUrl")}</label>
-                    <input className="athlete-input" name="photoUrl" value={values.photoUrl} onChange={handleChange} placeholder="https://..." />
                   </div>
                   <div className="athlete-input-group">
                     <label className="athlete-label">{t("athletes.fields.lastClub")}</label>

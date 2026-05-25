@@ -197,7 +197,6 @@ class AthleteController(
                 athleteId = athleteId,
                 jerseyNumber = request.jerseyNumber,
                 position = request.position,
-                photoUrl = request.photoUrl,
                 school = request.school,
                 schoolYear = request.schoolYear,
                 schoolClass = request.schoolClass,

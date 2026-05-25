@@ -7,6 +7,7 @@ import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
+import { FileAvatar } from "../../files";
 
 const ALL_HISTORY_SEASONS = "all";
 
@@ -131,7 +132,15 @@ export default function MemberPage() {
           <div className="member-profile-body">
             <div className="member-profile-header">
               <div className="member-profile-info">
-                <div className="member-profile-avatar">{getInitials(member.completeName)}</div>
+                <FileAvatar
+                  alt={member.completeName}
+                  className="member-profile-avatar"
+                  kind="MEMBER_PHOTO"
+                  ownerId={member.memberId}
+                  ownerType="MEMBER"
+                >
+                  {getInitials(member.completeName)}
+                </FileAvatar>
                 <div className="member-profile-name-block">
                   <h1 className="member-profile-name">{member.completeName}</h1>
                   <p className="member-profile-number">

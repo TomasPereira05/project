@@ -149,10 +149,6 @@ export function AthleteForm({
               <label className="athlete-label">{t("athletes.fields.homePhone")}</label>
               <input className="athlete-input" name="homePhone" value={values.homePhone} onChange={onChange} placeholder={t("athletes.common.optional")} />
             </div>
-            <div className="athlete-input-group md:col-span-2">
-              <label className="athlete-label">{t("athletes.fields.photoUrl")}</label>
-              <input className="athlete-input" name="photoUrl" value={values.photoUrl} onChange={onChange} placeholder="https://..." />
-            </div>
           </div>
         </section>
 

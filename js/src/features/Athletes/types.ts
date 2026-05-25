@@ -158,7 +158,6 @@ export type AthleteInput = {
   lastClub: string | null;
   season: string | null;
   teamCategoryId: number;
-  photoUrl: string | null;
   hasFamilyInClub: boolean;
   schoolCertificationAccepted: boolean;
   // Agregado familiar
@@ -171,7 +170,6 @@ export type AthleteInput = {
 export type AthleteUpdateRequest = {
   jerseyNumber: number | null;
   position: string | null;
-  photoUrl: string | null;
   school: string | null;
   schoolYear: string | null;
   schoolClass: string | null;

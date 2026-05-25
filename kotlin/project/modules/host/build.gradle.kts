@@ -32,6 +32,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
 
     implementation("org.springframework.security:spring-security-core:6.5.4")
+    implementation("software.amazon.awssdk:s3:2.30.31")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")

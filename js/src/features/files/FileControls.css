@@ -1,0 +1,46 @@
+@layer components {
+  .file-avatar-control {
+    @apply relative overflow-hidden;
+  }
+
+  .file-avatar-image {
+    @apply h-full w-full rounded-full object-cover;
+  }
+
+  .file-avatar-action {
+    @apply absolute bottom-1 right-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-primary text-white shadow-md transition-colors hover:bg-primary-hover;
+  }
+
+  .file-avatar-action input,
+  .file-upload-button input {
+    @apply hidden;
+  }
+
+  .file-list-card {
+    @apply rounded-md border border-border bg-white/80 p-4;
+  }
+
+  .file-list-header {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .file-list-title {
+    @apply flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-text-primary;
+  }
+
+  .file-upload-button {
+    @apply inline-flex h-9 cursor-pointer items-center justify-center gap-2 rounded-md border border-primary bg-primary px-4 text-xs font-semibold uppercase tracking-wide text-white transition-colors hover:bg-primary-hover;
+  }
+
+  .file-list-items {
+    @apply mt-3 flex flex-col gap-2 text-sm;
+  }
+
+  .file-list-items a {
+    @apply font-medium text-primary underline-offset-4 hover:underline;
+  }
+
+  .file-empty-text {
+    @apply mt-3 text-sm text-text-secondary;
+  }
+}
