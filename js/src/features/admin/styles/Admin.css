@@ -20,7 +20,19 @@
   }
 
   .admin-sidebar-nav {
-    @apply flex gap-2 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0;
+    @apply flex gap-4 overflow-x-auto pb-1 lg:flex-col lg:overflow-visible lg:pb-0;
+  }
+
+  .admin-sidebar-group {
+    @apply flex min-w-max flex-col gap-2 lg:min-w-0;
+  }
+
+  .admin-sidebar-group-title {
+    @apply px-2 text-[0.68rem] font-bold uppercase tracking-[0.18em] text-text-secondary;
+  }
+
+  .admin-sidebar-group-links {
+    @apply flex gap-2 lg:flex-col;
   }
 
   .admin-sidebar-link {

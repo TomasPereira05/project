@@ -949,6 +949,12 @@
       "sponsorApprovals": "Aprovações",
       "sponsorSettings": "Tabela de patrocínios"
     },
+    "navGroups": {
+      "general": "Geral",
+      "people": "Pessoas",
+      "sponsorships": "Patrocínios",
+      "settings": "Configuração"
+    },
     "home": {
       "eyebrow": "Backoffice",
       "title": "Administração",

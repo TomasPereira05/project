@@ -949,6 +949,12 @@
       "sponsorApprovals": "Approvals",
       "sponsorSettings": "Sponsorship table"
     },
+    "navGroups": {
+      "general": "General",
+      "people": "People",
+      "sponsorships": "Sponsorships",
+      "settings": "Configuration"
+    },
     "home": {
       "eyebrow": "Back office",
       "title": "Administration",
