@@ -18,7 +18,7 @@ export function useSponsorApprovals(canManage: boolean, page: number) {
     setErrorMessage("");
 
     try {
-      const response = await fetchAllSponsorships(page, PAGE_SIZE);
+      const response = await fetchAllSponsorships(page, PAGE_SIZE, "SUBMETIDO");
       setItems(response.items);
       setTotalItems(response.total);
       setTotalPages(response.totalPages);

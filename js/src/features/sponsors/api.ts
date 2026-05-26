@@ -143,11 +143,14 @@ export function createSponsorshipCheckoutSession(sponsorshipId: number) {
   });
 }
 
-export function fetchAllSponsorships(page = 1, size = 8) {
+export function fetchAllSponsorships(page = 1, size = 8, status?: Sponsorship["status"]) {
   const search = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
+  if (status) {
+    search.set("status", status);
+  }
   return request<PaginatedResponse<SponsorApprovalItem>>(`/sponsorships?${search.toString()}`);
 }
 

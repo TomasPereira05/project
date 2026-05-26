@@ -46,6 +46,7 @@
     "sponsors": {
       "info": "Information",
       "my": "My sponsorships",
+      "list": "Sponsorship list",
       "approvals": "Approvals",
       "settings": "Settings",
       "become": "Become a sponsor"
@@ -519,6 +520,16 @@
       "empty": "There are no sponsorships linked to this account yet.",
       "details": "Details"
     },
+    "admin": {
+      "eyebrow": "Back office",
+      "title": "All sponsorships",
+      "description": "View all submitted, approved, paid, active, and cancelled sponsorships.",
+      "approvalsLink": "View approvals",
+      "contractsEyebrow": "Contracts",
+      "listTitle": "Complete list",
+      "loading": "Loading sponsorships...",
+      "empty": "There are no registered sponsorships yet."
+    },
     "details": {
       "eyebrow": "Details",
       "title": "Sponsorship",
@@ -540,11 +551,11 @@
     },
     "approvals": {
       "eyebrow": "Approvals",
-      "title": "Sponsorship list",
-      "description": "Review pending requests and manage approval and payment flow.",
+      "title": "Sponsorships to approve",
+      "description": "Review only submitted requests that still need approval.",
       "settingsLink": "Go to settings",
       "loading": "Loading sponsorships...",
-      "empty": "There are no registered sponsorships.",
+      "empty": "There are no sponsorships to approve.",
       "actions": {
         "approve": "Approve",
         "markPaid": "Mark paid",
@@ -934,7 +945,8 @@
       "members": "Members",
       "athletes": "Athletes",
       "teams": "Teams",
-      "sponsorApprovals": "Sponsorships",
+      "sponsors": "Sponsorships",
+      "sponsorApprovals": "Approvals",
       "sponsorSettings": "Sponsorship table"
     },
     "home": {

@@ -46,6 +46,7 @@
     "sponsors": {
       "info": "Informação",
       "my": "Meus patrocínios",
+      "list": "Lista de patrocínios",
       "approvals": "Aprovações",
       "settings": "Configurações",
       "become": "Tornar-se patrocinador"
@@ -519,6 +520,16 @@
       "empty": "Ainda não existem patrocínios associados a esta conta.",
       "details": "Detalhes"
     },
+    "admin": {
+      "eyebrow": "Backoffice",
+      "title": "Todos os patrocínios",
+      "description": "Consulta todos os patrocínios submetidos, aprovados, pagos, ativos e cancelados.",
+      "approvalsLink": "Ver aprovações",
+      "contractsEyebrow": "Contratos",
+      "listTitle": "Lista completa",
+      "loading": "A carregar patrocínios...",
+      "empty": "Ainda não existem patrocínios registados."
+    },
     "details": {
       "eyebrow": "Detalhe",
       "title": "Patrocínio",
@@ -540,11 +551,11 @@
     },
     "approvals": {
       "eyebrow": "Aprovações",
-      "title": "Lista de patrocínios",
-      "description": "Revê pedidos pendentes e gere o fluxo de aprovação e pagamento.",
+      "title": "Patrocínios por aprovar",
+      "description": "Revê apenas os pedidos submetidos que ainda precisam de aprovação.",
       "settingsLink": "Ir para settings",
       "loading": "A carregar patrocínios...",
-      "empty": "Não existem patrocínios registados.",
+      "empty": "Não existem patrocínios por aprovar.",
       "actions": {
         "approve": "Aprovar",
         "markPaid": "Marcar pago",
@@ -934,7 +945,8 @@
       "members": "Sócios",
       "athletes": "Atletas",
       "teams": "Equipas",
-      "sponsorApprovals": "Patrocínios",
+      "sponsors": "Patrocínios",
+      "sponsorApprovals": "Aprovações",
       "sponsorSettings": "Tabela de patrocínios"
     },
     "home": {

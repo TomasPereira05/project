@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { BadgeEuro, LayoutDashboard, Settings, Trophy, Users } from "lucide-react";
+import { BadgeEuro, ClipboardCheck, LayoutDashboard, Settings, Trophy, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
@@ -9,7 +9,8 @@ const adminNavItems = [
   { to: "/admin/members", labelKey: "admin.nav.members", icon: Users },
   { to: "/admin/athletes", labelKey: "admin.nav.athletes", icon: Trophy },
   { to: "/admin/team-settings", labelKey: "admin.nav.teams", icon: Settings },
-  { to: "/admin/sponsors/approvals", labelKey: "admin.nav.sponsorApprovals", icon: BadgeEuro },
+  { to: "/admin/sponsors", labelKey: "admin.nav.sponsors", icon: BadgeEuro, end: true },
+  { to: "/admin/sponsors/approvals", labelKey: "admin.nav.sponsorApprovals", icon: ClipboardCheck },
   { to: "/admin/sponsors/settings", labelKey: "admin.nav.sponsorSettings", icon: Settings },
 ];
 

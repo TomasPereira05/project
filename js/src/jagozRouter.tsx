@@ -22,6 +22,7 @@ import {
   UpdateAthlete,
 } from "./features/Athletes";
 import {
+  ListSponsorships,
   SponsorApprovals,
   SponsorCreate,
   MySponsorships,
@@ -280,6 +281,10 @@ const router = createBrowserRouter([
       {
         path: "team-settings",
         element: <TeamSettings />,
+      },
+      {
+        path: "sponsors",
+        element: <ListSponsorships />,
       },
       {
         path: "sponsors/approvals",

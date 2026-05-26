@@ -189,6 +189,9 @@ export default function Header() {
                         <Link to="/sponsors/my" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.my")}</Link>
                     )}
                     {isStaff && (
+                        <Link to="/admin/sponsors" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.list")}</Link>
+                    )}
+                    {isStaff && (
                         <Link to="/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.approvals")}</Link>
                     )}
                     {isStaff && (

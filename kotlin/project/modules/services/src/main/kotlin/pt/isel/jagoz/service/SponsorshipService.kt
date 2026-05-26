@@ -220,10 +220,6 @@ class SponsorshipService(
 
     fun getSponsorshipsForUser(authenticatedUser: AuthenticatedUser): Either<SponsorError, List<Sponsorship>> =
         transactionManager.run { transaction ->
-            if (authenticatedUser.canManageBackoffice()) {
-                return@run success(transaction.sponsorshipRepository.findAll())
-            }
-
             val sponsors =
                 transaction.sponsorRepository
                     .findByUserId(authenticatedUser.userId)
@@ -240,16 +236,6 @@ class SponsorshipService(
     ): Either<SponsorError, Page<Sponsorship>> =
         transactionManager.run { transaction ->
             val request = pageRequest(page, size)
-            if (authenticatedUser.canManageBackoffice()) {
-                return@run success(
-                    pageOf(
-                        items = transaction.sponsorshipRepository.findPage(request.size, request.offset),
-                        request = request,
-                        total = transaction.sponsorshipRepository.countAll(),
-                    ),
-                )
-            }
-
             val sponsors =
                 transaction.sponsorRepository
                     .findByUserId(authenticatedUser.userId)
@@ -272,6 +258,7 @@ class SponsorshipService(
         authenticatedUser: AuthenticatedUser,
         page: Int,
         size: Int,
+        status: String? = null,
     ): Either<SponsorError, Page<SponsorshipWithSponsor>> =
         transactionManager.run { transaction ->
             if (!authenticatedUser.canManageBackoffice()) {
@@ -279,7 +266,24 @@ class SponsorshipService(
             }
 
             val request = pageRequest(page, size)
-            val sponsorships = transaction.sponsorshipRepository.findPage(request.size, request.offset)
+            val statusFilter =
+                status
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let {
+                        runCatching { SponsorshipStatus.valueOf(it.uppercase()) }
+                            .getOrNull()
+                            ?: return@run failure(SponsorError.ValidationError("Invalid sponsorship status"))
+                    }
+            val allMatchingSponsorships =
+                statusFilter?.let { expectedStatus ->
+                    transaction.sponsorshipRepository
+                        .findAll()
+                        .filter { it.status == expectedStatus }
+                        .sortedByDescending { it.sponsorshipId }
+                }
+            val sponsorships =
+                allMatchingSponsorships?.drop(request.offset)?.take(request.size)
+                    ?: transaction.sponsorshipRepository.findPage(request.size, request.offset)
             val sponsors =
                 sponsorships
                     .mapNotNull { sponsorship -> transaction.sponsorRepository.findById(sponsorship.sponsorId) }
@@ -294,7 +298,7 @@ class SponsorshipService(
                             }
                         },
                     request = request,
-                    total = transaction.sponsorshipRepository.countAll(),
+                    total = allMatchingSponsorships?.size?.toLong() ?: transaction.sponsorshipRepository.countAll(),
                 ),
             )
         }
