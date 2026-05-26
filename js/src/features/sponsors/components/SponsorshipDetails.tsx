@@ -27,9 +27,7 @@ export default function SponsorshipDetails() {
   const locationState = location.state as { backPath?: string } | null;
   const backPath = locationState?.backPath ?? (location.pathname.startsWith("/admin")
     ? "/admin/sponsors/approvals"
-    : canManage
-      ? "/sponsors/approvals"
-      : "/sponsors/my");
+    : "/sponsors/my");
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     email: "",

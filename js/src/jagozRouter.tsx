@@ -104,13 +104,6 @@ const router = createBrowserRouter([
           <UpdateMember />
         </Require>,
       },
-      {
-        path: "list",
-        element:
-        <Require allowAdmin allowSecretaria>
-          <Members />
-        </Require>,
-      },
     ]
   },
   {
@@ -119,13 +112,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <Athletes />
-            </Require>
-          </AuthRequire>
-        ),
+        element: <Navigate to="/" replace />,
       },
       {
         path: "register",
@@ -136,32 +123,12 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "settings",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <TeamSettings />
-            </Require>
-          </AuthRequire>
-        ),
-      },
-      {
         path: "category/:teamCategory",
         element: <AthleteByTeamCategory />,
       },
       {
         path: ":athleteId",
         element: <AthletePage />,
-      },
-      {
-        path: ":athleteId/edit",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <UpdateAthlete />
-            </Require>
-          </AuthRequire>
-        ),
       },
     ],
   },
@@ -197,36 +164,6 @@ const router = createBrowserRouter([
         element: (
           <AuthRequire>
             <SponsorshipDetails />
-          </AuthRequire>
-        ),
-      },
-      {
-        path: "settings",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <SponsorSettings />
-            </Require>
-          </AuthRequire>
-        ),
-      },
-      {
-        path: "approvals",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <SponsorApprovals />
-            </Require>
-          </AuthRequire>
-        ),
-      },
-      {
-        path: "details/:sponsorshipId",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <SponsorshipDetails />
-            </Require>
           </AuthRequire>
         ),
       },

@@ -81,6 +81,17 @@ class JdbiAthleteRepository(
             .mapTo(Long::class.java)
             .one()
 
+    override fun countByStatus(status: AthleteStatus): Long =
+        handle
+            .createQuery(
+                """
+                SELECT COUNT(*) FROM jagoz.athlete a
+                JOIN jagoz.member m ON m.member_id = a.member_id
+                WHERE ${status.toSqlPredicate()}
+                """.trimIndent(),
+            ).mapTo(Long::class.java)
+            .one()
+
     override fun findPageFiltered(
         limit: Int,
         offset: Int,

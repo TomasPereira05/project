@@ -63,6 +63,10 @@ object Uris {
         fun byId(userId: Long): URI = UriTemplate(GET_BY_ID).expand(userId)
     }
 
+    object Admin {
+        const val OVERVIEW_STATS = "$PREFIX/admin/overview/stats"
+    }
+
     object Sponsors {
         const val GET_ALL = "$PREFIX/sponsors"
         const val GET_BY_ID = "$PREFIX/sponsors/{sponsorId}"

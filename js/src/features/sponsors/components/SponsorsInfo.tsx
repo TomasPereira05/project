@@ -40,11 +40,11 @@ export default function SponsorsInfo() {
               </Link>
               {canManage ? (
                 <>
-                  <Link className="sponsor-button-secondary" to="/sponsors/approvals">
+                  <Link className="sponsor-button-secondary" to="/admin/sponsors/approvals">
                     <ShieldCheck size={16} />
                     {t("sponsors.info.approve")}
                   </Link>
-                  <Link className="sponsor-button-secondary" to="/sponsors/settings">
+                  <Link className="sponsor-button-secondary" to="/admin/sponsors/settings">
                     <Settings size={16} />
                     {t("sponsors.info.settings")}
                   </Link>

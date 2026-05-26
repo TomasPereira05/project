@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import org.jdbi.v3.core.statement.SqlStatement
 import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
+import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.repository.MemberRepository
 
 class JdbiMemberRepository(
@@ -70,6 +71,13 @@ class JdbiMemberRepository(
     override fun countAll(): Long =
         handle
             .createQuery("SELECT COUNT(*) FROM jagoz.member")
+            .mapTo(Long::class.java)
+            .one()
+
+    override fun countByStatus(status: MemberStatus): Long =
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.member WHERE status = CAST(:status AS jagoz.member_status)")
+            .bind("status", status.name)
             .mapTo(Long::class.java)
             .one()
 

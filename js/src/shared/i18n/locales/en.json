@@ -954,6 +954,23 @@
       "title": "Administration",
       "description": "Club management area."
     },
+    "stats": {
+      "eyebrow": "Summary",
+      "groups": {
+        "members": "Members",
+        "athletes": "Athletes",
+        "sponsorships": "Sponsorships"
+      },
+      "members": "Members",
+      "activeMembers": "Active members",
+      "pendingMembers": "Pending members",
+      "athletes": "Athletes",
+      "activeAthletes": "Active athletes",
+      "pendingAthletes": "Pending athletes",
+      "sponsorships": "Sponsorships",
+      "pendingSponsorships": "To approve",
+      "error": "Could not load all numbers."
+    },
     "cards": {
       "members": {
         "title": "Members",

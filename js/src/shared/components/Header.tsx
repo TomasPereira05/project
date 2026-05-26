@@ -176,7 +176,7 @@ export default function Header() {
                         <span className="dropdown-disabled">{t("header.members.profile")}</span>
                     )}
                     {isStaff && (
-                        <Link to="/members/list" className="dropdown-link" onClick={closeMenus}>{t("header.members.list")}</Link>
+                        <Link to="/admin/members" className="dropdown-link" onClick={closeMenus}>{t("header.members.list")}</Link>
                     )}
                     <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>{t("header.members.become")}</Link>
                 </nav>
@@ -192,10 +192,10 @@ export default function Header() {
                         <Link to="/admin/sponsors" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.list")}</Link>
                     )}
                     {isStaff && (
-                        <Link to="/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.approvals")}</Link>
+                        <Link to="/admin/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.approvals")}</Link>
                     )}
                     {isStaff && (
-                        <Link to="/sponsors/settings" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.settings")}</Link>
+                        <Link to="/admin/sponsors/settings" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.settings")}</Link>
                     )}
                     <Link to="/sponsors/create" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.become")}</Link>
                 </nav>
@@ -212,7 +212,7 @@ export default function Header() {
             <div className={`dropdown ${activeMenu === "equipas" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
                     {isStaff && (
-                        <Link to="/athletes" className="dropdown-link" onClick={closeMenus}>{t("header.teams.manage")}</Link>
+                        <Link to="/admin/athletes" className="dropdown-link" onClick={closeMenus}>{t("header.teams.manage")}</Link>
                     )}
                     {teamCategories.map((category) => (
                         <Link
@@ -233,7 +233,7 @@ export default function Header() {
                     </Link>
                     {isStaff && (
                         <Link
-                            to="/athletes/settings"
+                            to="/admin/team-settings"
                             className="dropdown-link"
                             onClick={closeMenus}
                         >

@@ -954,6 +954,23 @@
       "title": "Administração",
       "description": "Área de gestão do clube."
     },
+    "stats": {
+      "eyebrow": "Resumo",
+      "groups": {
+        "members": "Sócios",
+        "athletes": "Atletas",
+        "sponsorships": "Patrocínios"
+      },
+      "members": "Sócios",
+      "activeMembers": "Sócios ativos",
+      "pendingMembers": "Sócios pendentes",
+      "athletes": "Atletas",
+      "activeAthletes": "Atletas ativos",
+      "pendingAthletes": "Atletas pendentes",
+      "sponsorships": "Patrocínios",
+      "pendingSponsorships": "Por aprovar",
+      "error": "Não foi possível carregar todos os números."
+    },
     "cards": {
       "members": {
         "title": "Sócios",
