@@ -34,9 +34,17 @@ class JdbiChargeItemRepository(
         handle
             .createQuery(
                 """
-                SELECT ci.*, c.status AS charge_status
+                SELECT ci.*, c.status AS charge_status, paid_payment.payment_id
                 FROM jagoz.charge_item ci
                 JOIN jagoz.charge c ON c.charge_id = ci.charge_id
+                LEFT JOIN LATERAL (
+                    SELECT p.payment_id
+                    FROM jagoz.payment p
+                    WHERE p.charge_id = c.charge_id
+                      AND p.status = 'PAID'
+                    ORDER BY p.confirmed_at DESC NULLS LAST, p.payment_id DESC
+                    LIMIT 1
+                ) paid_payment ON TRUE
                 WHERE c.member_id = :memberId
                 ORDER BY ci.season ASC, ci.month ASC
                 """,
@@ -53,6 +61,7 @@ class JdbiChargeItemRepository(
                             description = rs.getString("description"),
                         ),
                     chargeStatus = ChargeStatus.valueOf(rs.getString("charge_status")),
+                    paymentId = (rs.getObject("payment_id") as? Number)?.toLong(),
                 )
             }.list()
 

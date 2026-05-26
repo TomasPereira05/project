@@ -10,6 +10,7 @@ data class MembershipFeeOptionOutput(
     val dueDate: String,
     val status: ChargeStatus?,
     val selectable: Boolean,
+    val receiptPaymentId: Long?,
 )
 
 fun MembershipFeeOption.toOutput(): MembershipFeeOptionOutput =
@@ -20,4 +21,5 @@ fun MembershipFeeOption.toOutput(): MembershipFeeOptionOutput =
         dueDate = dueDate.toString(),
         status = status,
         selectable = selectable,
+        receiptPaymentId = receiptPaymentId,
     )

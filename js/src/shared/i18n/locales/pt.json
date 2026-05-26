@@ -344,6 +344,8 @@
         "dueDate": "Vencimento",
         "value": "Valor",
         "status": "Estado",
+        "receipt": "Recibo",
+        "viewReceipt": "Ver recibo",
         "previous": "Anterior",
         "next": "Seguinte",
         "page": "Página {{page}} de {{totalPages}}",
@@ -533,7 +535,8 @@
       "saving": "A guardar...",
       "cancelEdit": "Cancelar",
       "updateSuccess": "Patrocínio atualizado com sucesso.",
-      "updateError": "Não foi possível atualizar o patrocínio."
+      "updateError": "Não foi possível atualizar o patrocínio.",
+      "viewReceipt": "Ver recibo"
     },
     "approvals": {
       "eyebrow": "Aprovações",

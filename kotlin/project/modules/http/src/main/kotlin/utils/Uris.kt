@@ -106,6 +106,8 @@ object Uris {
     object Payments {
         const val CREATE_CHECKOUT_SESSION = "$PREFIX/payments/checkout-session"
         const val MEMBERSHIP_FEE_OPTIONS = "$PREFIX/members/{memberId}/fees/options"
+        const val RECEIPT = "$PREFIX/payments/{paymentId}/receipt"
+        const val SPONSORSHIP_RECEIPT = "$PREFIX/payments/sponsorships/{sponsorshipId}/receipt"
         const val STRIPE_WEBHOOK = "$PREFIX/payments/stripe/webhook"
     }
 

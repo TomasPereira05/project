@@ -219,6 +219,16 @@ const router = createBrowserRouter([
           </AuthRequire>
         ),
       },
+      {
+        path: "details/:sponsorshipId",
+        element: (
+          <AuthRequire>
+            <Require allowAdmin allowSecretaria>
+              <SponsorshipDetails />
+            </Require>
+          </AuthRequire>
+        ),
+      },
     ],
   },
   {

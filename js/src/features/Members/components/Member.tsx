@@ -6,7 +6,7 @@ import { useMemberDetail } from "../hooks";
 import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import { HERO_IMG_SRC } from "../../../shared/config/config";
+import { BASE_URL, HERO_IMG_SRC } from "../../../shared/config/config";
 import { FileAvatar } from "../../files";
 
 const ALL_HISTORY_SEASONS = "all";
@@ -397,6 +397,7 @@ export default function MemberPage() {
                         <th>{t("members.detail.finance.dueDate")}</th>
                         <th>{t("members.detail.finance.value")}</th>
                         <th>{t("members.detail.finance.status")}</th>
+                        <th>{t("members.detail.finance.receipt")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -407,6 +408,15 @@ export default function MemberPage() {
                           <td>{formatDate(item.dueDate)}</td>
                           <td className="member-fee-table-value">{formatCurrency(item.amountCents)}</td>
                           <td>{t("members.detail.finance.statuses.PAID")}</td>
+                          <td>
+                            {item.receiptPaymentId ? (
+                              <a className="member-link-action" href={`${BASE_URL}/payments/${item.receiptPaymentId}/receipt`} target="_blank" rel="noreferrer">
+                                {t("members.detail.finance.viewReceipt")}
+                              </a>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

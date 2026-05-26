@@ -344,6 +344,8 @@
         "dueDate": "Due date",
         "value": "Value",
         "status": "Status",
+        "receipt": "Receipt",
+        "viewReceipt": "View receipt",
         "previous": "Previous",
         "next": "Next",
         "page": "Page {{page}} of {{totalPages}}",
@@ -533,7 +535,8 @@
       "saving": "Saving...",
       "cancelEdit": "Cancel",
       "updateSuccess": "Sponsorship updated successfully.",
-      "updateError": "Could not update the sponsorship."
+      "updateError": "Could not update the sponsorship.",
+      "viewReceipt": "View receipt"
     },
     "approvals": {
       "eyebrow": "Approvals",
