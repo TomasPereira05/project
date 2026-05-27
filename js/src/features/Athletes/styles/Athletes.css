@@ -220,7 +220,7 @@
   }
 
   .athlete-btn-evaluate {
-    @apply inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wide h-8 px-4 border border-primary text-primary hover:bg-primary hover:text-white transition-colors rounded-md;
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md border border-primary bg-white text-primary transition-colors hover:bg-primary hover:text-white;
   }
 
   /* Tabela */
@@ -341,15 +341,19 @@
   }
 
   .athlete-row-actions {
-    @apply flex items-center justify-end gap-2 opacity-0 transition-opacity;
+    @apply flex items-center justify-end gap-2 opacity-100 transition-opacity sm:opacity-0;
   }
 
   .athlete-btn-table-edit {
-    @apply text-xs font-medium text-text-secondary hover:text-primary transition-colors px-2 py-1;
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-white text-text-secondary transition-colors hover:border-primary hover:text-primary;
   }
 
   .athlete-action-btn {
-    @apply text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary hover:bg-primary hover:text-white transition-colors px-3 py-1.5 rounded;
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors hover:bg-primary hover:text-white;
+  }
+
+  .athlete-action-danger {
+    @apply inline-flex h-9 w-9 items-center justify-center rounded-md border border-red-200 bg-red-50 text-red-700 transition-colors hover:bg-red-600 hover:text-white;
   }
 
   /* Paginação */

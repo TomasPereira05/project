@@ -86,10 +86,11 @@ class JdbiMemberRepository(
         offset: Int,
         search: String?,
         category: MemberCategory?,
+        status: MemberStatus?,
     ): List<Member> {
         val sql =
             StringBuilder("SELECT * FROM jagoz.member")
-                .appendMemberFilters(search, category)
+                .appendMemberFilters(search, category, status)
                 .append(" ORDER BY (status = 'PENDENTE') DESC, registration_date DESC, member_id DESC")
                 .append(" LIMIT :limit OFFSET :offset")
                 .toString()
@@ -98,7 +99,7 @@ class JdbiMemberRepository(
             .createQuery(sql)
             .bind("limit", limit)
             .bind("offset", offset)
-            .bindMemberFilters(search, category)
+            .bindMemberFilters(search, category, status)
             .mapTo(Member::class.java)
             .list()
     }
@@ -106,15 +107,16 @@ class JdbiMemberRepository(
     override fun countFiltered(
         search: String?,
         category: MemberCategory?,
+        status: MemberStatus?,
     ): Long {
         val sql =
             StringBuilder("SELECT COUNT(*) FROM jagoz.member")
-                .appendMemberFilters(search, category)
+                .appendMemberFilters(search, category, status)
                 .toString()
 
         return handle
             .createQuery(sql)
-            .bindMemberFilters(search, category)
+            .bindMemberFilters(search, category, status)
             .mapTo(Long::class.java)
             .one()
     }
@@ -138,6 +140,7 @@ class JdbiMemberRepository(
     private fun StringBuilder.appendMemberFilters(
         search: String?,
         category: MemberCategory?,
+        status: MemberStatus?,
     ): StringBuilder {
         val clauses = mutableListOf<String>()
         if (!search.isNullOrBlank()) {
@@ -145,6 +148,9 @@ class JdbiMemberRepository(
         }
         if (category != null) {
             clauses += "category = CAST(:category AS jagoz.member_category)"
+        }
+        if (status != null) {
+            clauses += "status = CAST(:status AS jagoz.member_status)"
         }
         if (clauses.isNotEmpty()) {
             append(" WHERE ")
@@ -156,12 +162,16 @@ class JdbiMemberRepository(
     private fun <T : SqlStatement<T>> T.bindMemberFilters(
         search: String?,
         category: MemberCategory?,
+        status: MemberStatus?,
     ): T {
         if (!search.isNullOrBlank()) {
             bind("search", "%${search.trim()}%")
         }
         if (category != null) {
             bind("category", category.name)
+        }
+        if (status != null) {
+            bind("status", status.name)
         }
         return this
     }

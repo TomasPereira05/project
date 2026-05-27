@@ -165,6 +165,7 @@
       "back": "Back",
       "edit": "Edit",
       "view": "View",
+      "deactivate": "Deactivate",
       "saving": "Saving...",
       "yes": "Yes",
       "no": "No",
@@ -270,10 +271,13 @@
         "searchPlaceholder": "Member number or name",
         "category": "Category",
         "allCategories": "All categories",
+        "status": "Status",
+        "allStatuses": "All statuses",
         "empty": "There are no members for the selected filters."
       },
       "errors": {
-        "load": "Could not load the member list."
+        "load": "Could not load the member list.",
+        "deactivate": "Could not deactivate this member."
       },
       "pending": {
         "title": "Pending Requests",
@@ -528,7 +532,32 @@
       "contractsEyebrow": "Contracts",
       "listTitle": "Complete list",
       "loading": "Loading sponsorships...",
-      "empty": "There are no registered sponsorships yet."
+      "empty": "There are no registered sponsorships yet.",
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses"
+      }
+    },
+    "companies": {
+      "eyebrow": "Back office",
+      "title": "Sponsors",
+      "description": "View registered sponsor entities and their linked account.",
+      "loading": "Loading sponsors...",
+      "empty": "There are no sponsors for the selected filters.",
+      "noAccount": "No linked account",
+      "columns": {
+        "account": "Account"
+      },
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Name or tax ID"
+      },
+      "pagination": {
+        "items": "sponsors"
+      },
+      "errors": {
+        "load": "Could not load the sponsor list."
+      }
     },
     "details": {
       "eyebrow": "Details",
@@ -753,7 +782,8 @@
         "empty": "There are no athletes for the selected filters."
       },
       "errors": {
-        "load": "Could not load the athlete list."
+        "load": "Could not load the athlete list.",
+        "deactivate": "Could not deactivate this athlete."
       },
       "pending": {
         "title": "Pending Athletes",
@@ -1026,6 +1056,7 @@
       "athletes": "Athletes",
       "teams": "Teams",
       "sponsors": "Sponsorships",
+      "sponsorCompanies": "Sponsors",
       "sponsorApprovals": "Approvals",
       "sponsorSettings": "Sponsorship table"
     },

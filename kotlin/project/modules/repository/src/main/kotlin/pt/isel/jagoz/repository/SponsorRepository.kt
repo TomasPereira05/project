@@ -20,6 +20,14 @@ interface SponsorRepository {
 
     fun countAll(): Long
 
+    fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+    ): List<Sponsor>
+
+    fun countFiltered(search: String?): Long
+
     fun save(sponsor: Sponsor): Long
 
     fun update(sponsor: Sponsor)

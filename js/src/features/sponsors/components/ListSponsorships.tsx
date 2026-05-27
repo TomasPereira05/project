@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Ban, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency } from "../../../shared/utils";
 import { useAdminSponsorships } from "../hooks";
+import type { SponsorshipStatus } from "../types";
 import {
   calculateMySponsorshipTotals,
   resolveSponsorshipTarget,
@@ -15,7 +16,8 @@ import {
 export default function AdminSponsorships() {
   const { t } = useTranslation();
   const [page, setPage] = useState(1);
-  const { catalogs, errorMessage, isLoading, items, pageSize, totalItems, totalPages } = useAdminSponsorships(page);
+  const [statusFilter, setStatusFilter] = useState<SponsorshipStatus | "">("");
+  const { cancel, catalogs, errorMessage, isLoading, items, markPaid, pageSize, totalItems, totalPages } = useAdminSponsorships(page, statusFilter);
   const totals = useMemo(() => calculateMySponsorshipTotals(items), [items]);
 
   useEffect(() => {
@@ -63,6 +65,26 @@ export default function AdminSponsorships() {
             </div>
           </div>
 
+          <div className="sponsor-admin-filters">
+            <label className="sponsor-admin-filter">
+              <span>{t("sponsors.admin.filters.status")}</span>
+              <select
+                value={statusFilter}
+                onChange={(event) => {
+                  setStatusFilter(event.target.value as SponsorshipStatus | "");
+                  setPage(1);
+                }}
+              >
+                <option value="">{t("sponsors.admin.filters.allStatuses")}</option>
+                <option value="SUBMETIDO">{t("sponsors.labels.statuses.SUBMETIDO")}</option>
+                <option value="APROVADO">{t("sponsors.labels.statuses.APROVADO")}</option>
+                <option value="PAGO">{t("sponsors.labels.statuses.PAGO")}</option>
+                <option value="ATIVO">{t("sponsors.labels.statuses.ATIVO")}</option>
+                <option value="CANCELADO">{t("sponsors.labels.statuses.CANCELADO")}</option>
+              </select>
+            </label>
+          </div>
+
           {isLoading ? (
             <div className="sponsor-empty-card">{t("sponsors.admin.loading")}</div>
           ) : items.length === 0 ? (
@@ -89,6 +111,18 @@ export default function AdminSponsorships() {
                       <Link className="sponsor-button-secondary" state={{ backPath: "/admin/sponsors" }} to={`/admin/sponsors/details/${sponsorship.sponsorshipId}`}>
                         {t("sponsors.my.details")}
                       </Link>
+                      {sponsorship.status === "APROVADO" ? (
+                        <button className="sponsor-button-primary" onClick={() => void markPaid(sponsorship.sponsorshipId)} type="button">
+                          <CheckCircle2 size={16} />
+                          {t("sponsors.approvals.actions.markPaid")}
+                        </button>
+                      ) : null}
+                      {sponsorship.status !== "CANCELADO" && sponsorship.status !== "PAGO" ? (
+                        <button className="sponsor-button-ghost" onClick={() => void cancel(sponsorship.sponsorshipId)} type="button">
+                          <Ban size={16} />
+                          {t("sponsors.approvals.actions.cancel")}
+                        </button>
+                      ) : null}
                     </div>
                   </div>
                 </article>

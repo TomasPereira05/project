@@ -165,6 +165,7 @@
       "back": "Voltar",
       "edit": "Editar",
       "view": "Ver",
+      "deactivate": "Desativar",
       "saving": "A guardar...",
       "yes": "Sim",
       "no": "Não",
@@ -270,10 +271,13 @@
         "searchPlaceholder": "Nº de sócio ou nome",
         "category": "Categoria",
         "allCategories": "Todas as categorias",
+        "status": "Estado",
+        "allStatuses": "Todos os estados",
         "empty": "Não existem sócios para os filtros selecionados."
       },
       "errors": {
-        "load": "Não foi possível carregar a lista de sócios."
+        "load": "Não foi possível carregar a lista de sócios.",
+        "deactivate": "Não foi possível desativar este sócio."
       },
       "pending": {
         "title": "Pedidos Pendentes",
@@ -528,7 +532,32 @@
       "contractsEyebrow": "Contratos",
       "listTitle": "Lista completa",
       "loading": "A carregar patrocínios...",
-      "empty": "Ainda não existem patrocínios registados."
+      "empty": "Ainda não existem patrocínios registados.",
+      "filters": {
+        "status": "Estado",
+        "allStatuses": "Todos os estados"
+      }
+    },
+    "companies": {
+      "eyebrow": "Backoffice",
+      "title": "Patrocinadores",
+      "description": "Consulta as entidades patrocinadoras registadas e a conta associada.",
+      "loading": "A carregar patrocinadores...",
+      "empty": "Não existem patrocinadores para os filtros selecionados.",
+      "noAccount": "Sem conta associada",
+      "columns": {
+        "account": "Conta"
+      },
+      "filters": {
+        "search": "Pesquisar",
+        "searchPlaceholder": "Nome ou NIF"
+      },
+      "pagination": {
+        "items": "patrocinadores"
+      },
+      "errors": {
+        "load": "Não foi possível carregar a lista de patrocinadores."
+      }
     },
     "details": {
       "eyebrow": "Detalhe",
@@ -753,7 +782,8 @@
         "empty": "Não existem atletas para os filtros selecionados."
       },
       "errors": {
-        "load": "Não foi possível carregar a lista de atletas."
+        "load": "Não foi possível carregar a lista de atletas.",
+        "deactivate": "Não foi possível desativar este atleta."
       },
       "pending": {
         "title": "Atletas Pendentes",
@@ -1026,6 +1056,7 @@
       "athletes": "Atletas",
       "teams": "Equipas",
       "sponsors": "Patrocínios",
+      "sponsorCompanies": "Patrocinadores",
       "sponsorApprovals": "Aprovações",
       "sponsorSettings": "Tabela de patrocínios"
     },

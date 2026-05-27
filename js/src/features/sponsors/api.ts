@@ -60,11 +60,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return JSON.parse(text) as T;
 }
 
-export function fetchSponsors(page = 1, size = 20) {
+export function fetchSponsors(page = 1, size = 20, filters: { search?: string } = {}) {
   const search = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
+  if (filters.search?.trim()) {
+    search.set("search", filters.search.trim());
+  }
   return request<PaginatedResponse<Sponsor>>(`/sponsors?${search.toString()}`);
 }
 

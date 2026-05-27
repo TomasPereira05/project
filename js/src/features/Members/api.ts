@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../shared/config/config";
-import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
+import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MemberStatus, MembershipFeeOption, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
 import { todayISO } from "../../shared/utils/dateInputs";
@@ -23,7 +23,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export function fetchMembers(
   page = 1,
   size = 8,
-  filters: { search?: string; category?: MemberCategory | "" } = {},
+  filters: { search?: string; category?: MemberCategory | ""; status?: MemberStatus | "" } = {},
 ) {
   const search = new URLSearchParams({
     page: String(page),
@@ -34,6 +34,9 @@ export function fetchMembers(
   }
   if (filters.category) {
     search.set("category", filters.category);
+  }
+  if (filters.status) {
+    search.set("status", filters.status);
   }
   return request<PaginatedResponse<Member>>(`/members?${search.toString()}`);
 }
@@ -121,6 +124,12 @@ export function approveMember(memberId: number) {
 export function rejectMember(memberId: number) {
   return request<Member>(`/members/${memberId}/reject`, {
     method: "PUT",
+  });
+}
+
+export function deactivateMember(memberId: number) {
+  return request<Member>(`/members/${memberId}`, {
+    method: "DELETE",
   });
 }
 

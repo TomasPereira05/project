@@ -33,11 +33,13 @@ interface MemberRepository {
         offset: Int,
         search: String?,
         category: MemberCategory?,
+        status: MemberStatus?,
     ): List<Member>
 
     fun countFiltered(
         search: String?,
         category: MemberCategory?,
+        status: MemberStatus?,
     ): Long
 
     fun findAllActive(): List<Member>

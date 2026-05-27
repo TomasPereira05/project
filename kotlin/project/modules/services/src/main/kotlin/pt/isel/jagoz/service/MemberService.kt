@@ -7,6 +7,7 @@ import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberDomain
 import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -117,6 +118,7 @@ class MemberService(
         size: Int,
         search: String? = null,
         category: MemberCategory? = null,
+        status: MemberStatus? = null,
     ): Page<Member> {
         LOG.debug("Retrieving members page $page with size $size")
 
@@ -130,9 +132,10 @@ class MemberService(
                         request.offset,
                         normalizedSearch,
                         category,
+                        status,
                     ),
                 request = request,
-                total = transaction.memberRepository.countFiltered(normalizedSearch, category),
+                total = transaction.memberRepository.countFiltered(normalizedSearch, category, status),
             )
         }
     }

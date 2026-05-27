@@ -26,6 +26,7 @@ import {
   SponsorApprovals,
   SponsorCreate,
   MySponsorships,
+  SponsorsList,
   SponsorSettings,
   SponsorshipDetails,
   SponsorsInfo,
@@ -230,6 +231,10 @@ const router = createBrowserRouter([
       {
         path: "sponsors",
         element: <ListSponsorships />,
+      },
+      {
+        path: "sponsors/companies",
+        element: <SponsorsList />,
       },
       {
         path: "sponsors/approvals",

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import { fetchAllTeamCategories, listAllAdmin } from "../api";
+import { deactivateAthlete, fetchAllTeamCategories, listAllAdmin } from "../api";
 import type { AthleteAdmin, AthleteStatus, TeamCatalogCategory } from "../types";
 import { getVisibleTeamCategories } from "../utils";
 
@@ -23,6 +23,7 @@ export function useAthletesList(t: TFunction<"translation", undefined>) {
   const [selectedStatuses, setSelectedStatuses] = useState<AthleteStatus[]>([]);
   const [selectedTeamCategoryIds, setSelectedTeamCategoryIds] = useState<number[]>([]);
   const [teamCategories, setTeamCategories] = useState<TeamCatalogCategory[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -82,7 +83,7 @@ export function useAthletesList(t: TFunction<"translation", undefined>) {
     return () => {
       ignore = true;
     };
-  }, [page, debouncedSearchTerm, selectedStatuses, selectedTeamCategoryIds, t]);
+  }, [page, debouncedSearchTerm, refreshKey, selectedStatuses, selectedTeamCategoryIds, t]);
 
   useEffect(() => {
     if (page > totalPages) {
@@ -117,6 +118,15 @@ export function useAthletesList(t: TFunction<"translation", undefined>) {
     setPage(1);
   }
 
+  async function deactivate(athleteId: number) {
+    try {
+      await deactivateAthlete(athleteId);
+      setRefreshKey((current) => current + 1);
+    } catch {
+      setErrorMessage(t("athletes.list.errors.deactivate"));
+    }
+  }
+
   return {
     athletes,
     errorMessage,
@@ -134,6 +144,7 @@ export function useAthletesList(t: TFunction<"translation", undefined>) {
     toggleTeamCategory,
     teamCategories,
     clearFilters,
+    deactivate,
     activeFilterCount,
   };
 }
