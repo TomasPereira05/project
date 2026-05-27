@@ -52,6 +52,9 @@ object Uris {
     object Users {
         const val GET_ALL = "$PREFIX/users"
         const val GET_BY_ID = "$PREFIX/users/{userId}"
+        const val GET_ASSOCIATIONS = "$PREFIX/users/{userId}/associations"
+        const val UPDATE_ROLE = "$PREFIX/users/{userId}/role"
+        const val UPDATE_ACTIVE_MEMBER = "$PREFIX/users/{userId}/active-member"
         const val GET_BY_EMAIL = "$PREFIX/users/by-email"
         const val GET_BY_USERNAME = "$PREFIX/users/by-username"
         const val CREATE_USER = "$PREFIX/users"

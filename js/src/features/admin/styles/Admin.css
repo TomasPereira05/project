@@ -146,4 +146,115 @@
   .admin-card p {
     @apply mt-2 text-sm leading-6 text-text-secondary;
   }
+
+  .admin-users-page {
+    @apply mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
+  }
+
+  .admin-users-panel {
+    @apply rounded-[24px] border border-border bg-white p-5 shadow-soft;
+  }
+
+  .admin-users-filters {
+    @apply grid gap-3 rounded-[24px] border border-border bg-white p-4 shadow-soft md:grid-cols-[minmax(0,1fr)_240px];
+  }
+
+  .admin-users-search,
+  .admin-users-role-filter {
+    @apply flex items-center gap-3 rounded-xl border border-border bg-slate-50 px-3 py-2 text-sm text-text-secondary;
+  }
+
+  .admin-users-search input,
+  .admin-users-role-filter select {
+    @apply min-w-0 flex-1 bg-transparent font-semibold text-text-primary outline-none;
+  }
+
+  .admin-users-role-filter span {
+    @apply text-xs font-bold uppercase tracking-[0.14em] text-text-secondary;
+  }
+
+  .admin-users-table-wrap {
+    @apply overflow-x-auto;
+  }
+
+  .admin-users-table {
+    @apply w-full min-w-[760px] border-collapse text-left text-sm;
+  }
+
+  .admin-users-table th {
+    @apply border-b border-border px-4 py-3 text-xs font-bold uppercase tracking-[0.16em] text-text-secondary;
+  }
+
+  .admin-users-table td {
+    @apply border-b border-border px-4 py-4 text-text-secondary;
+  }
+
+  .admin-users-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .admin-users-table strong {
+    @apply text-text-primary;
+  }
+
+  .admin-user-role-badge {
+    @apply inline-flex rounded-full border px-3 py-1 text-xs font-semibold;
+  }
+
+  .admin-user-inline-form {
+    @apply mt-5 flex flex-col gap-3 sm:flex-row sm:items-center;
+  }
+
+  .admin-user-select,
+  .admin-user-stack-form input {
+    @apply min-h-11 rounded-xl border border-border bg-slate-50 px-3 text-sm font-semibold text-text-primary outline-none transition focus:border-primary focus:bg-white;
+  }
+
+  .admin-user-select {
+    @apply min-w-56;
+  }
+
+  .admin-user-association-grid {
+    @apply m-5 grid gap-4 lg:grid-cols-3;
+  }
+
+  .admin-user-association-card {
+    @apply flex min-h-64 flex-col gap-4 rounded-2xl border border-border bg-slate-50 p-4 text-sm text-text-secondary;
+  }
+
+  .admin-user-association-card strong {
+    @apply text-base text-text-primary;
+  }
+
+  .admin-user-association-card p {
+    @apply leading-6;
+  }
+
+  .admin-user-association-heading {
+    @apply flex items-center gap-2 text-text-primary;
+  }
+
+  .admin-user-association-heading svg {
+    @apply text-primary;
+  }
+
+  .admin-user-association-heading h3 {
+    @apply font-heading text-2xl uppercase tracking-tight;
+  }
+
+  .admin-user-card-actions {
+    @apply mt-auto flex flex-wrap gap-2;
+  }
+
+  .admin-user-stack-form {
+    @apply mt-auto flex flex-col gap-3;
+  }
+
+  .admin-user-mini-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .admin-user-mini-list > div {
+    @apply rounded-xl border border-border bg-white p-3;
+  }
 }

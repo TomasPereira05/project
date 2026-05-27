@@ -934,6 +934,85 @@
       }
     }
   },
+  "users": {
+    "list": {
+      "eyebrow": "Back office",
+      "title": "Users",
+      "description": "View all accounts registered in the platform.",
+      "loading": "Loading users...",
+      "empty": "There are no registered users yet.",
+      "columns": {
+        "username": "Username",
+        "email": "Email",
+        "role": "Role",
+        "activeMember": "Active member",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewProfile": "View profile"
+      },
+      "filters": {
+        "search": "Search by username or email",
+        "role": "Role",
+        "allRoles": "All"
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "to",
+        "of": "of",
+        "items": "users"
+      },
+      "errors": {
+        "load": "Could not load the user list."
+      }
+    },
+    "details": {
+      "subtitle": "User profile",
+      "account": "Account",
+      "description": "Information for the selected account.",
+      "loading": "Loading user...",
+      "role": {
+        "title": "Access role",
+        "description": "Change this account permission level.",
+        "save": "Save role"
+      },
+      "associations": {
+        "title": "Linked profiles",
+        "description": "Link this account to the matching member, athlete, or sponsor record.",
+        "member": "Member",
+        "athlete": "Athlete",
+        "sponsor": "Sponsor",
+        "memberMeta": "Member #{{number}} · {{status}}",
+        "athleteMeta": "Athlete #{{athleteId}} · Season {{season}}",
+        "viewMember": "View member profile",
+        "viewAthlete": "View athlete profile",
+        "unlink": "Unlink",
+        "noMember": "This account does not have a linked member profile yet.",
+        "noAthlete": "The linked member does not have an athlete profile yet.",
+        "athleteNeedsMember": "Link a member profile first. The athlete profile appears automatically if it exists.",
+        "noSponsor": "This account does not have linked sponsors yet.",
+        "memberId": "Member ID",
+        "sponsorId": "Sponsor ID",
+        "linkMember": "Link member",
+        "linkSponsor": "Link sponsor"
+      },
+      "feedback": {
+        "roleUpdated": "Role updated successfully.",
+        "memberLinked": "Member profile linked successfully.",
+        "memberUnlinked": "Member profile unlinked.",
+        "sponsorLinked": "Sponsor linked successfully."
+      },
+      "errors": {
+        "load": "Could not load the user.",
+        "updateRole": "Could not update the role.",
+        "invalidMember": "Enter a valid member ID.",
+        "linkMember": "Could not link the member profile.",
+        "unlinkMember": "Could not unlink the member profile.",
+        "invalidSponsor": "Enter a valid sponsor ID.",
+        "linkSponsor": "Could not link the sponsor."
+      }
+    }
+  },
   "admin": {
     "sidebar": {
       "eyebrow": "Back office",
@@ -943,6 +1022,7 @@
     "nav": {
       "overview": "Overview",
       "members": "Members",
+      "users": "Users",
       "athletes": "Athletes",
       "teams": "Teams",
       "sponsors": "Sponsorships",

@@ -34,7 +34,7 @@ import {
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
-import { UserPage, UsersLayout } from "./features/User";
+import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
 import { AdminHome, AdminLayout } from "./features/admin";
 
@@ -186,6 +186,14 @@ const router = createBrowserRouter([
       {
         path: "members",
         element: <Members />,
+      },
+      {
+        path: "users",
+        element: <UsersList />,
+      },
+      {
+        path: "users/:userId",
+        element: <UserDetails />,
       },
       {
         path: "members/create",

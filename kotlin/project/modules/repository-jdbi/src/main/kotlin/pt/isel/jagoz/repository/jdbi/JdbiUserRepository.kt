@@ -2,7 +2,9 @@ package pt.isel.jagoz.repository.jdbi
 
 import kotlinx.datetime.Instant
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.statement.SqlStatement
 import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.TokenValidationInfo
 import pt.isel.jagoz.domain.user.User
@@ -81,6 +83,43 @@ class JdbiUserRepository(
             .mapTo(Long::class.java)
             .one()
 
+    override fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+        role: Role?,
+    ): List<User> {
+        val sql =
+            StringBuilder("SELECT * FROM jagoz.users")
+                .appendUserFilters(search, role)
+                .append(" ORDER BY user_id ASC LIMIT :limit OFFSET :offset")
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .bindUserFilters(search, role)
+            .mapTo(User::class.java)
+            .list()
+    }
+
+    override fun countFiltered(
+        search: String?,
+        role: Role?,
+    ): Long {
+        val sql =
+            StringBuilder("SELECT COUNT(*) FROM jagoz.users")
+                .appendUserFilters(search, role)
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bindUserFilters(search, role)
+            .mapTo(Long::class.java)
+            .one()
+    }
+
     override fun update(user: User) {
         handle
             .createUpdate(
@@ -152,4 +191,35 @@ class JdbiUserRepository(
             .createUpdate("DELETE FROM jagoz.user_token WHERE token_validation = :validation")
             .bind("validation", validation.validationInfo)
             .execute()
+
+    private fun StringBuilder.appendUserFilters(
+        search: String?,
+        role: Role?,
+    ): StringBuilder {
+        val clauses = mutableListOf<String>()
+        if (!search.isNullOrBlank()) {
+            clauses += "(username ILIKE :search OR email ILIKE :search)"
+        }
+        if (role != null) {
+            clauses += "role = CAST(:role AS jagoz.user_role)"
+        }
+        if (clauses.isNotEmpty()) {
+            append(" WHERE ")
+            append(clauses.joinToString(" AND "))
+        }
+        return this
+    }
+
+    private fun <T : SqlStatement<T>> T.bindUserFilters(
+        search: String?,
+        role: Role?,
+    ): T {
+        if (!search.isNullOrBlank()) {
+            bind("search", "%${search.trim()}%")
+        }
+        if (role != null) {
+            bind("role", role.name)
+        }
+        return this
+    }
 }

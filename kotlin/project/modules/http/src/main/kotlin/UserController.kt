@@ -8,16 +8,24 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.user.UserError
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.user.AuthenticatedUserOutputModel
 import pt.isel.jagoz.http.model.user.CreateUserRequest
 import pt.isel.jagoz.http.model.user.LoginRequest
+import pt.isel.jagoz.http.model.user.UpdateUserActiveMemberRequest
+import pt.isel.jagoz.http.model.user.UpdateUserRoleRequest
+import pt.isel.jagoz.http.model.user.UserAssociationsOutput
+import pt.isel.jagoz.http.model.user.UserAthleteAssociationOutput
 import pt.isel.jagoz.http.model.user.UserCreateTokenInputModel
+import pt.isel.jagoz.http.model.user.UserMemberAssociationOutput
+import pt.isel.jagoz.http.model.user.UserSponsorAssociationOutput
 import pt.isel.jagoz.http.model.user.UserTokenCreateOutputModel
 import pt.isel.jagoz.http.model.user.toOutputModel
 import pt.isel.jagoz.http.utils.Problem
@@ -55,8 +63,10 @@ class UserController(
         authenticatedUser: AuthenticatedUser,
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(required = false) search: String?,
+        @RequestParam(required = false) role: String?,
     ): ResponseEntity<*> =
-        userService.getUsersPage(authenticatedUser, page, size).handle(
+        userService.getUsersPage(authenticatedUser, page, size, search, role?.let { runCatching { Role.valueOf(it.uppercase()) }.getOrNull() }).handle(
             onFailure = { error -> serviceErrorToProblem(error) },
             onSuccess = { usersPage ->
                 ResponseEntity.ok(
@@ -81,6 +91,73 @@ class UserController(
                 serviceErrorToProblem(error)
             },
             onSuccess = { user -> ResponseEntity.ok(user.toOutputModel()) },
+        )
+
+    @PutMapping(Uris.Users.UPDATE_ROLE)
+    fun updateUserRole(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable userId: Long,
+        @RequestBody request: UpdateUserRoleRequest,
+    ): ResponseEntity<*> =
+        userService.updateUserRole(authenticatedUser, userId, request.role).handle(
+            onFailure = { error -> serviceErrorToProblem(error) },
+            onSuccess = { user -> ResponseEntity.ok(user.toOutputModel()) },
+        )
+
+    @PutMapping(Uris.Users.UPDATE_ACTIVE_MEMBER)
+    fun updateUserActiveMember(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable userId: Long,
+        @RequestBody request: UpdateUserActiveMemberRequest,
+    ): ResponseEntity<*> =
+        userService.updateActiveMember(authenticatedUser, userId, request.memberId).handle(
+            onFailure = { error -> serviceErrorToProblem(error) },
+            onSuccess = { user -> ResponseEntity.ok(user.toOutputModel()) },
+        )
+
+    @GetMapping(Uris.Users.GET_ASSOCIATIONS)
+    fun getUserAssociations(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable userId: Long,
+    ): ResponseEntity<*> =
+        userService.getUserAssociations(authenticatedUser, userId).handle(
+            onFailure = { error -> serviceErrorToProblem(error) },
+            onSuccess = { associations ->
+                ResponseEntity.ok(
+                    UserAssociationsOutput(
+                        member =
+                            associations.member?.let {
+                                UserMemberAssociationOutput(
+                                    memberId = it.memberId,
+                                    memberNumber = it.memberNumber,
+                                    completeName = it.completeName,
+                                    email = it.email,
+                                    status = it.status.name,
+                                )
+                            },
+                        athlete =
+                            associations.athlete?.let {
+                                UserAthleteAssociationOutput(
+                                    athleteId = it.athleteId,
+                                    memberId = it.memberId,
+                                    teamCategory = it.teamCategory.label,
+                                    season = it.season,
+                                    active = it.active,
+                                )
+                            },
+                        sponsors =
+                            associations.sponsors.map {
+                                UserSponsorAssociationOutput(
+                                    sponsorId = it.sponsorId,
+                                    name = it.name,
+                                    email = it.email,
+                                    phone = it.phone,
+                                    nif = it.nif,
+                                )
+                            },
+                    ),
+                )
+            },
         )
 
     @GetMapping(Uris.Users.GET_BY_EMAIL)
