@@ -7,6 +7,7 @@ import { useAuth } from "../../../shared/hooks/useAuth";
 export default function CreateMembers() {
   const { t } = useTranslation();
   const { id, role } = useAuth();
+  const isStaffCreation = role === "ADMIN" || role === "SECRETARIA";
   const { errorMessage, handleChange, handleSubmit, isSubmitting, photoFile, setPhotoFile, successMessage, values } =
     useCreateMember(id, role, t);
 
@@ -28,6 +29,7 @@ export default function CreateMembers() {
             onSubmit={handleSubmit}
             photoFile={photoFile}
             onPhotoChange={setPhotoFile}
+            showAccountUsernameField={isStaffCreation}
             submitLabel={t("members.create.submit")}
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}

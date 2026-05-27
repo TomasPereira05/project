@@ -1,6 +1,15 @@
 package pt.isel.jagoz.service
 
 import jakarta.inject.Named
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import pt.isel.jagoz.domain.payment.Charge
+import pt.isel.jagoz.domain.payment.ChargeStatus
+import pt.isel.jagoz.domain.payment.ChargeType
+import pt.isel.jagoz.domain.payment.Payment
+import pt.isel.jagoz.domain.payment.PaymentDomain
+import pt.isel.jagoz.domain.payment.PaymentStatus
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
@@ -24,6 +33,7 @@ data class SponsorshipWithSponsor(
 class SponsorshipService(
     private val transactionManager: TransactionManager,
     private val sponsorDomain: SponsorDomain,
+    private val paymentDomain: PaymentDomain,
 ) {
     fun createSponsorship(
         authenticatedUser: AuthenticatedUser,
@@ -316,7 +326,49 @@ class SponsorshipService(
         sponsorshipId: Long,
     ): SponsorshipResult {
         if (!authenticatedUser.canManageBackoffice()) return failure(SponsorError.DomainError("Not authorized"))
-        return transitionSponsorship(sponsorshipId) { sponsorDomain.markPaid(it) }
+        return transactionManager.run { transaction ->
+            val sponsorship =
+                transaction.sponsorshipRepository.findById(sponsorshipId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsorship $sponsorshipId not found"))
+
+            val updatedSponsorship =
+                when (val updated = sponsorDomain.markPaid(sponsorship)) {
+                    is Either.Left -> return@run updated
+                    is Either.Right -> updated.value
+                }
+
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                    ?: return@run failure(SponsorError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+            val charge =
+                transaction.chargeRepository.findPendingBySponsorship(sponsorshipId)
+                    ?: createManualSponsorshipCharge(transaction, authenticatedUser, sponsorship, sponsor)
+
+            val now = Clock.System.now()
+            val paidAt = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val paidCharge =
+                when (val result = paymentDomain.markChargePaid(charge, paidAt)) {
+                    is Either.Left -> return@run failure(SponsorError.DomainError(result.value.toString()))
+                    is Either.Right -> result.value
+                }
+
+            transaction.chargeRepository.update(paidCharge)
+            transaction.paymentRepository.save(
+                Payment(
+                    paymentId = 0,
+                    chargeId = paidCharge.chargeId,
+                    amount = paidCharge.value,
+                    provider = "MANUAL",
+                    providerRef = null,
+                    status = PaymentStatus.PAID,
+                    createdAt = now,
+                    confirmedAt = now,
+                ),
+            )
+            transaction.sponsorshipRepository.update(updatedSponsorship)
+            success(updatedSponsorship)
+        }
     }
 
     fun cancelSponsorship(
@@ -410,6 +462,36 @@ class SponsorshipService(
                 }
             }
         }
+
+    private fun createManualSponsorshipCharge(
+        transaction: Transaction,
+        authenticatedUser: AuthenticatedUser,
+        sponsorship: Sponsorship,
+        sponsor: Sponsor,
+    ): Charge {
+        val creationUser =
+            transaction.userRepository.findById(authenticatedUser.userId)
+                ?: throw IllegalStateException("User ${authenticatedUser.userId} not found")
+        val chargedUser = sponsor.userId?.let { transaction.userRepository.findById(it) }
+        val createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val charge =
+            Charge(
+                chargeId = 0,
+                type = ChargeType.SPONSORSHIP_FEE,
+                memberId = null,
+                sponsorshipId = sponsorship.sponsorshipId,
+                value = sponsorship.price,
+                status = ChargeStatus.PENDING,
+                season = sponsorship.season,
+                month = null,
+                createdAt = createdAt,
+                creationUser = creationUser,
+                chargeUser = chargedUser,
+                paidAt = null,
+            )
+        val chargeId = transaction.chargeRepository.save(charge)
+        return charge.copy(chargeId = chargeId)
+    }
 
     private fun enrichWithPricing(
         transaction: Transaction,

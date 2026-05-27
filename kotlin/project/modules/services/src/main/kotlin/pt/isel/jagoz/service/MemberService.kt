@@ -36,26 +36,42 @@ class MemberService(
      * @param member the member data to register (memberId and memberNumber will be ignored)
      * @return Either a [MemberError] if validation fails or the created [Member] with assigned ID
      */
-    fun createMember(member: Member): MemberResult {
+    fun createMember(
+        member: Member,
+        linkedUsername: String? = null,
+    ): MemberResult {
         LOG.info("Creating new member registration for: ${member.email}")
 
         return transactionManager.run { transaction ->
+            val linkedUser =
+                linkedUsername
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { username ->
+                        transaction.userRepository.findByUsername(username)
+                            ?: return@run failure(MemberError.NotFound("User with username", username))
+                    }
+            val memberCandidate = member.copy(userId = linkedUser?.userId ?: member.userId)
+
             // Validate the member data
-            val validationResult = memberDomain.validateForCreation(member)
+            val validationResult = memberDomain.validateForCreation(memberCandidate)
             if (validationResult is Either.Left) {
                 LOG.warn("Member validation failed: ${validationResult.value}")
                 return@run validationResult
             }
 
-            val memberToSave = member.copy(memberNumber = 0)
+            val memberToSave = memberCandidate.copy(memberNumber = 0)
 
             // Save to repository
             val memberId = transaction.memberRepository.save(memberToSave)
             val savedMember = memberToSave.copy(memberId = memberId)
 
-            if (member.userId != null) {
-                val user = transaction.userRepository.findById(member.userId!!)
-                transaction.userRepository.update(user!!.copy(activeMemberId = savedMember.memberId))
+            val memberUserId = memberToSave.userId
+            if (memberUserId != null) {
+                val user =
+                    transaction.userRepository.findById(memberUserId)
+                        ?: return@run failure(MemberError.NotFound("User", memberUserId))
+                transaction.userRepository.update(user.copy(activeMemberId = savedMember.memberId))
             }
 
             LOG.info("Successfully created pending member with ID: $memberId")

@@ -45,7 +45,7 @@ export function fetchMember(memberId: number) {
   return request<Member>(`/members/${memberId}`);
 }
 
-export function createMember(values: MemberFormValues, userId: number | null) {
+export function createMember(values: MemberFormValues, userId: number | null, linkedUsername?: string | null) {
   const today = todayISO();
   const membershipQuota =
     values.category === "ATLETA_SOCIO"
@@ -76,6 +76,7 @@ export function createMember(values: MemberFormValues, userId: number | null) {
       approvalDate: null,
       privacyAccepted: values.privacyAccepted,
       comsAccepted: values.comsAccepted,
+      linkedUsername: linkedUsername?.trim() || null,
     }),
   });
 }
@@ -144,5 +145,15 @@ export function createMembershipFeesCheckoutSession(
   return request<CheckoutSession>("/payments/checkout-session", {
     method: "POST",
     body: JSON.stringify({ memberId, membershipFees }),
+  });
+}
+
+export function markMembershipFeesPaid(
+  memberId: number,
+  membershipFees: Array<{ season: string; month: number }>,
+) {
+  return request<MembershipFeeOption[]>(`/members/${memberId}/fees/mark-paid`, {
+    method: "POST",
+    body: JSON.stringify({ membershipFees }),
   });
 }

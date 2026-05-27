@@ -44,8 +44,10 @@ export function useCreateMember(userId: number | null | undefined, role: string 
     setSuccessMessage("");
 
     try {
-      const linkedUserId = role === "ADMIN" ? null : userId ?? null;
-      const created = await createMember(values, linkedUserId);
+      const isStaffCreation = role === "ADMIN" || role === "SECRETARIA";
+      const linkedUserId = isStaffCreation ? null : userId ?? null;
+      const linkedUsername = isStaffCreation ? values.accountUsername : null;
+      const created = await createMember(values, linkedUserId, linkedUsername);
       if (photoFile) {
         await uploadFile("MEMBER", created.memberId, "MEMBER_PHOTO", photoFile);
       }

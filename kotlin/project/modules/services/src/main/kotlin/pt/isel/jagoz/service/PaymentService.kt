@@ -213,6 +213,51 @@ class PaymentService(
             success(buildMembershipFeeOptions(member, transaction))
         }
 
+    fun markMembershipFeesPaid(
+        authenticatedUser: AuthenticatedUser,
+        memberId: Long,
+        membershipFees: List<MembershipFeeSelection>,
+    ): MembershipFeeOptionsResult {
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(PaymentError.DomainError("Not authorized"))
+        }
+
+        return transactionManager.run { transaction ->
+            val charge =
+                when (val result = createMembershipFeeCharge(transaction, authenticatedUser, memberId, membershipFees)) {
+                    is Either.Left -> return@run failure(result.value)
+                    is Either.Right -> result.value
+                }
+
+            val now = Clock.System.now()
+            val paidAt = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val paidCharge =
+                when (val result = paymentDomain.markChargePaid(charge, paidAt)) {
+                    is Either.Left -> return@run failure(PaymentError.InvalidOperation(result.value.toString()))
+                    is Either.Right -> result.value
+                }
+            transaction.chargeRepository.update(paidCharge)
+
+            transaction.paymentRepository.save(
+                Payment(
+                    paymentId = 0,
+                    chargeId = paidCharge.chargeId,
+                    amount = paidCharge.value,
+                    provider = "MANUAL",
+                    providerRef = null,
+                    status = PaymentStatus.PAID,
+                    createdAt = now,
+                    confirmedAt = now,
+                ),
+            )
+
+            val member =
+                transaction.memberRepository.findById(memberId)
+                    ?: return@run failure(PaymentError.DomainError("Member $memberId not found"))
+            success(buildMembershipFeeOptions(member, transaction))
+        }
+    }
+
     fun getReceipt(
         authenticatedUser: AuthenticatedUser,
         paymentId: Long,

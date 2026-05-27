@@ -32,6 +32,7 @@ export default function MemberPage() {
     goToNextFeePage,
     goToPreviousFeePage,
     handleApprove,
+    handleMarkSelectedFeesPaid,
     handlePaySelectedFees,
     handleReject,
     isLoading,
@@ -47,6 +48,7 @@ export default function MemberPage() {
     visibleFeeOptions,
   } =
     useMemberDetail(memberId, isAdmin || isSelf, t);
+  const canMarkFeesPaid = isAdmin && !isSelf;
 
   const paidPaymentHistory = useMemo(
     () => paymentHistory.filter((item) => item.status === "PAID"),
@@ -349,11 +351,15 @@ export default function MemberPage() {
                   <button
                     className="member-btn-primary-sm"
                     disabled={isPaying || selectedFeeOptions.length === 0}
-                    onClick={handlePaySelectedFees}
+                    onClick={canMarkFeesPaid ? handleMarkSelectedFeesPaid : handlePaySelectedFees}
                     type="button"
                   >
                     <CreditCard size={18} />
-                    {isPaying ? t("members.detail.finance.paymentStarting") : t("members.detail.finance.paySelected")}
+                    {isPaying
+                      ? t("members.detail.finance.paymentStarting")
+                      : canMarkFeesPaid
+                        ? t("members.detail.finance.markSelectedPaid")
+                        : t("members.detail.finance.paySelected")}
                   </button>
                 </div>
               )}

@@ -13,6 +13,7 @@ import pt.isel.jagoz.domain.payment.PaymentError
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.payment.CreateCheckoutSessionInput
+import pt.isel.jagoz.http.model.payment.MarkMembershipFeesPaidInput
 import pt.isel.jagoz.http.model.payment.toOutput
 import pt.isel.jagoz.http.model.payment.toHtml
 import pt.isel.jagoz.http.model.payment.toService
@@ -47,6 +48,21 @@ class PaymentController(
         @PathVariable memberId: Long,
     ): ResponseEntity<*> =
         paymentService.getMembershipFeeOptions(authenticatedUser, memberId).handle(
+            onFailure = { handlePaymentError(it) },
+            onSuccess = { options -> ResponseEntity.ok(options.map { it.toOutput() }) },
+        )
+
+    @PostMapping(Uris.Payments.MARK_MEMBERSHIP_FEES_PAID)
+    fun markMembershipFeesPaid(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable memberId: Long,
+        @RequestBody input: MarkMembershipFeesPaidInput,
+    ): ResponseEntity<*> =
+        paymentService.markMembershipFeesPaid(
+            authenticatedUser,
+            memberId,
+            input.membershipFees.map { it.toService() },
+        ).handle(
             onFailure = { handlePaymentError(it) },
             onSuccess = { options -> ResponseEntity.ok(options.map { it.toOutput() }) },
         )

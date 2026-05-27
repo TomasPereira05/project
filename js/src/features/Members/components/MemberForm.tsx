@@ -17,6 +17,7 @@ type MemberFormProps = {
   onPhotoChange?: (file: File | null) => void;
   readonlyIdentity?: boolean;
   showBackendNotice?: boolean;
+  showAccountUsernameField?: boolean;
 };
 
 export function MemberForm({
@@ -32,6 +33,7 @@ export function MemberForm({
   photoFile,
   onPhotoChange,
   readonlyIdentity = false,
+  showAccountUsernameField = false,
 }: MemberFormProps) {
   const { t } = useTranslation();
   const [hasReadPrivacyText, setHasReadPrivacyText] = useState(values.privacyAccepted);
@@ -108,6 +110,22 @@ export function MemberForm({
                   </button>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {showAccountUsernameField && (
+          <div className="member-form-section">
+            <div className="member-input-group">
+              <label className="member-label">{t("members.form.accountUsername")}</label>
+              <input
+                className="member-input"
+                name="accountUsername"
+                onChange={onChange}
+                placeholder={t("members.form.accountUsernamePlaceholder")}
+                value={values.accountUsername}
+              />
+              <p className="member-helper-text">{t("members.form.accountUsernameHelp")}</p>
             </div>
           </div>
         )}

@@ -49,6 +49,7 @@ export type MemberFormValues = {
   billingLocation: string;
   privacyAccepted: boolean;
   comsAccepted: boolean;
+  accountUsername: string;
 };
 
 export type PaymentHistoryItem = {

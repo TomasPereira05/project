@@ -72,7 +72,7 @@ class MemberController(
     fun createMember(
         @RequestBody member: MemberCreateInput,
     ): ResponseEntity<*> =
-        memberService.createMember(member.toMember()).handle(
+        memberService.createMember(member.toMember(), member.linkedUsername).handle(
             onFailure = { error -> handleMemberError(error) },
             onSuccess = { res -> ResponseEntity.ok(res.tooutput()) },
         )
