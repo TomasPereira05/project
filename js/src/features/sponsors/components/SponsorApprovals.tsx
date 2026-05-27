@@ -78,7 +78,7 @@ export default function SponsorApprovals() {
                       </p>
                     </div>
                     <div className="sponsor-contract-actions">
-                      <Link className="sponsor-button-secondary" to={`${sponsorAdminBasePath}/details/${sponsorship.sponsorshipId}`}>
+                      <Link className="sponsor-button-secondary" state={{ backPath: `${sponsorAdminBasePath}/approvals` }} to={`${sponsorAdminBasePath}/details/${sponsorship.sponsorshipId}`}>
                         <Eye size={16} />
                         {t("sponsors.approvals.actions.details")}
                       </Link>

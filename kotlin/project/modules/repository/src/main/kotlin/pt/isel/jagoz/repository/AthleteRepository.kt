@@ -28,6 +28,8 @@ interface AthleteRepository {
     /** Total para cálculo de páginas. */
     fun countAll(): Long
 
+    fun countByStatus(status: AthleteStatus): Long
+
     /**
      * Página filtrada da listagem admin. Pesquisa por nº de sócio ou nome, e filtra por
      * conjuntos de escalões e/ou estados (OR dentro de cada dimensão, AND entre dimensões).

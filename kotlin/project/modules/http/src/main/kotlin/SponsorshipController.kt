@@ -48,8 +48,9 @@ class SponsorshipController(
         authenticatedUser: AuthenticatedUser,
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "8") size: Int,
+        @RequestParam(required = false) status: String?,
     ): ResponseEntity<*> =
-        sponsorshipService.getAllSponsorshipsWithSponsorsPage(authenticatedUser, page, size).handle(
+        sponsorshipService.getAllSponsorshipsWithSponsorsPage(authenticatedUser, page, size, status).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )

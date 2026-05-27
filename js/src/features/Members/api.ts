@@ -1,5 +1,5 @@
 import { BASE_URL } from "../../shared/config/config";
-import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MembershipFeeOption, PaginatedResponse } from "./types";
+import type { CheckoutSession, Member, MemberCategory, MemberFormValues, MemberStatus, MembershipFeeOption, PaginatedResponse } from "./types";
 import { centsFromEuroInput } from "../../shared/utils";
 import { HttpError } from "../../shared/types/HttpError";
 import { todayISO } from "../../shared/utils/dateInputs";
@@ -23,7 +23,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 export function fetchMembers(
   page = 1,
   size = 8,
-  filters: { search?: string; category?: MemberCategory | "" } = {},
+  filters: { search?: string; category?: MemberCategory | ""; status?: MemberStatus | "" } = {},
 ) {
   const search = new URLSearchParams({
     page: String(page),
@@ -35,6 +35,9 @@ export function fetchMembers(
   if (filters.category) {
     search.set("category", filters.category);
   }
+  if (filters.status) {
+    search.set("status", filters.status);
+  }
   return request<PaginatedResponse<Member>>(`/members?${search.toString()}`);
 }
 
@@ -42,7 +45,7 @@ export function fetchMember(memberId: number) {
   return request<Member>(`/members/${memberId}`);
 }
 
-export function createMember(values: MemberFormValues, userId: number | null) {
+export function createMember(values: MemberFormValues, userId: number | null, linkedUsername?: string | null) {
   const today = todayISO();
   const membershipQuota =
     values.category === "ATLETA_SOCIO"
@@ -73,6 +76,7 @@ export function createMember(values: MemberFormValues, userId: number | null) {
       approvalDate: null,
       privacyAccepted: values.privacyAccepted,
       comsAccepted: values.comsAccepted,
+      linkedUsername: linkedUsername?.trim() || null,
     }),
   });
 }
@@ -124,6 +128,12 @@ export function rejectMember(memberId: number) {
   });
 }
 
+export function deactivateMember(memberId: number) {
+  return request<Member>(`/members/${memberId}`, {
+    method: "DELETE",
+  });
+}
+
 export function fetchMembershipFeeOptions(memberId: number) {
   return request<MembershipFeeOption[]>(`/members/${memberId}/fees/options`);
 }
@@ -135,5 +145,15 @@ export function createMembershipFeesCheckoutSession(
   return request<CheckoutSession>("/payments/checkout-session", {
     method: "POST",
     body: JSON.stringify({ memberId, membershipFees }),
+  });
+}
+
+export function markMembershipFeesPaid(
+  memberId: number,
+  membershipFees: Array<{ season: string; month: number }>,
+) {
+  return request<MembershipFeeOption[]>(`/members/${memberId}/fees/mark-paid`, {
+    method: "POST",
+    body: JSON.stringify({ membershipFees }),
   });
 }

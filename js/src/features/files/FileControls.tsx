@@ -1,7 +1,8 @@
-import { FileText, Upload } from "lucide-react";
+import { Camera, FileText, Upload, UserRoundCheck } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  deleteFile,
   fileContentUrl,
   listFiles,
   publicAthletePhotoUrl,
@@ -21,17 +22,37 @@ type FileAvatarProps = OwnerProps & {
   alt: string;
   children: ReactNode;
   className: string;
+  editable?: boolean;
+  fallback?: OwnerProps;
+  useFallbackLabel?: string;
+  uploadLabel?: string;
   publicImage?: boolean;
 };
 
-export function FileAvatar({ alt, children, className, kind, ownerId, ownerType, publicImage = false }: FileAvatarProps) {
+export function FileAvatar({
+  alt,
+  children,
+  className,
+  editable = true,
+  fallback,
+  kind,
+  ownerId,
+  ownerType,
+  publicImage = false,
+  useFallbackLabel,
+  uploadLabel,
+}: FileAvatarProps) {
   const { t } = useTranslation();
   const [file, setFile] = useState<StoredFile | null>(null);
+  const [fallbackFile, setFallbackFile] = useState<StoredFile | null>(null);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     let ignore = false;
-    if (!ownerId) return;
+    setFile(null);
+    if (!ownerId) {
+      return;
+    }
     listFiles(ownerType, ownerId, kind)
       .then((files) => {
         if (!ignore) setFile(files[0] ?? null);
@@ -42,7 +63,25 @@ export function FileAvatar({ alt, children, className, kind, ownerId, ownerType,
     };
   }, [kind, ownerId, ownerType]);
 
-  async function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+  useEffect(() => {
+    let ignore = false;
+    setFallbackFile(null);
+    if (!fallback?.ownerId) {
+      return;
+    }
+    listFiles(fallback.ownerType, fallback.ownerId, fallback.kind)
+      .then((files) => {
+        if (!ignore) setFallbackFile(files[0] ?? null);
+      })
+      .catch(() => undefined);
+    return () => {
+      ignore = true;
+    };
+  }, [fallback?.kind, fallback?.ownerId, fallback?.ownerType]);
+
+  async function handleChange(
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) {
     const selected = event.target.files?.[0];
     if (!selected || !ownerId) return;
     setUploading(true);
@@ -55,18 +94,74 @@ export function FileAvatar({ alt, children, className, kind, ownerId, ownerType,
     }
   }
 
-  const src = file ? (publicImage ? publicAthletePhotoUrl(file.fileId) : fileContentUrl(file.fileId)) : null;
+  async function handleUseFallback() {
+    if (!file) return;
+    setUploading(true);
+    try {
+      await deleteFile(file.fileId);
+      setFile(null);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  const displayFile = file ?? fallbackFile;
+  const src = displayFile ? (publicImage ? publicAthletePhotoUrl(displayFile.fileId) : fileContentUrl(displayFile.fileId)) : null;
 
   return (
-    <div className={`${className} file-avatar-control`}>
-      {src ? <img src={src} alt={alt} className="file-avatar-image" /> : children}
-      {ownerId && (
-        <label className="file-avatar-action" title={t("files.actions.uploadPhoto")}>
-          <Upload size={16} />
-          <input accept="image/png,image/jpeg,image/webp" disabled={uploading} onChange={handleChange} type="file" />
-        </label>
+    <div className="file-avatar-block">
+      <div className={className}>
+        {src ? <img src={src} alt={alt} className="file-avatar-image" /> : children}
+      </div>
+      {editable && ownerId && (
+        <div className="file-avatar-actions">
+          {fallback?.ownerId && (
+            <button className="file-avatar-button-secondary" disabled={uploading || !file} onClick={handleUseFallback} type="button">
+              <UserRoundCheck size={16} />
+              <span>{useFallbackLabel ?? t("files.actions.useMemberPhoto")}</span>
+            </button>
+          )}
+          <label className="file-avatar-button" title={t("files.actions.uploadPhoto")}>
+            <Camera size={16} />
+            <span>{uploading ? t("files.actions.uploading") : uploadLabel ?? t("files.actions.changePhoto")}</span>
+            <input
+              accept="image/png,image/jpeg,image/webp"
+              disabled={uploading}
+              onChange={handleChange}
+              type="file"
+            />
+          </label>
+        </div>
       )}
     </div>
+  );
+}
+
+export function ProfilePhoto({
+  activeMemberId,
+  alt,
+  className,
+  userId,
+  children,
+}: {
+  activeMemberId?: number | null;
+  alt: string;
+  className: string;
+  userId?: number | null;
+  children: ReactNode;
+}) {
+  return (
+    <FileAvatar
+      alt={alt}
+      className={className}
+      editable={false}
+      fallback={activeMemberId ? { ownerType: "MEMBER", ownerId: activeMemberId, kind: "MEMBER_PHOTO" } : undefined}
+      kind="USER_PROFILE_PHOTO"
+      ownerId={userId}
+      ownerType="USER"
+    >
+      {children}
+    </FileAvatar>
   );
 }
 

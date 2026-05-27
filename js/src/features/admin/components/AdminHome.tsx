@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { BadgeEuro, Settings, Trophy, Users } from "lucide-react";
+import { BadgeEuro, Clock3, Settings, Trophy, UserCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAdminOverviewStats } from "../hooks/useAdminOverviewStats";
 
 const adminCards = [
   {
@@ -31,6 +32,33 @@ const adminCards = [
 
 export default function AdminHome() {
   const { t } = useTranslation();
+  const { hasError, isLoading, stats } = useAdminOverviewStats();
+
+  const statGroups = [
+    {
+      titleKey: "admin.stats.groups.members",
+      cards: [
+        { icon: Users, labelKey: "admin.stats.members", value: stats.totalMembers },
+        { icon: UserCheck, labelKey: "admin.stats.activeMembers", value: stats.activeMembers },
+        { icon: Clock3, labelKey: "admin.stats.pendingMembers", value: stats.pendingMembers },
+      ],
+    },
+    {
+      titleKey: "admin.stats.groups.athletes",
+      cards: [
+        { icon: Trophy, labelKey: "admin.stats.athletes", value: stats.totalAthletes },
+        { icon: UserCheck, labelKey: "admin.stats.activeAthletes", value: stats.activeAthletes },
+        { icon: Clock3, labelKey: "admin.stats.pendingAthletes", value: stats.pendingAthletes },
+      ],
+    },
+    {
+      titleKey: "admin.stats.groups.sponsorships",
+      cards: [
+        { icon: BadgeEuro, labelKey: "admin.stats.sponsorships", value: stats.totalSponsorships },
+        { icon: Clock3, labelKey: "admin.stats.pendingSponsorships", value: stats.pendingSponsorships },
+      ],
+    },
+  ];
 
   return (
     <main className="admin-home">
@@ -38,6 +66,35 @@ export default function AdminHome() {
         <p className="admin-eyebrow">{t("admin.home.eyebrow")}</p>
         <h1>{t("admin.home.title")}</h1>
         <p>{t("admin.home.description")}</p>
+      </section>
+
+      <section className="admin-stats-section">
+        <div className="admin-section-header">
+          <div>
+            <p className="admin-eyebrow">{t("admin.stats.eyebrow")}</p>
+          </div>
+          {hasError ? <span className="admin-stats-error">{t("admin.stats.error")}</span> : null}
+        </div>
+        <div className="admin-stats-group-grid">
+          {statGroups.map((group) => (
+            <article className="admin-stat-group" key={group.titleKey}>
+              <h3>{t(group.titleKey)}</h3>
+              <div className="admin-stats-grid">
+                {group.cards.map((card) => {
+                  const Icon = card.icon;
+
+                  return (
+                    <div className="admin-stat-card" key={card.labelKey}>
+                      <Icon size={20} />
+                      <span>{t(card.labelKey)}</span>
+                      <strong>{isLoading ? "-" : card.value.toLocaleString()}</strong>
+                    </div>
+                  );
+                })}
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="admin-card-grid">

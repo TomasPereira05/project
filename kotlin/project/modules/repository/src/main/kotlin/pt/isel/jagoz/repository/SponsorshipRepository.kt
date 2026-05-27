@@ -17,6 +17,8 @@ interface SponsorshipRepository {
 
     fun countAll(): Long
 
+    fun countByStatus(status: SponsorshipStatus): Long
+
     fun findPageBySponsorId(
         sponsorId: Long,
         limit: Int,

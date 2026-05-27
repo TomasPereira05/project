@@ -244,6 +244,7 @@ function renderAdminContent({
                 kind="ATHLETE_PHOTO"
                 ownerId={athlete.athleteId}
                 ownerType="ATHLETE"
+                uploadLabel={t("files.actions.changePhoto")}
               >
                 {getInitials(athlete.member.completeName)}
               </FileAvatar>

@@ -7,7 +7,10 @@
     "actions": {
       "upload": "Carregar",
       "uploading": "A carregar...",
-      "uploadPhoto": "Carregar foto"
+      "uploadPhoto": "Carregar foto",
+      "changePhoto": "Alterar foto",
+      "choosePhoto": "Escolher foto",
+      "useMemberPhoto": "Usar foto de sócio"
     },
     "kinds": {
       "ATHLETE_ID_CARD": "Cartao de cidadao",
@@ -43,6 +46,7 @@
     "sponsors": {
       "info": "Informação",
       "my": "Meus patrocínios",
+      "list": "Lista de patrocínios",
       "approvals": "Aprovações",
       "settings": "Configurações",
       "become": "Tornar-se patrocinador"
@@ -161,6 +165,7 @@
       "back": "Voltar",
       "edit": "Editar",
       "view": "Ver",
+      "deactivate": "Desativar",
       "saving": "A guardar...",
       "yes": "Sim",
       "no": "Não",
@@ -219,8 +224,14 @@
     "form": {
       "quotaHelp": "Valor mínimo para sócio: 1,50 EUR",
       "billingPlaceholder": "Ex: Sede do clube",
+      "accountUsername": "Conta associada",
+      "accountUsernamePlaceholder": "Username da conta",
+      "accountUsernameHelp": "Opcional. Se preencheres, o backend procura esse username e associa a conta ao sócio.",
       "formerMember": "Já foi sócio anteriormente",
       "formerMemberHelp": "Ajuda a secretaria a perceber se a inscrição é nova ou uma reentrada.",
+      "photoTitle": "Foto de sócio",
+      "photoHelp": "Esta foto será usada como imagem principal do perfil.",
+      "removePhoto": "Remover foto",
       "privacyTitle": "Texto de privacidade obrigatório",
       "readPrivacy": "Li o texto",
       "privacyText": "Os dados pessoais recolhidos neste formulário serão tratados pelo Grupo Desportivo União Ericeirense para efeitos de inscrição como sócio do clube e para envio de comunicações relacionadas com a atividade desportiva. Poderá exercer, a qualquer momento, os direitos de acesso, retificação, anulação, oposição ou eliminação dos seus dados pessoais, nos casos legalmente admitidos, incluindo a revogação do consentimento quando aplicável. O não fornecimento destes dados inviabiliza a inscrição. Os seus dados pessoais não serão partilhados com terceiros, exceto mediante consentimento, quando exigido por lei ou para responder a processo legal.",
@@ -263,10 +274,13 @@
         "searchPlaceholder": "Nº de sócio ou nome",
         "category": "Categoria",
         "allCategories": "Todas as categorias",
+        "status": "Estado",
+        "allStatuses": "Todos os estados",
         "empty": "Não existem sócios para os filtros selecionados."
       },
       "errors": {
-        "load": "Não foi possível carregar a lista de sócios."
+        "load": "Não foi possível carregar a lista de sócios.",
+        "deactivate": "Não foi possível desativar este sócio."
       },
       "pending": {
         "title": "Pedidos Pendentes",
@@ -327,6 +341,9 @@
         "selectDescription": "Escolha as quotas em atraso, atuais ou futuras que pretende pagar num único checkout.",
         "selectedTotal": "Total selecionado",
         "paySelected": "Pagar selecionadas",
+        "markSelectedPaid": "Marcar como pago",
+        "markPaidSuccess": "Quotas marcadas como pagas com sucesso.",
+        "markPaidError": "Não foi possível marcar as quotas como pagas.",
         "paymentStarting": "A preparar pagamento...",
         "paymentError": "Não foi possível iniciar o pagamento das quotas.",
         "selectOverdue": "Selecionar atrasadas",
@@ -338,6 +355,8 @@
         "dueDate": "Vencimento",
         "value": "Valor",
         "status": "Estado",
+        "receipt": "Recibo",
+        "viewReceipt": "Ver recibo",
         "previous": "Anterior",
         "next": "Seguinte",
         "page": "Página {{page}} de {{totalPages}}",
@@ -511,6 +530,41 @@
       "empty": "Ainda não existem patrocínios associados a esta conta.",
       "details": "Detalhes"
     },
+    "admin": {
+      "eyebrow": "Backoffice",
+      "title": "Todos os patrocínios",
+      "description": "Consulta todos os patrocínios submetidos, aprovados, pagos, ativos e cancelados.",
+      "approvalsLink": "Ver aprovações",
+      "contractsEyebrow": "Contratos",
+      "listTitle": "Lista completa",
+      "loading": "A carregar patrocínios...",
+      "empty": "Ainda não existem patrocínios registados.",
+      "filters": {
+        "status": "Estado",
+        "allStatuses": "Todos os estados"
+      }
+    },
+    "companies": {
+      "eyebrow": "Backoffice",
+      "title": "Patrocinadores",
+      "description": "Consulta as entidades patrocinadoras registadas e a conta associada.",
+      "loading": "A carregar patrocinadores...",
+      "empty": "Não existem patrocinadores para os filtros selecionados.",
+      "noAccount": "Sem conta associada",
+      "columns": {
+        "account": "Conta"
+      },
+      "filters": {
+        "search": "Pesquisar",
+        "searchPlaceholder": "Nome ou NIF"
+      },
+      "pagination": {
+        "items": "patrocinadores"
+      },
+      "errors": {
+        "load": "Não foi possível carregar a lista de patrocinadores."
+      }
+    },
     "details": {
       "eyebrow": "Detalhe",
       "title": "Patrocínio",
@@ -527,15 +581,16 @@
       "saving": "A guardar...",
       "cancelEdit": "Cancelar",
       "updateSuccess": "Patrocínio atualizado com sucesso.",
-      "updateError": "Não foi possível atualizar o patrocínio."
+      "updateError": "Não foi possível atualizar o patrocínio.",
+      "viewReceipt": "Ver recibo"
     },
     "approvals": {
       "eyebrow": "Aprovações",
-      "title": "Lista de patrocínios",
-      "description": "Revê pedidos pendentes e gere o fluxo de aprovação e pagamento.",
+      "title": "Patrocínios por aprovar",
+      "description": "Revê apenas os pedidos submetidos que ainda precisam de aprovação.",
       "settingsLink": "Ir para settings",
       "loading": "A carregar patrocínios...",
-      "empty": "Não existem patrocínios registados.",
+      "empty": "Não existem patrocínios por aprovar.",
       "actions": {
         "approve": "Aprovar",
         "markPaid": "Marcar pago",
@@ -733,7 +788,8 @@
         "empty": "Não existem atletas para os filtros selecionados."
       },
       "errors": {
-        "load": "Não foi possível carregar a lista de atletas."
+        "load": "Não foi possível carregar a lista de atletas.",
+        "deactivate": "Não foi possível desativar este atleta."
       },
       "pending": {
         "title": "Atletas Pendentes",
@@ -914,6 +970,85 @@
       }
     }
   },
+  "users": {
+    "list": {
+      "eyebrow": "Backoffice",
+      "title": "Utilizadores",
+      "description": "Consulta todas as contas registadas na plataforma.",
+      "loading": "A carregar utilizadores...",
+      "empty": "Ainda não existem utilizadores registados.",
+      "columns": {
+        "username": "Username",
+        "email": "Email",
+        "role": "Perfil",
+        "activeMember": "Sócio ativo",
+        "actions": "Ações"
+      },
+      "actions": {
+        "viewProfile": "Ver perfil"
+      },
+      "filters": {
+        "search": "Pesquisar por username ou email",
+        "role": "Perfil",
+        "allRoles": "Todos"
+      },
+      "pagination": {
+        "showing": "A mostrar",
+        "to": "a",
+        "of": "de",
+        "items": "utilizadores"
+      },
+      "errors": {
+        "load": "Não foi possível carregar a lista de utilizadores."
+      }
+    },
+    "details": {
+      "subtitle": "Perfil de utilizador",
+      "account": "Conta",
+      "description": "Informação da conta selecionada.",
+      "loading": "A carregar utilizador...",
+      "role": {
+        "title": "Perfil de acesso",
+        "description": "Altera o tipo de permissão desta conta.",
+        "save": "Guardar perfil"
+      },
+      "associations": {
+        "title": "Fichas associadas",
+        "description": "Liga esta conta à ficha de sócio, atleta ou patrocinador correspondente.",
+        "member": "Sócio",
+        "athlete": "Atleta",
+        "sponsor": "Patrocinador",
+        "memberMeta": "Sócio #{{number}} · {{status}}",
+        "athleteMeta": "Atleta #{{athleteId}} · Época {{season}}",
+        "viewMember": "Ver ficha de sócio",
+        "viewAthlete": "Ver ficha de atleta",
+        "unlink": "Desassociar",
+        "noMember": "Esta conta ainda não tem ficha de sócio associada.",
+        "noAthlete": "O sócio associado ainda não tem ficha de atleta.",
+        "athleteNeedsMember": "Associa primeiro uma ficha de sócio. A ficha de atleta aparece automaticamente se existir.",
+        "noSponsor": "Esta conta ainda não tem patrocinadores associados.",
+        "memberId": "ID do sócio",
+        "sponsorId": "ID do patrocinador",
+        "linkMember": "Associar sócio",
+        "linkSponsor": "Associar patrocinador"
+      },
+      "feedback": {
+        "roleUpdated": "Perfil atualizado com sucesso.",
+        "memberLinked": "Ficha de sócio associada com sucesso.",
+        "memberUnlinked": "Ficha de sócio desassociada.",
+        "sponsorLinked": "Patrocinador associado com sucesso."
+      },
+      "errors": {
+        "load": "Não foi possível carregar o utilizador.",
+        "updateRole": "Não foi possível atualizar o perfil.",
+        "invalidMember": "Indica um ID de sócio válido.",
+        "linkMember": "Não foi possível associar a ficha de sócio.",
+        "unlinkMember": "Não foi possível desassociar a ficha de sócio.",
+        "invalidSponsor": "Indica um ID de patrocinador válido.",
+        "linkSponsor": "Não foi possível associar o patrocinador."
+      }
+    }
+  },
   "admin": {
     "sidebar": {
       "eyebrow": "Backoffice",
@@ -923,15 +1058,41 @@
     "nav": {
       "overview": "Visão geral",
       "members": "Sócios",
+      "users": "Utilizadores",
       "athletes": "Atletas",
       "teams": "Equipas",
-      "sponsorApprovals": "Patrocínios",
+      "sponsors": "Patrocínios",
+      "sponsorCompanies": "Patrocinadores",
+      "sponsorApprovals": "Aprovações",
       "sponsorSettings": "Tabela de patrocínios"
+    },
+    "navGroups": {
+      "general": "Geral",
+      "people": "Pessoas",
+      "sponsorships": "Patrocínios",
+      "settings": "Configuração"
     },
     "home": {
       "eyebrow": "Backoffice",
       "title": "Administração",
       "description": "Área de gestão do clube."
+    },
+    "stats": {
+      "eyebrow": "Resumo",
+      "groups": {
+        "members": "Sócios",
+        "athletes": "Atletas",
+        "sponsorships": "Patrocínios"
+      },
+      "members": "Sócios",
+      "activeMembers": "Sócios ativos",
+      "pendingMembers": "Sócios pendentes",
+      "athletes": "Atletas",
+      "activeAthletes": "Atletas ativos",
+      "pendingAthletes": "Atletas pendentes",
+      "sponsorships": "Patrocínios",
+      "pendingSponsorships": "Por aprovar",
+      "error": "Não foi possível carregar todos os números."
     },
     "cards": {
       "members": {

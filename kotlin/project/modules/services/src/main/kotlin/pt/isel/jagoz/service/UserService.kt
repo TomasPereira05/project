@@ -4,6 +4,9 @@ import jakarta.inject.Named
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import org.slf4j.LoggerFactory
+import pt.isel.jagoz.domain.athlete.Athlete
+import pt.isel.jagoz.domain.member.Member
+import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.PasswordValidationInfo
 import pt.isel.jagoz.domain.user.Role
@@ -21,10 +24,17 @@ import pt.isel.jagoz.repository.TransactionManager
 typealias UserResult = Either<UserError, User>
 typealias AuthenticatedUserResult = Either<UserError, AuthenticatedUser>
 typealias TokenCreationResult = Either<UserError, TokenExternalInfo>
+typealias UserAssociationsResult = Either<UserError, UserAssociations>
 
 data class TokenExternalInfo(
     val tokenValue: String,
     val tokenExpiration: Instant,
+)
+
+data class UserAssociations(
+    val member: Member?,
+    val athlete: Athlete?,
+    val sponsors: List<Sponsor>,
 )
 
 @Named
@@ -97,6 +107,81 @@ class UserService(
         return getUserById(userId)
     }
 
+    fun updateUserRole(
+        authenticatedUser: AuthenticatedUser,
+        userId: Long,
+        role: Role,
+    ): UserResult {
+        if (!authenticatedUser.canManageBackoffice()) return failure(UserError.Unauthorized("Not authorized"))
+
+        return transactionManager.run { transaction ->
+            val user =
+                transaction.userRepository.findById(userId)
+                    ?: return@run failure(UserError.NotFound("userId", userId))
+
+            val updated = user.copy(role = role)
+            transaction.userRepository.update(updated)
+            success(updated)
+        }
+    }
+
+    fun updateActiveMember(
+        authenticatedUser: AuthenticatedUser,
+        userId: Long,
+        memberId: Long?,
+    ): UserResult {
+        if (!authenticatedUser.canManageBackoffice()) return failure(UserError.Unauthorized("Not authorized"))
+
+        return transactionManager.run { transaction ->
+            val user =
+                transaction.userRepository.findById(userId)
+                    ?: return@run failure(UserError.NotFound("userId", userId))
+
+            val newMember =
+                memberId?.let {
+                    transaction.memberRepository.findById(it)
+                        ?: return@run failure(UserError.NotFound("memberId", it))
+                }
+
+            if (newMember?.userId != null && newMember.userId != userId) {
+                return@run failure(UserError.Validation("Member is already associated with another user"))
+            }
+
+            user.activeMemberId
+                ?.takeIf { it != memberId }
+                ?.let { transaction.memberRepository.findById(it) }
+                ?.takeIf { it.userId == userId }
+                ?.let { transaction.memberRepository.update(it.copy(userId = null)) }
+
+            if (newMember != null && newMember.userId != userId) {
+                transaction.memberRepository.update(newMember.copy(userId = userId))
+            }
+
+            val updated = user.copy(activeMemberId = memberId)
+            transaction.userRepository.update(updated)
+            success(updated)
+        }
+    }
+
+    fun getUserAssociations(
+        authenticatedUser: AuthenticatedUser,
+        userId: Long,
+    ): UserAssociationsResult {
+        if (!authenticatedUser.canManageBackoffice()) return failure(UserError.Unauthorized("Not authorized"))
+
+        return transactionManager.run { transaction ->
+            val user =
+                transaction.userRepository.findById(userId)
+                    ?: return@run failure(UserError.NotFound("userId", userId))
+
+            val member = user.activeMemberId?.let { transaction.memberRepository.findById(it) }
+            val athlete = member?.let { transaction.athleteRepository.findByMemberId(it.memberId) }
+            val sponsors = transaction.sponsorRepository.findByUserId(userId)
+
+            success(UserAssociations(member = member, athlete = athlete, sponsors = sponsors))
+        }
+    }
+
     fun getUserByEmail(email: String): UserResult =
         transactionManager.run { transaction ->
             val user =
@@ -135,6 +220,8 @@ class UserService(
         authenticatedUser: AuthenticatedUser,
         page: Int,
         size: Int,
+        search: String?,
+        role: Role?,
     ): Either<UserError, Page<User>> {
         if (!authenticatedUser.canManageBackoffice()) {
             return failure(UserError.Unauthorized("Not authorized"))
@@ -144,9 +231,9 @@ class UserService(
         return transactionManager.run { transaction ->
             success(
                 pageOf(
-                    items = transaction.userRepository.findPage(request.size, request.offset),
+                    items = transaction.userRepository.findPageFiltered(request.size, request.offset, search, role),
                     request = request,
-                    total = transaction.userRepository.countAll(),
+                    total = transaction.userRepository.countFiltered(search, role),
                 ),
             )
         }

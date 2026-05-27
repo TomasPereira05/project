@@ -7,6 +7,7 @@ import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberDomain
 import pt.isel.jagoz.domain.member.MemberError
+import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -35,26 +36,42 @@ class MemberService(
      * @param member the member data to register (memberId and memberNumber will be ignored)
      * @return Either a [MemberError] if validation fails or the created [Member] with assigned ID
      */
-    fun createMember(member: Member): MemberResult {
+    fun createMember(
+        member: Member,
+        linkedUsername: String? = null,
+    ): MemberResult {
         LOG.info("Creating new member registration for: ${member.email}")
 
         return transactionManager.run { transaction ->
+            val linkedUser =
+                linkedUsername
+                    ?.trim()
+                    ?.takeIf { it.isNotEmpty() }
+                    ?.let { username ->
+                        transaction.userRepository.findByUsername(username)
+                            ?: return@run failure(MemberError.NotFound("User with username", username))
+                    }
+            val memberCandidate = member.copy(userId = linkedUser?.userId ?: member.userId)
+
             // Validate the member data
-            val validationResult = memberDomain.validateForCreation(member)
+            val validationResult = memberDomain.validateForCreation(memberCandidate)
             if (validationResult is Either.Left) {
                 LOG.warn("Member validation failed: ${validationResult.value}")
                 return@run validationResult
             }
 
-            val memberToSave = member.copy(memberNumber = 0)
+            val memberToSave = memberCandidate.copy(memberNumber = 0)
 
             // Save to repository
             val memberId = transaction.memberRepository.save(memberToSave)
             val savedMember = memberToSave.copy(memberId = memberId)
 
-            if (member.userId != null) {
-                val user = transaction.userRepository.findById(member.userId!!)
-                transaction.userRepository.update(user!!.copy(activeMemberId = savedMember.memberId))
+            val memberUserId = memberToSave.userId
+            if (memberUserId != null) {
+                val user =
+                    transaction.userRepository.findById(memberUserId)
+                        ?: return@run failure(MemberError.NotFound("User", memberUserId))
+                transaction.userRepository.update(user.copy(activeMemberId = savedMember.memberId))
             }
 
             LOG.info("Successfully created pending member with ID: $memberId")
@@ -117,6 +134,7 @@ class MemberService(
         size: Int,
         search: String? = null,
         category: MemberCategory? = null,
+        status: MemberStatus? = null,
     ): Page<Member> {
         LOG.debug("Retrieving members page $page with size $size")
 
@@ -130,9 +148,10 @@ class MemberService(
                         request.offset,
                         normalizedSearch,
                         category,
+                        status,
                     ),
                 request = request,
-                total = transaction.memberRepository.countFiltered(normalizedSearch, category),
+                total = transaction.memberRepository.countFiltered(normalizedSearch, category, status),
             )
         }
     }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Bell, ChevronDown, ChevronLeft, ChevronRight, Plus, Search, Users, ShieldAlert } from "lucide-react";
+import { Bell, ChevronDown, ChevronLeft, ChevronRight, ClipboardCheck, Eye, Pencil, Plus, Search, UserX, Users, ShieldAlert } from "lucide-react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { MEMBERS_PAGE_SIZE, useMembersList } from "../hooks";
 import { memberStatusColor } from "../utils";
@@ -25,6 +25,9 @@ export default function Members() {
     setCategoryFilter,
     setPage,
     setSearchTerm,
+    deactivate,
+    setStatusFilter,
+    statusFilter,
     totalMembers,
     totalPages,
   } =
@@ -96,8 +99,13 @@ export default function Members() {
                           <span>{member.city}</span>
                         </div>
                       </div>
-                      <Link className="member-btn-evaluate" to={`${memberBasePath}/${member.memberId}`}>
-                        {t("members.list.pending.evaluate")}
+                      <Link
+                        aria-label={t("members.list.pending.evaluate")}
+                        className="member-btn-evaluate"
+                        title={t("members.list.pending.evaluate")}
+                        to={`${memberBasePath}/${member.memberId}`}
+                      >
+                        <ClipboardCheck size={16} />
                       </Link>
                     </div>
                   ))}
@@ -133,6 +141,21 @@ export default function Members() {
                 <option value="">{t("members.list.filters.allCategories")}</option>
                 <option value="SOCIO">{t("members.labels.categories.SOCIO")}</option>
                 <option value="ATLETA_SOCIO">{t("members.labels.categories.ATLETA_SOCIO")}</option>
+              </select>
+            </label>
+
+            <label className="member-list-filter">
+              <span className="member-label">{t("members.list.filters.status")}</span>
+              <select
+                className="member-input"
+                onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
+                value={statusFilter}
+              >
+                <option value="">{t("members.list.filters.allStatuses")}</option>
+                <option value="ATIVO">{t("members.labels.statuses.ATIVO")}</option>
+                <option value="PENDENTE">{t("members.labels.statuses.PENDENTE")}</option>
+                <option value="INATIVO">{t("members.labels.statuses.INATIVO")}</option>
+                <option value="REJEITADO">{t("members.labels.statuses.REJEITADO")}</option>
               </select>
             </label>
           </div>
@@ -181,12 +204,33 @@ export default function Members() {
                           </td>
                           <td className="member-td-right">
                             <div className="member-row-actions">
-                              <Link to={`${memberBasePath}/${member.memberId}/edit`} className="member-btn-table-edit">
-                                {t("members.common.edit")}
+                              <Link
+                                aria-label={t("members.common.edit")}
+                                className="member-btn-table-edit"
+                                title={t("members.common.edit")}
+                                to={`${memberBasePath}/${member.memberId}/edit`}
+                              >
+                                <Pencil size={16} />
                               </Link>
-                              <Link to={`${memberBasePath}/${member.memberId}`} className="member-action-btn">
-                                {t("members.common.view")}
+                              <Link
+                                aria-label={t("members.common.view")}
+                                className="member-action-btn"
+                                title={t("members.common.view")}
+                                to={`${memberBasePath}/${member.memberId}`}
+                              >
+                                <Eye size={16} />
                               </Link>
+                              {member.status !== "INATIVO" ? (
+                                <button
+                                  aria-label={t("members.common.deactivate")}
+                                  className="member-action-danger"
+                                  onClick={() => void deactivate(member.memberId)}
+                                  title={t("members.common.deactivate")}
+                                  type="button"
+                                >
+                                  <UserX size={16} />
+                                </button>
+                              ) : null}
                             </div>
                           </td>
                         </tr>

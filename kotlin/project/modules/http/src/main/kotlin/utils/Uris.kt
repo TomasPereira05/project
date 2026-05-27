@@ -52,6 +52,9 @@ object Uris {
     object Users {
         const val GET_ALL = "$PREFIX/users"
         const val GET_BY_ID = "$PREFIX/users/{userId}"
+        const val GET_ASSOCIATIONS = "$PREFIX/users/{userId}/associations"
+        const val UPDATE_ROLE = "$PREFIX/users/{userId}/role"
+        const val UPDATE_ACTIVE_MEMBER = "$PREFIX/users/{userId}/active-member"
         const val GET_BY_EMAIL = "$PREFIX/users/by-email"
         const val GET_BY_USERNAME = "$PREFIX/users/by-username"
         const val CREATE_USER = "$PREFIX/users"
@@ -61,6 +64,10 @@ object Uris {
         const val ME = "$PREFIX/users/me"
 
         fun byId(userId: Long): URI = UriTemplate(GET_BY_ID).expand(userId)
+    }
+
+    object Admin {
+        const val OVERVIEW_STATS = "$PREFIX/admin/overview/stats"
     }
 
     object Sponsors {
@@ -106,6 +113,9 @@ object Uris {
     object Payments {
         const val CREATE_CHECKOUT_SESSION = "$PREFIX/payments/checkout-session"
         const val MEMBERSHIP_FEE_OPTIONS = "$PREFIX/members/{memberId}/fees/options"
+        const val MARK_MEMBERSHIP_FEES_PAID = "$PREFIX/members/{memberId}/fees/mark-paid"
+        const val RECEIPT = "$PREFIX/payments/{paymentId}/receipt"
+        const val SPONSORSHIP_RECEIPT = "$PREFIX/payments/sponsorships/{sponsorshipId}/receipt"
         const val STRIPE_WEBHOOK = "$PREFIX/payments/stripe/webhook"
     }
 

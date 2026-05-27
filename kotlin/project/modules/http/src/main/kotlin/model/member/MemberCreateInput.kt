@@ -28,6 +28,7 @@ data class MemberCreateInput(
     val approvalDate: String?,
     val privacyAccepted: Boolean,
     val comsAccepted: Boolean,
+    val linkedUsername: String? = null,
 )
 
 fun MemberCreateInput.toMember(): Member =

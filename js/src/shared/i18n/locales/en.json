@@ -7,7 +7,10 @@
     "actions": {
       "upload": "Upload",
       "uploading": "Uploading...",
-      "uploadPhoto": "Upload photo"
+      "uploadPhoto": "Upload photo",
+      "changePhoto": "Change photo",
+      "choosePhoto": "Choose photo",
+      "useMemberPhoto": "Use member photo"
     },
     "kinds": {
       "ATHLETE_ID_CARD": "Citizen card",
@@ -43,6 +46,7 @@
     "sponsors": {
       "info": "Information",
       "my": "My sponsorships",
+      "list": "Sponsorship list",
       "approvals": "Approvals",
       "settings": "Settings",
       "become": "Become a sponsor"
@@ -161,6 +165,7 @@
       "back": "Back",
       "edit": "Edit",
       "view": "View",
+      "deactivate": "Deactivate",
       "saving": "Saving...",
       "yes": "Yes",
       "no": "No",
@@ -219,8 +224,14 @@
     "form": {
       "quotaHelp": "Minimum member fee: 1.50 EUR",
       "billingPlaceholder": "Ex: Club headquarters",
+      "accountUsername": "Linked account",
+      "accountUsernamePlaceholder": "Account username",
+      "accountUsernameHelp": "Optional. If filled, the backend searches that username and links the account to the member.",
       "formerMember": "Has been a member before",
       "formerMemberHelp": "Helps the office understand whether this is a new registration or a re-entry.",
+      "photoTitle": "Member photo",
+      "photoHelp": "This photo will be used as the main profile image.",
+      "removePhoto": "Remove photo",
       "privacyTitle": "Required privacy text",
       "readPrivacy": "I read the text",
       "privacyText": "The personal data collected in this form will be processed by Grupo Desportivo União Ericeirense for club membership registration and for sending communications related to sporting activity. You may exercise your rights of access, rectification, cancellation, opposition, or deletion of your personal data whenever legally permitted, including withdrawal of consent where applicable. Not providing this data prevents registration. Your personal data will not be shared with third parties except with consent, when required by law, or to respond to legal process.",
@@ -263,10 +274,13 @@
         "searchPlaceholder": "Member number or name",
         "category": "Category",
         "allCategories": "All categories",
+        "status": "Status",
+        "allStatuses": "All statuses",
         "empty": "There are no members for the selected filters."
       },
       "errors": {
-        "load": "Could not load the member list."
+        "load": "Could not load the member list.",
+        "deactivate": "Could not deactivate this member."
       },
       "pending": {
         "title": "Pending Requests",
@@ -327,6 +341,9 @@
         "selectDescription": "Choose overdue, current, or future fees to pay in a single checkout.",
         "selectedTotal": "Selected total",
         "paySelected": "Pay selected",
+        "markSelectedPaid": "Mark as paid",
+        "markPaidSuccess": "Fees marked as paid successfully.",
+        "markPaidError": "Could not mark the fees as paid.",
         "paymentStarting": "Preparing payment...",
         "paymentError": "Could not start the fee payment.",
         "selectOverdue": "Select overdue",
@@ -338,6 +355,8 @@
         "dueDate": "Due date",
         "value": "Value",
         "status": "Status",
+        "receipt": "Receipt",
+        "viewReceipt": "View receipt",
         "previous": "Previous",
         "next": "Next",
         "page": "Page {{page}} of {{totalPages}}",
@@ -511,6 +530,41 @@
       "empty": "There are no sponsorships linked to this account yet.",
       "details": "Details"
     },
+    "admin": {
+      "eyebrow": "Back office",
+      "title": "All sponsorships",
+      "description": "View all submitted, approved, paid, active, and cancelled sponsorships.",
+      "approvalsLink": "View approvals",
+      "contractsEyebrow": "Contracts",
+      "listTitle": "Complete list",
+      "loading": "Loading sponsorships...",
+      "empty": "There are no registered sponsorships yet.",
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses"
+      }
+    },
+    "companies": {
+      "eyebrow": "Back office",
+      "title": "Sponsors",
+      "description": "View registered sponsor entities and their linked account.",
+      "loading": "Loading sponsors...",
+      "empty": "There are no sponsors for the selected filters.",
+      "noAccount": "No linked account",
+      "columns": {
+        "account": "Account"
+      },
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Name or tax ID"
+      },
+      "pagination": {
+        "items": "sponsors"
+      },
+      "errors": {
+        "load": "Could not load the sponsor list."
+      }
+    },
     "details": {
       "eyebrow": "Details",
       "title": "Sponsorship",
@@ -527,15 +581,16 @@
       "saving": "Saving...",
       "cancelEdit": "Cancel",
       "updateSuccess": "Sponsorship updated successfully.",
-      "updateError": "Could not update the sponsorship."
+      "updateError": "Could not update the sponsorship.",
+      "viewReceipt": "View receipt"
     },
     "approvals": {
       "eyebrow": "Approvals",
-      "title": "Sponsorship list",
-      "description": "Review pending requests and manage approval and payment flow.",
+      "title": "Sponsorships to approve",
+      "description": "Review only submitted requests that still need approval.",
       "settingsLink": "Go to settings",
       "loading": "Loading sponsorships...",
-      "empty": "There are no registered sponsorships.",
+      "empty": "There are no sponsorships to approve.",
       "actions": {
         "approve": "Approve",
         "markPaid": "Mark paid",
@@ -733,7 +788,8 @@
         "empty": "There are no athletes for the selected filters."
       },
       "errors": {
-        "load": "Could not load the athlete list."
+        "load": "Could not load the athlete list.",
+        "deactivate": "Could not deactivate this athlete."
       },
       "pending": {
         "title": "Pending Athletes",
@@ -914,6 +970,85 @@
       }
     }
   },
+  "users": {
+    "list": {
+      "eyebrow": "Back office",
+      "title": "Users",
+      "description": "View all accounts registered in the platform.",
+      "loading": "Loading users...",
+      "empty": "There are no registered users yet.",
+      "columns": {
+        "username": "Username",
+        "email": "Email",
+        "role": "Role",
+        "activeMember": "Active member",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewProfile": "View profile"
+      },
+      "filters": {
+        "search": "Search by username or email",
+        "role": "Role",
+        "allRoles": "All"
+      },
+      "pagination": {
+        "showing": "Showing",
+        "to": "to",
+        "of": "of",
+        "items": "users"
+      },
+      "errors": {
+        "load": "Could not load the user list."
+      }
+    },
+    "details": {
+      "subtitle": "User profile",
+      "account": "Account",
+      "description": "Information for the selected account.",
+      "loading": "Loading user...",
+      "role": {
+        "title": "Access role",
+        "description": "Change this account permission level.",
+        "save": "Save role"
+      },
+      "associations": {
+        "title": "Linked profiles",
+        "description": "Link this account to the matching member, athlete, or sponsor record.",
+        "member": "Member",
+        "athlete": "Athlete",
+        "sponsor": "Sponsor",
+        "memberMeta": "Member #{{number}} · {{status}}",
+        "athleteMeta": "Athlete #{{athleteId}} · Season {{season}}",
+        "viewMember": "View member profile",
+        "viewAthlete": "View athlete profile",
+        "unlink": "Unlink",
+        "noMember": "This account does not have a linked member profile yet.",
+        "noAthlete": "The linked member does not have an athlete profile yet.",
+        "athleteNeedsMember": "Link a member profile first. The athlete profile appears automatically if it exists.",
+        "noSponsor": "This account does not have linked sponsors yet.",
+        "memberId": "Member ID",
+        "sponsorId": "Sponsor ID",
+        "linkMember": "Link member",
+        "linkSponsor": "Link sponsor"
+      },
+      "feedback": {
+        "roleUpdated": "Role updated successfully.",
+        "memberLinked": "Member profile linked successfully.",
+        "memberUnlinked": "Member profile unlinked.",
+        "sponsorLinked": "Sponsor linked successfully."
+      },
+      "errors": {
+        "load": "Could not load the user.",
+        "updateRole": "Could not update the role.",
+        "invalidMember": "Enter a valid member ID.",
+        "linkMember": "Could not link the member profile.",
+        "unlinkMember": "Could not unlink the member profile.",
+        "invalidSponsor": "Enter a valid sponsor ID.",
+        "linkSponsor": "Could not link the sponsor."
+      }
+    }
+  },
   "admin": {
     "sidebar": {
       "eyebrow": "Back office",
@@ -923,15 +1058,41 @@
     "nav": {
       "overview": "Overview",
       "members": "Members",
+      "users": "Users",
       "athletes": "Athletes",
       "teams": "Teams",
-      "sponsorApprovals": "Sponsorships",
+      "sponsors": "Sponsorships",
+      "sponsorCompanies": "Sponsors",
+      "sponsorApprovals": "Approvals",
       "sponsorSettings": "Sponsorship table"
+    },
+    "navGroups": {
+      "general": "General",
+      "people": "People",
+      "sponsorships": "Sponsorships",
+      "settings": "Configuration"
     },
     "home": {
       "eyebrow": "Back office",
       "title": "Administration",
       "description": "Club management area."
+    },
+    "stats": {
+      "eyebrow": "Summary",
+      "groups": {
+        "members": "Members",
+        "athletes": "Athletes",
+        "sponsorships": "Sponsorships"
+      },
+      "members": "Members",
+      "activeMembers": "Active members",
+      "pendingMembers": "Pending members",
+      "athletes": "Athletes",
+      "activeAthletes": "Active athletes",
+      "pendingAthletes": "Pending athletes",
+      "sponsorships": "Sponsorships",
+      "pendingSponsorships": "To approve",
+      "error": "Could not load all numbers."
     },
     "cards": {
       "members": {

@@ -2,6 +2,7 @@ package pt.isel.jagoz.repository
 
 import kotlinx.datetime.Instant
 import pt.isel.jagoz.domain.user.PasswordValidationInfo
+import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.TokenValidationInfo
 import pt.isel.jagoz.domain.user.User
@@ -26,6 +27,18 @@ interface UserRepository {
     ): List<User>
 
     fun countAll(): Long
+
+    fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+        role: Role?,
+    ): List<User>
+
+    fun countFiltered(
+        search: String?,
+        role: Role?,
+    ): Long
 
     fun update(user: User)
 
