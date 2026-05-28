@@ -5,10 +5,14 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ClipboardCheck,
+  Eye,
   Filter,
+  Pencil,
   Plus,
   Search,
   ShieldAlert,
+  UserX,
   Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -68,6 +72,7 @@ export default function Athletes() {
     toggleTeamCategory,
     teamCategories,
     clearFilters,
+    deactivate,
     activeFilterCount,
   } = useAthletesList(t);
 
@@ -154,8 +159,13 @@ export default function Athletes() {
                             <span>{athlete.teamCategoryLabel}</span>
                           </div>
                         </div>
-                        <Link className="athlete-btn-evaluate" to={`${athleteBasePath}/${athlete.athleteId}`}>
-                          {t("athletes.list.pending.evaluate")}
+                        <Link
+                          aria-label={t("athletes.list.pending.evaluate")}
+                          className="athlete-btn-evaluate"
+                          title={t("athletes.list.pending.evaluate")}
+                          to={`${athleteBasePath}/${athlete.athleteId}`}
+                        >
+                          <ClipboardCheck size={16} />
                         </Link>
                       </div>
                     ))}
@@ -297,17 +307,32 @@ export default function Athletes() {
                             <td className="athlete-td-right">
                               <div className="athlete-row-actions">
                                 <Link
-                                  to={`${athleteBasePath}/${athlete.athleteId}/edit`}
+                                  aria-label={t("athletes.common.edit")}
                                   className="athlete-btn-table-edit"
+                                  title={t("athletes.common.edit")}
+                                  to={`${athleteBasePath}/${athlete.athleteId}/edit`}
                                 >
-                                  {t("athletes.common.edit")}
+                                  <Pencil size={16} />
                                 </Link>
                                 <Link
-                                  to={`${athleteBasePath}/${athlete.athleteId}`}
+                                  aria-label={t("athletes.common.view")}
                                   className="athlete-action-btn"
+                                  title={t("athletes.common.view")}
+                                  to={`${athleteBasePath}/${athlete.athleteId}`}
                                 >
-                                  {t("athletes.common.view")}
+                                  <Eye size={16} />
                                 </Link>
+                                {athlete.status !== "INATIVO" ? (
+                                  <button
+                                    aria-label={t("athletes.detail.actions.deactivate")}
+                                    className="athlete-action-danger"
+                                    onClick={() => void deactivate(athlete.athleteId)}
+                                    title={t("athletes.detail.actions.deactivate")}
+                                    type="button"
+                                  >
+                                    <UserX size={16} />
+                                  </button>
+                                ) : null}
                               </div>
                             </td>
                           </tr>

@@ -1,6 +1,7 @@
 package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
+import org.jdbi.v3.core.statement.SqlStatement
 import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.repository.SponsorRepository
 
@@ -59,6 +60,53 @@ class JdbiSponsorRepository(
             .createQuery("SELECT COUNT(*) FROM jagoz.sponsor")
             .mapTo(Long::class.java)
             .one()
+
+    override fun findPageFiltered(
+        limit: Int,
+        offset: Int,
+        search: String?,
+    ): List<Sponsor> {
+        val sql =
+            StringBuilder("SELECT * FROM jagoz.sponsor")
+                .appendSponsorFilters(search)
+                .append(" ORDER BY name ASC LIMIT :limit OFFSET :offset")
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bind("limit", limit)
+            .bind("offset", offset)
+            .bindSponsorFilters(search)
+            .mapTo(Sponsor::class.java)
+            .list()
+    }
+
+    override fun countFiltered(search: String?): Long {
+        val sql =
+            StringBuilder("SELECT COUNT(*) FROM jagoz.sponsor")
+                .appendSponsorFilters(search)
+                .toString()
+
+        return handle
+            .createQuery(sql)
+            .bindSponsorFilters(search)
+            .mapTo(Long::class.java)
+            .one()
+    }
+
+    private fun StringBuilder.appendSponsorFilters(search: String?): StringBuilder {
+        if (!search.isNullOrBlank()) {
+            append(" WHERE name ILIKE :search OR nif ILIKE :search")
+        }
+        return this
+    }
+
+    private fun <T : SqlStatement<T>> T.bindSponsorFilters(search: String?): T {
+        if (!search.isNullOrBlank()) {
+            bind("search", "%${search.trim()}%")
+        }
+        return this
+    }
 
     override fun save(sponsor: Sponsor): Long =
         handle

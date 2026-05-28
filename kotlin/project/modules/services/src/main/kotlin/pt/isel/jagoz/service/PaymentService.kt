@@ -73,11 +73,32 @@ data class MembershipFeeOption(
     val dueDate: LocalDate,
     val status: ChargeStatus?,
     val selectable: Boolean,
+    val receiptPaymentId: Long?,
+)
+
+data class ReceiptLine(
+    val description: String,
+    val amount: Int,
+)
+
+data class PaymentReceipt(
+    val receiptNumber: String,
+    val paymentId: Long,
+    val chargeId: Long,
+    val type: ChargeType,
+    val payerName: String,
+    val payerNif: String?,
+    val paidAt: String,
+    val amount: Int,
+    val provider: String,
+    val providerRef: String?,
+    val lines: List<ReceiptLine>,
 )
 
 typealias CheckoutSessionCreationResult = Either<PaymentError, CheckoutSessionResult>
 typealias StripeWebhookResult = Either<PaymentError, Unit>
 typealias MembershipFeeOptionsResult = Either<PaymentError, List<MembershipFeeOption>>
+typealias PaymentReceiptResult = Either<PaymentError, PaymentReceipt>
 
 private val TICKET_EMAIL_ZONE: ZoneId = ZoneId.of("Europe/Lisbon")
 private val TICKET_EMAIL_FORMATTER: DateTimeFormatter =
@@ -161,6 +182,26 @@ class PaymentService(
                 chargeItems.addAll(transaction.chargeItemRepository.findByChargeId(charge.chargeId))
             }
 
+            transaction.paymentRepository
+                .findByChargeId(charge.chargeId)
+                .firstOrNull { it.status == PaymentStatus.PENDING }
+                ?.let { pendingPayment ->
+                    val pendingSession =
+                        runCatching { Session.retrieve(pendingPayment.providerRef, requestOptions) }
+                            .getOrNull()
+
+                    if (pendingSession?.status == "open" && pendingSession.url != null) {
+                        return@run success(
+                            CheckoutSessionResult(
+                                paymentId = pendingPayment.paymentId,
+                                chargeId = charge.chargeId,
+                                sessionId = pendingSession.id,
+                                checkoutUrl = pendingSession.url,
+                            ),
+                        )
+                    }
+                }
+
             val lineItems = chargeItems.map { StripeLineItem(it.description, it.amount) }
             createSessionAndPayment(transaction, charge, lineItems, charge.chargeUser?.email)
         }
@@ -179,6 +220,109 @@ class PaymentService(
             }
 
             success(buildMembershipFeeOptions(member, transaction))
+        }
+
+    fun markMembershipFeesPaid(
+        authenticatedUser: AuthenticatedUser,
+        memberId: Long,
+        membershipFees: List<MembershipFeeSelection>,
+    ): MembershipFeeOptionsResult {
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(PaymentError.DomainError("Not authorized"))
+        }
+
+        return transactionManager.run { transaction ->
+            val charge =
+                when (val result = createMembershipFeeCharge(transaction, authenticatedUser, memberId, membershipFees)) {
+                    is Either.Left -> return@run failure(result.value)
+                    is Either.Right -> result.value
+                }
+
+            val now = Clock.System.now()
+            val paidAt = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
+            val paidCharge =
+                when (val result = paymentDomain.markChargePaid(charge, paidAt)) {
+                    is Either.Left -> return@run failure(PaymentError.InvalidOperation(result.value.toString()))
+                    is Either.Right -> result.value
+                }
+            transaction.chargeRepository.update(paidCharge)
+
+            transaction.paymentRepository.save(
+                Payment(
+                    paymentId = 0,
+                    chargeId = paidCharge.chargeId,
+                    amount = paidCharge.value,
+                    provider = "MANUAL",
+                    providerRef = null,
+                    status = PaymentStatus.PAID,
+                    createdAt = now,
+                    confirmedAt = now,
+                ),
+            )
+
+            val member =
+                transaction.memberRepository.findById(memberId)
+                    ?: return@run failure(PaymentError.DomainError("Member $memberId not found"))
+            success(buildMembershipFeeOptions(member, transaction))
+        }
+    }
+
+    fun getReceipt(
+        authenticatedUser: AuthenticatedUser,
+        paymentId: Long,
+    ): PaymentReceiptResult =
+        transactionManager.run { transaction ->
+            val payment =
+                transaction.paymentRepository.findById(paymentId)
+                    ?: return@run failure(PaymentError.DomainError("Payment $paymentId not found"))
+            buildReceipt(transaction, authenticatedUser, payment)
+        }
+
+    fun getSponsorshipReceipt(
+        authenticatedUser: AuthenticatedUser,
+        sponsorshipId: Long,
+    ): PaymentReceiptResult =
+        transactionManager.run { transaction ->
+            val payment = transaction.paymentRepository.findPaidBySponsorshipId(sponsorshipId)
+            if (payment != null) {
+                return@run buildReceipt(transaction, authenticatedUser, payment)
+            }
+
+            val sponsorship =
+                transaction.sponsorshipRepository.findById(sponsorshipId)
+                    ?: return@run failure(PaymentError.DomainError("Sponsorship $sponsorshipId not found"))
+            val sponsor =
+                transaction.sponsorRepository.findById(sponsorship.sponsorId)
+                    ?: return@run failure(PaymentError.DomainError("Sponsor ${sponsorship.sponsorId} not found"))
+
+            if (!canPaySponsorship(authenticatedUser, sponsor)) {
+                return@run failure(PaymentError.DomainError("Not authorized"))
+            }
+
+            if (sponsorship.status != SponsorshipStatus.PAGO && sponsorship.status != SponsorshipStatus.ATIVO) {
+                return@run failure(PaymentError.InvalidOperation("Sponsorship is not paid"))
+            }
+
+            success(
+                PaymentReceipt(
+                    receiptNumber = "REC-SP-${sponsorship.sponsorshipId.toString().padStart(6, '0')}",
+                    paymentId = 0,
+                    chargeId = 0,
+                    type = ChargeType.SPONSORSHIP_FEE,
+                    payerName = sponsor.name,
+                    payerNif = sponsor.nif,
+                    paidAt =
+                        Clock.System
+                            .now()
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                            .date
+                            .toString(),
+                    amount = sponsorship.price,
+                    provider = "MANUAL",
+                    providerRef = null,
+                    lines = listOf(ReceiptLine(description = "Patrocinio ${sponsorship.season}", amount = sponsorship.price)),
+                ),
+            )
         }
 
     fun handleStripeWebhook(
@@ -480,15 +624,41 @@ class PaymentService(
         }
 
         val uniqueSelections = selections.distinct()
+        val selectedFeeKeys = uniqueSelections.map { feeKey(it.season, it.month) }.toSet()
         uniqueSelections.forEach { selection ->
             if (selection.month !in 1..12) {
                 return failure(PaymentError.Validation("Month must be between 1 and 12"))
             }
-            if (transaction.chargeItemRepository.existsPaidOrPending(member.memberId, selection.season, selection.month)) {
-                return failure(
-                    PaymentError.InvalidOperation("Membership fee ${selection.season}/${selection.month} is already pending or paid"),
-                )
+        }
+
+        val existingItems =
+            transaction.chargeItemRepository
+                .findWithStatusByMember(member.memberId)
+                .filter { feeKey(it.item.season, it.item.month) in selectedFeeKeys }
+
+        existingItems.firstOrNull { it.chargeStatus == ChargeStatus.PAID }?.let {
+            return failure(PaymentError.InvalidOperation("Membership fee ${it.item.season}/${it.item.month} is already paid"))
+        }
+
+        val pendingItems = existingItems.filter { it.chargeStatus == ChargeStatus.PENDING }
+        if (pendingItems.isNotEmpty()) {
+            val pendingChargeIds = pendingItems.map { it.item.chargeId }.distinct()
+            if (pendingChargeIds.size != 1) {
+                return failure(PaymentError.InvalidOperation("Selected membership fees belong to multiple pending payments"))
             }
+
+            val pendingChargeId = pendingChargeIds.single()
+            val pendingCharge =
+                transaction.chargeRepository.findById(pendingChargeId)
+                    ?: return failure(PaymentError.DomainError("Charge $pendingChargeId not found"))
+            val pendingChargeItems = transaction.chargeItemRepository.findByChargeId(pendingChargeId)
+            val pendingFeeKeys = pendingChargeItems.map { feeKey(it.season, it.month) }.toSet()
+
+            if (selectedFeeKeys != pendingFeeKeys) {
+                return failure(PaymentError.InvalidOperation("Select all membership fees from the pending payment"))
+            }
+
+            return success(pendingCharge)
         }
 
         val creationUser =
@@ -634,9 +804,89 @@ class PaymentService(
                 amount = existingItem?.item?.amount ?: member.membershipQuota,
                 dueDate = LocalDate(yearMonth.year, yearMonth.month, 8),
                 status = existingItem?.chargeStatus,
-                selectable = existingItem == null || existingItem.chargeStatus == ChargeStatus.CANCELLED,
+                selectable = existingItem == null || existingItem.chargeStatus != ChargeStatus.PAID,
+                receiptPaymentId = existingItem?.paymentId,
             )
         }.toList()
+    }
+
+    private fun feeKey(
+        season: String,
+        month: Int,
+    ): String = "$season-$month"
+
+    private fun buildReceipt(
+        transaction: Transaction,
+        authenticatedUser: AuthenticatedUser,
+        payment: Payment,
+    ): PaymentReceiptResult {
+        if (payment.status != PaymentStatus.PAID) {
+            return failure(PaymentError.InvalidOperation("Payment is not paid"))
+        }
+
+        val charge =
+            transaction.chargeRepository.findById(payment.chargeId)
+                ?: return failure(PaymentError.DomainError("Charge ${payment.chargeId} not found"))
+
+        if (!canViewReceipt(transaction, authenticatedUser, charge)) {
+            return failure(PaymentError.DomainError("Not authorized"))
+        }
+
+        val member = charge.memberId?.let { transaction.memberRepository.findById(it) }
+        val sponsorship = charge.sponsorshipId?.let { transaction.sponsorshipRepository.findById(it) }
+        val sponsor = sponsorship?.let { transaction.sponsorRepository.findById(it.sponsorId) }
+        val items = transaction.chargeItemRepository.findByChargeId(charge.chargeId)
+        val lines =
+            if (items.isEmpty()) {
+                listOf(ReceiptLine(description = chargeProductName(charge), amount = charge.value))
+            } else {
+                items.map { ReceiptLine(description = it.description, amount = it.amount) }
+            }
+
+        val paidAt =
+            payment.confirmedAt
+                ?.toLocalDateTime(TimeZone.currentSystemDefault())
+                ?.date
+                ?.toString()
+                ?: charge.paidAt?.toString()
+                ?: payment.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()).date.toString()
+
+        return success(
+            PaymentReceipt(
+                receiptNumber = "REC-${payment.paymentId.toString().padStart(6, '0')}",
+                paymentId = payment.paymentId,
+                chargeId = charge.chargeId,
+                type = charge.type,
+                payerName = member?.completeName ?: sponsor?.name ?: charge.chargeUser?.username ?: charge.chargeUser?.email ?: "Cliente",
+                payerNif = member?.nif ?: sponsor?.nif,
+                paidAt = paidAt,
+                amount = payment.amount,
+                provider = payment.provider,
+                providerRef = payment.providerRef,
+                lines = lines,
+            ),
+        )
+    }
+
+    private fun canViewReceipt(
+        transaction: Transaction,
+        authenticatedUser: AuthenticatedUser,
+        charge: Charge,
+    ): Boolean {
+        if (authenticatedUser.canManageBackoffice()) return true
+
+        charge.memberId?.let { memberId ->
+            val member = transaction.memberRepository.findById(memberId) ?: return false
+            return canPayMember(authenticatedUser, member)
+        }
+
+        charge.sponsorshipId?.let { sponsorshipId ->
+            val sponsorship = transaction.sponsorshipRepository.findById(sponsorshipId) ?: return false
+            val sponsor = transaction.sponsorRepository.findById(sponsorship.sponsorId) ?: return false
+            return canPaySponsorship(authenticatedUser, sponsor)
+        }
+
+        return canPayCharge(authenticatedUser, charge)
     }
 
     private data class YearMonth(

@@ -3,8 +3,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDown, Menu, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { fetchAllTeamCategories, type TeamCatalogCategory } from "../../features/Athletes";
+import { ProfilePhoto } from "../../features/files";
 import { LOGO_SRC } from "../config/config";
 import { useAuth } from "../hooks/useAuth";
+import { getInitials } from "../utils";
 
 type MenuType = "mobile" | "socios" | "equipas" | "outras-modalidades" | "user" | "patrocinios" | "bilhetes" | null;
 
@@ -14,7 +16,7 @@ export default function Header() {
     const [teamCategories, setTeamCategories] = useState<TeamCatalogCategory[]>([]);
     const navigate = useNavigate();
     const location = useLocation();
-    const { role, activeMemberId, username, clearAuth } = useAuth();
+    const { id, role, activeMemberId, username, clearAuth } = useAuth();
     const ref = useRef<HTMLDivElement>(null);
     const isAuthenticated = Boolean(username);
     const isStaff = role === "ADMIN" || role === "SECRETARIA";
@@ -65,7 +67,11 @@ export default function Header() {
     };
 
     const otherSports = ["Patinagem", "Voleibol", "Futebol Praia", "Golf"];
-    const userIcon = <User size={20} aria-hidden="true" />;
+    const userIcon = (
+        <ProfilePhoto activeMemberId={activeMemberId} alt={username ?? t("header.aria.userAccount")} className="header-user-avatar" userId={id}>
+            {username ? getInitials(username) : <User size={18} aria-hidden="true" />}
+        </ProfilePhoto>
+    );
     const language = i18n.resolvedLanguage?.startsWith("en") ? "en" : "pt";
 
     const handleLanguageChange = (nextLanguage: "pt" | "en") => {
@@ -173,7 +179,7 @@ export default function Header() {
                         <span className="dropdown-disabled">{t("header.members.profile")}</span>
                     )}
                     {isStaff && (
-                        <Link to="/members/list" className="dropdown-link" onClick={closeMenus}>{t("header.members.list")}</Link>
+                        <Link to="/admin/members" className="dropdown-link" onClick={closeMenus}>{t("header.members.list")}</Link>
                     )}
                     <Link to="/members/create" className="dropdown-link" onClick={closeMenus}>{t("header.members.become")}</Link>
                 </nav>
@@ -186,10 +192,13 @@ export default function Header() {
                         <Link to="/sponsors/my" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.my")}</Link>
                     )}
                     {isStaff && (
-                        <Link to="/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.approvals")}</Link>
+                        <Link to="/admin/sponsors" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.list")}</Link>
                     )}
                     {isStaff && (
-                        <Link to="/sponsors/settings" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.settings")}</Link>
+                        <Link to="/admin/sponsors/approvals" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.approvals")}</Link>
+                    )}
+                    {isStaff && (
+                        <Link to="/admin/sponsors/settings" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.settings")}</Link>
                     )}
                     <Link to="/sponsors/create" className="dropdown-link" onClick={closeMenus}>{t("header.sponsors.become")}</Link>
                 </nav>
@@ -212,7 +221,7 @@ export default function Header() {
             <div className={`dropdown ${activeMenu === "equipas" ? "dropdown-visible" : "dropdown-hidden"}`}>
                 <nav className="dropdown-nav">
                     {isStaff && (
-                        <Link to="/athletes" className="dropdown-link" onClick={closeMenus}>{t("header.teams.manage")}</Link>
+                        <Link to="/admin/athletes" className="dropdown-link" onClick={closeMenus}>{t("header.teams.manage")}</Link>
                     )}
                     {teamCategories.map((category) => (
                         <Link
@@ -233,7 +242,7 @@ export default function Header() {
                     </Link>
                     {isStaff && (
                         <Link
-                            to="/athletes/settings"
+                            to="/admin/team-settings"
                             className="dropdown-link"
                             onClick={closeMenus}
                         >

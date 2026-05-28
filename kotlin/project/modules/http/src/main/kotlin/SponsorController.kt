@@ -28,8 +28,9 @@ class SponsorController(
         authenticatedUser: AuthenticatedUser,
         @RequestParam(defaultValue = "1") page: Int,
         @RequestParam(defaultValue = "20") size: Int,
+        @RequestParam(required = false) search: String?,
     ): ResponseEntity<*> =
-        sponsorService.getSponsorsPage(authenticatedUser, page, size).handle(
+        sponsorService.getSponsorsPage(authenticatedUser, page, size, search).handle(
             onFailure = { handleSponsorError(it) },
             onSuccess = { ResponseEntity.ok(it) },
         )

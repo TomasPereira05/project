@@ -60,11 +60,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return JSON.parse(text) as T;
 }
 
-export function fetchSponsors(page = 1, size = 20) {
+export function fetchSponsors(page = 1, size = 20, filters: { search?: string } = {}) {
   const search = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
+  if (filters.search?.trim()) {
+    search.set("search", filters.search.trim());
+  }
   return request<PaginatedResponse<Sponsor>>(`/sponsors?${search.toString()}`);
 }
 
@@ -143,11 +146,14 @@ export function createSponsorshipCheckoutSession(sponsorshipId: number) {
   });
 }
 
-export function fetchAllSponsorships(page = 1, size = 8) {
+export function fetchAllSponsorships(page = 1, size = 8, status?: Sponsorship["status"]) {
   const search = new URLSearchParams({
     page: String(page),
     size: String(size),
   });
+  if (status) {
+    search.set("status", status);
+  }
   return request<PaginatedResponse<SponsorApprovalItem>>(`/sponsorships?${search.toString()}`);
 }
 

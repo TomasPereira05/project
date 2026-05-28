@@ -51,6 +51,7 @@ export function buildPaymentHistory(member: Member, t?: Translate): PaymentHisto
       status: isPaid ? "PAID" : "PENDING",
       dueDate: `2026-${monthNumber}-08`,
       paidDate: isPaid ? `2026-${monthNumber}-05` : null,
+      receiptPaymentId: null,
     };
   });
 }
@@ -85,6 +86,7 @@ export function buildPaymentHistoryFromFeeOptions(
       status: option.status ?? "PENDING",
       dueDate: option.dueDate,
       paidDate: option.status === "PAID" ? option.dueDate : null,
+      receiptPaymentId: option.receiptPaymentId,
     };
   });
 }

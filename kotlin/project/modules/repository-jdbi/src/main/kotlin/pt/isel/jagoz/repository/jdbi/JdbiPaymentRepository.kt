@@ -7,12 +7,37 @@ import pt.isel.jagoz.repository.PaymentRepository
 class JdbiPaymentRepository(
     private val handle: Handle,
 ) : PaymentRepository {
+    override fun findById(paymentId: Long): Payment? =
+        handle
+            .createQuery("SELECT * FROM jagoz.payment WHERE payment_id = :paymentId")
+            .bind("paymentId", paymentId)
+            .mapTo(Payment::class.java)
+            .findOne()
+            .orElse(null)
+
     override fun findByChargeId(chargeId: Long): List<Payment> =
         handle
             .createQuery("SELECT * FROM jagoz.payment WHERE charge_id = :chargeId ORDER BY created_at DESC")
             .bind("chargeId", chargeId)
             .mapTo(Payment::class.java)
             .list()
+
+    override fun findPaidBySponsorshipId(sponsorshipId: Long): Payment? =
+        handle
+            .createQuery(
+                """
+                SELECT p.*
+                FROM jagoz.payment p
+                JOIN jagoz.charge c ON c.charge_id = p.charge_id
+                WHERE c.sponsorship_id = :sponsorshipId
+                  AND p.status = 'PAID'
+                ORDER BY p.confirmed_at DESC NULLS LAST, p.payment_id DESC
+                LIMIT 1
+                """.trimIndent(),
+            ).bind("sponsorshipId", sponsorshipId)
+            .mapTo(Payment::class.java)
+            .findOne()
+            .orElse(null)
 
     override fun findByProviderRef(
         provider: String,

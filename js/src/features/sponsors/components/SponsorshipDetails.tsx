@@ -5,7 +5,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { Edit3, Save, X } from "lucide-react";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { centsFromEuroInput, euroInputFromCents, formatCurrency } from "../../../shared/utils";
-import { HERO_IMG_SRC } from "../../../shared/config/config";
+import { BASE_URL, HERO_IMG_SRC } from "../../../shared/config/config";
 import { useSponsorshipDetails } from "../hooks";
 import {
   resolveSponsorshipTarget,
@@ -23,11 +23,11 @@ export default function SponsorshipDetails() {
     useSponsorshipDetails(sponsorshipId);
   const canManage = role === "ADMIN" || role === "SECRETARIA";
   const canPay = sponsorship?.status === "APROVADO";
-  const backPath = location.pathname.startsWith("/admin")
+  const canViewReceipt = sponsorship?.status === "PAGO" || sponsorship?.status === "ATIVO";
+  const locationState = location.state as { backPath?: string } | null;
+  const backPath = locationState?.backPath ?? (location.pathname.startsWith("/admin")
     ? "/admin/sponsors/approvals"
-    : canManage
-      ? "/sponsors/approvals"
-      : "/sponsors/my";
+    : "/sponsors/my");
   const [isEditing, setIsEditing] = useState(false);
   const [form, setForm] = useState({
     email: "",
@@ -142,6 +142,13 @@ export default function SponsorshipDetails() {
                     <button className="sponsor-button-primary" disabled={isPaying} onClick={handlePay} type="button">
                       {isPaying ? t("sponsors.details.paymentStarting") : t("sponsors.details.pay")}
                     </button>
+                  </div>
+                ) : null}
+                {canViewReceipt ? (
+                  <div className="sponsor-form-actions">
+                    <a className="sponsor-button-secondary" href={`${BASE_URL}/payments/sponsorships/${sponsorship.sponsorshipId}/receipt`} target="_blank" rel="noreferrer">
+                      {t("sponsors.details.viewReceipt")}
+                    </a>
                   </div>
                 ) : null}
               </article>

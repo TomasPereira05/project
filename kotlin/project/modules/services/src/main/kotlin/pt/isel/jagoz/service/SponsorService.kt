@@ -75,17 +75,19 @@ class SponsorService(
         authenticatedUser: AuthenticatedUser,
         page: Int,
         size: Int,
+        search: String? = null,
     ): Either<SponsorError, Page<Sponsor>> {
         if (!authenticatedUser.canManageBackoffice()) {
             return failure(SponsorError.DomainError("Not authorized"))
         }
         val request = pageRequest(page, size)
+        val normalizedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
         return transactionManager.run { transaction ->
             success(
                 pageOf(
-                    items = transaction.sponsorRepository.findPage(request.size, request.offset),
+                    items = transaction.sponsorRepository.findPageFiltered(request.size, request.offset, normalizedSearch),
                     request = request,
-                    total = transaction.sponsorRepository.countAll(),
+                    total = transaction.sponsorRepository.countFiltered(normalizedSearch),
                 ),
             )
         }

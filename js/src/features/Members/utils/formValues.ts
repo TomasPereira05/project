@@ -21,5 +21,6 @@ export function defaultMemberFormValues(member?: Member): MemberFormValues {
     billingLocation: member?.billingLocation ?? "",
     privacyAccepted: member?.privacyAccepted ?? false,
     comsAccepted: member?.comsAccepted ?? false,
+    accountUsername: "",
   };
 }

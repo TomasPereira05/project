@@ -5,9 +5,9 @@ import { Link, useLocation, useParams, Navigate } from "react-router-dom";
 import { useMemberDetail } from "../hooks";
 import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
+import { BASE_URL, HERO_IMG_SRC } from "../../../shared/config/config";
+import { FileAvatar } from "../../files";
 import { useAuth } from "../../../shared/hooks/useAuth";
-import { HERO_IMG_SRC } from "../../../shared/config/config";
-import { FileAvatar } from "../../files/components/FileControls";
 
 const ALL_HISTORY_SEASONS = "all";
 
@@ -32,6 +32,7 @@ export default function MemberPage() {
     goToNextFeePage,
     goToPreviousFeePage,
     handleApprove,
+    handleMarkSelectedFeesPaid,
     handlePaySelectedFees,
     handleReject,
     isLoading,
@@ -47,6 +48,7 @@ export default function MemberPage() {
     visibleFeeOptions,
   } =
     useMemberDetail(memberId, isAdmin || isSelf, t);
+  const canMarkFeesPaid = isAdmin && !isSelf;
 
   const paidPaymentHistory = useMemo(
     () => paymentHistory.filter((item) => item.status === "PAID"),
@@ -135,6 +137,7 @@ export default function MemberPage() {
                 <FileAvatar
                   alt={member.completeName}
                   className="member-profile-avatar"
+                  editable={false}
                   kind="MEMBER_PHOTO"
                   ownerId={member.memberId}
                   ownerType="MEMBER"
@@ -348,11 +351,15 @@ export default function MemberPage() {
                   <button
                     className="member-btn-primary-sm"
                     disabled={isPaying || selectedFeeOptions.length === 0}
-                    onClick={handlePaySelectedFees}
+                    onClick={canMarkFeesPaid ? handleMarkSelectedFeesPaid : handlePaySelectedFees}
                     type="button"
                   >
                     <CreditCard size={18} />
-                    {isPaying ? t("members.detail.finance.paymentStarting") : t("members.detail.finance.paySelected")}
+                    {isPaying
+                      ? t("members.detail.finance.paymentStarting")
+                      : canMarkFeesPaid
+                        ? t("members.detail.finance.markSelectedPaid")
+                        : t("members.detail.finance.paySelected")}
                   </button>
                 </div>
               )}
@@ -396,6 +403,7 @@ export default function MemberPage() {
                         <th>{t("members.detail.finance.dueDate")}</th>
                         <th>{t("members.detail.finance.value")}</th>
                         <th>{t("members.detail.finance.status")}</th>
+                        <th>{t("members.detail.finance.receipt")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -406,6 +414,15 @@ export default function MemberPage() {
                           <td>{formatDate(item.dueDate)}</td>
                           <td className="member-fee-table-value">{formatCurrency(item.amountCents)}</td>
                           <td>{t("members.detail.finance.statuses.PAID")}</td>
+                          <td>
+                            {item.receiptPaymentId ? (
+                              <a className="member-link-action" href={`${BASE_URL}/payments/${item.receiptPaymentId}/receipt`} target="_blank" rel="noreferrer">
+                                {t("members.detail.finance.viewReceipt")}
+                              </a>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

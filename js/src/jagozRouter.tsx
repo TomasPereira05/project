@@ -22,9 +22,11 @@ import {
   UpdateAthlete,
 } from "./features/Athletes";
 import {
+  ListSponsorships,
   SponsorApprovals,
   SponsorCreate,
   MySponsorships,
+  SponsorsList,
   SponsorSettings,
   SponsorshipDetails,
   SponsorsInfo,
@@ -33,7 +35,7 @@ import {
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
-import { UserPage, UsersLayout } from "./features/User";
+import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
 import { AdminHome, AdminLayout } from "./features/admin";
 import { EventsList, EventForm, EventTickets, EventsPublicList, TicketCheckout } from "./features/events";
@@ -104,13 +106,6 @@ const router = createBrowserRouter([
           <UpdateMember />
         </Require>,
       },
-      {
-        path: "list",
-        element:
-        <Require allowAdmin allowSecretaria>
-          <Members />
-        </Require>,
-      },
     ]
   },
   {
@@ -119,13 +114,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <Athletes />
-            </Require>
-          </AuthRequire>
-        ),
+        element: <Navigate to="/" replace />,
       },
       {
         path: "register",
@@ -136,32 +125,12 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "settings",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <TeamSettings />
-            </Require>
-          </AuthRequire>
-        ),
-      },
-      {
         path: "category/:teamCategory",
         element: <AthleteByTeamCategory />,
       },
       {
         path: ":athleteId",
         element: <AthletePage />,
-      },
-      {
-        path: ":athleteId/edit",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <UpdateAthlete />
-            </Require>
-          </AuthRequire>
-        ),
       },
     ],
   },
@@ -200,26 +169,6 @@ const router = createBrowserRouter([
           </AuthRequire>
         ),
       },
-      {
-        path: "settings",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <SponsorSettings />
-            </Require>
-          </AuthRequire>
-        ),
-      },
-      {
-        path: "approvals",
-        element: (
-          <AuthRequire>
-            <Require allowAdmin allowSecretaria>
-              <SponsorApprovals />
-            </Require>
-          </AuthRequire>
-        ),
-      },
     ],
   },
   {
@@ -239,6 +188,14 @@ const router = createBrowserRouter([
       {
         path: "members",
         element: <Members />,
+      },
+      {
+        path: "users",
+        element: <UsersList />,
+      },
+      {
+        path: "users/:userId",
+        element: <UserDetails />,
       },
       {
         path: "members/create",
@@ -271,6 +228,14 @@ const router = createBrowserRouter([
       {
         path: "team-settings",
         element: <TeamSettings />,
+      },
+      {
+        path: "sponsors",
+        element: <ListSponsorships />,
+      },
+      {
+        path: "sponsors/companies",
+        element: <SponsorsList />,
       },
       {
         path: "sponsors/approvals",

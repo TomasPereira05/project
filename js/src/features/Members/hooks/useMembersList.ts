@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import { fetchMembers } from "../api";
-import type { Member, MemberCategory } from "../types";
+import { deactivateMember, fetchMembers } from "../api";
+import type { Member, MemberCategory, MemberStatus } from "../types";
 
 export const MEMBERS_PAGE_SIZE = 8;
 const SEARCH_DEBOUNCE_MS = 500;
@@ -16,6 +16,8 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<MemberCategory | "">("");
+  const [statusFilter, setStatusFilter] = useState<MemberStatus | "">("");
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -37,6 +39,7 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
         const response = await fetchMembers(page, MEMBERS_PAGE_SIZE, {
           search: debouncedSearchTerm,
           category: categoryFilter,
+          status: statusFilter,
         });
 
         if (!ignore) {
@@ -62,7 +65,16 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
     return () => {
       ignore = true;
     };
-  }, [categoryFilter, debouncedSearchTerm, page, role, t]);
+  }, [categoryFilter, debouncedSearchTerm, page, refreshKey, role, statusFilter, t]);
+
+  async function deactivate(memberId: number) {
+    try {
+      await deactivateMember(memberId);
+      setRefreshKey((current) => current + 1);
+    } catch {
+      setErrorMessage(t ? t("members.list.errors.deactivate") : "NÃ£o foi possÃ­vel desativar este sÃ³cio.");
+    }
+  }
 
   const pendingMembers = useMemo(
     () => members.filter((member) => member.status === "PENDENTE"),
@@ -87,10 +99,16 @@ export function useMembersList(role?: string, t?: TFunction<"translation", undef
       setCategoryFilter(category);
       setPage(1);
     },
+    setStatusFilter: (status: MemberStatus | "") => {
+      setStatusFilter(status);
+      setPage(1);
+    },
     setPage,
     setSearchTerm: (search: string) => {
       setSearchTerm(search);
     },
+    deactivate,
+    statusFilter,
     totalMembers,
     totalPages,
   };

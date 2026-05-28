@@ -1,17 +1,30 @@
 @layer components {
-  .file-avatar-control {
-    @apply relative overflow-hidden;
+  .file-avatar-block {
+    @apply flex flex-col items-center gap-2;
+  }
+
+  .file-avatar-actions {
+    @apply flex flex-wrap items-center justify-center gap-2;
   }
 
   .file-avatar-image {
     @apply h-full w-full rounded-full object-cover;
   }
 
-  .file-avatar-action {
-    @apply absolute bottom-1 right-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-white bg-primary text-white shadow-md transition-colors hover:bg-primary-hover;
+  .file-avatar-button {
+    @apply inline-flex h-8 cursor-pointer items-center justify-center gap-2 rounded-md border border-primary/30 bg-white/90 px-3 text-xs font-semibold uppercase tracking-wide text-primary shadow-sm transition-colors hover:border-primary hover:bg-primary hover:text-white;
   }
 
-  .file-avatar-action input,
+  .file-avatar-button-secondary {
+    @apply file-avatar-button border-border text-text-secondary hover:border-text-secondary hover:bg-text-secondary hover:text-white;
+  }
+
+  .file-avatar-button-secondary:disabled {
+    @apply cursor-not-allowed opacity-50 hover:border-border hover:bg-white/90 hover:text-text-secondary;
+  }
+
+  .file-avatar-button input,
+  .file-avatar-button-secondary input,
   .file-upload-button input {
     @apply hidden;
   }

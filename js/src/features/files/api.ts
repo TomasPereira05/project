@@ -22,6 +22,17 @@ export type StoredFile = {
   uploadedBy: number;
 };
 
+const fileListCache = new Map<string, Promise<StoredFile[]>>();
+
+function fileListCacheKey(ownerType: FileOwnerType, ownerId: number, kind?: FileKind) {
+  return `${ownerType}:${ownerId}:${kind ?? "ALL"}`;
+}
+
+function invalidateFileListCache(ownerType: FileOwnerType, ownerId: number, kind?: FileKind) {
+  fileListCache.delete(fileListCacheKey(ownerType, ownerId, kind));
+  fileListCache.delete(fileListCacheKey(ownerType, ownerId));
+}
+
 async function parseResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     throw await HttpError.fromResponse(response);
@@ -41,12 +52,25 @@ export function publicAthletePhotoUrl(fileId: number) {
 }
 
 export async function listFiles(ownerType: FileOwnerType, ownerId: number, kind?: FileKind) {
+  const cacheKey = fileListCacheKey(ownerType, ownerId, kind);
+  const cached = fileListCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const params = new URLSearchParams({ ownerType, ownerId: String(ownerId) });
   if (kind) params.set("kind", kind);
-  const response = await fetch(`${BASE_URL}/files?${params.toString()}`, {
+  const request = fetch(`${BASE_URL}/files?${params.toString()}`, {
     credentials: "include",
-  });
-  return parseResponse<StoredFile[]>(response);
+  })
+    .then((response) => parseResponse<StoredFile[]>(response))
+    .catch((error) => {
+      fileListCache.delete(cacheKey);
+      throw error;
+    });
+
+  fileListCache.set(cacheKey, request);
+  return request;
 }
 
 export async function uploadFile(ownerType: FileOwnerType, ownerId: number, kind: FileKind, file: File) {
@@ -61,7 +85,9 @@ export async function uploadFile(ownerType: FileOwnerType, ownerId: number, kind
     body: form,
     credentials: "include",
   });
-  return parseResponse<StoredFile>(response);
+  const saved = await parseResponse<StoredFile>(response);
+  invalidateFileListCache(ownerType, ownerId, kind);
+  return saved;
 }
 
 export async function deleteFile(fileId: number) {
@@ -69,5 +95,6 @@ export async function deleteFile(fileId: number) {
     method: "DELETE",
     credentials: "include",
   });
+  fileListCache.clear();
   return parseResponse<void>(response);
 }

@@ -56,9 +56,11 @@ export default function UserPage() {
                 <FileAvatar
                   alt={displayName}
                   className="user-avatar"
+                  fallback={activeMemberId ? { ownerType: "MEMBER", ownerId: activeMemberId, kind: "MEMBER_PHOTO" } : undefined}
                   kind="USER_PROFILE_PHOTO"
                   ownerId={id}
                   ownerType="USER"
+                  uploadLabel={t("files.actions.choosePhoto")}
                 >
                   {getInitials(displayName)}
                 </FileAvatar>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
-import { approveMember, createMembershipFeesCheckoutSession, fetchMember, fetchMembershipFeeOptions, rejectMember } from "../api";
+import { approveMember, createMembershipFeesCheckoutSession, fetchMember, fetchMembershipFeeOptions, markMembershipFeesPaid, rejectMember } from "../api";
 import type { Member, MembershipFeeOption } from "../types";
 import { buildPaymentHistoryFromFeeOptions, getDebtSummary, isFeeOverdue } from "../utils";
 
@@ -34,7 +34,7 @@ export function useMemberDetail(
           setMember(response);
           setFeeOptions(fees);
           setFeePage(1);
-          setSelectedFees(new Set(fees.filter(isFeeOverdue).map(feeKey)));
+          setSelectedFees(new Set(getDefaultSelectedFees(fees).map(feeKey)));
         }
       } catch {
         if (!ignore) {
@@ -90,11 +90,13 @@ export function useMemberDetail(
   }
 
   function selectOverdueFees() {
-    setSelectedFees(new Set(feeOptions.filter(isFeeOverdue).map(feeKey)));
+    setSelectedFees(new Set(getDefaultSelectedFees(feeOptions).map(feeKey)));
   }
 
   function selectSeasonFees(season: string) {
-    setSelectedFees(new Set(feeOptions.filter((fee) => fee.selectable && fee.season === season).map(feeKey)));
+    const seasonFees = feeOptions.filter((fee) => fee.selectable && fee.season === season);
+    const pendingSeasonFees = seasonFees.filter((fee) => fee.status === "PENDING");
+    setSelectedFees(new Set((pendingSeasonFees.length > 0 ? pendingSeasonFees : seasonFees).map(feeKey)));
   }
 
   function toggleFee(option: MembershipFeeOption) {
@@ -124,6 +126,26 @@ export function useMemberDetail(
       window.location.assign(session.checkoutUrl);
     } catch {
       setErrorMessage(t("members.detail.finance.paymentError"));
+      setIsPaying(false);
+    }
+  }
+
+  async function handleMarkSelectedFeesPaid() {
+    if (!member || selectedFeeOptions.length === 0) return;
+
+    try {
+      setIsPaying(true);
+      setErrorMessage("");
+      const fees = await markMembershipFeesPaid(
+        member.memberId,
+        selectedFeeOptions.map(({ season, month }) => ({ season, month })),
+      );
+      setFeeOptions(fees);
+      setSelectedFees(new Set());
+      setFeedback(t("members.detail.finance.markPaidSuccess"));
+    } catch {
+      setErrorMessage(t("members.detail.finance.markPaidError"));
+    } finally {
       setIsPaying(false);
     }
   }
@@ -164,6 +186,7 @@ export function useMemberDetail(
     goToNextFeePage,
     goToPreviousFeePage,
     handleApprove,
+    handleMarkSelectedFeesPaid,
     handlePaySelectedFees,
     handleReject,
     isPaying,
@@ -183,4 +206,10 @@ export function useMemberDetail(
 
 function feeKey(option: Pick<MembershipFeeOption, "season" | "month">) {
   return `${option.season}-${option.month}`;
+}
+
+function getDefaultSelectedFees(fees: MembershipFeeOption[]) {
+  const overdueFees = fees.filter(isFeeOverdue);
+  const pendingOverdueFees = overdueFees.filter((fee) => fee.status === "PENDING");
+  return pendingOverdueFees.length > 0 ? pendingOverdueFees : overdueFees;
 }

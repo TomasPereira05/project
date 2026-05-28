@@ -49,6 +49,7 @@ export type MemberFormValues = {
   billingLocation: string;
   privacyAccepted: boolean;
   comsAccepted: boolean;
+  accountUsername: string;
 };
 
 export type PaymentHistoryItem = {
@@ -59,6 +60,7 @@ export type PaymentHistoryItem = {
   status: "PAID" | "PENDING" | "CANCELLED";
   dueDate: string;
   paidDate: string | null;
+  receiptPaymentId: number | null;
 };
 
 export type MembershipFeeOption = {
@@ -68,6 +70,7 @@ export type MembershipFeeOption = {
   dueDate: string;
   status: "PAID" | "PENDING" | "CANCELLED" | null;
   selectable: boolean;
+  receiptPaymentId: number | null;
 };
 
 export type CheckoutSession = {

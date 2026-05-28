@@ -68,6 +68,13 @@ class JdbiSponsorshipRepository(
             .mapTo(Long::class.java)
             .one()
 
+    override fun countByStatus(status: SponsorshipStatus): Long =
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.sponsorship WHERE status = CAST(:status AS jagoz.sponsorship_status)")
+            .bind("status", status.name)
+            .mapTo(Long::class.java)
+            .one()
+
     override fun findPageBySponsorId(
         sponsorId: Long,
         limit: Int,

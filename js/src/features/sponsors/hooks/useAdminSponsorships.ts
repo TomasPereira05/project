@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
 import i18n from "../../../shared/i18n";
-import { approveSponsorship, cancelSponsorship, fetchAllSponsorships, markSponsorshipPaid } from "../api";
-import type { SponsorApprovalItem } from "../types";
+import { cancelSponsorship, fetchAllSponsorships, fetchCatalogSnapshot, markSponsorshipPaid } from "../api";
+import type { CatalogSnapshot, SponsorApprovalItem, SponsorshipStatus } from "../types";
+import { emptySponsorCatalogs, sortSponsorCatalogs } from "../utils";
 
-type SponsorApprovalAction = "approve" | "paid" | "cancel";
 const PAGE_SIZE = 8;
 
-export function useSponsorApprovals(canManage: boolean, page: number) {
+export function useAdminSponsorships(page: number, status?: SponsorshipStatus | "") {
   const [items, setItems] = useState<SponsorApprovalItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [catalogs, setCatalogs] = useState<CatalogSnapshot>(emptySponsorCatalogs);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -18,35 +19,37 @@ export function useSponsorApprovals(canManage: boolean, page: number) {
     setErrorMessage("");
 
     try {
-      const response = await fetchAllSponsorships(page, PAGE_SIZE, "SUBMETIDO");
+      const [response, catalogSnapshot] = await Promise.all([
+        fetchAllSponsorships(page, PAGE_SIZE, status || undefined),
+        fetchCatalogSnapshot(),
+      ]);
       setItems(response.items);
       setTotalItems(response.total);
       setTotalPages(response.totalPages);
+      setCatalogs(sortSponsorCatalogs(catalogSnapshot));
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.errors.loadSponsorships"));
     } finally {
       setIsLoading(false);
     }
-  }, [page]);
+  }, [page, status]);
 
   useEffect(() => {
-    if (!canManage) {
-      setIsLoading(false);
-      return;
-    }
-
     void loadItems();
-  }, [canManage, loadItems]);
+  }, [loadItems]);
 
-  async function runAction(sponsorshipId: number, action: SponsorApprovalAction) {
+  async function markPaid(sponsorshipId: number) {
     try {
-      if (action === "approve") {
-        await approveSponsorship(sponsorshipId);
-      } else if (action === "paid") {
-        await markSponsorshipPaid(sponsorshipId);
-      } else {
-        await cancelSponsorship(sponsorshipId);
-      }
+      await markSponsorshipPaid(sponsorshipId);
+      await loadItems();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.errors.updateSponsorship"));
+    }
+  }
+
+  async function cancel(sponsorshipId: number) {
+    try {
+      await cancelSponsorship(sponsorshipId);
       await loadItems();
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.errors.updateSponsorship"));
@@ -54,10 +57,12 @@ export function useSponsorApprovals(canManage: boolean, page: number) {
   }
 
   return {
+    catalogs,
     errorMessage,
     isLoading,
     items,
-    runAction,
+    cancel,
+    markPaid,
     pageSize: PAGE_SIZE,
     totalItems,
     totalPages,

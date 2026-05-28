@@ -348,6 +348,72 @@
     @apply mt-6 flex flex-col gap-4;
   }
 
+  .sponsor-admin-filters {
+    @apply mt-5 grid gap-4 rounded-2xl border border-border bg-slate-50 p-4 md:grid-cols-[240px];
+  }
+
+  .sponsor-admin-filters-wide {
+    @apply md:grid-cols-[minmax(0,1fr)];
+  }
+
+  .sponsor-admin-filter {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .sponsor-admin-filter span {
+    @apply text-xs font-bold uppercase tracking-[0.14em] text-text-secondary;
+  }
+
+  .sponsor-admin-filter select {
+    @apply h-10 rounded-md border border-border bg-white px-3 text-sm font-semibold text-text-primary outline-none transition focus:border-primary focus:ring-1 focus:ring-primary;
+  }
+
+  .sponsor-admin-search {
+    @apply flex h-10 items-center gap-2 rounded-md border border-border bg-white px-3 text-text-secondary transition focus-within:border-primary focus-within:ring-1 focus-within:ring-primary;
+  }
+
+  .sponsor-admin-search input {
+    @apply h-full min-w-0 flex-1 bg-transparent text-sm font-semibold text-text-primary outline-none placeholder:text-text-secondary;
+  }
+
+  .sponsor-table-wrap {
+    @apply mt-6 overflow-x-auto;
+  }
+
+  .sponsor-admin-table {
+    @apply w-full min-w-[820px] border-collapse text-left text-sm;
+  }
+
+  .sponsor-admin-table th {
+    @apply border-b border-border px-4 py-3 text-xs font-bold uppercase tracking-[0.16em] text-text-secondary;
+  }
+
+  .sponsor-admin-table td {
+    @apply border-b border-border px-4 py-4 text-text-secondary;
+  }
+
+  .sponsor-admin-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .sponsor-company-name,
+  .sponsor-user-link {
+    @apply inline-flex items-center gap-2;
+  }
+
+  .sponsor-company-name svg,
+  .sponsor-user-link svg {
+    @apply text-primary;
+  }
+
+  .sponsor-company-name strong {
+    @apply text-text-primary;
+  }
+
+  .sponsor-user-link {
+    @apply font-semibold text-primary transition hover:text-primary-hover;
+  }
+
   .sponsor-empty-card {
     @apply rounded-2xl border border-dashed border-border bg-muted/40 px-5 py-6 text-sm text-text-secondary;
   }
