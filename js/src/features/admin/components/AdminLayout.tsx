@@ -1,11 +1,12 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { BadgeEuro, LayoutDashboard, Settings, Trophy, Users } from "lucide-react";
+import { BadgeEuro, LayoutDashboard, Settings, Ticket, Trophy, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
 
 const adminNavItems = [
   { to: "/admin", labelKey: "admin.nav.overview", icon: LayoutDashboard, end: true },
+  { to: "/admin/events", labelKey: "admin.nav.events", icon: Ticket },
   { to: "/admin/members", labelKey: "admin.nav.members", icon: Users },
   { to: "/admin/athletes", labelKey: "admin.nav.athletes", icon: Trophy },
   { to: "/admin/team-settings", labelKey: "admin.nav.teams", icon: Settings },

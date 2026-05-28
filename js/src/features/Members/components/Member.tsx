@@ -7,7 +7,7 @@ import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
-import { FileAvatar } from "../../files";
+import { FileAvatar } from "../../files/components/FileControls";
 
 const ALL_HISTORY_SEASONS = "all";
 

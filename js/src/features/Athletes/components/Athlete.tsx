@@ -14,7 +14,7 @@ import type { AthleteAdmin, AthleteDetail, AthleteStatus } from "..";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { formatDate, getInitials, todayISO } from "../../../shared/utils";
 import AthletePageBackground from "./AthletePageBackground";
-import { FileAvatar, FileUploadList } from "../../files";
+import { FileAvatar, FileUploadList } from "../../files/components/FileControls";
 
 function isAdminLike(role?: string) {
   return role === "ADMIN" || role === "SECRETARIA";
