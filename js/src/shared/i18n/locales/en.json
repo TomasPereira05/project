@@ -27,6 +27,7 @@
       "sponsors": "Sponsorships",
       "teams": "Teams",
       "otherSports": "Sports",
+      "tickets": "Tickets",
       "admin": "Administration"
     },
     "auth": {
@@ -49,6 +50,9 @@
     },
     "user": {
       "profile": "Profile"
+    },
+    "tickets": {
+      "buy": "Buy tickets"
     },
     "teams": {
       "manage": "Athlete management",
@@ -914,6 +918,110 @@
       }
     }
   },
+  "events": {
+    "public": {
+      "eyebrow": "Tickets",
+      "title": "Buy tickets",
+      "description": "Pick a game to buy tickets.",
+      "loading": "Loading events...",
+      "empty": "No events available",
+      "buy": "Buy",
+      "soon": "Available soon",
+      "normalPrice": "Standard",
+      "memberPrice": "Member",
+      "availableSeats": "{{count}} seats available"
+    },
+    "filters": { "scheduled": "Scheduled", "past": "Past", "cancelled": "Cancelled", "all": "All" },
+    "statuses": { "SCHEDULED": "Scheduled", "CANCELLED": "Cancelled" },
+    "priceTypes": { "NORMAL": "Normal", "MEMBER": "Member" },
+    "ticketStatuses": { "RESERVED": "Reserved", "CONFIRMED": "Confirmed", "CANCELLED": "Cancelled", "USED": "Used" },
+    "fields": {
+      "name": "Name",
+      "startsAt": "Date & time",
+      "location": "Location",
+      "description": "Description",
+      "priceNormal": "Standard price (EUR)",
+      "priceMember": "Member price (EUR)",
+      "capacity": "Capacity",
+      "status": "Status",
+      "actions": "Actions",
+      "sectorName": "Sector",
+      "occupancy": "Occupancy",
+      "email": "Email",
+      "price": "Price"
+    },
+    "list": {
+      "eyebrow": "Back office",
+      "title": "Events",
+      "description": "Create and manage games and ticket sales.",
+      "new": "New event",
+      "loading": "Loading events...",
+      "empty": "No events for this filter.",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "tickets": "Tickets",
+      "confirmCancel": "Cancel event \"{{name}}\"? Sold tickets will be cancelled.",
+      "cancelled": "Event cancelled and seats released."
+    },
+    "form": {
+      "eyebrow": "Event",
+      "createTitle": "Create event",
+      "editTitle": "Edit event",
+      "loading": "Loading event...",
+      "sectors": "Sectors",
+      "addSector": "Add sector",
+      "removeSector": "Remove",
+      "removeBlocked": "Cannot remove a sector with sold tickets.",
+      "occupancyValue": "{{occupied}}/{{capacity}} ({{available}} available)",
+      "equalPriceWarning": "The member price is not lower than the standard price. Confirm this is intentional.",
+      "priceSnapshotNote": "Already sold tickets keep the original price — the change only affects new purchases.",
+      "back": "Back",
+      "submit": "Save",
+      "saving": "Saving..."
+    },
+    "tickets": {
+      "eyebrow": "Tickets",
+      "title": "Sold tickets",
+      "loading": "Loading tickets...",
+      "empty": "No tickets for this event yet.",
+      "back": "Back to events",
+      "sold": "{{count}} active tickets",
+      "buyer": "Buyer",
+      "type": "Type"
+    },
+    "checkout": {
+      "loading": "Loading event...",
+      "notFound": "Event not found.",
+      "steps": { "tickets": "Tickets", "sectors": "Sectors", "buyer": "Details", "payment": "Payment" },
+      "stepOf": "Step {{current}} of {{total}}",
+      "step1Title": "Choose your tickets",
+      "step2Title": "Choose a sector for each ticket",
+      "step3Title": "Details to receive the tickets",
+      "step4Title": "Review and payment",
+      "normalTickets": "Standard tickets",
+      "memberTickets": "Member tickets",
+      "maxReached": "At most {{max}} tickets per purchase.",
+      "memberCredsTitle": "Member ticket {{n}}",
+      "useMyAccount": "Use my membership account",
+      "memberNumber": "Member number",
+      "birthDate": "Date of birth",
+      "ticketLabel": "Ticket {{n}}",
+      "sector": "Sector",
+      "selectSector": "Select a sector",
+      "seatsLeft": "{{count}} seats available",
+      "buyerName": "Full name",
+      "buyerEmail": "Email",
+      "summary": "Purchase summary",
+      "total": "Total",
+      "back": "Back",
+      "next": "Next",
+      "pay": "Pay",
+      "paying": "Redirecting to payment...",
+      "error": "Could not start the purchase. Check the details and try again.",
+      "soldOut": "Sold out",
+      "invalidCredentials": "Some member credentials are invalid. Check the member number and date of birth (the member must be active)."
+    }
+  },
   "admin": {
     "sidebar": {
       "eyebrow": "Back office",
@@ -922,6 +1030,7 @@
     },
     "nav": {
       "overview": "Overview",
+      "events": "Events",
       "members": "Members",
       "athletes": "Athletes",
       "teams": "Teams",
@@ -934,6 +1043,10 @@
       "description": "Club management area."
     },
     "cards": {
+      "events": {
+        "title": "Events",
+        "description": "Create and manage games and ticket sales."
+      },
       "members": {
         "title": "Members",
         "description": "Manage requests, profiles, and member status."
