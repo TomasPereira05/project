@@ -1,0 +1,377 @@
+@layer components {
+  /*
+   * Estilos próprios da feature Eventos. A feature é autónoma: usa classes `events-*`
+   * e apoia-se apenas nos tokens do design system (primary, accent, border,
+   * text-secondary, muted...) e nas mesmas receitas @apply das outras features —
+   * sem reutilizar classes de outras features (member, athlete, sponsor) nem
+   * introduzir cores novas.
+   */
+
+  /* ===== Layout / página (backoffice) ===== */
+  .events-page {
+    @apply relative min-h-screen overflow-hidden bg-background py-10;
+  }
+
+  .events-container {
+    @apply mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ===== Cabeçalho da página ===== */
+  .events-header {
+    @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .events-eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-secondary;
+  }
+
+  .events-title {
+    @apply font-heading text-3xl uppercase tracking-tight text-text-primary;
+  }
+
+  .events-desc {
+    @apply mt-1 text-sm text-text-secondary;
+  }
+
+  /* ===== Botões (variantes do design system) ===== */
+  .events-button-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-70;
+  }
+
+  .events-button-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .events-button-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-text-secondary transition hover:bg-muted hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .events-button-ghost-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-semibold text-text-secondary transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-text-secondary;
+  }
+
+  /* ===== Tabs (filtros da lista) ===== */
+  .events-tabs {
+    @apply flex flex-wrap gap-1 border-b border-border;
+  }
+
+  .events-tab {
+    @apply border-b-2 border-transparent px-3.5 py-2 text-sm font-semibold text-text-secondary transition hover:text-primary;
+  }
+
+  .events-tab.is-active {
+    @apply border-primary text-primary;
+  }
+
+  /* ===== Estados ===== */
+  .events-loading {
+    @apply py-10 text-center text-sm font-medium text-text-secondary;
+  }
+
+  .events-empty-card {
+    @apply rounded-2xl border border-dashed border-border bg-muted/40 px-5 py-8 text-center text-sm text-text-secondary;
+  }
+
+  /* ===== Tabela (backoffice) ===== */
+  .events-table-wrapper {
+    @apply overflow-x-auto rounded-2xl border border-border bg-white shadow-soft;
+  }
+
+  .events-table {
+    @apply min-w-full border-collapse text-left text-sm;
+  }
+
+  .events-table thead {
+    @apply bg-slate-100;
+  }
+
+  .events-table th {
+    @apply px-4 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary;
+  }
+
+  .events-table td {
+    @apply border-t border-border px-4 py-3 align-middle text-text-primary;
+  }
+
+  .events-table tr.is-cancelled {
+    @apply opacity-55;
+  }
+
+  .events-row-actions {
+    @apply flex flex-wrap items-center gap-2;
+  }
+
+  .events-action-btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-primary transition hover:bg-primary hover:text-white;
+  }
+
+  .events-action-btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-red-600 transition hover:bg-red-50;
+  }
+
+  /* ===== Badges de estado ===== */
+  .events-badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em];
+  }
+
+  .events-badge-scheduled {
+    @apply border-sky-200 bg-sky-50 text-sky-700;
+  }
+
+  .events-badge-cancelled,
+  .events-badge-ticket-cancelled {
+    @apply border-red-200 bg-red-50 text-red-700;
+  }
+
+  .events-badge-ticket-confirmed {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .events-badge-ticket-reserved {
+    @apply border-amber-200 bg-amber-50 text-amber-700;
+  }
+
+  .events-badge-ticket-used {
+    @apply border-slate-200 bg-slate-100 text-slate-600;
+  }
+
+  /* ===== Formulário ===== */
+  .events-form {
+    @apply flex flex-col gap-6 rounded-2xl border border-border bg-white p-6 shadow-soft;
+  }
+
+  .events-form-grid {
+    @apply grid gap-4 md:grid-cols-2;
+  }
+
+  .events-field-full {
+    @apply md:col-span-2;
+  }
+
+  .events-input {
+    @apply h-11 rounded-xl border border-border bg-muted/40 px-3 text-sm font-normal text-text-primary outline-none transition focus:border-primary focus:bg-white focus:ring-2 focus:ring-primary/10;
+  }
+
+  .events-textarea {
+    @apply h-auto min-h-28 resize-y py-3;
+  }
+
+  /* ===== Repeater de setores ===== */
+  .events-sectors {
+    @apply flex flex-col gap-3 border-t border-border pt-5;
+  }
+
+  .events-sectors-head {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  }
+
+  .events-sectors-title {
+    @apply font-heading text-xl uppercase tracking-tight text-text-primary;
+  }
+
+  .events-sector-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .events-sector-row {
+    @apply grid gap-3 rounded-2xl border border-border bg-slate-50/70 p-4 md:grid-cols-[1.4fr_0.8fr_1.1fr_auto] md:items-end;
+  }
+
+  .events-sector-field {
+    @apply flex flex-col gap-1.5;
+  }
+
+  .events-sector-field-label {
+    @apply text-xs font-bold uppercase tracking-wider text-text-secondary;
+  }
+
+  .events-sector-occupancy {
+    @apply text-sm font-medium text-text-secondary md:pb-2.5;
+  }
+
+  .events-sector-remove {
+    @apply flex md:justify-end md:pb-1;
+  }
+
+  .events-form-actions {
+    @apply flex flex-wrap items-center justify-end gap-3 border-t border-border pt-5;
+  }
+
+  /* ===== Pública: catálogo de bilhetes (/tickets) ===== */
+  .events-public {
+    @apply mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8;
+  }
+
+  .events-public-grid {
+    @apply grid gap-6 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .events-public-card {
+    @apply flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-soft transition duration-300 hover:-translate-y-1 hover:shadow-card;
+  }
+
+  /* cabeçalho navy com barra dourada de marca no topo (em vez de imagem) */
+  .events-public-card-header {
+    @apply border-t-[3px] border-accent bg-primary px-5 py-5 text-white;
+  }
+
+  .events-public-card-title {
+    @apply font-heading text-xl uppercase leading-tight tracking-tight;
+  }
+
+  .events-public-card-date {
+    @apply mt-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-white/80;
+  }
+
+  .events-public-card-body {
+    @apply flex flex-1 flex-col gap-4 p-5;
+  }
+
+  .events-public-meta {
+    @apply flex items-center gap-2 text-sm text-text-secondary;
+  }
+
+  .events-public-prices {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .events-price-pill {
+    @apply inline-flex flex-col gap-0.5 rounded-xl border border-border bg-muted/50 px-3 py-1.5;
+  }
+
+  .events-price-pill-label {
+    @apply text-[10px] font-bold uppercase tracking-[0.18em] text-text-secondary;
+  }
+
+  .events-price-pill-value {
+    @apply text-sm font-semibold text-text-primary;
+  }
+
+  /* preço de sócio destacado como "preço com desconto" */
+  .events-price-pill-member {
+    @apply border-accent bg-accent;
+  }
+
+  .events-price-pill-member .events-price-pill-label,
+  .events-price-pill-member .events-price-pill-value {
+    @apply text-text-primary;
+  }
+
+  .events-public-available {
+    @apply text-xs font-medium text-text-secondary;
+  }
+
+  .events-public-cta {
+    @apply mt-auto self-start;
+  }
+
+  /* empty state público (card tracejado com ícone) */
+  .events-public-empty {
+    @apply flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 px-6 py-16 text-center;
+  }
+
+  .events-public-empty-icon {
+    @apply mb-4 text-text-secondary/40;
+  }
+
+  .events-public-empty-text {
+    @apply text-base font-semibold text-text-primary;
+  }
+
+  /* ===== Wizard de compra (/tickets/:id) ===== */
+  .events-wizard {
+    @apply max-w-3xl;
+  }
+
+  .events-wizard-steps {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .events-wizard-step {
+    @apply flex items-center gap-2 rounded-full border border-border bg-white px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-text-secondary;
+  }
+
+  .events-wizard-step-num {
+    @apply inline-flex h-5 w-5 items-center justify-center rounded-full bg-muted text-[11px] text-text-secondary;
+  }
+
+  .events-wizard-step.is-active {
+    @apply border-primary text-primary;
+  }
+
+  .events-wizard-step.is-active .events-wizard-step-num {
+    @apply bg-primary text-white;
+  }
+
+  .events-wizard-step.is-done {
+    @apply border-accent text-text-primary;
+  }
+
+  .events-wizard-step.is-done .events-wizard-step-num {
+    @apply bg-accent text-text-primary;
+  }
+
+  .events-wizard-panel {
+    @apply flex flex-col gap-4 rounded-2xl border border-border bg-white p-6 shadow-soft;
+  }
+
+  .events-counter-row {
+    @apply flex items-center justify-between gap-4 rounded-xl border border-border bg-slate-50/70 p-4;
+  }
+
+  .events-counter-label {
+    @apply text-sm font-semibold text-text-primary;
+  }
+
+  .events-counter-price {
+    @apply text-xs text-text-secondary;
+  }
+
+  .events-counter {
+    @apply flex items-center gap-3;
+  }
+
+  .events-counter-btn {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-white text-text-primary transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .events-counter-value {
+    @apply w-6 text-center text-base font-semibold text-text-primary;
+  }
+
+  .events-member-cred {
+    @apply flex flex-col gap-3 rounded-xl border border-border bg-white p-4;
+  }
+
+  .events-member-cred-title {
+    @apply text-sm font-bold uppercase tracking-wide text-text-secondary;
+  }
+
+  .events-member-cred-toggle {
+    @apply flex items-center gap-2 text-sm font-medium text-text-primary;
+  }
+
+  .events-assign-row {
+    @apply flex flex-col gap-2 rounded-xl border border-border bg-slate-50/70 p-4 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .events-assign-label {
+    @apply text-sm font-semibold text-text-primary;
+  }
+
+  .events-summary {
+    @apply flex flex-col;
+  }
+
+  .events-summary-row {
+    @apply flex items-center justify-between border-b border-border py-2 text-sm text-text-primary;
+  }
+
+  .events-summary-total {
+    @apply border-b-0 pt-3 text-base font-bold;
+  }
+
+  .events-wizard-actions {
+    @apply flex items-center justify-between gap-3;
+  }
+}
