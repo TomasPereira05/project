@@ -1,17 +1,22 @@
 package pt.isel.jagoz.domain.event
 
 import kotlinx.datetime.LocalDateTime
-import java.util.UUID
 
-// possivel passe anual.
 data class Ticket(
     val ticketId: Long,
-    val memberId: Long?,
+    val eventId: Long,
+    val sectorId: Long,
+    // ligação à compra (charge TICKET_PURCHASE); null enquanto reservado sem charge
+    val chargeId: Long?,
+    // sempre preenchido para priceType=MEMBER (ver EventDomain.validateTicketForPurchase)
+    val memberId: Long? = null,
+    val memberNumber: Int? = null,
+    val priceType: TicketPriceType,
+    val price: Int,
     val buyerEmail: String,
     val buyerName: String,
-    val eventId: Long,
-    val price: Int,
-    val qrCode: String = UUID.randomUUID().toString(),
-    val used: Boolean = false,
+    val status: TicketStatus = TicketStatus.RESERVED,
+    // atribuído apenas na confirmação do pagamento
+    val qrCode: String? = null,
     val usedAt: LocalDateTime? = null,
 )

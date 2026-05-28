@@ -30,6 +30,7 @@
       "sponsors": "Patrocínios",
       "teams": "Equipas",
       "otherSports": "Modalidades",
+      "tickets": "Bilhetes",
       "admin": "Administração"
     },
     "auth": {
@@ -46,13 +47,16 @@
     "sponsors": {
       "info": "Informação",
       "my": "Meus patrocínios",
-      "list": "Lista de patrocínios",
       "approvals": "Aprovações",
       "settings": "Configurações",
-      "become": "Tornar-se patrocinador"
+      "become": "Tornar-se patrocinador",
+      "list": "Lista de patrocínios"
     },
     "user": {
       "profile": "Perfil"
+    },
+    "tickets": {
+      "buy": "Comprar bilhetes"
     },
     "teams": {
       "manage": "Gestão de Atletas",
@@ -165,12 +169,12 @@
       "back": "Voltar",
       "edit": "Editar",
       "view": "Ver",
-      "deactivate": "Desativar",
       "saving": "A guardar...",
       "yes": "Sim",
       "no": "Não",
       "notProvided": "Não indicado",
-      "notDefined": "Não definido"
+      "notDefined": "Não definido",
+      "deactivate": "Desativar"
     },
     "fields": {
       "name": "Nome",
@@ -224,14 +228,8 @@
     "form": {
       "quotaHelp": "Valor mínimo para sócio: 1,50 EUR",
       "billingPlaceholder": "Ex: Sede do clube",
-      "accountUsername": "Conta associada",
-      "accountUsernamePlaceholder": "Username da conta",
-      "accountUsernameHelp": "Opcional. Se preencheres, o backend procura esse username e associa a conta ao sócio.",
       "formerMember": "Já foi sócio anteriormente",
       "formerMemberHelp": "Ajuda a secretaria a perceber se a inscrição é nova ou uma reentrada.",
-      "photoTitle": "Foto de sócio",
-      "photoHelp": "Esta foto será usada como imagem principal do perfil.",
-      "removePhoto": "Remover foto",
       "privacyTitle": "Texto de privacidade obrigatório",
       "readPrivacy": "Li o texto",
       "privacyText": "Os dados pessoais recolhidos neste formulário serão tratados pelo Grupo Desportivo União Ericeirense para efeitos de inscrição como sócio do clube e para envio de comunicações relacionadas com a atividade desportiva. Poderá exercer, a qualquer momento, os direitos de acesso, retificação, anulação, oposição ou eliminação dos seus dados pessoais, nos casos legalmente admitidos, incluindo a revogação do consentimento quando aplicável. O não fornecimento destes dados inviabiliza a inscrição. Os seus dados pessoais não serão partilhados com terceiros, exceto mediante consentimento, quando exigido por lei ou para responder a processo legal.",
@@ -239,7 +237,13 @@
       "privacyConsentHelp": "Obrigatório para submissão e avaliação do pedido.",
       "readPrivacyFirst": "Leia e confirme o texto acima primeiro.",
       "clubCommunications": "Comunicações do clube",
-      "clubCommunicationsHelp": "Permite receber avisos, eventos e mensagens institucionais."
+      "clubCommunicationsHelp": "Permite receber avisos, eventos e mensagens institucionais.",
+      "accountUsername": "Conta associada",
+      "accountUsernamePlaceholder": "Username da conta",
+      "accountUsernameHelp": "Opcional. Se preencheres, o backend procura esse username e associa a conta ao sócio.",
+      "photoTitle": "Foto de sócio",
+      "photoHelp": "Esta foto será usada como imagem principal do perfil.",
+      "removePhoto": "Remover foto"
     },
     "create": {
       "title": "Criar novo sócio",
@@ -274,9 +278,9 @@
         "searchPlaceholder": "Nº de sócio ou nome",
         "category": "Categoria",
         "allCategories": "Todas as categorias",
+        "empty": "Não existem sócios para os filtros selecionados.",
         "status": "Estado",
-        "allStatuses": "Todos os estados",
-        "empty": "Não existem sócios para os filtros selecionados."
+        "allStatuses": "Todos os estados"
       },
       "errors": {
         "load": "Não foi possível carregar a lista de sócios.",
@@ -341,9 +345,6 @@
         "selectDescription": "Escolha as quotas em atraso, atuais ou futuras que pretende pagar num único checkout.",
         "selectedTotal": "Total selecionado",
         "paySelected": "Pagar selecionadas",
-        "markSelectedPaid": "Marcar como pago",
-        "markPaidSuccess": "Quotas marcadas como pagas com sucesso.",
-        "markPaidError": "Não foi possível marcar as quotas como pagas.",
         "paymentStarting": "A preparar pagamento...",
         "paymentError": "Não foi possível iniciar o pagamento das quotas.",
         "selectOverdue": "Selecionar atrasadas",
@@ -355,8 +356,6 @@
         "dueDate": "Vencimento",
         "value": "Valor",
         "status": "Estado",
-        "receipt": "Recibo",
-        "viewReceipt": "Ver recibo",
         "previous": "Anterior",
         "next": "Seguinte",
         "page": "Página {{page}} de {{totalPages}}",
@@ -365,7 +364,12 @@
           "PENDING": "Pendente",
           "PAID": "Pago",
           "CANCELLED": "Cancelado"
-        }
+        },
+        "markSelectedPaid": "Marcar como pago",
+        "markPaidSuccess": "Quotas marcadas como pagas com sucesso.",
+        "markPaidError": "Não foi possível marcar as quotas como pagas.",
+        "receipt": "Recibo",
+        "viewReceipt": "Ver recibo"
       }
     }
   },
@@ -530,41 +534,6 @@
       "empty": "Ainda não existem patrocínios associados a esta conta.",
       "details": "Detalhes"
     },
-    "admin": {
-      "eyebrow": "Backoffice",
-      "title": "Todos os patrocínios",
-      "description": "Consulta todos os patrocínios submetidos, aprovados, pagos, ativos e cancelados.",
-      "approvalsLink": "Ver aprovações",
-      "contractsEyebrow": "Contratos",
-      "listTitle": "Lista completa",
-      "loading": "A carregar patrocínios...",
-      "empty": "Ainda não existem patrocínios registados.",
-      "filters": {
-        "status": "Estado",
-        "allStatuses": "Todos os estados"
-      }
-    },
-    "companies": {
-      "eyebrow": "Backoffice",
-      "title": "Patrocinadores",
-      "description": "Consulta as entidades patrocinadoras registadas e a conta associada.",
-      "loading": "A carregar patrocinadores...",
-      "empty": "Não existem patrocinadores para os filtros selecionados.",
-      "noAccount": "Sem conta associada",
-      "columns": {
-        "account": "Conta"
-      },
-      "filters": {
-        "search": "Pesquisar",
-        "searchPlaceholder": "Nome ou NIF"
-      },
-      "pagination": {
-        "items": "patrocinadores"
-      },
-      "errors": {
-        "load": "Não foi possível carregar a lista de patrocinadores."
-      }
-    },
     "details": {
       "eyebrow": "Detalhe",
       "title": "Patrocínio",
@@ -649,6 +618,41 @@
         "update": "Não foi possível atualizar a opção.",
         "deactivate": "Não foi possível desativar a opção.",
         "reorder": "Não foi possível reordenar."
+      }
+    },
+    "admin": {
+      "eyebrow": "Backoffice",
+      "title": "Todos os patrocínios",
+      "description": "Consulta todos os patrocínios submetidos, aprovados, pagos, ativos e cancelados.",
+      "approvalsLink": "Ver aprovações",
+      "contractsEyebrow": "Contratos",
+      "listTitle": "Lista completa",
+      "loading": "A carregar patrocínios...",
+      "empty": "Ainda não existem patrocínios registados.",
+      "filters": {
+        "status": "Estado",
+        "allStatuses": "Todos os estados"
+      }
+    },
+    "companies": {
+      "eyebrow": "Backoffice",
+      "title": "Patrocinadores",
+      "description": "Consulta as entidades patrocinadoras registadas e a conta associada.",
+      "loading": "A carregar patrocinadores...",
+      "empty": "Não existem patrocinadores para os filtros selecionados.",
+      "noAccount": "Sem conta associada",
+      "columns": {
+        "account": "Conta"
+      },
+      "filters": {
+        "search": "Pesquisar",
+        "searchPlaceholder": "Nome ou NIF"
+      },
+      "pagination": {
+        "items": "patrocinadores"
+      },
+      "errors": {
+        "load": "Não foi possível carregar a lista de patrocinadores."
       }
     }
   },
@@ -970,6 +974,200 @@
       }
     }
   },
+  "events": {
+    "public": {
+      "eyebrow": "Bilhetes",
+      "title": "Comprar bilhetes",
+      "description": "Escolhe um jogo para comprar bilhetes.",
+      "loading": "A carregar eventos...",
+      "empty": "Não há eventos disponíveis",
+      "buy": "Comprar",
+      "soon": "Disponível em breve",
+      "normalPrice": "Normal",
+      "memberPrice": "Sócio",
+      "availableSeats": "{{count}} lugares disponíveis"
+    },
+    "filters": {
+      "scheduled": "Agendados",
+      "past": "Decorridos",
+      "cancelled": "Cancelados",
+      "all": "Todos"
+    },
+    "statuses": {
+      "SCHEDULED": "Agendado",
+      "CANCELLED": "Cancelado"
+    },
+    "priceTypes": {
+      "NORMAL": "Normal",
+      "MEMBER": "Sócio"
+    },
+    "ticketStatuses": {
+      "RESERVED": "Reservado",
+      "CONFIRMED": "Confirmado",
+      "CANCELLED": "Cancelado",
+      "USED": "Usado"
+    },
+    "fields": {
+      "name": "Nome",
+      "startsAt": "Data e hora",
+      "location": "Local",
+      "description": "Descrição",
+      "priceNormal": "Preço normal (EUR)",
+      "priceMember": "Preço sócio (EUR)",
+      "capacity": "Capacidade",
+      "status": "Estado",
+      "actions": "Ações",
+      "sectorName": "Setor",
+      "occupancy": "Ocupação",
+      "email": "Email",
+      "price": "Preço"
+    },
+    "list": {
+      "eyebrow": "Backoffice",
+      "title": "Eventos",
+      "description": "Cria e gere jogos e a venda de bilhetes.",
+      "new": "Novo evento",
+      "loading": "A carregar eventos...",
+      "empty": "Não existem eventos para este filtro.",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "tickets": "Bilhetes",
+      "confirmCancel": "Cancelar o evento \"{{name}}\"? Os bilhetes vendidos serão cancelados.",
+      "cancelled": "Evento cancelado e lugares libertados."
+    },
+    "form": {
+      "eyebrow": "Evento",
+      "createTitle": "Criar evento",
+      "editTitle": "Editar evento",
+      "loading": "A carregar evento...",
+      "sectors": "Setores",
+      "addSector": "Adicionar setor",
+      "removeSector": "Remover",
+      "removeBlocked": "Não é possível remover um setor com bilhetes vendidos.",
+      "occupancyValue": "{{occupied}}/{{capacity}} ({{available}} disponíveis)",
+      "equalPriceWarning": "O preço de sócio não é inferior ao normal. Confirma que é intencional.",
+      "priceSnapshotNote": "Bilhetes já vendidos mantêm o preço original — a alteração só afeta novas compras.",
+      "back": "Voltar",
+      "submit": "Guardar",
+      "saving": "A guardar..."
+    },
+    "tickets": {
+      "eyebrow": "Bilhetes",
+      "title": "Bilhetes vendidos",
+      "loading": "A carregar bilhetes...",
+      "empty": "Ainda não há bilhetes para este evento.",
+      "back": "Voltar aos eventos",
+      "sold": "{{count}} bilhetes ativos",
+      "buyer": "Comprador",
+      "type": "Tipo"
+    },
+    "checkout": {
+      "loading": "A carregar evento...",
+      "notFound": "Evento não encontrado.",
+      "steps": {
+        "tickets": "Bilhetes",
+        "sectors": "Setores",
+        "buyer": "Dados",
+        "payment": "Pagamento"
+      },
+      "stepOf": "Passo {{current}} de {{total}}",
+      "step1Title": "Escolhe os teus bilhetes",
+      "step2Title": "Escolhe o setor de cada bilhete",
+      "step3Title": "Dados para receber os bilhetes",
+      "step4Title": "Revisão e pagamento",
+      "normalTickets": "Bilhetes normais",
+      "memberTickets": "Bilhetes de sócio",
+      "maxReached": "Máximo de {{max}} bilhetes por compra.",
+      "memberCredsTitle": "Bilhete de sócio {{n}}",
+      "useMyAccount": "Usar a minha conta de sócio",
+      "memberNumber": "Número de sócio",
+      "birthDate": "Data de nascimento",
+      "ticketLabel": "Bilhete {{n}}",
+      "sector": "Setor",
+      "selectSector": "Seleciona um setor",
+      "seatsLeft": "{{count}} lugares disponíveis",
+      "buyerName": "Nome completo",
+      "buyerEmail": "Email",
+      "summary": "Resumo da compra",
+      "total": "Total",
+      "back": "Voltar",
+      "next": "Seguinte",
+      "pay": "Pagar",
+      "paying": "A redirecionar para pagamento...",
+      "error": "Não foi possível iniciar a compra. Confirma os dados e tenta de novo.",
+      "soldOut": "Esgotado",
+      "invalidCredentials": "Há credenciais de sócio inválidas. Confirma o número e a data de nascimento (o sócio tem de estar ativo)."
+    }
+  },
+  "admin": {
+    "sidebar": {
+      "eyebrow": "Backoffice",
+      "title": "Administração",
+      "aria": "Navegação de administração"
+    },
+    "nav": {
+      "overview": "Visão geral",
+      "events": "Eventos",
+      "members": "Sócios",
+      "athletes": "Atletas",
+      "teams": "Equipas",
+      "sponsorApprovals": "Aprovações",
+      "sponsorSettings": "Tabela de patrocínios",
+      "users": "Utilizadores",
+      "sponsors": "Patrocínios",
+      "sponsorCompanies": "Patrocinadores"
+    },
+    "home": {
+      "eyebrow": "Backoffice",
+      "title": "Administração",
+      "description": "Área de gestão do clube."
+    },
+    "cards": {
+      "events": {
+        "title": "Eventos",
+        "description": "Criar e gerir jogos e a venda de bilhetes."
+      },
+      "members": {
+        "title": "Sócios",
+        "description": "Gerir pedidos, fichas e estado dos sócios."
+      },
+      "athletes": {
+        "title": "Atletas",
+        "description": "Avaliar inscrições e consultar atletas registados."
+      },
+      "sponsors": {
+        "title": "Patrocínios",
+        "description": "Aprovar pedidos, marcar pagamentos e ver detalhes."
+      },
+      "settings": {
+        "title": "Configurações",
+        "description": "Atualizar opções, preços e colocações disponíveis."
+      }
+    },
+    "navGroups": {
+      "general": "Geral",
+      "people": "Pessoas",
+      "sponsorships": "Patrocínios",
+      "settings": "Configuração"
+    },
+    "stats": {
+      "eyebrow": "Resumo",
+      "groups": {
+        "members": "Sócios",
+        "athletes": "Atletas",
+        "sponsorships": "Patrocínios"
+      },
+      "members": "Sócios",
+      "activeMembers": "Sócios ativos",
+      "pendingMembers": "Sócios pendentes",
+      "athletes": "Atletas",
+      "activeAthletes": "Atletas ativos",
+      "pendingAthletes": "Atletas pendentes",
+      "sponsorships": "Patrocínios",
+      "pendingSponsorships": "Por aprovar",
+      "error": "Não foi possível carregar todos os números."
+    }
+  },
   "users": {
     "list": {
       "eyebrow": "Backoffice",
@@ -1046,70 +1244,6 @@
         "unlinkMember": "Não foi possível desassociar a ficha de sócio.",
         "invalidSponsor": "Indica um ID de patrocinador válido.",
         "linkSponsor": "Não foi possível associar o patrocinador."
-      }
-    }
-  },
-  "admin": {
-    "sidebar": {
-      "eyebrow": "Backoffice",
-      "title": "Administração",
-      "aria": "Navegação de administração"
-    },
-    "nav": {
-      "overview": "Visão geral",
-      "members": "Sócios",
-      "users": "Utilizadores",
-      "athletes": "Atletas",
-      "teams": "Equipas",
-      "sponsors": "Patrocínios",
-      "sponsorCompanies": "Patrocinadores",
-      "sponsorApprovals": "Aprovações",
-      "sponsorSettings": "Tabela de patrocínios"
-    },
-    "navGroups": {
-      "general": "Geral",
-      "people": "Pessoas",
-      "sponsorships": "Patrocínios",
-      "settings": "Configuração"
-    },
-    "home": {
-      "eyebrow": "Backoffice",
-      "title": "Administração",
-      "description": "Área de gestão do clube."
-    },
-    "stats": {
-      "eyebrow": "Resumo",
-      "groups": {
-        "members": "Sócios",
-        "athletes": "Atletas",
-        "sponsorships": "Patrocínios"
-      },
-      "members": "Sócios",
-      "activeMembers": "Sócios ativos",
-      "pendingMembers": "Sócios pendentes",
-      "athletes": "Atletas",
-      "activeAthletes": "Atletas ativos",
-      "pendingAthletes": "Atletas pendentes",
-      "sponsorships": "Patrocínios",
-      "pendingSponsorships": "Por aprovar",
-      "error": "Não foi possível carregar todos os números."
-    },
-    "cards": {
-      "members": {
-        "title": "Sócios",
-        "description": "Gerir pedidos, fichas e estado dos sócios."
-      },
-      "athletes": {
-        "title": "Atletas",
-        "description": "Avaliar inscrições e consultar atletas registados."
-      },
-      "sponsors": {
-        "title": "Patrocínios",
-        "description": "Aprovar pedidos, marcar pagamentos e ver detalhes."
-      },
-      "settings": {
-        "title": "Configurações",
-        "description": "Atualizar opções, preços e colocações disponíveis."
       }
     }
   }

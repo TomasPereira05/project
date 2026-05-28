@@ -119,6 +119,20 @@ object Uris {
         const val STRIPE_WEBHOOK = "$PREFIX/payments/stripe/webhook"
     }
 
+    object Events {
+        const val CREATE = "$PREFIX/events"
+        const val GET_ALL = "$PREFIX/events"
+        const val AVAILABLE = "$PREFIX/events/available"
+        const val GET_BY_ID = "$PREFIX/events/{eventId}"
+        const val UPDATE = "$PREFIX/events/{eventId}"
+        const val CANCEL = "$PREFIX/events/{eventId}/cancel"
+        const val TICKETS = "$PREFIX/events/{eventId}/tickets"
+        const val CHECKOUT = "$PREFIX/events/{eventId}/checkout"
+        const val VALIDATE_MEMBER = "$PREFIX/events/validate-member" // público: valida nº+data de sócio no wizard
+
+        fun byId(eventId: Long): URI = UriTemplate(GET_BY_ID).expand(eventId)
+    }
+
     object Files {
         const val LIST = "$PREFIX/files"
         const val UPLOAD = "$PREFIX/files"

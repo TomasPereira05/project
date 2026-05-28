@@ -49,13 +49,15 @@
 
   .admin-content .member-page,
   .admin-content .athlete-page,
-  .admin-content .sponsor-page {
+  .admin-content .sponsor-page,
+  .admin-content .events-page {
     @apply min-h-0 bg-transparent;
   }
 
   .admin-content .member-container,
   .admin-content .athlete-container,
-  .admin-content .sponsor-shell {
+  .admin-content .sponsor-shell,
+  .admin-content .events-container {
     @apply max-w-none;
   }
 

@@ -16,7 +16,7 @@ import { getInitials } from "../../../shared/utils";
 import { useSponsorClaim, useUserProfile } from "../hooks";
 import { isStaffRole, roleBadgeColor } from "../utils";
 import { HERO_IMG_SRC } from "../../../shared/config/config";
-import { FileAvatar, FileUploadList } from "../../files";
+import { FileAvatar, FileUploadList } from "../../files/components/FileControls";
 
 export default function UserPage() {
   const navigate = useNavigate();

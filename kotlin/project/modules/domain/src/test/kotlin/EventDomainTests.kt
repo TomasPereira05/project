@@ -2,18 +2,18 @@ package pt.isel.jagoz.event
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.domain.event.EventDomain
 import pt.isel.jagoz.domain.event.Ticket
 import pt.isel.jagoz.domain.event.TicketError
+import pt.isel.jagoz.domain.event.TicketPriceType
+import pt.isel.jagoz.domain.event.TicketStatus
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.ValidationError
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 class EventDomainTests {
@@ -25,155 +25,150 @@ class EventDomainTests {
         override fun now(): Instant = instant
     }
 
-    private fun sampleEvent(date: LocalDate = LocalDate.parse("2027-01-01")) =
+    private val clock = FixedClock(Instant.parse("2026-06-01T12:00:00Z"))
+
+    private fun sampleEvent(startsAt: Instant = Instant.parse("2027-01-01T20:00:00Z")) =
         Event(
             eventId = 1,
             name = "Match",
             description = "A big match",
-            date = date,
+            startsAt = startsAt,
             location = "Stadium",
+            priceNormal = 1000,
+            priceMember = 500,
         )
 
-    private fun sampleTicket(used: Boolean = false) =
+    private fun sampleTicket() =
         Ticket(
             ticketId = 1,
-            memberId = null,
+            eventId = 1,
+            sectorId = 1,
+            chargeId = null,
+            priceType = TicketPriceType.NORMAL,
+            price = 1000,
             buyerEmail = "buyer@example.com",
             buyerName = "Buyer",
-            eventId = 1,
-            price = 1000,
-            qrCode = "qr",
-            used = used,
-            usedAt = null,
         )
+
+    private fun fieldError(res: Either<ValidationError, *>): String {
+        val left = assertIs<Either.Left<*>>(res)
+        return assertIs<ValidationError.FieldError>(left.value).field
+    }
 
     // ---- validateEventForCreation ----
 
     @Test
     fun `validateEventForCreation accepts future event`() {
-        val res = domain.validateEventForCreation(sampleEvent(), Clock.System)
-        assertTrue(res is Either.Right)
+        assertTrue(domain.validateEventForCreation(sampleEvent(), clock) is Either.Right)
     }
 
     @Test
-    fun `validateEventForCreation rejects past date`() {
-        val past = sampleEvent(LocalDate.parse("2000-01-01"))
-        val res = domain.validateEventForCreation(past, Clock.System)
-        assertTrue(res is Either.Left)
-        val err = assertIs<ValidationError.FieldError>(res.value)
-        assertEquals("date", err.field)
+    fun `validateEventForCreation rejects past startsAt`() {
+        val res = domain.validateEventForCreation(sampleEvent(Instant.parse("2020-01-01T20:00:00Z")), clock)
+        assertEquals("startsAt", fieldError(res))
     }
 
     @Test
     fun `validateEventForCreation rejects blank name`() {
-        val res = domain.validateEventForCreation(sampleEvent().copy(name = ""), Clock.System)
-        assertTrue(res is Either.Left)
-        val err = assertIs<ValidationError.FieldError>(res.value)
-        assertEquals("name", err.field)
+        assertEquals("name", fieldError(domain.validateEventForCreation(sampleEvent().copy(name = ""), clock)))
     }
 
     @Test
     fun `validateEventForCreation rejects blank location`() {
-        val res = domain.validateEventForCreation(sampleEvent().copy(location = ""), Clock.System)
-        assertTrue(res is Either.Left)
-        val err = assertIs<ValidationError.FieldError>(res.value)
-        assertEquals("location", err.field)
+        assertEquals("location", fieldError(domain.validateEventForCreation(sampleEvent().copy(location = ""), clock)))
     }
 
     @Test
-    fun `validateEventForCreation accepts event on today's date`() {
-        val today = LocalDate.parse("2027-06-15")
-        // 2027-06-15T12:00 UTC
-        val clock = FixedClock(Instant.parse("2027-06-15T12:00:00Z"))
-        val res = domain.validateEventForCreation(sampleEvent(today), clock)
+    fun `validateEventForCreation rejects member price above normal price`() {
+        val res = domain.validateEventForCreation(sampleEvent().copy(priceNormal = 1000, priceMember = 1500), clock)
+        assertEquals("priceMember", fieldError(res))
+    }
+
+    @Test
+    fun `validateEventForCreation accepts member price equal to normal price`() {
+        // decisão: price_member <= price_normal é permitido (flexibilidade > regra estrita)
+        val res = domain.validateEventForCreation(sampleEvent().copy(priceNormal = 1000, priceMember = 1000), clock)
+        assertTrue(res is Either.Right)
+    }
+
+    @Test
+    fun `validateEventForCreation accepts free event`() {
+        val res = domain.validateEventForCreation(sampleEvent().copy(priceNormal = 0, priceMember = 0), clock)
         assertTrue(res is Either.Right)
     }
 
     // ---- validateTicketForPurchase ----
 
     @Test
-    fun `validateTicketForPurchase accepts valid ticket`() {
-        val res = domain.validateTicketForPurchase(sampleTicket())
-        assertTrue(res is Either.Right)
+    fun `validateTicketForPurchase accepts valid normal ticket`() {
+        assertTrue(domain.validateTicketForPurchase(sampleTicket()) is Either.Right)
     }
 
     @Test
     fun `validateTicketForPurchase rejects blank buyerName`() {
-        val res = domain.validateTicketForPurchase(sampleTicket().copy(buyerName = ""))
-        assertTrue(res is Either.Left)
-        val err = assertIs<ValidationError.FieldError>(res.value)
-        assertEquals("buyerName", err.field)
+        assertEquals("buyerName", fieldError(domain.validateTicketForPurchase(sampleTicket().copy(buyerName = ""))))
     }
 
     @Test
     fun `validateTicketForPurchase rejects invalid buyerEmail`() {
-        val res = domain.validateTicketForPurchase(sampleTicket().copy(buyerEmail = "bad"))
-        assertTrue(res is Either.Left)
-        val err = assertIs<ValidationError.FieldError>(res.value)
-        assertEquals("buyerEmail", err.field)
+        assertEquals("buyerEmail", fieldError(domain.validateTicketForPurchase(sampleTicket().copy(buyerEmail = "bad"))))
     }
 
     @Test
     fun `validateTicketForPurchase rejects negative price`() {
-        val res = domain.validateTicketForPurchase(sampleTicket().copy(price = -1))
-        assertTrue(res is Either.Left)
-        val err = assertIs<ValidationError.FieldError>(res.value)
-        assertEquals("price", err.field)
+        assertEquals("price", fieldError(domain.validateTicketForPurchase(sampleTicket().copy(price = -1))))
     }
 
     @Test
     fun `validateTicketForPurchase accepts zero price`() {
-        val res = domain.validateTicketForPurchase(sampleTicket().copy(price = 0))
+        assertTrue(domain.validateTicketForPurchase(sampleTicket().copy(price = 0)) is Either.Right)
+    }
+
+    @Test
+    fun `validateTicketForPurchase rejects member ticket without memberId`() {
+        val res = domain.validateTicketForPurchase(sampleTicket().copy(priceType = TicketPriceType.MEMBER, memberId = null))
+        assertEquals("memberId", fieldError(res))
+    }
+
+    @Test
+    fun `validateTicketForPurchase accepts member ticket with memberId`() {
+        val res = domain.validateTicketForPurchase(sampleTicket().copy(priceType = TicketPriceType.MEMBER, memberId = 42))
         assertTrue(res is Either.Right)
     }
 
     // ---- markTicketUsed ----
 
     @Test
-    fun `markTicketUsed flags ticket and sets usedAt`() {
+    fun `markTicketUsed flags confirmed ticket and sets usedAt`() {
         val at = LocalDateTime.parse("2027-01-01T10:00:00")
-        val res = domain.markTicketUsed(sampleTicket(), at)
-        assertTrue(res is Either.Right)
-        assertTrue(res.value.used)
-        assertEquals(at, res.value.usedAt)
+        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.CONFIRMED), at)
+        val ticket = assertIs<Ticket>(assertIs<Either.Right<*>>(res).value)
+        assertEquals(TicketStatus.USED, ticket.status)
+        assertEquals(at, ticket.usedAt)
     }
 
     @Test
     fun `markTicketUsed rejects already used ticket`() {
-        val res = domain.markTicketUsed(sampleTicket(used = true), LocalDateTime.parse("2027-01-01T10:00:00"))
-        assertTrue(res is Either.Left)
-        assertIs<TicketError.InvalidOperation>(res.value)
+        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.USED), LocalDateTime.parse("2027-01-01T10:00:00"))
+        assertIs<TicketError.InvalidOperation>(assertIs<Either.Left<*>>(res).value)
+    }
+
+    @Test
+    fun `markTicketUsed rejects ticket that is not confirmed`() {
+        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.RESERVED), LocalDateTime.parse("2027-01-01T10:00:00"))
+        assertIs<TicketError.InvalidOperation>(assertIs<Either.Left<*>>(res).value)
     }
 
     // ---- validateRefundable ----
 
     @Test
-    fun `validateRefundable accepts unused ticket`() {
-        val res = domain.validateRefundable(sampleTicket())
-        assertTrue(res is Either.Right)
+    fun `validateRefundable accepts confirmed ticket`() {
+        assertTrue(domain.validateRefundable(sampleTicket().copy(status = TicketStatus.CONFIRMED)) is Either.Right)
     }
 
     @Test
     fun `validateRefundable rejects used ticket`() {
-        val res = domain.validateRefundable(sampleTicket(used = true))
-        assertTrue(res is Either.Left)
-        assertIs<TicketError.InvalidOperation>(res.value)
-    }
-
-    // ---- Ticket model ----
-
-    @Test
-    fun `Ticket has UUID default qrCode when omitted`() {
-        val t =
-            Ticket(
-                ticketId = 99,
-                memberId = null,
-                buyerEmail = "x@y.com",
-                buyerName = "X",
-                eventId = 1,
-                price = 500,
-            )
-        assertNotNull(t.qrCode)
-        assertTrue(t.qrCode.isNotBlank())
+        val res = domain.validateRefundable(sampleTicket().copy(status = TicketStatus.USED))
+        assertIs<TicketError.InvalidOperation>(assertIs<Either.Left<*>>(res).value)
     }
 }

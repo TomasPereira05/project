@@ -1,9 +1,10 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
-import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Instant
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.domain.event.Event
+import pt.isel.jagoz.domain.event.EventStatus
 import java.sql.ResultSet
 
 class EventMapper : RowMapper<Event> {
@@ -15,7 +16,10 @@ class EventMapper : RowMapper<Event> {
             eventId = rs.getLong("event_id"),
             name = rs.getString("name"),
             description = rs.getString("description"),
-            date = LocalDate.parse(rs.getString("date")),
+            startsAt = rs.getTimestamp("starts_at").toInstant().let { Instant.fromEpochMilliseconds(it.toEpochMilli()) },
             location = rs.getString("location"),
+            priceNormal = rs.getInt("price_normal"),
+            priceMember = rs.getInt("price_member"),
+            status = EventStatus.valueOf(rs.getString("status")),
         )
 }

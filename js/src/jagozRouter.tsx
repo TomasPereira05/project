@@ -38,6 +38,7 @@ import { Home } from "./features/home";
 import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
 import { AdminHome, AdminLayout } from "./features/admin";
+import { EventsList, EventForm, EventTickets, EventsPublicList, TicketCheckout } from "./features/events";
 
 const router = createBrowserRouter([
   {
@@ -252,7 +253,31 @@ const router = createBrowserRouter([
         path: "sponsors/details/:sponsorshipId",
         element: <SponsorshipDetails />,
       },
+      {
+        path: "events",
+        element: <EventsList />,
+      },
+      {
+        path: "events/new",
+        element: <EventForm />,
+      },
+      {
+        path: "events/:eventId/edit",
+        element: <EventForm />,
+      },
+      {
+        path: "events/:eventId/tickets",
+        element: <EventTickets />,
+      },
     ],
+  },
+  {
+    path: "/tickets",
+    element: <EventsPublicList />,
+  },
+  {
+    path: "/tickets/:eventId",
+    element: <TicketCheckout />,
   },
   {
     path: "/payments/success",

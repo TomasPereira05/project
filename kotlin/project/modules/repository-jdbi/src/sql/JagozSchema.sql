@@ -10,6 +10,9 @@ drop type if exists payment_status cascade;
 drop type if exists guardian_role cascade;
 drop type if exists file_owner_type cascade;
 drop type if exists file_kind cascade;
+drop type if exists event_status cascade;
+drop type if exists ticket_status cascade;
+drop type if exists ticket_price_type cascade;
 
 create schema if not exists jagoz;
 set search_path to jagoz;
@@ -219,9 +222,12 @@ CREATE TABLE sponsorship (
 );
 
 CREATE TYPE user_role AS ENUM ('ADMIN', 'SECRETARIA', 'NORMAL');
-CREATE TYPE charge_type AS ENUM ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE', 'SPONSORSHIP_FEE');
+CREATE TYPE charge_type AS ENUM ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE', 'SPONSORSHIP_FEE', 'TICKET_PURCHASE');
 CREATE TYPE charge_status AS ENUM ('PAID', 'PENDING', 'CANCELLED');
 CREATE TYPE payment_status AS ENUM ('PENDING', 'PAID', 'FAILED');
+CREATE TYPE event_status AS ENUM ('SCHEDULED', 'CANCELLED');
+CREATE TYPE ticket_status AS ENUM ('RESERVED', 'CONFIRMED', 'CANCELLED', 'USED');
+CREATE TYPE ticket_price_type AS ENUM ('NORMAL', 'MEMBER');
 CREATE TYPE file_owner_type AS ENUM ('USER', 'MEMBER', 'ATHLETE');
 CREATE TYPE file_kind AS ENUM (
     'USER_PROFILE_PHOTO',
@@ -255,21 +261,26 @@ CREATE TABLE event (
     event_id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
-    date DATE NOT NULL,
-    location VARCHAR(255) NOT NULL
+    starts_at TIMESTAMPTZ NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    status event_status NOT NULL DEFAULT 'SCHEDULED',
+    price_normal INT NOT NULL DEFAULT 0,
+    price_member INT NOT NULL DEFAULT 0,
+    -- price_member <= price_normal intencional (preços iguais / eventos gratuitos permitidos; frontend avisa quando iguais)
+    CONSTRAINT chk_event_prices CHECK (price_normal >= 0 AND price_member >= 0 AND price_member <= price_normal)
 );
 
-CREATE TABLE ticket (
-    ticket_id SERIAL PRIMARY KEY,
-    member_id INT REFERENCES member(member_id) ON DELETE SET NULL,
-    buyer_email VARCHAR(255) NOT NULL,
-    buyer_name VARCHAR(255) NOT NULL,
+CREATE TABLE event_sector (
+    sector_id SERIAL PRIMARY KEY,
     event_id INT NOT NULL REFERENCES event(event_id) ON DELETE CASCADE,
-    price INT NOT NULL,
-    qr_code VARCHAR(255) UNIQUE NOT NULL,
-    used BOOLEAN NOT NULL DEFAULT false,
-    used_at TIMESTAMPTZ
+    name VARCHAR(100) NOT NULL,
+    capacity INT NOT NULL CHECK (capacity >= 0),
+    occupied INT NOT NULL DEFAULT 0 CHECK (occupied >= 0),
+    CONSTRAINT chk_sector_capacity CHECK (occupied <= capacity),
+    UNIQUE (event_id, name)
 );
+
+-- (tabela ticket definida depois de charge, por causa da FK charge_id)
 
 CREATE TABLE charge (
     charge_id SERIAL PRIMARY KEY,
@@ -281,14 +292,41 @@ CREATE TABLE charge (
     season VARCHAR(50),
     month INT,
     created_at DATE NOT NULL,
-    creation_user_id INT NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
+    creation_user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
     charged_user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
     paid_at DATE,
     CONSTRAINT chk_charge_target CHECK (
         (type IN ('MEMBER_FEE', 'ATHLETE_MONTHLY_FEE') AND member_id IS NOT NULL) OR
-        (type = 'SPONSORSHIP_FEE' AND sponsorship_id IS NOT NULL)
+        (type = 'SPONSORSHIP_FEE' AND sponsorship_id IS NOT NULL) OR
+        (type = 'TICKET_PURCHASE')
     )
 );
+
+CREATE TABLE ticket (
+    ticket_id SERIAL PRIMARY KEY,
+    event_id INT NOT NULL REFERENCES event(event_id) ON DELETE CASCADE,
+    sector_id INT NOT NULL REFERENCES event_sector(sector_id),
+    charge_id INT REFERENCES charge(charge_id) ON DELETE SET NULL,
+    member_id INT REFERENCES member(member_id) ON DELETE SET NULL,
+    member_number INT,
+    price_type ticket_price_type NOT NULL DEFAULT 'NORMAL',
+    price INT NOT NULL,
+    buyer_email VARCHAR(255) NOT NULL,
+    buyer_name VARCHAR(255) NOT NULL,
+    status ticket_status NOT NULL DEFAULT 'RESERVED',
+    qr_code VARCHAR(255) UNIQUE,
+    used_at TIMESTAMPTZ,
+    -- decisão #3: bilhete MEMBER tem sempre member_id (faz o índice parcial cobrir compras anónimas)
+    CONSTRAINT chk_ticket_member_consistency CHECK (
+        (price_type = 'MEMBER' AND member_id IS NOT NULL) OR price_type = 'NORMAL'
+    )
+);
+
+-- decisão #6: 1 bilhete-sócio ativo por sócio por evento
+CREATE UNIQUE INDEX uq_ticket_member_event ON ticket (event_id, member_id)
+    WHERE price_type = 'MEMBER' AND status <> 'CANCELLED';
+CREATE INDEX ticket_event_idx ON ticket (event_id);
+CREATE INDEX ticket_charge_idx ON ticket (charge_id);
 
 CREATE TABLE charge_item (
     charge_item_id SERIAL PRIMARY KEY,
