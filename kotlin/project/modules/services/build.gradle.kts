@@ -21,6 +21,10 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
     implementation("com.stripe:stripe-java:31.3.0")
     implementation("com.google.code.gson:gson:2.11.0")
+
+    // QR dos bilhetes (Fase 4): core gera a matriz, javase renderiza para PNG (MatrixToImageWriter)
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("com.google.zxing:javase:3.5.3")
 }
 
 tasks.test {
