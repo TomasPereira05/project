@@ -18,8 +18,8 @@ import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.event.EventCheckoutInput
 import pt.isel.jagoz.http.model.event.EventCreateInput
-import pt.isel.jagoz.http.model.event.MemberCredentialInput
 import pt.isel.jagoz.http.model.event.EventUpdateInput
+import pt.isel.jagoz.http.model.event.MemberCredentialInput
 import pt.isel.jagoz.http.model.event.toDraft
 import pt.isel.jagoz.http.model.event.toOutput
 import pt.isel.jagoz.http.model.payment.toOutput

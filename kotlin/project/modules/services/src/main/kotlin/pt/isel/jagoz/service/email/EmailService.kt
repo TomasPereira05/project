@@ -33,11 +33,12 @@ class EmailService(
     ) {
         val inlineImages = mutableMapOf<String, ByteArray>()
         val rows =
-            lines.mapIndexed { index, line ->
-                val cid = "qr-$index"
-                inlineImages[cid] = qrCodeGenerator.pngBytes(line.qrToken)
-                ticketRowHtml(cid, line)
-            }.joinToString("")
+            lines
+                .mapIndexed { index, line ->
+                    val cid = "qr-$index"
+                    inlineImages[cid] = qrCodeGenerator.pngBytes(line.qrToken)
+                    ticketRowHtml(cid, line)
+                }.joinToString("")
 
         val body = ticketEmailHtml(buyerName, eventName, eventWhen, location, rows, lines.sumOf { it.priceCents })
         emailSender.sendEmail(
@@ -65,7 +66,7 @@ class EmailService(
                 <img src="cid:$cid" alt="QR code" width="120" height="120" style="display:block;margin-left:auto;border:1px solid #e2e8f0;border-radius:8px;" />
               </td>
             </tr>
-        """.trimIndent()
+            """.trimIndent()
     }
 
     private fun ticketEmailHtml(

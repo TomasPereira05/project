@@ -292,7 +292,11 @@ class EventService(
                     status = ChargeStatus.PENDING,
                     season = null,
                     month = null,
-                    createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+                    createdAt =
+                        Clock.System
+                            .now()
+                            .toLocalDateTime(TimeZone.currentSystemDefault())
+                            .date,
                     creationUser = buyer,
                     chargeUser = buyer,
                     paidAt = null,
@@ -383,8 +387,7 @@ class EventService(
         return member.takeIf { it.status == MemberStatus.ATIVO }
     }
 
-    private fun priceTypeLabel(priceType: TicketPriceType): String =
-        if (priceType == TicketPriceType.MEMBER) "Sócio" else "Normal"
+    private fun priceTypeLabel(priceType: TicketPriceType): String = if (priceType == TicketPriceType.MEMBER) "Sócio" else "Normal"
 
     private fun PaymentError.toEventError(): EventError =
         when (this) {

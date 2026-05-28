@@ -203,7 +203,9 @@ class FileService(
     }
 
     private fun buildStorageKey(input: FileUploadInput): String =
-        "${input.ownerType.name.lowercase()}/${input.ownerId}/${input.kind.name.lowercase()}/${UUID.randomUUID()}-${sanitizeName(input.originalName)}"
+        "${input.ownerType.name.lowercase()}/${input.ownerId}/${input.kind.name.lowercase()}/${UUID.randomUUID()}-${sanitizeName(
+            input.originalName,
+        )}"
 
     private fun sanitizeName(name: String): String =
         name
