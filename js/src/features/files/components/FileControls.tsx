@@ -10,7 +10,7 @@ import {
   type FileKind,
   type FileOwnerType,
   type StoredFile,
-} from "./api";
+} from "../api";
 
 type OwnerProps = {
   ownerType: FileOwnerType;

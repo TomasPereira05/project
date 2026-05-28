@@ -5,9 +5,9 @@ import { Link, useLocation, useParams, Navigate } from "react-router-dom";
 import { useMemberDetail } from "../hooks";
 import { memberStatusColor, monthName } from "../utils";
 import { formatCurrency, formatDate, getInitials } from "../../../shared/utils";
-import { useAuth } from "../../../shared/hooks/useAuth";
 import { BASE_URL, HERO_IMG_SRC } from "../../../shared/config/config";
 import { FileAvatar } from "../../files";
+import { useAuth } from "../../../shared/hooks/useAuth";
 
 const ALL_HISTORY_SEASONS = "all";
 

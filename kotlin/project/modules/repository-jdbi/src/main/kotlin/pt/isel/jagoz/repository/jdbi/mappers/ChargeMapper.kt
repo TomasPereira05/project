@@ -33,14 +33,16 @@ class ChargeMapper : RowMapper<Charge> {
             }
 
         val creationUserRecord =
-            User(
-                userId = rs.getLong("cu_user_id"),
-                email = rs.getString("cu_email"),
-                username = rs.getString("cu_username"),
-                passwordValidation = PasswordValidationInfo(rs.getString("cu_password_validation")),
-                role = Role.valueOf(rs.getString("cu_role")),
-                activeMemberId = (rs.getObject("cu_active_member_id") as? Number)?.toLong(),
-            )
+            rs.getObject("cu_user_id")?.let {
+                User(
+                    userId = rs.getLong("cu_user_id"),
+                    email = rs.getString("cu_email"),
+                    username = rs.getString("cu_username"),
+                    passwordValidation = PasswordValidationInfo(rs.getString("cu_password_validation")),
+                    role = Role.valueOf(rs.getString("cu_role")),
+                    activeMemberId = (rs.getObject("cu_active_member_id") as? Number)?.toLong(),
+                )
+            }
 
         return Charge(
             chargeId = rs.getLong("charge_id"),

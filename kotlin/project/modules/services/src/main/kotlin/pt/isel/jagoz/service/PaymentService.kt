@@ -9,9 +9,12 @@ import com.stripe.net.Webhook
 import com.stripe.param.checkout.SessionCreateParams
 import jakarta.inject.Named
 import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.slf4j.LoggerFactory
+import pt.isel.jagoz.domain.event.TicketStatus
 import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.payment.Charge
@@ -33,6 +36,10 @@ import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
+import pt.isel.jagoz.service.email.EmailService
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 data class StripeProperties(
     val secretKey: String,
@@ -46,6 +53,12 @@ data class CheckoutSessionResult(
     val chargeId: Long,
     val sessionId: String,
     val checkoutUrl: String,
+)
+
+/** Linha do Stripe Checkout (nome do produto + valor em cêntimos). */
+data class StripeLineItem(
+    val name: String,
+    val amountCents: Int,
 )
 
 data class MembershipFeeSelection(
@@ -87,12 +100,28 @@ typealias StripeWebhookResult = Either<PaymentError, Unit>
 typealias MembershipFeeOptionsResult = Either<PaymentError, List<MembershipFeeOption>>
 typealias PaymentReceiptResult = Either<PaymentError, PaymentReceipt>
 
+private val TICKET_EMAIL_ZONE: ZoneId = ZoneId.of("Europe/Lisbon")
+private val TICKET_EMAIL_FORMATTER: DateTimeFormatter =
+    DateTimeFormatter
+        .ofPattern("dd/MM/yyyy 'às' HH:mm")
+
+/** Dados (capturados na transação, usados fora dela) para o email de confirmação de bilhetes. */
+private data class TicketPurchaseEmailData(
+    val buyerName: String,
+    val buyerEmail: String,
+    val eventName: String,
+    val eventWhen: String,
+    val location: String,
+    val lines: List<EmailService.TicketEmailLine>,
+)
+
 @Named
 class PaymentService(
     private val transactionManager: TransactionManager,
     private val paymentDomain: PaymentDomain,
     private val sponsorDomain: SponsorDomain,
     private val stripeProperties: StripeProperties,
+    private val emailService: EmailService,
 ) {
     private val requestOptions: RequestOptions =
         RequestOptions
@@ -111,26 +140,34 @@ class PaymentService(
             val chargeItems = mutableListOf<ChargeItem>()
             val charge =
                 when {
-                    chargeId != null ->
+                    chargeId != null -> {
                         transaction.chargeRepository.findById(chargeId)
                             ?: return@run failure(PaymentError.DomainError("Charge $chargeId not found"))
+                    }
 
-                    sponsorshipId != null ->
+                    sponsorshipId != null -> {
                         when (val result = getOrCreateSponsorshipCharge(transaction, authenticatedUser, sponsorshipId)) {
                             is Either.Left -> return@run failure(result.value)
                             is Either.Right -> result.value
                         }
+                    }
 
-                    memberId != null ->
+                    memberId != null -> {
                         when (val result = createMembershipFeeCharge(transaction, authenticatedUser, memberId, membershipFees.orEmpty())) {
-                            is Either.Left -> return@run failure(result.value)
+                            is Either.Left -> {
+                                return@run failure(result.value)
+                            }
+
                             is Either.Right -> {
                                 chargeItems.addAll(transaction.chargeItemRepository.findByChargeId(result.value.chargeId))
                                 result.value
                             }
                         }
+                    }
 
-                    else -> return@run failure(PaymentError.Validation("chargeId, sponsorshipId or memberId is required"))
+                    else -> {
+                        return@run failure(PaymentError.Validation("chargeId, sponsorshipId or memberId is required"))
+                    }
                 }
 
             if (!canPayCharge(authenticatedUser, charge)) {
@@ -165,36 +202,8 @@ class PaymentService(
                     }
                 }
 
-            val session = createStripeSession(charge, chargeItems)
-            val now = Clock.System.now()
-            val payment =
-                Payment(
-                    paymentId = 0,
-                    chargeId = charge.chargeId,
-                    amount = charge.value,
-                    provider = STRIPE_PROVIDER,
-                    providerRef = session.id,
-                    status = PaymentStatus.PENDING,
-                    createdAt = now,
-                    confirmedAt = null,
-                )
-
-            when (val validation = paymentDomain.validatePaymentForCreation(payment)) {
-                is Either.Left -> failure(PaymentError.Validation(validationErrorMessage(validation.value)))
-                is Either.Right -> {
-                    val paymentId = transaction.paymentRepository.save(validation.value)
-                    success(
-                        CheckoutSessionResult(
-                            paymentId = paymentId,
-                            chargeId = charge.chargeId,
-                            sessionId = session.id,
-                            checkoutUrl =
-                                session.url
-                                    ?: return@run failure(PaymentError.DomainError("Stripe did not return a checkout URL")),
-                        ),
-                    )
-                }
-            }
+            val lineItems = chargeItems.map { StripeLineItem(it.description, it.amount) }
+            createSessionAndPayment(transaction, charge, lineItems, charge.chargeUser?.email)
         }
 
     fun getMembershipFeeOptions(
@@ -342,9 +351,47 @@ class PaymentService(
         }
     }
 
+    /**
+     * Cria a sessão Stripe + o Payment(PENDING) associado, participando na [transaction] do
+     * chamador (não abre transação própria). Partilhado pelo checkout de quotas/patrocínios
+     * (auth) e pela compra de bilhetes (anónima) — daí [customerEmail] e [lineItems] explícitos.
+     */
+    fun createSessionAndPayment(
+        transaction: Transaction,
+        charge: Charge,
+        lineItems: List<StripeLineItem>,
+        customerEmail: String?,
+    ): Either<PaymentError, CheckoutSessionResult> {
+        val session = createStripeSession(charge, lineItems, customerEmail)
+        val payment =
+            Payment(
+                paymentId = 0,
+                chargeId = charge.chargeId,
+                amount = charge.value,
+                provider = STRIPE_PROVIDER,
+                providerRef = session.id,
+                status = PaymentStatus.PENDING,
+                createdAt = Clock.System.now(),
+                confirmedAt = null,
+            )
+        return when (val validation = paymentDomain.validatePaymentForCreation(payment)) {
+            is Either.Left -> {
+                failure(PaymentError.Validation(validationErrorMessage(validation.value)))
+            }
+
+            is Either.Right -> {
+                val paymentId = transaction.paymentRepository.save(validation.value)
+                val checkoutUrl =
+                    session.url ?: return failure(PaymentError.DomainError("Stripe did not return a checkout URL"))
+                success(CheckoutSessionResult(paymentId, charge.chargeId, session.id, checkoutUrl))
+            }
+        }
+    }
+
     private fun createStripeSession(
         charge: Charge,
-        chargeItems: List<ChargeItem>,
+        lineItems: List<StripeLineItem>,
+        customerEmail: String?,
     ): Session {
         val appUrl = stripeProperties.publicUrl.trimEnd('/')
         val builder =
@@ -353,49 +400,29 @@ class PaymentService(
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl("$appUrl/payments/success?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl("$appUrl/payments/cancel")
-                .setCustomerEmail(charge.chargeUser?.email)
+                .setCustomerEmail(customerEmail)
                 .putMetadata("chargeId", charge.chargeId.toString())
                 .putMetadata("chargeType", charge.type.name)
 
-        if (chargeItems.isEmpty()) {
-            builder
-                .addLineItem(
-                    SessionCreateParams.LineItem
-                        .builder()
-                        .setQuantity(1)
-                        .setPriceData(
-                            SessionCreateParams.LineItem.PriceData
-                                .builder()
-                                .setCurrency("eur")
-                                .setUnitAmount(charge.value.toLong())
-                                .setProductData(
-                                    SessionCreateParams.LineItem.PriceData.ProductData
-                                        .builder()
-                                        .setName(chargeProductName(charge))
-                                        .build(),
-                                ).build(),
-                        ).build(),
-                )
-        } else {
-            chargeItems.forEach { item ->
-                builder.addLineItem(
-                    SessionCreateParams.LineItem
-                        .builder()
-                        .setQuantity(1)
-                        .setPriceData(
-                            SessionCreateParams.LineItem.PriceData
-                                .builder()
-                                .setCurrency("eur")
-                                .setUnitAmount(item.amount.toLong())
-                                .setProductData(
-                                    SessionCreateParams.LineItem.PriceData.ProductData
-                                        .builder()
-                                        .setName(item.description)
-                                        .build(),
-                                ).build(),
-                        ).build(),
-                )
-            }
+        val effectiveItems = lineItems.ifEmpty { listOf(StripeLineItem(chargeProductName(charge), charge.value)) }
+        effectiveItems.forEach { item ->
+            builder.addLineItem(
+                SessionCreateParams.LineItem
+                    .builder()
+                    .setQuantity(1)
+                    .setPriceData(
+                        SessionCreateParams.LineItem.PriceData
+                            .builder()
+                            .setCurrency("eur")
+                            .setUnitAmount(item.amountCents.toLong())
+                            .setProductData(
+                                SessionCreateParams.LineItem.PriceData.ProductData
+                                    .builder()
+                                    .setName(item.name)
+                                    .build(),
+                            ).build(),
+                    ).build(),
+            )
         }
 
         return Session.create(builder.build(), requestOptions)
@@ -403,46 +430,66 @@ class PaymentService(
 
     private fun handleCheckoutSessionPaid(sessionId: String?): StripeWebhookResult {
         val stripeSessionId = sessionId ?: return failure(PaymentError.DomainError("Stripe session missing"))
-        return transactionManager.run { transaction ->
-            val payment =
-                transaction.paymentRepository.findByProviderRef(STRIPE_PROVIDER, stripeSessionId)
-                    ?: return@run failure(PaymentError.DomainError("Payment for Stripe session $stripeSessionId not found"))
+        val outcome: Either<PaymentError, TicketPurchaseEmailData?> =
+            transactionManager.run { transaction ->
+                val payment =
+                    transaction.paymentRepository.findByProviderRef(STRIPE_PROVIDER, stripeSessionId)
+                        ?: return@run failure(PaymentError.DomainError("Payment for Stripe session $stripeSessionId not found"))
 
-            if (payment.status == PaymentStatus.PAID) {
-                return@run success(Unit)
-            }
-
-            val charge =
-                transaction.chargeRepository.findById(payment.chargeId)
-                    ?: return@run failure(PaymentError.DomainError("Charge ${payment.chargeId} not found"))
-
-            val confirmedAt = Clock.System.now()
-            when (val confirmedPayment = paymentDomain.confirmPayment(payment, confirmedAt)) {
-                is Either.Left -> return@run failure(confirmedPayment.value)
-                is Either.Right -> transaction.paymentRepository.update(confirmedPayment.value)
-            }
-
-            if (charge.status == ChargeStatus.PENDING) {
-                val paidAt = confirmedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
-                when (val paidCharge = paymentDomain.markChargePaid(charge, paidAt)) {
-                    is Either.Left -> return@run failure(PaymentError.DomainError(paidCharge.value.toString()))
-                    is Either.Right -> transaction.chargeRepository.update(paidCharge.value)
+                if (payment.status == PaymentStatus.PAID) {
+                    return@run success(null)
                 }
-            }
 
-            charge.sponsorshipId?.let { sponsorshipId ->
-                val sponsorship =
-                    transaction.sponsorshipRepository.findById(sponsorshipId)
-                        ?: return@run failure(PaymentError.DomainError("Sponsorship $sponsorshipId not found"))
-                if (sponsorship.status != SponsorshipStatus.PAGO) {
-                    when (val paidSponsorship = sponsorDomain.markPaid(sponsorship)) {
-                        is Either.Left -> return@run failure(PaymentError.DomainError(paidSponsorship.value.toString()))
-                        is Either.Right -> transaction.sponsorshipRepository.update(paidSponsorship.value)
+                val charge =
+                    transaction.chargeRepository.findById(payment.chargeId)
+                        ?: return@run failure(PaymentError.DomainError("Charge ${payment.chargeId} not found"))
+
+                val confirmedAt = Clock.System.now()
+                when (val confirmedPayment = paymentDomain.confirmPayment(payment, confirmedAt)) {
+                    is Either.Left -> return@run failure(confirmedPayment.value)
+                    is Either.Right -> transaction.paymentRepository.update(confirmedPayment.value)
+                }
+
+                if (charge.status == ChargeStatus.PENDING) {
+                    val paidAt = confirmedAt.toLocalDateTime(TimeZone.currentSystemDefault()).date
+                    when (val paidCharge = paymentDomain.markChargePaid(charge, paidAt)) {
+                        is Either.Left -> return@run failure(PaymentError.DomainError(paidCharge.value.toString()))
+                        is Either.Right -> transaction.chargeRepository.update(paidCharge.value)
                     }
                 }
+
+                charge.sponsorshipId?.let { sponsorshipId ->
+                    val sponsorship =
+                        transaction.sponsorshipRepository.findById(sponsorshipId)
+                            ?: return@run failure(PaymentError.DomainError("Sponsorship $sponsorshipId not found"))
+                    if (sponsorship.status != SponsorshipStatus.PAGO) {
+                        when (val paidSponsorship = sponsorDomain.markPaid(sponsorship)) {
+                            is Either.Left -> return@run failure(PaymentError.DomainError(paidSponsorship.value.toString()))
+                            is Either.Right -> transaction.sponsorshipRepository.update(paidSponsorship.value)
+                        }
+                    }
+                }
+
+                // bilhetes: RESERVED -> CONFIRMED (gera token QR); email enviado após a compra
+                val ticketEmail =
+                    if (charge.type == ChargeType.TICKET_PURCHASE) {
+                        confirmTicketsForCharge(transaction, charge.chargeId)
+                    } else {
+                        null
+                    }
+
+                success(ticketEmail)
             }
 
-            success(Unit)
+        return when (outcome) {
+            is Either.Left -> {
+                failure(outcome.value)
+            }
+
+            is Either.Right -> {
+                outcome.value?.let { sendTicketEmailSafely(it) }
+                success(Unit)
+            }
         }
     }
 
@@ -458,11 +505,77 @@ class PaymentService(
                     is Either.Left -> return@run failure(failed.value)
                     is Either.Right -> transaction.paymentRepository.update(failed.value)
                 }
+                // bilhetes: cancela os reservados e liberta os lugares (decisão #7)
+                val charge = transaction.chargeRepository.findById(payment.chargeId)
+                if (charge?.type == ChargeType.TICKET_PURCHASE) {
+                    transaction.ticketRepository.findByChargeId(charge.chargeId).forEach { ticket ->
+                        if (transaction.ticketRepository.cancel(ticket.ticketId)) {
+                            transaction.eventRepository.releaseSeat(ticket.sectorId)
+                        }
+                    }
+                }
             }
 
             success(Unit)
         }
     }
+
+    /**
+     * Confirma (RESERVED -> CONFIRMED) os bilhetes da compra [chargeId], atribuindo a cada um um
+     * token QR único, e devolve os dados para o email (ou null se não houver bilhetes a confirmar).
+     * Corre dentro da transação do webhook; o envio do email fica para depois do commit.
+     */
+    private fun confirmTicketsForCharge(
+        transaction: Transaction,
+        chargeId: Long,
+    ): TicketPurchaseEmailData? {
+        val reserved = transaction.ticketRepository.findByChargeId(chargeId).filter { it.status == TicketStatus.RESERVED }
+        if (reserved.isEmpty()) return null
+
+        val event = transaction.eventRepository.findById(reserved.first().eventId) ?: return null
+        val sectorNames = transaction.eventRepository.findSectorsByEvent(event.eventId).associate { it.sectorId to it.name }
+
+        val lines =
+            reserved.map { ticket ->
+                val token = UUID.randomUUID().toString()
+                transaction.ticketRepository.confirm(ticket.ticketId, token)
+                EmailService.TicketEmailLine(
+                    sectorName = sectorNames[ticket.sectorId] ?: "?",
+                    priceType = ticket.priceType,
+                    priceCents = ticket.price,
+                    qrToken = token,
+                )
+            }
+        val buyer = reserved.first()
+        return TicketPurchaseEmailData(
+            buyerName = buyer.buyerName,
+            buyerEmail = buyer.buyerEmail,
+            eventName = event.name,
+            eventWhen = formatTicketEventWhen(event.startsAt),
+            location = event.location,
+            lines = lines,
+        )
+    }
+
+    private fun sendTicketEmailSafely(data: TicketPurchaseEmailData) {
+        runCatching {
+            emailService.sendTicketPurchaseEmail(
+                buyerName = data.buyerName,
+                buyerEmail = data.buyerEmail,
+                eventName = data.eventName,
+                eventWhen = data.eventWhen,
+                location = data.location,
+                lines = data.lines,
+            )
+        }.onFailure { logger.error("Failed to send ticket email to {}: {}", data.buyerEmail, it.message, it) }
+    }
+
+    private fun formatTicketEventWhen(startsAt: Instant): String =
+        TICKET_EMAIL_FORMATTER.format(
+            java.time.Instant
+                .ofEpochMilli(startsAt.toEpochMilliseconds())
+                .atZone(TICKET_EMAIL_ZONE),
+        )
 
     private fun canPayCharge(
         authenticatedUser: AuthenticatedUser,
@@ -655,6 +768,7 @@ class PaymentService(
             ChargeType.MEMBER_FEE -> "Quota de sócio"
             ChargeType.ATHLETE_MONTHLY_FEE -> "Mensalidade de atleta"
             ChargeType.SPONSORSHIP_FEE -> "Patrocínio"
+            ChargeType.TICKET_PURCHASE -> "Bilhete"
         }
 
     private fun buildMembershipFeeOptions(
@@ -841,5 +955,6 @@ class PaymentService(
 
     private companion object {
         const val STRIPE_PROVIDER = "STRIPE"
+        private val logger = LoggerFactory.getLogger(PaymentService::class.java)
     }
 }

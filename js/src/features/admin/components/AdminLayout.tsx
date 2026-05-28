@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { BadgeEuro, Building2, ClipboardCheck, LayoutDashboard, Settings, Trophy, UserCog, Users } from "lucide-react";
+import { BadgeEuro, Building2, ClipboardCheck, LayoutDashboard, Settings, Ticket, Trophy, UserCog, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
@@ -9,6 +9,7 @@ const adminNavGroups = [
     titleKey: "admin.navGroups.general",
     items: [
       { to: "/admin", labelKey: "admin.nav.overview", icon: LayoutDashboard, end: true },
+      { to: "/admin/events", labelKey: "admin.nav.events", icon: Ticket },
     ],
   },
   {

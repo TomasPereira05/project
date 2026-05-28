@@ -1,9 +1,16 @@
 import { Link } from "react-router-dom";
-import { BadgeEuro, Clock3, Settings, Trophy, UserCheck, Users } from "lucide-react";
+import { BadgeEuro, Settings, Ticket, Trophy, Users } from "lucide-react";
+import { BadgeEuro, Clock3, Settings, Ticket, Trophy, UserCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAdminOverviewStats } from "../hooks/useAdminOverviewStats";
 
 const adminCards = [
+  {
+    icon: Ticket,
+    titleKey: "admin.cards.events.title",
+    descriptionKey: "admin.cards.events.description",
+    to: "/admin/events",
+  },
   {
     icon: Users,
     titleKey: "admin.cards.members.title",

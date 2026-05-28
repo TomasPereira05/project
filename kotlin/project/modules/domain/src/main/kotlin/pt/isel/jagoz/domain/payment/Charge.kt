@@ -19,7 +19,8 @@ data class Charge(
     // 1..12
     val month: Int? = null,
     val createdAt: LocalDate,
-    val creationUser: User,
+    // null em compras anónimas (ex.: bilhetes comprados sem conta) — decisão #1
+    val creationUser: User?,
     val chargeUser: User? = null,
     val paidAt: LocalDate? = null,
 )

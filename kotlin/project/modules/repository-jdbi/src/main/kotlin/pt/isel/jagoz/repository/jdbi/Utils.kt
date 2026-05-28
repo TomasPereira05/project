@@ -7,6 +7,7 @@ import org.jdbi.v3.postgres.PostgresPlugin
 import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.Guardian
 import pt.isel.jagoz.domain.event.Event
+import pt.isel.jagoz.domain.event.EventSector
 import pt.isel.jagoz.domain.event.Ticket
 import pt.isel.jagoz.domain.file.StoredFile
 import pt.isel.jagoz.domain.member.Member
@@ -29,6 +30,7 @@ import pt.isel.jagoz.repository.jdbi.mappers.ChargeItemMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EquipmentPlacementMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EventMapper
+import pt.isel.jagoz.repository.jdbi.mappers.EventSectorMapper
 import pt.isel.jagoz.repository.jdbi.mappers.GuardianMapper
 import pt.isel.jagoz.repository.jdbi.mappers.InstantArgumentFactory
 import pt.isel.jagoz.repository.jdbi.mappers.InstantMapper
@@ -64,6 +66,7 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerRowMapper(Charge::class.java, ChargeMapper())
     registerRowMapper(ChargeItem::class.java, ChargeItemMapper())
     registerRowMapper(Event::class.java, EventMapper())
+    registerRowMapper(EventSector::class.java, EventSectorMapper())
     registerRowMapper(Member::class.java, MemberMapper())
     registerRowMapper(Payment::class.java, PaymentMapper())
     registerRowMapper(Sponsor::class.java, SponsorMapper())

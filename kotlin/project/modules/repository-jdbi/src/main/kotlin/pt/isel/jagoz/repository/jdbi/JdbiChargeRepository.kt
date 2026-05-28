@@ -14,7 +14,7 @@ class JdbiChargeRepository(
             u_c.user_id as cu_user_id, u_c.email as cu_email, u_c.username as cu_username, u_c.password_validation as cu_password_validation, u_c.role as cu_role, u_c.active_member_id as cu_active_member_id,
             u_ch.user_id as ch_user_id, u_ch.email as ch_email, u_ch.username as ch_username, u_ch.password_validation as ch_password_validation, u_ch.role as ch_role, u_ch.active_member_id as ch_active_member_id
         FROM jagoz.charge c
-        JOIN jagoz.users u_c ON c.creation_user_id = u_c.user_id
+        LEFT JOIN jagoz.users u_c ON c.creation_user_id = u_c.user_id
         LEFT JOIN jagoz.users u_ch ON c.charged_user_id = u_ch.user_id
         """.trimIndent()
 
@@ -80,7 +80,7 @@ class JdbiChargeRepository(
             .bind("season", charge.season)
             .bind("month", charge.month)
             .bind("createdAt", charge.createdAt.toString())
-            .bind("creationUserId", charge.creationUser.userId)
+            .bind("creationUserId", charge.creationUser?.userId)
             .bind("chargedUserId", charge.chargeUser?.userId)
             .bind("paidAt", charge.paidAt?.toString())
             .executeAndReturnGeneratedKeys()
@@ -114,7 +114,7 @@ class JdbiChargeRepository(
             .bind("season", charge.season)
             .bind("month", charge.month)
             .bind("createdAt", charge.createdAt.toString())
-            .bind("creationUserId", charge.creationUser.userId)
+            .bind("creationUserId", charge.creationUser?.userId)
             .bind("chargedUserId", charge.chargeUser?.userId)
             .bind("paidAt", charge.paidAt?.toString())
             .execute()
