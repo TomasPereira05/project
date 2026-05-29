@@ -1,0 +1,2243 @@
+openapi: 3.0.3
+info:
+  title: Jagoz API
+  version: 0.1.0
+  description: API REST do projeto Jagoz para gestao de socios, atletas, patrocinadores, eventos, pagamentos e ficheiros.
+servers:
+  - url: http://localhost:8080
+    description: Backend local
+  - url: http://localhost:5173
+    description: Frontend Vite local com proxy /api
+tags:
+  - name: Users
+  - name: Members
+  - name: Athletes
+  - name: Teams
+  - name: Sponsors
+  - name: Sponsorships
+  - name: Sponsorship catalog
+  - name: Events
+  - name: Payments
+  - name: Files
+  - name: Admin
+security:
+  - bearerAuth: []
+  - cookieAuth: []
+paths:
+  /api/users:
+    post:
+      tags: [Users]
+      summary: Criar utilizador
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "201":
+          description: Utilizador criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "409":
+          $ref: "#/components/responses/Conflict"
+    get:
+      tags: [Users]
+      summary: Listar utilizadores
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size20"
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: role
+          in: query
+          schema:
+            $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: Pagina de utilizadores
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/users/login:
+    post:
+      tags: [Users]
+      summary: Login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "201":
+          description: Sessao criada
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticatedUser"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/users/logout:
+    post:
+      tags: [Users]
+      summary: Logout
+      responses:
+        "204":
+          description: Sessao terminada
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+  /api/users/token:
+    post:
+      tags: [Users]
+      summary: Criar token por username/password
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreateTokenInput"
+      responses:
+        "201":
+          description: Token criado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /api/users/me:
+    get:
+      tags: [Users]
+      summary: Obter utilizador autenticado
+      responses:
+        "200":
+          description: Utilizador autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthenticatedUser"
+  /api/users/{userId}:
+    get:
+      tags: [Users]
+      summary: Obter utilizador por id
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200":
+          description: Utilizador
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/users/{userId}/role:
+    put:
+      tags: [Users]
+      summary: Atualizar role do utilizador
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: Utilizador atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /api/users/{userId}/active-member:
+    put:
+      tags: [Users]
+      summary: Atualizar socio ativo associado ao utilizador
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                memberId:
+                  type: integer
+                  format: int64
+                  nullable: true
+      responses:
+        "200":
+          description: Utilizador atualizado
+  /api/users/{userId}/associations:
+    get:
+      tags: [Users]
+      summary: Obter associacoes de socio, atleta e patrocinador de um utilizador
+      parameters:
+        - $ref: "#/components/parameters/UserId"
+      responses:
+        "200":
+          description: Associacoes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserAssociations"
+  /api/users/by-email:
+    get:
+      tags: [Users]
+      summary: Procurar utilizador por email
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+      responses:
+        "200":
+          description: Utilizador
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /api/users/by-username:
+    get:
+      tags: [Users]
+      summary: Procurar utilizador por username
+      parameters:
+        - name: username
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Utilizador
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /api/members:
+    get:
+      tags: [Members]
+      summary: Listar socios
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size8"
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            $ref: "#/components/schemas/MemberCategory"
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/MemberStatus"
+      responses:
+        "200":
+          description: Pagina de socios
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+  /api/members/active:
+    get:
+      tags: [Members]
+      summary: Listar socios ativos
+      security: []
+      responses:
+        "200":
+          description: Lista de socios ativos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Member"
+  /api/members/create:
+    post:
+      tags: [Members]
+      summary: Criar socio
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberCreateInput"
+      responses:
+        "200":
+          description: Socio criado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+  /api/members/{memberId}:
+    get:
+      tags: [Members]
+      summary: Obter socio por id
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      responses:
+        "200":
+          description: Socio
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+    put:
+      tags: [Members]
+      summary: Atualizar socio
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MemberUpdateInput"
+      responses:
+        "200":
+          description: Socio atualizado
+    delete:
+      tags: [Members]
+      summary: Desativar socio
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      responses:
+        "200":
+          description: Socio desativado
+  /api/members/{memberId}/approve:
+    put:
+      tags: [Members]
+      summary: Aprovar socio
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      requestBody:
+        $ref: "#/components/requestBodies/Approval"
+      responses:
+        "200":
+          description: Socio aprovado
+  /api/members/{memberId}/reject:
+    put:
+      tags: [Members]
+      summary: Rejeitar socio
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      responses:
+        "200":
+          description: Socio rejeitado
+  /api/members/{memberId}/reactivate:
+    put:
+      tags: [Members]
+      summary: Reativar socio
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reactivationDate]
+              properties:
+                reactivationDate:
+                  type: string
+                  format: date
+      responses:
+        "200":
+          description: Socio reativado
+  /api/members/{memberId}/category:
+    put:
+      tags: [Members]
+      summary: Alterar categoria do socio
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [category]
+              properties:
+                category:
+                  $ref: "#/components/schemas/MemberCategory"
+      responses:
+        "200":
+          description: Categoria alterada
+
+  /api/teams/{teamCategoryId}/athletes:
+    get:
+      tags: [Athletes]
+      summary: Listar atletas publicos de uma categoria
+      security: []
+      parameters:
+        - name: teamCategoryId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Lista publica de atletas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AthletePublic"
+  /api/athletes:
+    post:
+      tags: [Athletes]
+      summary: Inscrever atleta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AthleteCreationInput"
+      responses:
+        "201":
+          description: Atleta criado
+    get:
+      tags: [Athletes]
+      summary: Listar atletas para backoffice
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size8"
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: teamCategory
+          in: query
+          schema:
+            type: array
+            items:
+              type: integer
+              format: int64
+          style: form
+          explode: true
+        - name: status
+          in: query
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/AthleteStatus"
+          style: form
+          explode: true
+      responses:
+        "200":
+          description: Pagina de atletas
+  /api/athletes/me:
+    get:
+      tags: [Athletes]
+      summary: Obter atleta associado ao utilizador autenticado
+      responses:
+        "200":
+          description: Detalhe de atleta
+  /api/athletes/{athleteId}:
+    get:
+      tags: [Athletes]
+      summary: Detalhe publico do atleta
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      responses:
+        "200":
+          description: Detalhe publico
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AthletePublic"
+    put:
+      tags: [Athletes]
+      summary: Atualizar atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AthleteUpdateInput"
+      responses:
+        "200":
+          description: Atleta atualizado
+  /api/athletes/{athleteId}/admin:
+    get:
+      tags: [Athletes]
+      summary: Detalhe de atleta para backoffice
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      responses:
+        "200":
+          description: Detalhe administrativo
+  /api/athletes/member/{memberId}:
+    get:
+      tags: [Athletes]
+      summary: Obter atleta por socio
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      responses:
+        "200":
+          description: Detalhe administrativo
+  /api/athletes/{athleteId}/team-category:
+    put:
+      tags: [Athletes]
+      summary: Alterar categoria/equipa do atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [teamCategoryId]
+              properties:
+                teamCategoryId:
+                  type: integer
+                  format: int64
+      responses:
+        "200":
+          description: Categoria alterada
+  /api/athletes/{athleteId}/deactivate:
+    patch:
+      tags: [Athletes]
+      summary: Desativar atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      responses:
+        "200":
+          description: Atleta desativado
+  /api/athletes/{athleteId}/reactivate:
+    put:
+      tags: [Athletes]
+      summary: Reativar atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      responses:
+        "200":
+          description: Atleta reativado
+  /api/athletes/{athleteId}/approve:
+    put:
+      tags: [Athletes]
+      summary: Aprovar inscricao de atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      requestBody:
+        $ref: "#/components/requestBodies/Approval"
+      responses:
+        "200":
+          description: Atleta aprovado
+  /api/athletes/{athleteId}/reject:
+    put:
+      tags: [Athletes]
+      summary: Rejeitar inscricao de atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      responses:
+        "200":
+          description: Atleta rejeitado
+
+  /api/teams/groups/active:
+    get:
+      tags: [Teams]
+      summary: Listar grupos ativos
+      security: []
+      responses:
+        "200":
+          description: Grupos ativos
+  /api/teams/groups:
+    get:
+      tags: [Teams]
+      summary: Listar grupos
+      security: []
+      responses:
+        "200":
+          description: Grupos
+    post:
+      tags: [Teams]
+      summary: Criar grupo
+      requestBody:
+        $ref: "#/components/requestBodies/TeamGroup"
+      responses:
+        "201":
+          description: Grupo criado
+  /api/teams/groups/{groupId}:
+    put:
+      tags: [Teams]
+      summary: Atualizar grupo
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      requestBody:
+        $ref: "#/components/requestBodies/TeamGroup"
+      responses:
+        "200":
+          description: Grupo atualizado
+    delete:
+      tags: [Teams]
+      summary: Desativar grupo
+      parameters:
+        - $ref: "#/components/parameters/GroupId"
+      responses:
+        "204":
+          description: Grupo desativado
+  /api/teams/groups/reorder:
+    put:
+      tags: [Teams]
+      summary: Reordenar grupos
+      requestBody:
+        $ref: "#/components/requestBodies/Reorder"
+      responses:
+        "200":
+          description: Grupos reordenados
+  /api/teams/categories/active:
+    get:
+      tags: [Teams]
+      summary: Listar categorias ativas
+      security: []
+      responses:
+        "200":
+          description: Categorias ativas
+  /api/teams/categories:
+    get:
+      tags: [Teams]
+      summary: Listar categorias
+      security: []
+      responses:
+        "200":
+          description: Categorias
+    post:
+      tags: [Teams]
+      summary: Criar categoria
+      requestBody:
+        $ref: "#/components/requestBodies/TeamCategory"
+      responses:
+        "201":
+          description: Categoria criada
+  /api/teams/categories/{categoryId}:
+    put:
+      tags: [Teams]
+      summary: Atualizar categoria
+      parameters:
+        - $ref: "#/components/parameters/CategoryId"
+      requestBody:
+        $ref: "#/components/requestBodies/TeamCategory"
+      responses:
+        "200":
+          description: Categoria atualizada
+    delete:
+      tags: [Teams]
+      summary: Desativar categoria
+      parameters:
+        - $ref: "#/components/parameters/CategoryId"
+      responses:
+        "204":
+          description: Categoria desativada
+  /api/teams/categories/reorder:
+    put:
+      tags: [Teams]
+      summary: Reordenar categorias
+      requestBody:
+        $ref: "#/components/requestBodies/Reorder"
+      responses:
+        "200":
+          description: Categorias reordenadas
+  /api/teams/groups-prices:
+    get:
+      tags: [Teams]
+      summary: Listar precos por grupo
+      security: []
+      responses:
+        "200":
+          description: Precos por grupo
+    put:
+      tags: [Teams]
+      summary: Criar ou atualizar preco por grupo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamGroupPriceRequest"
+      responses:
+        "200":
+          description: Preco atualizado
+  /api/teams/category-overrides:
+    get:
+      tags: [Teams]
+      summary: Listar overrides de preco por categoria
+      security: []
+      responses:
+        "200":
+          description: Overrides de preco
+    put:
+      tags: [Teams]
+      summary: Criar ou atualizar override de preco por categoria
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TeamCategoryPriceOverrideRequest"
+      responses:
+        "200":
+          description: Override atualizado
+
+  /api/sponsors:
+    get:
+      tags: [Sponsors]
+      summary: Listar patrocinadores
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size20"
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pagina de patrocinadores
+    post:
+      tags: [Sponsors]
+      summary: Criar patrocinador
+      requestBody:
+        $ref: "#/components/requestBodies/Sponsor"
+      responses:
+        "201":
+          description: Patrocinador criado
+  /api/sponsors/{sponsorId}:
+    get:
+      tags: [Sponsors]
+      summary: Obter patrocinador
+      parameters:
+        - $ref: "#/components/parameters/SponsorId"
+      responses:
+        "200":
+          description: Patrocinador
+    put:
+      tags: [Sponsors]
+      summary: Atualizar patrocinador
+      parameters:
+        - $ref: "#/components/parameters/SponsorId"
+      requestBody:
+        $ref: "#/components/requestBodies/Sponsor"
+      responses:
+        "200":
+          description: Patrocinador atualizado
+  /api/sponsors/{sponsorId}/user:
+    put:
+      tags: [Sponsors]
+      summary: Associar utilizador a patrocinador
+      parameters:
+        - $ref: "#/components/parameters/SponsorId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userId]
+              properties:
+                userId:
+                  type: integer
+                  format: int64
+      responses:
+        "200":
+          description: Utilizador associado
+  /api/sponsors/claim:
+    post:
+      tags: [Sponsors]
+      summary: Reivindicar patrocinador existente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SponsorClaimRequest"
+      responses:
+        "200":
+          description: Patrocinador reivindicado
+
+  /api/sponsorships:
+    get:
+      tags: [Sponsorships]
+      summary: Listar patrocinios
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size8"
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/SponsorshipStatus"
+      responses:
+        "200":
+          description: Pagina de patrocinios
+    post:
+      tags: [Sponsorships]
+      summary: Criar patrocinio
+      requestBody:
+        $ref: "#/components/requestBodies/Sponsorship"
+      responses:
+        "201":
+          description: Patrocinio criado
+  /api/sponsorships/with-sponsor:
+    post:
+      tags: [Sponsorships]
+      summary: Criar patrocinador e patrocinio na mesma operacao
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sponsor, sponsorship]
+              properties:
+                sponsor:
+                  $ref: "#/components/schemas/Sponsor"
+                sponsorship:
+                  $ref: "#/components/schemas/Sponsorship"
+                userId:
+                  type: integer
+                  format: int64
+                  nullable: true
+      responses:
+        "201":
+          description: Patrocinio criado
+  /api/sponsorships/my:
+    get:
+      tags: [Sponsorships]
+      summary: Listar patrocinios do utilizador autenticado
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size8"
+      responses:
+        "200":
+          description: Pagina de patrocinios
+  /api/sponsorships/{sponsorshipId}:
+    get:
+      tags: [Sponsorships]
+      summary: Obter patrocinio
+      parameters:
+        - $ref: "#/components/parameters/SponsorshipId"
+      responses:
+        "200":
+          description: Patrocinio
+  /api/sponsors/{sponsorId}/sponsorships:
+    get:
+      tags: [Sponsorships]
+      summary: Listar patrocinios de um patrocinador
+      parameters:
+        - $ref: "#/components/parameters/SponsorId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/Size8"
+      responses:
+        "200":
+          description: Pagina de patrocinios
+  /api/sponsorships/{sponsorshipId}/details:
+    put:
+      tags: [Sponsorships]
+      summary: Atualizar detalhes de contacto/preco do patrocinio
+      parameters:
+        - $ref: "#/components/parameters/SponsorshipId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SponsorshipDetailUpdateRequest"
+      responses:
+        "200":
+          description: Patrocinio atualizado
+  /api/sponsorships/{sponsorshipId}/approve:
+    put:
+      tags: [Sponsorships]
+      summary: Aprovar patrocinio
+      parameters:
+        - $ref: "#/components/parameters/SponsorshipId"
+      responses:
+        "200":
+          description: Patrocinio aprovado
+  /api/sponsorships/{sponsorshipId}/paid:
+    put:
+      tags: [Sponsorships]
+      summary: Marcar patrocinio como pago
+      parameters:
+        - $ref: "#/components/parameters/SponsorshipId"
+      responses:
+        "200":
+          description: Patrocinio pago
+  /api/sponsorships/{sponsorshipId}/cancel:
+    put:
+      tags: [Sponsorships]
+      summary: Cancelar patrocinio
+      parameters:
+        - $ref: "#/components/parameters/SponsorshipId"
+      responses:
+        "200":
+          description: Patrocinio cancelado
+
+  /api/sponsorship-catalog/pub-options/active:
+    get:
+      tags: [Sponsorship catalog]
+      summary: Listar opcoes de publicidade ativas
+      security: []
+      responses:
+        "200":
+          description: Opcoes ativas
+  /api/sponsorship-catalog/pub-options:
+    post:
+      tags: [Sponsorship catalog]
+      summary: Criar opcao de publicidade
+      requestBody:
+        $ref: "#/components/requestBodies/PubOption"
+      responses:
+        "201":
+          description: Opcao criada
+  /api/sponsorship-catalog/pub-options/{pubOptionId}:
+    put:
+      tags: [Sponsorship catalog]
+      summary: Atualizar opcao de publicidade
+      parameters:
+        - name: pubOptionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: "#/components/requestBodies/PubOption"
+      responses:
+        "200":
+          description: Opcao atualizada
+    delete:
+      tags: [Sponsorship catalog]
+      summary: Desativar opcao de publicidade
+      parameters:
+        - name: pubOptionId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Opcao desativada
+  /api/sponsorship-catalog/pub-options/reorder:
+    put:
+      tags: [Sponsorship catalog]
+      summary: Reordenar opcoes de publicidade
+      requestBody:
+        $ref: "#/components/requestBodies/Reorder"
+      responses:
+        "200":
+          description: Opcoes reordenadas
+  /api/sponsorship-catalog/equipment-placements/active:
+    get:
+      tags: [Sponsorship catalog]
+      summary: Listar colocacoes de equipamento ativas
+      security: []
+      responses:
+        "200":
+          description: Colocacoes ativas
+  /api/sponsorship-catalog/equipment-placements:
+    post:
+      tags: [Sponsorship catalog]
+      summary: Criar colocacao de equipamento
+      requestBody:
+        $ref: "#/components/requestBodies/EquipmentPlacement"
+      responses:
+        "201":
+          description: Colocacao criada
+  /api/sponsorship-catalog/equipment-placements/{placementId}:
+    put:
+      tags: [Sponsorship catalog]
+      summary: Atualizar colocacao de equipamento
+      parameters:
+        - $ref: "#/components/parameters/PlacementId"
+      requestBody:
+        $ref: "#/components/requestBodies/EquipmentPlacement"
+      responses:
+        "200":
+          description: Colocacao atualizada
+    delete:
+      tags: [Sponsorship catalog]
+      summary: Desativar colocacao de equipamento
+      parameters:
+        - $ref: "#/components/parameters/PlacementId"
+      responses:
+        "204":
+          description: Colocacao desativada
+  /api/sponsorship-catalog/equipment-placements/reorder:
+    put:
+      tags: [Sponsorship catalog]
+      summary: Reordenar colocacoes de equipamento
+      requestBody:
+        $ref: "#/components/requestBodies/Reorder"
+      responses:
+        "200":
+          description: Colocacoes reordenadas
+  /api/sponsorship-catalog/team-options/occupied:
+    get:
+      tags: [Sponsorship catalog]
+      summary: Listar opcoes de equipa ja ocupadas
+      security: []
+      responses:
+        "200":
+          description: Opcoes ocupadas
+  /api/sponsorship-catalog/other-sports/active:
+    get:
+      tags: [Sponsorship catalog]
+      summary: Listar outros desportos ativos
+      security: []
+      responses:
+        "200":
+          description: Outros desportos ativos
+  /api/sponsorship-catalog/other-sports:
+    post:
+      tags: [Sponsorship catalog]
+      summary: Criar outro desporto
+      requestBody:
+        $ref: "#/components/requestBodies/OtherSport"
+      responses:
+        "201":
+          description: Desporto criado
+  /api/sponsorship-catalog/other-sports/{sportId}:
+    put:
+      tags: [Sponsorship catalog]
+      summary: Atualizar outro desporto
+      parameters:
+        - name: sportId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        $ref: "#/components/requestBodies/OtherSport"
+      responses:
+        "200":
+          description: Desporto atualizado
+    delete:
+      tags: [Sponsorship catalog]
+      summary: Desativar outro desporto
+      parameters:
+        - name: sportId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Desporto desativado
+  /api/sponsorship-catalog/other-sports/reorder:
+    put:
+      tags: [Sponsorship catalog]
+      summary: Reordenar outros desportos
+      requestBody:
+        $ref: "#/components/requestBodies/Reorder"
+      responses:
+        "200":
+          description: Desportos reordenados
+
+  /api/events:
+    get:
+      tags: [Events]
+      summary: Listar eventos para backoffice
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [all, scheduled, past, cancelled]
+            default: all
+      responses:
+        "200":
+          description: Eventos
+    post:
+      tags: [Events]
+      summary: Criar evento
+      requestBody:
+        $ref: "#/components/requestBodies/EventCreate"
+      responses:
+        "201":
+          description: Evento criado
+  /api/events/available:
+    get:
+      tags: [Events]
+      summary: Listar eventos disponiveis para compra publica
+      security: []
+      responses:
+        "200":
+          description: Eventos disponiveis
+  /api/events/validate-member:
+    post:
+      tags: [Events]
+      summary: Validar numero e data de nascimento de socio
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [memberNumber, memberBirthDate]
+              properties:
+                memberNumber:
+                  type: integer
+                memberBirthDate:
+                  type: string
+                  format: date
+      responses:
+        "200":
+          description: Resultado da validacao
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+  /api/events/{eventId}:
+    get:
+      tags: [Events]
+      summary: Obter evento
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+      responses:
+        "200":
+          description: Evento
+    put:
+      tags: [Events]
+      summary: Atualizar evento
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+      requestBody:
+        $ref: "#/components/requestBodies/EventUpdate"
+      responses:
+        "200":
+          description: Evento atualizado
+  /api/events/{eventId}/cancel:
+    post:
+      tags: [Events]
+      summary: Cancelar evento
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+      responses:
+        "200":
+          description: Evento cancelado
+  /api/events/{eventId}/tickets:
+    get:
+      tags: [Events]
+      summary: Listar bilhetes de um evento
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+      responses:
+        "200":
+          description: Bilhetes
+  /api/events/{eventId}/checkout:
+    post:
+      tags: [Events]
+      summary: Iniciar checkout de bilhetes
+      security:
+        - bearerAuth: []
+        - cookieAuth: []
+        - {}
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventCheckoutInput"
+      responses:
+        "201":
+          description: Sessao de checkout criada
+
+  /api/payments/checkout-session:
+    post:
+      tags: [Payments]
+      summary: Criar sessao Stripe Checkout para quotas, mensalidades ou patrocinio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCheckoutSessionInput"
+      responses:
+        "201":
+          description: Sessao criada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckoutSession"
+  /api/members/{memberId}/fees/options:
+    get:
+      tags: [Payments]
+      summary: Listar opcoes de quotas/mensalidades em divida
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      responses:
+        "200":
+          description: Opcoes
+  /api/members/{memberId}/fees/mark-paid:
+    post:
+      tags: [Payments]
+      summary: Marcar quotas/mensalidades como pagas manualmente
+      parameters:
+        - $ref: "#/components/parameters/MemberId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [membershipFees]
+              properties:
+                membershipFees:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/MembershipFeeSelection"
+      responses:
+        "200":
+          description: Pagamentos marcados
+  /api/payments/{paymentId}/receipt:
+    get:
+      tags: [Payments]
+      summary: Obter recibo HTML de pagamento
+      parameters:
+        - name: paymentId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Recibo HTML
+          content:
+            text/html:
+              schema:
+                type: string
+  /api/payments/sponsorships/{sponsorshipId}/receipt:
+    get:
+      tags: [Payments]
+      summary: Obter recibo HTML de patrocinio
+      parameters:
+        - $ref: "#/components/parameters/SponsorshipId"
+      responses:
+        "200":
+          description: Recibo HTML
+          content:
+            text/html:
+              schema:
+                type: string
+  /api/payments/stripe/webhook:
+    post:
+      tags: [Payments]
+      summary: Webhook Stripe
+      security: []
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        "200":
+          description: Webhook processado
+
+  /api/files:
+    get:
+      tags: [Files]
+      summary: Listar ficheiros de uma entidade
+      parameters:
+        - name: ownerType
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/FileOwnerType"
+        - name: ownerId
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: kind
+          in: query
+          schema:
+            $ref: "#/components/schemas/FileKind"
+      responses:
+        "200":
+          description: Ficheiros
+    post:
+      tags: [Files]
+      summary: Fazer upload de ficheiro
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [ownerType, ownerId, kind, file]
+              properties:
+                ownerType:
+                  $ref: "#/components/schemas/FileOwnerType"
+                ownerId:
+                  type: integer
+                  format: int64
+                kind:
+                  $ref: "#/components/schemas/FileKind"
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Ficheiro guardado
+  /api/files/{fileId}/content:
+    get:
+      tags: [Files]
+      summary: Obter conteudo de ficheiro
+      parameters:
+        - $ref: "#/components/parameters/FileId"
+      responses:
+        "200":
+          description: Conteudo do ficheiro
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/files/{fileId}/public-athlete-photo:
+    get:
+      tags: [Files]
+      summary: Obter foto publica de atleta
+      security: []
+      parameters:
+        - $ref: "#/components/parameters/FileId"
+      responses:
+        "200":
+          description: Foto publica
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/files/{fileId}:
+    delete:
+      tags: [Files]
+      summary: Apagar ficheiro
+      parameters:
+        - $ref: "#/components/parameters/FileId"
+      responses:
+        "204":
+          description: Ficheiro removido
+
+  /api/admin/overview/stats:
+    get:
+      tags: [Admin]
+      summary: Estatisticas do painel de administracao
+      responses:
+        "200":
+          description: Estatisticas
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  parameters:
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+    Size8:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 8
+        minimum: 1
+    Size20:
+      name: size
+      in: query
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    MemberId:
+      name: memberId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    AthleteId:
+      name: athleteId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    SponsorId:
+      name: sponsorId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    SponsorshipId:
+      name: sponsorshipId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    EventId:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    FileId:
+      name: fileId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    GroupId:
+      name: groupId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    CategoryId:
+      name: categoryId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    PlacementId:
+      name: placementId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBodies:
+    Approval:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [approvalDate]
+            properties:
+              approvalDate:
+                type: string
+                format: date
+    Reorder:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [ids]
+            properties:
+              ids:
+                type: array
+                items:
+                  type: integer
+                  format: int64
+    TeamGroup:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TeamGroup"
+    TeamCategory:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TeamCategory"
+    Sponsor:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Sponsor"
+    Sponsorship:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Sponsorship"
+    PubOption:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PubOption"
+    EquipmentPlacement:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EquipmentPlacement"
+    OtherSport:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OtherSport"
+    EventCreate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EventCreateInput"
+    EventUpdate:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EventUpdateInput"
+  responses:
+    BadRequest:
+      description: Pedido invalido
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    Unauthorized:
+      description: Nao autenticado
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    Forbidden:
+      description: Sem permissao
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    NotFound:
+      description: Recurso nao encontrado
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    Conflict:
+      description: Conflito de estado ou recurso duplicado
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+  schemas:
+    Role:
+      type: string
+      enum: [ADMIN, SECRETARIA, NORMAL]
+    MemberCategory:
+      type: string
+      enum: [SOCIO, ATLETA_SOCIO]
+    MemberStatus:
+      type: string
+      enum: [PENDENTE, ATIVO, INATIVO, REJEITADO]
+    AthleteStatus:
+      type: string
+      enum: [PENDENTE, ATIVO, INATIVO, REJEITADO]
+    SponsorType:
+      type: string
+      enum: [PUB, TEAM, OTHER]
+    SponsorshipStatus:
+      type: string
+      enum: [SUBMETIDO, APROVADO, PAGO, ATIVO, CANCELADO]
+    FileOwnerType:
+      type: string
+      enum: [USER, MEMBER, ATHLETE]
+    FileKind:
+      type: string
+      enum: [USER_PROFILE_PHOTO, MEMBER_PHOTO, ATHLETE_PHOTO, ATHLETE_ID_CARD, ATHLETE_MEDICAL_EXAM]
+    GuardianRole:
+      type: string
+      enum: [FATHER, MOTHER, LEGAL_GUARDIAN]
+    Problem:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        detail:
+          type: string
+        status:
+          type: integer
+    Page:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+        page:
+          type: integer
+        size:
+          type: integer
+        total:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+    CreateUserRequest:
+      type: object
+      required: [email, username, password, role]
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+        role:
+          $ref: "#/components/schemas/Role"
+        activeMemberId:
+          type: integer
+          format: int64
+          nullable: true
+    LoginRequest:
+      type: object
+      required: [identifier, password]
+      properties:
+        identifier:
+          type: string
+          description: Email ou username.
+        password:
+          type: string
+          format: password
+    UserCreateTokenInput:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+    User:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        activeMemberId:
+          type: integer
+          format: int64
+          nullable: true
+        role:
+          $ref: "#/components/schemas/Role"
+    AuthenticatedUser:
+      allOf:
+        - $ref: "#/components/schemas/User"
+        - type: object
+          properties:
+            token:
+              type: string
+    UserAssociations:
+      type: object
+      properties:
+        member:
+          type: object
+          nullable: true
+        athlete:
+          type: object
+          nullable: true
+        sponsors:
+          type: array
+          items:
+            $ref: "#/components/schemas/Sponsor"
+    MemberCreateInput:
+      type: object
+      required: [completeName, birthDate, email, phone, address, postalCode, city, category, formerMember, privacyAccepted, comsAccepted]
+      properties:
+        linkedUsername:
+          type: string
+          nullable: true
+        completeName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        birthplace:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        homePhone:
+          type: string
+          nullable: true
+        address:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        nif:
+          type: string
+          nullable: true
+        category:
+          $ref: "#/components/schemas/MemberCategory"
+        formerMember:
+          type: boolean
+        membershipQuota:
+          type: integer
+          nullable: true
+        billingLocation:
+          type: string
+          nullable: true
+        privacyAccepted:
+          type: boolean
+        comsAccepted:
+          type: boolean
+    MemberUpdateInput:
+      allOf:
+        - $ref: "#/components/schemas/MemberCreateInput"
+    Member:
+      allOf:
+        - $ref: "#/components/schemas/MemberCreateInput"
+        - type: object
+          properties:
+            memberId:
+              type: integer
+              format: int64
+            memberNumber:
+              type: integer
+              nullable: true
+            status:
+              $ref: "#/components/schemas/MemberStatus"
+            registrationDate:
+              type: string
+              format: date
+            approvalDate:
+              type: string
+              format: date
+              nullable: true
+    GuardianInput:
+      type: object
+      required: [name, role, email, phone]
+      properties:
+        memberNumber:
+          type: integer
+          nullable: true
+        name:
+          type: string
+        role:
+          $ref: "#/components/schemas/GuardianRole"
+        kinship:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        professionalActivity:
+          type: string
+          nullable: true
+        contactPhone:
+          type: string
+          nullable: true
+    AthleteCreationInput:
+      type: object
+      properties:
+        isSelfRegistration:
+          type: boolean
+        member:
+          $ref: "#/components/schemas/MemberCreateInput"
+        nationality:
+          type: string
+        niss:
+          type: string
+        numeroUtente:
+          type: string
+        bi:
+          type: string
+        biExpirationDate:
+          type: string
+          format: date
+        school:
+          type: string
+          nullable: true
+        schoolYear:
+          type: string
+          nullable: true
+        schoolClass:
+          type: string
+          nullable: true
+        lastClub:
+          type: string
+          nullable: true
+        season:
+          type: string
+          nullable: true
+        teamCategoryId:
+          type: integer
+          format: int64
+          nullable: true
+        jerseyNumber:
+          type: integer
+          nullable: true
+        position:
+          type: string
+          nullable: true
+        hasFamilyInClub:
+          type: boolean
+        schoolCertificationAccepted:
+          type: boolean
+        guardians:
+          type: array
+          items:
+            $ref: "#/components/schemas/GuardianInput"
+    AthleteUpdateInput:
+      type: object
+      properties:
+        jerseyNumber:
+          type: integer
+          nullable: true
+        position:
+          type: string
+          nullable: true
+        school:
+          type: string
+          nullable: true
+        schoolYear:
+          type: string
+          nullable: true
+        schoolClass:
+          type: string
+          nullable: true
+        lastClub:
+          type: string
+          nullable: true
+        season:
+          type: string
+          nullable: true
+        hasFamilyInClub:
+          type: boolean
+          nullable: true
+        guardians:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/GuardianInput"
+    AthletePublic:
+      type: object
+      properties:
+        athleteId:
+          type: integer
+          format: int64
+        memberId:
+          type: integer
+          format: int64
+        completeName:
+          type: string
+        age:
+          type: integer
+        teamCategory:
+          type: string
+        season:
+          type: string
+        jerseyNumber:
+          type: integer
+          nullable: true
+        position:
+          type: string
+          nullable: true
+        photoUrl:
+          type: string
+          nullable: true
+    TeamGroup:
+      type: object
+      properties:
+        teamGroupId:
+          type: integer
+          format: int64
+          nullable: true
+        code:
+          type: string
+        label:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+          nullable: true
+    TeamCategory:
+      type: object
+      properties:
+        teamId:
+          type: integer
+          format: int64
+          nullable: true
+        teamGroupId:
+          type: integer
+          format: int64
+        code:
+          type: string
+        label:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+    TeamGroupPriceRequest:
+      type: object
+      required: [teamGroupId, placementId, price]
+      properties:
+        teamGroupId:
+          type: integer
+          format: int64
+        placementId:
+          type: integer
+          format: int64
+        price:
+          type: integer
+          description: Valor em centimos.
+    TeamCategoryPriceOverrideRequest:
+      type: object
+      required: [teamCategoryId, placementId, price]
+      properties:
+        teamCategoryId:
+          type: integer
+          format: int64
+        placementId:
+          type: integer
+          format: int64
+        price:
+          type: integer
+          description: Valor em centimos.
+    Sponsor:
+      type: object
+      required: [name, email, phone, nif]
+      properties:
+        sponsorId:
+          type: integer
+          format: int64
+          nullable: true
+        userId:
+          type: integer
+          format: int64
+          nullable: true
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+        nif:
+          type: string
+    SponsorClaimRequest:
+      type: object
+      properties:
+        nif:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+    Sponsorship:
+      type: object
+      required: [sponsorId, season, type, price]
+      properties:
+        sponsorshipId:
+          type: integer
+          format: int64
+          nullable: true
+        sponsorId:
+          type: integer
+          format: int64
+        season:
+          type: string
+          example: "2025/2026"
+        status:
+          $ref: "#/components/schemas/SponsorshipStatus"
+        type:
+          $ref: "#/components/schemas/SponsorType"
+        price:
+          type: integer
+          description: Valor em centimos.
+        pubOptionId:
+          type: integer
+          format: int64
+          nullable: true
+        teamCategoryId:
+          type: integer
+          format: int64
+          nullable: true
+        placementId:
+          type: integer
+          format: int64
+          nullable: true
+        sportId:
+          type: integer
+          format: int64
+          nullable: true
+        otherDetails:
+          type: string
+          nullable: true
+    SponsorshipDetailUpdateRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        nif:
+          type: string
+          nullable: true
+        price:
+          type: integer
+          nullable: true
+        otherDetails:
+          type: string
+          nullable: true
+    PubOption:
+      type: object
+      properties:
+        pubId:
+          type: integer
+          format: int64
+          nullable: true
+        code:
+          type: string
+        label:
+          type: string
+        active:
+          type: boolean
+        available:
+          type: integer
+        free:
+          type: integer
+        occupied:
+          type: integer
+        price:
+          type: integer
+        sortOrder:
+          type: integer
+    EquipmentPlacement:
+      type: object
+      properties:
+        equipmentId:
+          type: integer
+          format: int64
+          nullable: true
+        code:
+          type: string
+        label:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+    OtherSport:
+      type: object
+      properties:
+        sportId:
+          type: integer
+          format: int64
+          nullable: true
+        code:
+          type: string
+        label:
+          type: string
+        active:
+          type: boolean
+        price:
+          type: integer
+        sortOrder:
+          type: integer
+    EventCreateInput:
+      type: object
+      required: [name, description, startsAt, location, priceNormal, priceMember, sectors]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        startsAt:
+          type: string
+          format: date-time
+        location:
+          type: string
+        priceNormal:
+          type: integer
+        priceMember:
+          type: integer
+        sectors:
+          type: array
+          items:
+            $ref: "#/components/schemas/SectorInput"
+    EventUpdateInput:
+      allOf:
+        - $ref: "#/components/schemas/EventCreateInput"
+    SectorInput:
+      type: object
+      required: [name, capacity]
+      properties:
+        name:
+          type: string
+        capacity:
+          type: integer
+    EventCheckoutInput:
+      type: object
+      required: [buyerName, buyerEmail, tickets]
+      properties:
+        buyerName:
+          type: string
+        buyerEmail:
+          type: string
+          format: email
+        tickets:
+          type: array
+          items:
+            type: object
+            required: [sectorId, quantity, priceType]
+            properties:
+              sectorId:
+                type: integer
+                format: int64
+              quantity:
+                type: integer
+              priceType:
+                type: string
+                enum: [NORMAL, MEMBER]
+              memberNumber:
+                type: integer
+                nullable: true
+              memberBirthDate:
+                type: string
+                format: date
+                nullable: true
+    MembershipFeeSelection:
+      type: object
+      required: [season, month, amount]
+      properties:
+        season:
+          type: string
+        month:
+          type: integer
+          minimum: 1
+          maximum: 12
+        amount:
+          type: integer
+    CreateCheckoutSessionInput:
+      type: object
+      properties:
+        chargeId:
+          type: integer
+          format: int64
+          nullable: true
+        sponsorshipId:
+          type: integer
+          format: int64
+          nullable: true
+        memberId:
+          type: integer
+          format: int64
+          nullable: true
+        membershipFees:
+          type: array
+          nullable: true
+          items:
+            $ref: "#/components/schemas/MembershipFeeSelection"
+    CheckoutSession:
+      type: object
+      properties:
+        checkoutUrl:
+          type: string
+          format: uri
+        sessionId:
+          type: string
