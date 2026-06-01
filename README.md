@@ -72,6 +72,29 @@ npm run dev
 
 Abrir `http://localhost:5173`. O Vite faz proxy de `/api` para `http://localhost:8080`, configurado em `js/vite.config.ts`.
 
+## Como correr com Docker
+
+Na raiz do repositorio:
+
+```powershell
+docker compose up --build
+```
+
+Servicos expostos:
+
+- Frontend: `http://localhost:5173`
+- Backend: `http://localhost:8080`
+- PostgreSQL: `localhost:5432`, base `jagoz`, user `postgres`, password `postgres`
+
+O Compose aplica automaticamente `JagozSchema.sql` e `insert-test-data.sql` quando o volume da base de dados e criado pela primeira vez. Para recriar a base do zero:
+
+```powershell
+docker compose down -v
+docker compose up --build
+```
+
+O backend recebe placeholders para Stripe, SMTP e R2 se essas variaveis nao existirem no ambiente. Isto permite arrancar a app localmente, mas os fluxos reais de pagamentos, email e upload para R2 precisam de credenciais verdadeiras.
+
 ## Contas de desenvolvimento
 
 Quando `insert-test-data.sql` e aplicado, existem utilizadores de exemplo. A password dos utilizadores inseridos e a mesma hash usada no script de seed (tomas123);
@@ -92,7 +115,7 @@ cd kotlin/project
 ./gradlew.bat test
 ```
 
-Os testes dos modulos que precisam de PostgreSQL usam tarefas Gradle/Docker definidas em `repository-jdbi` e `host`.
+Os testes dos modulos que precisam de PostgreSQL usam `kotlin/project/docker-compose.yml`, com o servico `db-tests` na porta `5433`.
 
 Frontend:
 

@@ -24,6 +24,8 @@ A aplicacao fica em `http://localhost:5173`.
 
 O ficheiro `vite.config.ts` tem proxy para `/api`, apontando para `http://localhost:8080`. Por isso, durante desenvolvimento, o frontend chama `/api/...` e o Vite reencaminha para o backend.
 
+Dentro de Docker Compose, o proxy usa `VITE_API_PROXY_TARGET=http://backend:8080`.
+
 ## Estrutura
 
 - `src/features`: paginas, componentes, hooks e chamadas API por dominio.

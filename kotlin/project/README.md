@@ -55,13 +55,28 @@ O schema usa o schema PostgreSQL `jagoz`.
 
 O servidor fica disponivel em `http://localhost:8080`.
 
+## Correr com Docker
+
+Para correr apenas os servicos Docker do backend/testes a partir desta pasta:
+
+```powershell
+docker compose up --build db-tests
+```
+
+Para correr a aplicacao completa, usar o Compose da raiz do repositorio:
+
+```powershell
+cd ..\..
+docker compose up --build
+```
+
 ## Testes
 
 ```powershell
 ./gradlew.bat test
 ```
 
-As tarefas Gradle dos modulos `repository-jdbi` e `host` incluem suporte Docker para PostgreSQL de testes.
+As tarefas Gradle dos modulos `repository-jdbi`, `services` e `host` sobem automaticamente o servico `db-tests` definido em `docker-compose.yml`. Este Postgres fica em `localhost:5433` e usa a base `jagoz`, alinhada com o `DB_URL` default dos testes.
 
 ## API
 

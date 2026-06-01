@@ -1,4 +1,4 @@
-drop schema jagoz cascade;
+drop schema if exists jagoz cascade;
 drop type if exists member_category cascade;
 drop type if exists member_status cascade;
 drop type if exists sponsor_type cascade;

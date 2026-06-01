@@ -107,9 +107,11 @@ tasks.register("buildImageAll") {
 }
 
 tasks.register<Exec>("allUp") {
-    commandLine("docker", "compose", "up", "--force-recreate", "-d")
+    val composeFileDir: Directory by parent!!.extra
+    commandLine("docker", "compose", "-f", composeFileDir.file("docker-compose.yml").toString(), "up", "--force-recreate", "-d")
 }
 
 tasks.register<Exec>("allDown") {
-    commandLine("docker", "compose", "down")
+    val composeFileDir: Directory by parent!!.extra
+    commandLine("docker", "compose", "-f", composeFileDir.file("docker-compose.yml").toString(), "down", "--remove-orphans")
 }

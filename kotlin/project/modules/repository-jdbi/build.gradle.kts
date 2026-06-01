@@ -50,5 +50,5 @@ tasks.register<Exec>("dbTestsWait") {
 }
 
 tasks.register<Exec>("dbTestsDown") {
-    commandLine("docker", "compose", "-f", dockerComposePath, "down", "db-tests")
+    commandLine("docker", "compose", "-f", dockerComposePath, "down", "--remove-orphans")
 }

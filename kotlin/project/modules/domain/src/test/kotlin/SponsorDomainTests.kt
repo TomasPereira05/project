@@ -64,6 +64,7 @@ class SponsorDomainTests {
             teamCategoryId = null,
             placementId = null,
             sportId = 9,
+            otherDetails = "Apoio ao torneio de voleibol",
         )
 
     // ---- approveSponsorship ----
