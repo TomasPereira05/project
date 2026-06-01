@@ -125,10 +125,10 @@ export function changeTeamCategory(athleteId: number, teamCategoryId: number) {
   });
 }
 
-/** Marca atleta como inactivo. PATCH /api/athletes/{id}/deactivate */
+/** Marca atleta como inactivo. DELETE /api/athletes/{id} */
 export function deactivateAthlete(athleteId: number) {
-  return request<AthleteAdmin>(`/athletes/${athleteId}/deactivate`, {
-    method: "PATCH",
+  return request<AthleteAdmin>(`/athletes/${athleteId}`, {
+    method: "DELETE",
   });
 }
 

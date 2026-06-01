@@ -41,7 +41,7 @@ object Uris {
         const val GET_BY_MEMBER_ID = "$PREFIX/athletes/member/{memberId}"
         const val UPDATE_ATHLETE = "$PREFIX/athletes/{athleteId}"
         const val CHANGE_TEAM_CATEGORY = "$PREFIX/athletes/{athleteId}/team-category"
-        const val DEACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}/deactivate"
+        const val DELETE_ATHLETE = "$PREFIX/athletes/{athleteId}"
         const val REACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}/reactivate"
         const val APPROVE_ATHLETE = "$PREFIX/athletes/{athleteId}/approve"
         const val REJECT_ATHLETE = "$PREFIX/athletes/{athleteId}/reject"
