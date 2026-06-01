@@ -1,0 +1,22 @@
+sequenceDiagram
+    actor U as Comprador
+    participant F as Frontend
+    participant B as Backend
+    participant DB as PostgreSQL
+    participant S as Stripe
+    participant E as Email
+
+    U->>F: Seleciona evento, setor e bilhetes
+    F->>B: POST /api/events/validate-member (se bilhete de sócio)
+    B->>DB: Validar sócio ativo
+    B-->>F: Resultado da validação
+    F->>B: POST /api/events/{eventId}/checkout
+    B->>DB: Reservar bilhetes e criar cobrança
+    B->>S: Criar sessão Stripe Checkout
+    S-->>B: URL de checkout
+    B-->>F: URL de pagamento
+    U->>S: Efetua pagamento
+    S->>B: Webhook de pagamento
+    B->>DB: Confirmar pagamento e bilhetes
+    B->>B: Gerar QR codes
+    B->>E: Enviar email de confirmação

@@ -1,0 +1,9 @@
+flowchart LR
+    user["Utilizador / Visitante"] --> frontend["Frontend\nReact + TypeScript + Vite"]
+    admin["Admin / Secretaria"] --> frontend
+    frontend -->|HTTP / JSON / Cookies| backend["Backend\nKotlin + Spring Boot"]
+    backend --> db["PostgreSQL\nDados estruturados"]
+    backend --> stripe["Stripe\nPagamentos"]
+    backend --> smtp["SMTP\nEmail"]
+    backend --> r2["Cloudflare R2 / S3\nFicheiros"]
+    backend --> qr["ZXing\nQR Codes"]

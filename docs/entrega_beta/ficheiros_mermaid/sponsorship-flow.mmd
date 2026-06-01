@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor U as Utilizador
+    participant F as Frontend
+    participant B as Backend
+    participant DB as PostgreSQL
+    participant A as Administração
+
+    U->>F: Escolhe opção de patrocínio
+    F->>B: POST /api/sponsorships ou /with-sponsor
+    B->>B: Validar tipo e preço
+    B->>DB: Criar patrocínio SUBMETIDO
+    B-->>F: Pedido registado
+    A->>F: Consulta aprovações
+    F->>B: PUT /api/sponsorships/{id}/approve
+    B->>DB: Atualizar para APROVADO
+    F->>B: PUT /api/sponsorships/{id}/paid
+    B->>DB: Atualizar pagamento
