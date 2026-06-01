@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: jagoz-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jagoz
+    ports:
+      - "5432:5432"
+    volumes:
+      - jagoz-postgres-data:/var/lib/postgresql/data
+      - ./kotlin/project/modules/repository-jdbi/src/sql/JagozSchema.sql:/docker-entrypoint-initdb.d/1_schema.sql:ro
+      - ./kotlin/project/modules/repository-jdbi/src/sql/insert-test-data.sql:/docker-entrypoint-initdb.d/2_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jagoz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./kotlin/project
+      dockerfile: Dockerfile
+    container_name: jagoz-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SERVER_PORT: 8080
+      DB_URL: jdbc:postgresql://postgres:5432/jagoz?user=postgres&password=postgres
+      EMAIL_HOST: ${EMAIL_HOST:-smtp.example.com}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USERNAME: ${EMAIL_USERNAME:-change-me@example.com}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-change-me}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_change_me}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_change_me}
+      STRIPE_API_VERSION: ${STRIPE_API_VERSION:-2026-02-25.clover}
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:5173}
+      R2_ENDPOINT: ${R2_ENDPOINT:-https://example.r2.cloudflarestorage.com}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-change-me}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-change-me}
+      R2_BUCKET: ${R2_BUCKET:-jagoz-dev}
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:-10MB}
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:-10MB}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./js
+      dockerfile: Dockerfile
+    container_name: jagoz-frontend
+    depends_on:
+      - backend
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8080
+    ports:
+      - "5173:5173"
+
+volumes:
+  jagoz-postgres-data:

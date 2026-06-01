@@ -1,0 +1,18 @@
+services:
+  db-tests:
+    container_name: db-tests
+    image: jagoz-postgres-test
+    build:
+      context: ./modules/repository-jdbi
+      dockerfile: ../host/tests/Dockerfile-postgres-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mscx2003
+      POSTGRES_DB: jagoz
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jagoz"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
