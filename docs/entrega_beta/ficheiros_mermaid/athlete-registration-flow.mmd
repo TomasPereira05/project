@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor U as Utilizador
+    participant F as Frontend
+    participant B as Backend
+    participant DB as PostgreSQL
+    participant A as Administração
+
+    U->>F: Preenche inscrição de atleta
+    F->>B: POST /api/athletes
+    B->>B: Validar sócio, atleta e encarregados
+    B->>DB: Criar Member + Athlete + Guardians numa transação
+    B-->>F: Inscrição submetida
+    A->>F: Avalia inscrição
+    F->>B: PUT /api/athletes/{id}/approve
+    B->>DB: Aprovar sócio e ativar atleta
+    B-->>F: Atleta aprovado

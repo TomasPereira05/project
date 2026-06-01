@@ -1,0 +1,16 @@
+sequenceDiagram
+    actor U as Utilizador
+    participant F as Frontend
+    participant B as Backend
+    participant DB as PostgreSQL
+    participant A as Administração
+
+    U->>F: Preenche formulário de sócio
+    F->>B: POST /api/members/create
+    B->>B: Validar dados de domínio
+    B->>DB: Criar sócio PENDENTE
+    B-->>F: Sócio criado
+    A->>F: Consulta pedidos pendentes
+    F->>B: PUT /api/members/{id}/approve
+    B->>DB: Atualizar estado para ATIVO
+    B-->>F: Sócio aprovado

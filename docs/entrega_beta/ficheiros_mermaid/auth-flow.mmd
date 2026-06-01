@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor U as Utilizador
+    participant F as Frontend
+    participant B as Backend
+    participant DB as PostgreSQL
+
+    U->>F: Introduz credenciais
+    F->>B: POST /api/users/login
+    B->>DB: Procurar utilizador
+    DB-->>B: Dados do utilizador
+    B->>B: Validar password e gerar token
+    B->>DB: Guardar hash do token
+    B-->>F: Dados do utilizador + cookie HttpOnly
+    F-->>U: Sessão iniciada

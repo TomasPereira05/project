@@ -1,0 +1,10 @@
+flowchart TD
+    host["host\nArranque e configuração Spring Boot"] --> http["http\nControllers REST e pipeline"]
+    host --> services["services\nCasos de uso e lógica de negócio"]
+    host --> repoJdbi["repository-jdbi\nImplementação JDBI"]
+    http --> services
+    services --> domain["domain\nEntidades e regras de domínio"]
+    services --> repo["repository\nInterfaces de persistência"]
+    repoJdbi --> repo
+    repoJdbi --> domain
+    http --> domain
