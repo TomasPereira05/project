@@ -26,7 +26,7 @@ A documentacao da API esta em `docs/openapi.yaml`.
 Copy-Item .env.example .env
 ```
 
-2. Preencher os valores da `.env`.
+2. Preencher os valores do `.env`.
 
 Nunca commitar credenciais reais. O backend le varias variaveis obrigatorias no arranque, incluindo `DB_URL`, credenciais SMTP, Stripe e R2.
 
@@ -123,8 +123,6 @@ Frontend:
 cd js
 npm run dev
 ```
-
-Neste momento o `package.json` nao tem uma suite de testes real configurada.
 
 ## Documentacao adicional
 
