@@ -70,6 +70,15 @@ object Uris {
         const val OVERVIEW_STATS = "$PREFIX/admin/overview/stats"
     }
 
+    object TrainingSchedules {
+        const val GET_ALL = "$PREFIX/training-schedules"
+        const val GET_BY_TEAM_CATEGORY = "$PREFIX/teams/{teamCategoryId}/training-schedules"
+        const val CREATE = "$PREFIX/training-schedules"
+        const val UPDATE = "$PREFIX/training-schedules/{trainingScheduleId}"
+        const val DEACTIVATE = "$PREFIX/training-schedules/{trainingScheduleId}"
+        const val REACTIVATE = "$PREFIX/training-schedules/{trainingScheduleId}/reactivate"
+    }
+
     object Sponsors {
         const val GET_ALL = "$PREFIX/sponsors"
         const val GET_BY_ID = "$PREFIX/sponsors/{sponsorId}"

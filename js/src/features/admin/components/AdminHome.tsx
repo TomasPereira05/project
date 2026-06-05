@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { BadgeEuro, Clock3, Settings, Ticket, Trophy, UserCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import { useAdminOverviewStats } from "../hooks/useAdminOverviewStats";
+import { fetchTrainingSchedules} from "../api";
+import type { TrainingSchedule } from "../types";
+import { dayKeys, TrainingScheduleBoard } from "./TrainingScheduleBoard";
 
 const adminCards = [
   {
@@ -39,6 +43,30 @@ const adminCards = [
 export default function AdminHome() {
   const { t } = useTranslation();
   const { hasError, isLoading, stats } = useAdminOverviewStats();
+  const [schedules, setSchedules] = useState<TrainingSchedule[]>([]);
+  const [isScheduleLoading, setIsScheduleLoading] = useState(true);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadSchedules() {
+      setIsScheduleLoading(true);
+      try {
+        const response = await fetchTrainingSchedules({ season: "2025/2026", activeOnly: true });
+        if (!ignore) setSchedules(response);
+      } catch {
+        if (!ignore) setSchedules([]);
+      } finally {
+        if (!ignore) setIsScheduleLoading(false);
+      }
+    }
+
+    void loadSchedules();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const statGroups = [
     {
@@ -101,6 +129,29 @@ export default function AdminHome() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="admin-stats-section">
+        <div className="admin-section-header">
+          <div>
+            <p className="admin-eyebrow">{t("admin.training.overview.eyebrow")}</p>
+            <h2>{t("admin.training.overview.title")}</h2>
+          </div>
+          <Link className="member-link-action" to="/admin/training-schedules">
+            {t("admin.training.overview.manage")}
+          </Link>
+        </div>
+        {isScheduleLoading ? (
+          <div className="sponsor-empty-card">{t("admin.training.loading")}</div>
+        ) : schedules.length === 0 ? (
+          <div className="sponsor-empty-card">{t("admin.training.empty")}</div>
+        ) : (
+          <TrainingScheduleBoard
+            compact
+            schedules={schedules}
+            dayLabel={(weekday) => t(`admin.training.weekdays.${dayKeys[weekday - 1]}`)}
+          />
+        )}
       </section>
 
       <section className="admin-card-grid">

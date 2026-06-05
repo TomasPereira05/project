@@ -68,6 +68,28 @@ CREATE TABLE team_category (
     sort_order INT NOT NULL DEFAULT 0
 );
 
+CREATE TABLE training_schedule (
+    training_schedule_id SERIAL PRIMARY KEY,
+    team_category_id INT NOT NULL REFERENCES team_category(team_category_id) ON DELETE CASCADE,
+    season VARCHAR(9) NOT NULL,
+    weekday INT NOT NULL CHECK (weekday BETWEEN 1 AND 7),
+    start_time VARCHAR(5) NOT NULL,
+    end_time VARCHAR(5) NOT NULL,
+    field_name VARCHAR(120) NOT NULL,
+    field_zone VARCHAR(120),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    notes TEXT,
+
+    CONSTRAINT chk_training_schedule_time_format CHECK (
+        start_time ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+        AND end_time ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+        AND start_time < end_time
+    )
+);
+
+CREATE INDEX training_schedule_week_idx
+    ON training_schedule (season, active, weekday, start_time);
+
 CREATE TABLE athlete (
     athlete_id       SERIAL PRIMARY KEY,
     member_id        INT NOT NULL UNIQUE REFERENCES member(member_id) ON DELETE CASCADE,

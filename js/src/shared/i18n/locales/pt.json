@@ -918,7 +918,16 @@
       "viewAria": "Ver ficha de {{name}}",
       "ageMissing": "Idade —",
       "trainingSchedules": "Horários de treino",
-      "noSchedules": "Sem horários definidos."
+      "noSchedules": "Sem horários definidos.",
+      "weekdays": {
+        "monday": "Segunda",
+        "tuesday": "Terça",
+        "wednesday": "Quarta",
+        "thursday": "Quinta",
+        "friday": "Sexta",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
+      }
     },
     "teamSettings": {
       "eyebrow": "Equipas",
@@ -1111,6 +1120,7 @@
       "members": "Sócios",
       "athletes": "Atletas",
       "teams": "Equipas",
+      "trainingSchedules": "Horários",
       "sponsorApprovals": "Aprovações",
       "sponsorSettings": "Tabela de patrocínios",
       "users": "Utilizadores",
@@ -1166,6 +1176,62 @@
       "sponsorships": "Patrocínios",
       "pendingSponsorships": "Por aprovar",
       "error": "Não foi possível carregar todos os números."
+    },
+    "training": {
+      "eyebrow": "Treinos",
+      "title": "Horários de treino",
+      "description": "Organiza a ocupação semanal do campo por equipa, época, dia e zona.",
+      "loading": "A carregar horários...",
+      "empty": "Ainda não existem horários para estes filtros.",
+      "weekdays": {
+        "monday": "Segunda",
+        "tuesday": "Terça",
+        "wednesday": "Quarta",
+        "thursday": "Quinta",
+        "friday": "Sexta",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
+      },
+      "overview": {
+        "eyebrow": "Ocupação do campo",
+        "title": "Horário semanal",
+        "manage": "Gerir horários"
+      },
+      "filters": {
+        "season": "Época",
+        "showInactive": "Mostrar horários inativos"
+      },
+      "board": {
+        "eyebrow": "Mapa semanal",
+        "title": "Ocupação do campo"
+      },
+      "form": {
+        "createEyebrow": "Novo bloco",
+        "editEyebrow": "Editar bloco",
+        "createTitle": "Adicionar treino",
+        "editTitle": "Detalhes do treino",
+        "team": "Equipa",
+        "weekday": "Dia",
+        "startTime": "Início",
+        "endTime": "Fim",
+        "fieldName": "Campo",
+        "fieldZone": "Zona",
+        "notes": "Notas",
+        "create": "Adicionar",
+        "save": "Guardar",
+        "saving": "A guardar..."
+      },
+      "feedback": {
+        "created": "Horário criado com sucesso.",
+        "updated": "Horário atualizado com sucesso.",
+        "deactivated": "Horário marcado como inativo.",
+        "reactivated": "Horário reativado."
+      },
+      "errors": {
+        "load": "Não foi possível carregar os horários.",
+        "save": "Não foi possível guardar o horário. Verifica se existe sobreposição no mesmo campo e zona.",
+        "toggle": "Não foi possível alterar o estado do horário."
+      }
     }
   },
   "users": {

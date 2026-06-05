@@ -67,6 +67,23 @@ INSERT INTO jagoz.team_category (
     (4,'FEMININO_FUT11', 'Feminino Futebol 11',14),
     (4,'FEMININO_FUT7_9', 'Feminino Futebol 7/9',15);
 
+-- =========================
+-- TRAINING SCHEDULES
+-- =========================
+INSERT INTO jagoz.training_schedule (
+    team_category_id, season, weekday, start_time, end_time, field_name, field_zone, active, notes
+) VALUES
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'BENJAMINS_10'), '2025/2026', 1, '18:00', '19:15', 'Campo Principal', 'Meio Campo A', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'INFANTISA'), '2025/2026', 1, '18:00', '19:15', 'Campo Principal', 'Meio Campo B', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'JUNIORES'), '2025/2026', 1, '19:30', '21:00', 'Campo Principal', 'Campo Inteiro', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'SENIORES'), '2025/2026', 2, '20:30', '22:00', 'Campo Principal', 'Campo Inteiro', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'INICIADOSC'), '2025/2026', 3, '18:30', '20:00', 'Campo Principal', 'Meio Campo A', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'JUVENISB'), '2025/2026', 3, '18:30', '20:00', 'Campo Principal', 'Meio Campo B', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'FEMININO_FUT11'), '2025/2026', 4, '19:00', '20:30', 'Campo Principal', 'Campo Inteiro', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'VETERANOS'), '2025/2026', 5, '21:00', '22:30', 'Campo Principal', 'Campo Inteiro', true, NULL),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'PETIZES'), '2025/2026', 6, '10:00', '11:00', 'Campo Principal', 'Meio Campo A', true, 'Treino adaptado aos escalões mais jovens'),
+    ((SELECT team_category_id FROM jagoz.team_category WHERE code = 'TRAQUINAS'), '2025/2026', 6, '11:15', '12:15', 'Campo Principal', 'Meio Campo A', true, NULL);
+
 INSERT INTO jagoz.team_group_price (
     team_group_id, placement_id, price
 ) VALUES

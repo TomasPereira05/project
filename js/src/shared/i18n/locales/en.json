@@ -918,7 +918,16 @@
       "viewAria": "View {{name}} profile",
       "ageMissing": "Age —",
       "trainingSchedules": "Training schedules",
-      "noSchedules": "No schedules defined."
+      "noSchedules": "No schedules defined.",
+      "weekdays": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
     },
     "teamSettings": {
       "eyebrow": "Teams",
@@ -1111,6 +1120,7 @@
       "members": "Members",
       "athletes": "Athletes",
       "teams": "Teams",
+      "trainingSchedules": "Schedules",
       "sponsorApprovals": "Approvals",
       "sponsorSettings": "Sponsorship table",
       "users": "Users",
@@ -1166,6 +1176,62 @@
       "sponsorships": "Sponsorships",
       "pendingSponsorships": "To approve",
       "error": "Could not load all numbers."
+    },
+    "training": {
+      "eyebrow": "Training",
+      "title": "Training schedules",
+      "description": "Organize weekly field occupation by team, season, day, and zone.",
+      "loading": "Loading schedules...",
+      "empty": "There are no schedules for these filters yet.",
+      "weekdays": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "overview": {
+        "eyebrow": "Field occupation",
+        "title": "Weekly schedule",
+        "manage": "Manage schedules"
+      },
+      "filters": {
+        "season": "Season",
+        "showInactive": "Show inactive schedules"
+      },
+      "board": {
+        "eyebrow": "Weekly map",
+        "title": "Field occupation"
+      },
+      "form": {
+        "createEyebrow": "New block",
+        "editEyebrow": "Edit block",
+        "createTitle": "Add training",
+        "editTitle": "Training details",
+        "team": "Team",
+        "weekday": "Day",
+        "startTime": "Start",
+        "endTime": "End",
+        "fieldName": "Field",
+        "fieldZone": "Zone",
+        "notes": "Notes",
+        "create": "Add",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "feedback": {
+        "created": "Schedule created successfully.",
+        "updated": "Schedule updated successfully.",
+        "deactivated": "Schedule marked inactive.",
+        "reactivated": "Schedule reactivated."
+      },
+      "errors": {
+        "load": "Could not load schedules.",
+        "save": "Could not save the schedule. Check whether there is overlap in the same field and zone.",
+        "toggle": "Could not change the schedule status."
+      }
     }
   },
   "users": {

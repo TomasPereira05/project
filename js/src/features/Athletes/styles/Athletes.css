@@ -320,6 +320,34 @@
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200;
   }
 
+  .athlete-training-grid {
+    @apply grid gap-3 sm:grid-cols-2 lg:grid-cols-3;
+  }
+
+  .athlete-training-card {
+    @apply rounded-xl border border-border bg-white p-4 shadow-soft;
+  }
+
+  .athlete-training-card > div {
+    @apply flex items-start justify-between gap-3;
+  }
+
+  .athlete-training-card strong {
+    @apply font-heading text-xl uppercase tracking-tight text-text-primary;
+  }
+
+  .athlete-training-card span {
+    @apply rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary;
+  }
+
+  .athlete-training-card p {
+    @apply mt-3 text-sm font-semibold text-text-secondary;
+  }
+
+  .athlete-training-card small {
+    @apply mt-2 block text-xs leading-5 text-text-secondary;
+  }
+
   .athlete-status-badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border;
   }

@@ -1,10 +1,10 @@
 @layer components {
   .admin-layout {
-    @apply grid min-h-screen bg-slate-100 lg:grid-cols-[280px_minmax(0,1fr)];
+    @apply grid min-h-screen items-stretch bg-slate-100 lg:grid-cols-[280px_minmax(0,1fr)];
   }
 
   .admin-sidebar {
-    @apply sticky top-0 z-20 flex max-h-screen flex-col gap-6 border-b border-border bg-white px-4 py-5 shadow-soft lg:border-b-0 lg:border-r;
+    @apply sticky top-0 z-20 flex max-h-screen flex-col gap-6 overflow-y-auto border-b border-border bg-white px-4 py-5 shadow-soft lg:min-h-screen lg:border-b-0 lg:border-r;
   }
 
   .admin-sidebar-header {
@@ -44,14 +44,14 @@
   }
 
   .admin-content {
-    @apply min-w-0;
+    @apply min-h-screen min-w-0 bg-slate-100;
   }
 
   .admin-content .member-page,
   .admin-content .athlete-page,
   .admin-content .sponsor-page,
   .admin-content .events-page {
-    @apply min-h-0 bg-transparent;
+    @apply min-h-screen bg-transparent;
   }
 
   .admin-content .member-container,
@@ -62,7 +62,7 @@
   }
 
   .admin-home {
-    @apply mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
+    @apply mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
   }
 
   .admin-home-header {
@@ -150,7 +150,7 @@
   }
 
   .admin-users-page {
-    @apply mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
+    @apply mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
   }
 
   .admin-users-panel {
@@ -258,5 +258,176 @@
 
   .admin-user-mini-list > div {
     @apply rounded-xl border border-border bg-white p-3;
+  }
+
+  .admin-training-page {
+    @apply mx-auto flex min-h-screen w-full max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8;
+  }
+
+  .admin-training-toolbar {
+    @apply grid gap-3 rounded-[24px] border border-border bg-white p-4 shadow-soft md:grid-cols-[220px_1fr];
+  }
+
+  .admin-training-toolbar label,
+  .admin-training-form label {
+    @apply flex flex-col gap-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary;
+  }
+
+  .admin-training-toolbar input,
+  .admin-training-form input,
+  .admin-training-form select,
+  .admin-training-form textarea {
+    @apply min-h-11 rounded-xl border border-border bg-slate-50 px-3 text-sm font-semibold normal-case tracking-normal text-text-primary outline-none transition focus:border-primary focus:bg-white;
+  }
+
+  .admin-training-toggle {
+    @apply flex-row items-center justify-start self-end rounded-xl border border-border bg-slate-50 px-3 py-2;
+  }
+
+  .admin-training-toggle input {
+    @apply min-h-0 w-4 accent-primary;
+  }
+
+  .admin-training-layout {
+    @apply grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px];
+  }
+
+  .admin-training-board-panel,
+  .admin-training-form-panel {
+    @apply rounded-[24px] border border-border bg-white p-5 shadow-soft;
+  }
+
+  .admin-training-count {
+    @apply inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-bold text-primary;
+  }
+
+  .admin-training-form {
+    @apply mt-5 flex flex-col gap-4;
+  }
+
+  .admin-training-form-row {
+    @apply grid gap-3 sm:grid-cols-2;
+  }
+
+  .admin-training-form textarea {
+    @apply resize-none py-3;
+  }
+
+  .admin-training-form-actions {
+    @apply flex flex-wrap items-center gap-2 pt-2;
+  }
+
+  .admin-schedule-board {
+    @apply mt-5 overflow-x-auto rounded-2xl border border-border bg-slate-50 p-3;
+  }
+
+  .admin-schedule-body {
+    @apply grid min-w-[980px] gap-2;
+    grid-template-columns: 72px minmax(0, 1fr);
+  }
+
+  .admin-schedule-hours {
+    @apply grid text-[0.7rem] font-bold text-text-secondary;
+    grid-template-rows: 38px auto;
+  }
+
+  .admin-schedule-hours-track {
+    @apply relative min-h-[560px];
+  }
+
+  .admin-schedule-hours-track span {
+    @apply absolute right-2 whitespace-nowrap text-right leading-none;
+  }
+
+  .admin-schedule-corner {
+    @apply rounded-t-xl bg-slate-100;
+  }
+
+  .admin-schedule-grid {
+    @apply grid gap-2;
+    grid-template-columns: repeat(7, minmax(128px, 1fr));
+  }
+
+  .admin-schedule-day {
+    @apply overflow-hidden rounded-2xl border border-border bg-white;
+  }
+
+  .admin-schedule-day-label {
+    @apply border-b border-border bg-slate-100 px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-text-secondary;
+  }
+
+  .admin-schedule-day-track {
+    @apply relative min-h-[560px];
+  }
+
+  .admin-schedule-hour-line {
+    @apply absolute left-0 right-0 border-t border-dashed border-border;
+  }
+
+  .admin-schedule-block {
+    @apply absolute left-2 right-2 z-10 flex min-h-14 flex-col items-start justify-start overflow-hidden rounded-xl border px-3 py-2 text-left text-white shadow-soft transition hover:-translate-y-0.5 hover:shadow-card;
+    background-color: #2563eb;
+    border-color: #1d4ed8;
+    color: #ffffff;
+  }
+
+  .admin-schedule-block strong {
+    @apply block w-full truncate text-sm leading-tight text-white;
+  }
+
+  .admin-schedule-block span {
+    @apply mt-1 block w-full truncate text-xs font-bold text-white;
+  }
+
+  .admin-schedule-block small {
+    @apply mt-1 block w-full truncate text-[0.68rem] leading-tight text-white/90;
+  }
+
+  .admin-schedule-block-0 {
+    background-color: #2563eb;
+    border-color: #1d4ed8;
+  }
+
+  .admin-schedule-block-1 {
+    background-color: #059669;
+    border-color: #047857;
+  }
+
+  .admin-schedule-block-2 {
+    background-color: #d97706;
+    border-color: #b45309;
+  }
+
+  .admin-schedule-block-3 {
+    background-color: #e11d48;
+    border-color: #be123c;
+  }
+
+  .admin-schedule-block-4 {
+    background-color: #7c3aed;
+    border-color: #6d28d9;
+  }
+
+  .admin-schedule-block-inactive {
+    @apply opacity-70;
+    background-color: #64748b;
+    border-color: #475569;
+  }
+
+  .admin-schedule-board-compact .admin-schedule-day-track,
+  .admin-schedule-board-compact .admin-schedule-hours-track {
+    @apply min-h-[340px];
+  }
+
+  .admin-schedule-board-compact .admin-schedule-body {
+    @apply min-w-[820px];
+  }
+
+  .admin-schedule-board-compact .admin-schedule-block {
+    @apply min-h-12 px-2 py-1.5;
+  }
+
+  .admin-schedule-board-compact .admin-schedule-block small {
+    @apply hidden;
   }
 }
