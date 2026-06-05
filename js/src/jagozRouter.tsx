@@ -37,7 +37,7 @@ import { AuthRequire, Require } from "./shared/components/Require";
 import { Home } from "./features/home";
 import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
-import { AdminHome, AdminLayout, TrainingSchedules } from "./features/admin";
+import { AdminHome, AdminLayout, SeasonSettings, TrainingSchedules } from "./features/admin";
 import { EventsList, EventForm, EventTickets, EventsPublicList, TicketCheckout } from "./features/events";
 
 const router = createBrowserRouter([
@@ -260,6 +260,10 @@ const router = createBrowserRouter([
       {
         path: "training-schedules",
         element: <TrainingSchedules />,
+      },
+      {
+        path: "seasons",
+        element: <SeasonSettings />,
       },
       {
         path: "events/new",

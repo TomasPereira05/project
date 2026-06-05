@@ -170,6 +170,10 @@ export function fetchTeamTrainingSchedules(teamCategoryId: number, season?: stri
   return request<TrainingSchedule[]>(`/teams/${teamCategoryId}/training-schedules${query ? `?${query}` : ""}`);
 }
 
+export function fetchActiveSeason() {
+  return request<{ seasonId: number; name: string; startsAt: string; endsAt: string; active: boolean }>("/seasons/active");
+}
+
 export function createTeamCategory(payload: { teamGroupId: number; code: string; label: string; sortOrder: number }) {
   return request<TeamCatalogCategory>("/teams/categories", {
     method: "POST",

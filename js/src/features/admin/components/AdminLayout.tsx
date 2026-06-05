@@ -33,6 +33,7 @@ const adminNavGroups = [
     titleKey: "admin.navGroups.settings",
     items: [
       { to: "/admin/team-settings", labelKey: "admin.nav.teams", icon: Settings },
+      { to: "/admin/seasons", labelKey: "admin.nav.seasons", icon: CalendarClock },
       { to: "/admin/sponsors/settings", labelKey: "admin.nav.sponsorSettings", icon: Settings },
     ],
   },

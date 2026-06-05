@@ -7,6 +7,26 @@ export type AdminOverviewStats = {
   pendingAthletes: number;
   totalSponsorships: number;
   pendingSponsorships: number;
+  approvedUnpaidSponsorships: number;
+  pendingCharges: number;
+  todayTrainingSchedules: number;
+  activeSeason: string | null;
+};
+
+export type Season = {
+  seasonId: number;
+  name: string;
+  startsAt: string;
+  endsAt: string;
+  active: boolean;
+};
+
+export type SeasonInput = {
+  seasonId?: number;
+  name: string;
+  startsAt: string;
+  endsAt: string;
+  active?: boolean;
 };
 
 export type TrainingSchedule = {

@@ -1125,7 +1125,8 @@
       "sponsorSettings": "Sponsorship table",
       "users": "Users",
       "sponsors": "Sponsorships",
-      "sponsorCompanies": "Sponsors"
+      "sponsorCompanies": "Sponsors",
+      "seasons": "Seasons"
     },
     "home": {
       "eyebrow": "Back office",
@@ -1175,7 +1176,82 @@
       "pendingAthletes": "Pending athletes",
       "sponsorships": "Sponsorships",
       "pendingSponsorships": "To approve",
+      "approvedUnpaidSponsorships": "Approved unpaid",
+      "activeSeason": "Active season: {{season}}",
       "error": "Could not load all numbers."
+    },
+    "alerts": {
+      "eyebrow": "Alerts",
+      "title": "Important pending items",
+      "loading": "Loading alerts...",
+      "empty": "No critical alerts right now.",
+      "pendingMembers": {
+        "title": "{{count}} pending members",
+        "description": "Member requests waiting for a decision."
+      },
+      "pendingAthletes": {
+        "title": "{{count}} pending athletes",
+        "description": "Athlete registrations waiting for review."
+      },
+      "pendingSponsorships": {
+        "title": "{{count}} sponsorships to approve",
+        "description": "Submitted requests that need review."
+      },
+      "pendingCharges": {
+        "title": "{{count}} pending charges",
+        "description": "Created payments that have not been completed."
+      },
+      "todayTraining": {
+        "title": "{{count}} trainings today",
+        "description": "Active blocks scheduled today in the active season."
+      }
+    },
+    "seasons": {
+      "eyebrow": "Configuration",
+      "title": "Season management",
+      "description": "Create sports seasons, define dates, and choose the active season used by schedules and public views.",
+      "loading": "Loading seasons...",
+      "empty": "There are no seasons yet.",
+      "list": {
+        "eyebrow": "Seasons",
+        "title": "Season list"
+      },
+      "table": {
+        "name": "Name",
+        "period": "Period",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "edit": "Edit season",
+        "activate": "Make active"
+      },
+      "form": {
+        "createEyebrow": "New season",
+        "editEyebrow": "Edit season",
+        "createTitle": "Add season",
+        "editTitle": "Season details",
+        "name": "Name",
+        "startsAt": "Start",
+        "endsAt": "End",
+        "create": "Add",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "feedback": {
+        "created": "Season created successfully.",
+        "updated": "Season updated successfully.",
+        "activated": "Active season updated."
+      },
+      "errors": {
+        "load": "Could not load seasons.",
+        "save": "Could not save the season. Check the format and dates.",
+        "activate": "Could not activate the season."
+      }
     },
     "training": {
       "eyebrow": "Training",

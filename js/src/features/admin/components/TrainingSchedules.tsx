@@ -6,18 +6,18 @@ import { fetchAllTeamCategories, type TeamCatalogCategory } from "../../Athletes
 import {
   createTrainingSchedule,
   deactivateTrainingSchedule,
+  fetchActiveSeason,
+  fetchSeasons,
   fetchTrainingSchedules,
   reactivateTrainingSchedule,
   updateTrainingSchedule,
-  type TrainingSchedule,
-  type TrainingScheduleInput,
 } from "../api";
+import type { Season, TrainingSchedule, TrainingScheduleInput } from "../types";
 import { dayKeys, TrainingScheduleBoard, weekdays } from "./TrainingScheduleBoard";
 
-const currentSeason = "2025/2026";
 const emptyDraft: TrainingScheduleInput = {
   teamCategoryId: 0,
-  season: currentSeason,
+  season: "",
   weekday: 1,
   startTime: "18:00",
   endTime: "19:30",
@@ -31,7 +31,8 @@ export default function TrainingSchedules() {
   const { t } = useTranslation();
   const [schedules, setSchedules] = useState<TrainingSchedule[]>([]);
   const [categories, setCategories] = useState<TeamCatalogCategory[]>([]);
-  const [season, setSeason] = useState(currentSeason);
+  const [seasons, setSeasons] = useState<Season[]>([]);
+  const [season, setSeason] = useState("");
   const [showInactive, setShowInactive] = useState(false);
   const [draft, setDraft] = useState<TrainingScheduleInput>(emptyDraft);
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -40,17 +41,38 @@ export default function TrainingSchedules() {
   const [feedback, setFeedback] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  async function loadSchedules() {
+  async function loadInitialData() {
     setIsLoading(true);
     setErrorMessage("");
 
     try {
-      const [scheduleResponse, categoryResponse] = await Promise.all([
-        fetchTrainingSchedules({ season, activeOnly: !showInactive }),
+      const [seasonResponse, activeSeasonResponse, categoryResponse] = await Promise.all([
+        fetchSeasons(),
+        fetchActiveSeason(),
         fetchAllTeamCategories(),
       ]);
-      setSchedules(scheduleResponse);
+      setSeasons(seasonResponse);
       setCategories(categoryResponse.filter((category) => category.active));
+      setSeason(activeSeasonResponse.name);
+    } catch {
+      setErrorMessage(t("admin.training.errors.load"));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadInitialData();
+  }, []);
+
+  async function loadSchedules() {
+    if (!season) return;
+
+    setIsLoading(true);
+    setErrorMessage("");
+
+    try {
+      setSchedules(await fetchTrainingSchedules({ season, activeOnly: !showInactive }));
     } catch {
       setErrorMessage(t("admin.training.errors.load"));
     } finally {
@@ -73,6 +95,11 @@ export default function TrainingSchedules() {
   const sortedCategories = useMemo(
     () => [...categories].sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0) || left.label.localeCompare(right.label)),
     [categories],
+  );
+
+  const sortedSeasons = useMemo(
+    () => [...seasons].sort((left, right) => right.name.localeCompare(left.name)),
+    [seasons],
   );
 
   function dayLabel(weekday: number) {
@@ -170,7 +197,14 @@ export default function TrainingSchedules() {
       <section className="admin-training-toolbar">
         <label>
           <span>{t("admin.training.filters.season")}</span>
-          <input value={season} onChange={(event) => setSeason(event.target.value)} />
+          <select value={season} onChange={(event) => setSeason(event.target.value)}>
+            {sortedSeasons.map((seasonOption) => (
+              <option key={seasonOption.seasonId} value={seasonOption.name}>
+                {seasonOption.name}
+                {seasonOption.active ? ` (${t("admin.seasons.status.active")})` : ""}
+              </option>
+            ))}
+          </select>
         </label>
         <label className="admin-training-toggle">
           <input checked={showInactive} onChange={(event) => setShowInactive(event.target.checked)} type="checkbox" />

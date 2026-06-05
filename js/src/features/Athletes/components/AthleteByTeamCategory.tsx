@@ -4,6 +4,7 @@ import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   fetchAllTeamCategories,
+  fetchActiveSeason,
   fetchTeamTrainingSchedules,
   listByCategory,
   type Athlete,
@@ -13,7 +14,6 @@ import {
 import AthletePageBackground from "./AthletePageBackground";
 import { getInitials } from "../../../shared/utils";
 
-const SCHEDULE_SEASON = "2025/2026";
 const weekdayKeys = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
 export default function AthleteByTeamCategory() {
@@ -44,7 +44,10 @@ export default function AthleteByTeamCategory() {
       }
 
       try {
-        const allCategories = await fetchAllTeamCategories();
+        const [allCategories, activeSeason] = await Promise.all([
+          fetchAllTeamCategories(),
+          fetchActiveSeason(),
+        ]);
         const matched = allCategories.find((c) => c.code === teamCategory);
         if (!matched) {
           if (!ignore) {
@@ -56,7 +59,7 @@ export default function AthleteByTeamCategory() {
 
         const [athletesResponse, schedulesResponse] = await Promise.all([
           listByCategory(matched.teamId),
-          fetchTeamTrainingSchedules(matched.teamId, SCHEDULE_SEASON),
+          fetchTeamTrainingSchedules(matched.teamId, activeSeason.name),
         ]);
         if (!ignore) {
           setCategory(matched);

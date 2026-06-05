@@ -68,6 +68,21 @@ CREATE TABLE team_category (
     sort_order INT NOT NULL DEFAULT 0
 );
 
+CREATE TABLE club_season (
+    season_id SERIAL PRIMARY KEY,
+    name VARCHAR(9) UNIQUE NOT NULL,
+    starts_at DATE NOT NULL,
+    ends_at DATE NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT chk_club_season_name CHECK (name ~ '^[0-9]{4}/[0-9]{4}$'),
+    CONSTRAINT chk_club_season_dates CHECK (starts_at < ends_at)
+);
+
+CREATE UNIQUE INDEX club_season_single_active_idx
+    ON club_season (active)
+    WHERE active = true;
+
 CREATE TABLE training_schedule (
     training_schedule_id SERIAL PRIMARY KEY,
     team_category_id INT NOT NULL REFERENCES team_category(team_category_id) ON DELETE CASCADE,

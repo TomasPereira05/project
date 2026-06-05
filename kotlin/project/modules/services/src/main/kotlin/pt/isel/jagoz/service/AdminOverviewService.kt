@@ -11,6 +11,8 @@ import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager
+import java.time.LocalDate
+import java.time.ZoneId
 
 data class AdminOverviewStats(
     val totalMembers: Long,
@@ -21,6 +23,10 @@ data class AdminOverviewStats(
     val pendingAthletes: Long,
     val totalSponsorships: Long,
     val pendingSponsorships: Long,
+    val approvedUnpaidSponsorships: Long,
+    val pendingCharges: Long,
+    val todayTrainingSchedules: Long,
+    val activeSeason: String?,
 )
 
 typealias AdminOverviewStatsResult = Either<SponsorError, AdminOverviewStats>
@@ -35,6 +41,16 @@ class AdminOverviewService(
         }
 
         return transactionManager.run { transaction ->
+            val activeSeason = transaction.seasonRepository.findActive()
+            val todayWeekday = LocalDate.now(ZoneId.of("Europe/Lisbon")).dayOfWeek.value
+            val todayTrainingSchedules =
+                activeSeason?.let { season ->
+                    transaction.trainingScheduleRepository
+                        .findAll(season.name, true)
+                        .count { it.schedule.weekday == todayWeekday }
+                        .toLong()
+                } ?: 0L
+
             success(
                 AdminOverviewStats(
                     totalMembers = transaction.memberRepository.countAll(),
@@ -45,6 +61,10 @@ class AdminOverviewService(
                     pendingAthletes = transaction.athleteRepository.countByStatus(AthleteStatus.PENDENTE),
                     totalSponsorships = transaction.sponsorshipRepository.countAll(),
                     pendingSponsorships = transaction.sponsorshipRepository.countByStatus(SponsorshipStatus.SUBMETIDO),
+                    approvedUnpaidSponsorships = transaction.sponsorshipRepository.countByStatus(SponsorshipStatus.APROVADO),
+                    pendingCharges = transaction.chargeRepository.countPending(),
+                    todayTrainingSchedules = todayTrainingSchedules,
+                    activeSeason = activeSeason?.name,
                 ),
             )
         }

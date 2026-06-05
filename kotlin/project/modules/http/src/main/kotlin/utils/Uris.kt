@@ -70,6 +70,14 @@ object Uris {
         const val OVERVIEW_STATS = "$PREFIX/admin/overview/stats"
     }
 
+    object Seasons {
+        const val GET_ALL = "$PREFIX/seasons"
+        const val ACTIVE = "$PREFIX/seasons/active"
+        const val CREATE = "$PREFIX/seasons"
+        const val UPDATE = "$PREFIX/seasons/{seasonId}"
+        const val ACTIVATE = "$PREFIX/seasons/{seasonId}/activate"
+    }
+
     object TrainingSchedules {
         const val GET_ALL = "$PREFIX/training-schedules"
         const val GET_BY_TEAM_CATEGORY = "$PREFIX/teams/{teamCategoryId}/training-schedules"

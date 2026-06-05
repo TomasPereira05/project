@@ -70,6 +70,11 @@ INSERT INTO jagoz.team_category (
 -- =========================
 -- TRAINING SCHEDULES
 -- =========================
+INSERT INTO jagoz.club_season (name, starts_at, ends_at, active) VALUES
+    ('2024/2025', '2024-07-01', '2025-06-30', false),
+    ('2025/2026', '2025-07-01', '2026-06-30', true),
+    ('2026/2027', '2026-07-01', '2027-06-30', false);
+
 INSERT INTO jagoz.training_schedule (
     team_category_id, season, weekday, start_time, end_time, field_name, field_zone, active, notes
 ) VALUES

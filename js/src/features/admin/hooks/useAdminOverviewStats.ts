@@ -10,6 +10,10 @@ const emptyStats: AdminOverviewStats = {
   pendingAthletes: 0,
   totalSponsorships: 0,
   pendingSponsorships: 0,
+  approvedUnpaidSponsorships: 0,
+  pendingCharges: 0,
+  todayTrainingSchedules: 0,
+  activeSeason: null,
 };
 
 export function useAdminOverviewStats() {

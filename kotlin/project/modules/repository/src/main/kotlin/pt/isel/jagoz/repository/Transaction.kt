@@ -42,4 +42,6 @@ interface Transaction {
     val fileRepository: FileRepository
 
     val trainingScheduleRepository: TrainingScheduleRepository
+
+    val seasonRepository: SeasonRepository
 }

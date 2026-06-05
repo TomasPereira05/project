@@ -129,6 +129,34 @@
     @apply rounded-full bg-red-50 px-3 py-1 text-xs font-semibold text-red-700;
   }
 
+  .admin-alert-grid {
+    @apply mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3;
+  }
+
+  .admin-alert-card {
+    @apply grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-text-primary transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-soft;
+  }
+
+  .admin-alert-card svg {
+    @apply text-amber-700;
+  }
+
+  .admin-alert-card strong {
+    @apply block font-heading text-xl uppercase tracking-tight text-text-primary;
+  }
+
+  .admin-alert-card p {
+    @apply mt-1 text-sm leading-5 text-text-secondary;
+  }
+
+  .admin-alert-card span {
+    @apply rounded-full bg-white px-3 py-1 font-heading text-2xl text-amber-700;
+  }
+
+  .admin-alert-empty {
+    @apply mt-5 flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-semibold text-emerald-800;
+  }
+
   .admin-card-grid {
     @apply grid gap-4 md:grid-cols-2 xl:grid-cols-4;
   }
@@ -274,6 +302,7 @@
   }
 
   .admin-training-toolbar input,
+  .admin-training-toolbar select,
   .admin-training-form input,
   .admin-training-form select,
   .admin-training-form textarea {
@@ -315,6 +344,27 @@
 
   .admin-training-form-actions {
     @apply flex flex-wrap items-center gap-2 pt-2;
+  }
+
+  .admin-seasons-table {
+    @apply min-w-[680px];
+  }
+
+  .admin-season-status,
+  .admin-season-status-active {
+    @apply inline-flex rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.12em];
+  }
+
+  .admin-season-status {
+    @apply border-border bg-slate-50 text-text-secondary;
+  }
+
+  .admin-season-status-active {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .admin-season-actions {
+    @apply flex items-center gap-2;
   }
 
   .admin-schedule-board {

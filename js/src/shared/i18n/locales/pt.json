@@ -1125,7 +1125,8 @@
       "sponsorSettings": "Tabela de patrocínios",
       "users": "Utilizadores",
       "sponsors": "Patrocínios",
-      "sponsorCompanies": "Patrocinadores"
+      "sponsorCompanies": "Patrocinadores",
+      "seasons": "Épocas"
     },
     "home": {
       "eyebrow": "Backoffice",
@@ -1175,7 +1176,82 @@
       "pendingAthletes": "Atletas pendentes",
       "sponsorships": "Patrocínios",
       "pendingSponsorships": "Por aprovar",
+      "approvedUnpaidSponsorships": "Aprovados por pagar",
+      "activeSeason": "Época ativa: {{season}}",
       "error": "Não foi possível carregar todos os números."
+    },
+    "alerts": {
+      "eyebrow": "Alertas",
+      "title": "Pendentes importantes",
+      "loading": "A carregar alertas...",
+      "empty": "Sem alertas críticos neste momento.",
+      "pendingMembers": {
+        "title": "{{count}} sócios pendentes",
+        "description": "Pedidos de sócio à espera de decisão."
+      },
+      "pendingAthletes": {
+        "title": "{{count}} atletas pendentes",
+        "description": "Inscrições de atletas por avaliar."
+      },
+      "pendingSponsorships": {
+        "title": "{{count}} patrocínios por aprovar",
+        "description": "Pedidos submetidos que precisam de revisão."
+      },
+      "pendingCharges": {
+        "title": "{{count}} cobranças pendentes",
+        "description": "Pagamentos criados que ainda não foram concluídos."
+      },
+      "todayTraining": {
+        "title": "{{count}} treinos hoje",
+        "description": "Blocos ativos marcados para hoje na época ativa."
+      }
+    },
+    "seasons": {
+      "eyebrow": "Configuração",
+      "title": "Gestão de épocas",
+      "description": "Cria épocas desportivas, define datas e escolhe a época ativa usada por horários e vistas públicas.",
+      "loading": "A carregar épocas...",
+      "empty": "Ainda não existem épocas.",
+      "list": {
+        "eyebrow": "Épocas",
+        "title": "Lista de épocas"
+      },
+      "table": {
+        "name": "Nome",
+        "period": "Período",
+        "status": "Estado",
+        "actions": "Ações"
+      },
+      "status": {
+        "active": "Ativa",
+        "inactive": "Inativa"
+      },
+      "actions": {
+        "edit": "Editar época",
+        "activate": "Tornar ativa"
+      },
+      "form": {
+        "createEyebrow": "Nova época",
+        "editEyebrow": "Editar época",
+        "createTitle": "Adicionar época",
+        "editTitle": "Detalhes da época",
+        "name": "Nome",
+        "startsAt": "Início",
+        "endsAt": "Fim",
+        "create": "Adicionar",
+        "save": "Guardar",
+        "saving": "A guardar..."
+      },
+      "feedback": {
+        "created": "Época criada com sucesso.",
+        "updated": "Época atualizada com sucesso.",
+        "activated": "Época ativa atualizada."
+      },
+      "errors": {
+        "load": "Não foi possível carregar as épocas.",
+        "save": "Não foi possível guardar a época. Confirma o formato e as datas.",
+        "activate": "Não foi possível ativar a época."
+      }
     },
     "training": {
       "eyebrow": "Treinos",
