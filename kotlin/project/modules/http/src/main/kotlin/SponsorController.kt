@@ -15,8 +15,10 @@ import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.sponsor.SponsorClaimRequest
 import pt.isel.jagoz.http.model.sponsor.SponsorUserRequest
+import pt.isel.jagoz.http.model.sponsor.toOutput
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
+import pt.isel.jagoz.service.Page
 import pt.isel.jagoz.service.SponsorService
 
 @RestController
@@ -30,9 +32,19 @@ class SponsorController(
         @RequestParam(defaultValue = "20") size: Int,
         @RequestParam(required = false) search: String?,
     ): ResponseEntity<*> =
-        sponsorService.getSponsorsPage(authenticatedUser, page, size, search).handle(
+        sponsorService.getSponsorsWithAccountsPage(authenticatedUser, page, size, search).handle(
             onFailure = { handleSponsorError(it) },
-            onSuccess = { ResponseEntity.ok(it) },
+            onSuccess = { sponsorsPage ->
+                ResponseEntity.ok(
+                    Page(
+                        items = sponsorsPage.items.map { it.sponsor.toOutput(it.account) },
+                        page = sponsorsPage.page,
+                        size = sponsorsPage.size,
+                        total = sponsorsPage.total,
+                        totalPages = sponsorsPage.totalPages,
+                    ),
+                )
+            },
         )
 
     @GetMapping(Uris.Sponsors.GET_BY_ID)

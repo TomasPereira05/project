@@ -5,11 +5,17 @@ import pt.isel.jagoz.domain.sponsor.Sponsor
 import pt.isel.jagoz.domain.sponsor.SponsorDomain
 import pt.isel.jagoz.domain.sponsor.SponsorError
 import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.TransactionManager
+
+data class SponsorWithAccount(
+    val sponsor: Sponsor,
+    val account: User?,
+)
 
 @Named
 class SponsorService(
@@ -86,6 +92,35 @@ class SponsorService(
             success(
                 pageOf(
                     items = transaction.sponsorRepository.findPageFiltered(request.size, request.offset, normalizedSearch),
+                    request = request,
+                    total = transaction.sponsorRepository.countFiltered(normalizedSearch),
+                ),
+            )
+        }
+    }
+
+    fun getSponsorsWithAccountsPage(
+        authenticatedUser: AuthenticatedUser,
+        page: Int,
+        size: Int,
+        search: String? = null,
+    ): Either<SponsorError, Page<SponsorWithAccount>> {
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(SponsorError.DomainError("Not authorized"))
+        }
+        val request = pageRequest(page, size)
+        val normalizedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
+        return transactionManager.run { transaction ->
+            val sponsors = transaction.sponsorRepository.findPageFiltered(request.size, request.offset, normalizedSearch)
+            success(
+                pageOf(
+                    items =
+                        sponsors.map { sponsor ->
+                            SponsorWithAccount(
+                                sponsor = sponsor,
+                                account = sponsor.userId?.let { transaction.userRepository.findById(it) },
+                            )
+                        },
                     request = request,
                     total = transaction.sponsorRepository.countFiltered(normalizedSearch),
                 ),
