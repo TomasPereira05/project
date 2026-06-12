@@ -134,6 +134,7 @@ object Uris {
         const val RECEIPT = "$PREFIX/payments/{paymentId}/receipt"
         const val SPONSORSHIP_RECEIPT = "$PREFIX/payments/sponsorships/{sponsorshipId}/receipt"
         const val STRIPE_WEBHOOK = "$PREFIX/payments/stripe/webhook"
+        const val SEND_OVERDUE_REMINDERS = "$PREFIX/payments/overdue-reminders"
     }
 
     object Events {

@@ -19,11 +19,14 @@ import pt.isel.jagoz.http.model.payment.toHtml
 import pt.isel.jagoz.http.model.payment.toService
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
+import pt.isel.jagoz.service.PaymentReminderError
+import pt.isel.jagoz.service.PaymentReminderService
 import pt.isel.jagoz.service.PaymentService
 
 @RestController
 class PaymentController(
     private val paymentService: PaymentService,
+    private val paymentReminderService: PaymentReminderService,
 ) {
     @PostMapping(Uris.Payments.CREATE_CHECKOUT_SESSION)
     fun createCheckoutSession(
@@ -97,6 +100,13 @@ class PaymentController(
             onSuccess = { ResponseEntity.ok().build<Unit>() },
         )
 
+    @PostMapping(Uris.Payments.SEND_OVERDUE_REMINDERS)
+    fun sendOverduePaymentReminders(authenticatedUser: AuthenticatedUser): ResponseEntity<*> =
+        paymentReminderService.sendOverduePaymentReminders(authenticatedUser).handle(
+            onFailure = { handlePaymentReminderError(it) },
+            onSuccess = { ResponseEntity.ok(it.toOutput()) },
+        )
+
     private fun handlePaymentError(error: PaymentError): ResponseEntity<Any> =
         when (error) {
             is PaymentError.InvalidOperation -> Problem.InvalidOperation("payment", error.message).response(HttpStatus.BAD_REQUEST)
@@ -110,6 +120,16 @@ class PaymentController(
                     error.message.contains("webhook", ignoreCase = true) ->
                         Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
                     else -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+                }
+        }
+
+    private fun handlePaymentReminderError(error: PaymentReminderError): ResponseEntity<Any> =
+        when (error) {
+            is PaymentReminderError.DomainError ->
+                if (error.message.contains("not authorized", ignoreCase = true)) {
+                    Problem.Unauthorized(error.message).response(HttpStatus.FORBIDDEN)
+                } else {
+                    Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
                 }
         }
 }

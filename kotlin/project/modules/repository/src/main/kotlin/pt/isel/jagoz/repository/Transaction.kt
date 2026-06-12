@@ -44,4 +44,6 @@ interface Transaction {
     val trainingScheduleRepository: TrainingScheduleRepository
 
     val seasonRepository: SeasonRepository
+
+    val emailNotificationLogRepository: EmailNotificationLogRepository
 }

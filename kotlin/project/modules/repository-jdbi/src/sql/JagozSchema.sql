@@ -376,6 +376,21 @@ CREATE TABLE charge_item (
     UNIQUE (charge_id, season, month)
 );
 
+CREATE TABLE email_notification_log (
+    email_notification_log_id SERIAL PRIMARY KEY,
+    notification_type VARCHAR(80) NOT NULL,
+    member_id INT NOT NULL REFERENCES member(member_id) ON DELETE CASCADE,
+    charge_id INT REFERENCES charge(charge_id) ON DELETE SET NULL,
+    charge_type charge_type NOT NULL,
+    season VARCHAR(50) NOT NULL,
+    month INT NOT NULL CHECK (month BETWEEN 1 AND 12),
+    recipient_email VARCHAR(255) NOT NULL,
+    sent_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX email_notification_log_lookup_idx
+    ON email_notification_log (notification_type, member_id, charge_type, season, month, sent_at DESC);
+
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,
     charge_id INT NOT NULL REFERENCES charge(charge_id) ON DELETE CASCADE,

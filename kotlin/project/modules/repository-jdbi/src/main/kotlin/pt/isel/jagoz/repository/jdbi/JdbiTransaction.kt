@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.repository.AthleteRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.ChargeRepository
+import pt.isel.jagoz.repository.EmailNotificationLogRepository
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.FileRepository
@@ -46,4 +47,5 @@ class JdbiTransaction(
     override val fileRepository: FileRepository = JdbiFileRepository(handle)
     override val trainingScheduleRepository: TrainingScheduleRepository = JdbiTrainingScheduleRepository(handle)
     override val seasonRepository: SeasonRepository = JdbiSeasonRepository(handle)
+    override val emailNotificationLogRepository: EmailNotificationLogRepository = JdbiEmailNotificationLogRepository(handle)
 }

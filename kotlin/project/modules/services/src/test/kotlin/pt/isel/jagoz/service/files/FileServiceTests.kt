@@ -18,6 +18,7 @@ import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.repository.AthleteRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.ChargeRepository
+import pt.isel.jagoz.repository.EmailNotificationLogRepository
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.FileRepository
@@ -373,6 +374,7 @@ class FileServiceTests {
         override val teamGroupRepository: TeamGroupRepository get() = unsupported()
         override val trainingScheduleRepository: TrainingScheduleRepository get() = unsupported()
         override val seasonRepository: SeasonRepository get() = unsupported()
+        override val emailNotificationLogRepository: EmailNotificationLogRepository get() = unsupported()
 
         private fun <T> unsupported(): T = throw AssertionError("Repository should not be used in this test")
     }
