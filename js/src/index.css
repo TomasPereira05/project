@@ -1,9 +1,9 @@
 @import "./shared/styles/Header.css";
 @import "./shared/styles/Footer.css";
 @import "./shared/styles/LabeledField.css";
-@import "./features/home/styles/Hero.css";
-@import "./features/home/styles/NewsGrid.css";
-@import "./features/home/styles/StandingTable.css";
+@import "./features/Home/styles/Hero.css";
+@import "./features/Home/styles/NewsGrid.css";
+@import "./features/Home/styles/StandingTable.css";
 @import "./features/auth/styles/Form.css";
 @import "./shared/styles/FormBox.css";
 @import "./features/Members/styles/Members.css";
