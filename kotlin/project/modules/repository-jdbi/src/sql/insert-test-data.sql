@@ -273,30 +273,48 @@ INSERT INTO jagoz.athlete (
 -- =========================
 -- GUARDIANS (apenas para atletas menores)
 -- =========================
-INSERT INTO jagoz.guardian (
-    athlete_id, member_id, name, role, kinship, email, phone, professional_activity, contact_phone
-) VALUES
-    -- Tiago (athlete 1) -> pai
-    (1, NULL, 'Manuel Rocha', 'FATHER', NULL, 'manuel.rocha@example.pt', '912000001',
-     'Engenheiro civil', NULL),
-    -- Sofia (athlete 4) -> mãe
-    (4, NULL, 'Helena Carvalho', 'MOTHER', NULL, 'helena.carvalho@example.pt', '912000002',
-     'Professora', NULL),
-    -- Pedro (athlete 6) -> mae
-    (6, NULL, 'Patricia Almeida', 'MOTHER', NULL, 'patricia.almeida@example.pt', '912000003',
-     'Contabilista', NULL),
-    -- Lara (athlete 7) -> pai
-    (7, NULL, 'Nuno Nunes', 'FATHER', NULL, 'nuno.nunes@example.pt', '912000004',
-     'Tecnico de informatica', NULL),
-    -- Miguel (athlete 8) -> encarregado legal
-    (8, NULL, 'Teresa Batista', 'LEGAL_GUARDIAN', 'Tia', 'teresa.batista@example.pt', '912000005',
-     'Enfermeira', '912000105'),
-    -- Gustavo (athlete 10) -> mae
-    (10, NULL, 'Raquel Martins', 'MOTHER', NULL, 'raquel.martins@example.pt', '912000006',
-     'Designer', NULL),
-    -- Gustavo (athlete 10) -> pai
-    (10, NULL, 'Andre Martins', 'FATHER', NULL, 'andre.martins@example.pt', '912000007',
-     'Eletricista', NULL);
+-- Pais/mães: não são sócios e a CHECK obriga kinship/contact_phone a ficar de fora.
+-- Omitimos essas colunas (ficam NULL por omissão) em vez de as escrever explicitamente.
+INSERT INTO jagoz.guardian (name, role, email, phone, professional_activity) VALUES
+    ('Manuel Rocha', 'FATHER', 'manuel.rocha@example.pt', '912000001', 'Engenheiro civil'),
+    ('Helena Carvalho', 'MOTHER', 'helena.carvalho@example.pt', '912000002', 'Professora'),
+    ('Patricia Almeida', 'MOTHER', 'patricia.almeida@example.pt', '912000003', 'Contabilista'),
+    ('Nuno Nunes', 'FATHER', 'nuno.nunes@example.pt', '912000004', 'Tecnico de informatica'),
+    ('Raquel Martins', 'MOTHER', 'raquel.martins@example.pt', '912000006', 'Designer'),
+    ('Andre Martins', 'FATHER', 'andre.martins@example.pt', '912000007', 'Eletricista');
+
+-- Encarregados legais: a CHECK exige kinship + contact_phone.
+INSERT INTO jagoz.guardian (name, role, kinship, email, phone, professional_activity, contact_phone) VALUES
+    ('Teresa Batista', 'LEGAL_GUARDIAN', 'Tia', 'teresa.batista@example.pt', '912000005', 'Enfermeira', '912000105');
+
+-- EE que É sócio (member_id preenchido) e é encarregado de DOIS atletas — demonstra a relação N:N.
+INSERT INTO jagoz.guardian (member_id, name, role, kinship, email, phone, professional_activity, contact_phone) VALUES
+    ((SELECT member_id FROM jagoz.member WHERE member_number = 1016),
+     'Manuel Antunes', 'LEGAL_GUARDIAN', 'Avô', 'manuel.antunes@example.pt', '912345016', 'Reformado', '912345116');
+
+-- Ligações guardian <-> atleta (N:N).
+-- Gustavo (athlete 10) tem mãe e pai; Manuel Antunes (sócio) é EE de Tiago (1) e Pedro (6).
+INSERT INTO jagoz.guardian_athlete (guardian_id, athlete_id) VALUES
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'manuel.rocha@example.pt'), 1),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'helena.carvalho@example.pt'), 4),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'patricia.almeida@example.pt'), 6),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'nuno.nunes@example.pt'), 7),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'teresa.batista@example.pt'), 8),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'raquel.martins@example.pt'), 10),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'andre.martins@example.pt'), 10),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'manuel.antunes@example.pt'), 1),
+    ((SELECT guardian_id FROM jagoz.guardian WHERE email = 'manuel.antunes@example.pt'), 6);
+
+-- Atletas pagam quota mensal (20€), ao contrário dos sócios isentos no modelo antigo.
+UPDATE jagoz.member SET membership_quota = 2000 WHERE category = 'ATLETA_SOCIO';
+
+-- Atletas geridos por uma conta de user (secção "Os Meus Atletas" do perfil).
+-- Demo: o user 'tomas' gere 3 educandos (Tiago, Sofia, Gustavo) e pode pagar-lhes a quota.
+INSERT INTO jagoz.user_athlete (user_id, athlete_id)
+SELECT (SELECT user_id FROM jagoz.users WHERE username = 'tomas'), a.athlete_id
+FROM jagoz.athlete a
+JOIN jagoz.member m ON m.member_id = a.member_id
+WHERE m.member_number IN (1003, 1006, 1013);
 
 -- =========================
 -- SPONSORS

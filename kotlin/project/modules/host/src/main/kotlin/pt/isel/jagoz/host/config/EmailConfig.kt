@@ -32,8 +32,8 @@ class EmailConfig {
                 put("mail.transport.protocol", "smtp")
                 put("mail.smtp.auth", "true")
                 put("mail.smtp.starttls.enable", "true")
+                put("mail.smtp.starttls.required", "true")
                 put("mail.smtp.ssl.trust", host)
-                // Sem timeouts, um SMTP indisponível bloqueia o thread indefinidamente.
                 put("mail.smtp.connectiontimeout", "5000")
                 put("mail.smtp.timeout", "5000")
                 put("mail.smtp.writetimeout", "5000")
