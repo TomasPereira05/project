@@ -16,6 +16,7 @@ import {
   Athletes,
   AthletesLayout,
   AthleteByTeamCategory,
+  AthleteFees,
   AthletePage,
   CreateAthlete,
   TeamSettings,
@@ -34,7 +35,7 @@ import {
 } from "./features/sponsors";
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
-import { Home } from "./features/home";
+import { Home } from "./features/Home";
 import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
 import { AdminHome, AdminLayout } from "./features/admin";
@@ -127,6 +128,14 @@ const router = createBrowserRouter([
       {
         path: "category/:teamCategory",
         element: <AthleteByTeamCategory />,
+      },
+      {
+        path: ":athleteId/fees",
+        element: (
+          <AuthRequire>
+            <AthleteFees />
+          </AuthRequire>
+        ),
       },
       {
         path: ":athleteId",

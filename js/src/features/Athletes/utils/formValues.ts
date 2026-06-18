@@ -1,44 +1,4 @@
-import type { AthleteAdmin, AthleteInput, AthleteUpdateRequest, GuardianInput } from "../types";
-
-export type AthleteUpdateForm = {
-  teamCategoryId: number;
-  jerseyNumber: string;
-  position: string;
-  school: string;
-  schoolYear: string;
-  schoolClass: string;
-  lastClub: string;
-  season: string;
-  hasFamilyInClub: boolean;
-};
-
-export function stateFromAthlete(a: AthleteAdmin): AthleteUpdateForm {
-  return {
-    teamCategoryId: a.teamCategoryId,
-    jerseyNumber: a.jerseyNumber !== null ? String(a.jerseyNumber) : "",
-    position: a.position ?? "",
-    school: a.school ?? "",
-    schoolYear: a.schoolYear ?? "",
-    schoolClass: a.schoolClass ?? "",
-    lastClub: a.lastClub ?? "",
-    season: a.season ?? "",
-    hasFamilyInClub: a.hasFamilyInClub,
-  };
-}
-
-export function toUpdateRequest(values: AthleteUpdateForm): AthleteUpdateRequest {
-  const parsedJersey = values.jerseyNumber.trim() === "" ? null : Number(values.jerseyNumber);
-  return {
-    jerseyNumber: Number.isFinite(parsedJersey) ? (parsedJersey as number) : null,
-    position: values.position.trim() || null,
-    school: values.school.trim() || null,
-    schoolYear: values.schoolYear.trim() || null,
-    schoolClass: values.schoolClass.trim() || null,
-    lastClub: values.lastClub.trim() || null,
-    season: values.season.trim() || null,
-    hasFamilyInClub: values.hasFamilyInClub,
-  };
-}
+import type { AthleteInput, GuardianInput } from "../types";
 
 export type RegisterValues = {
   completeName: string;

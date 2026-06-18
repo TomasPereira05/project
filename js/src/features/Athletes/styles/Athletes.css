@@ -316,6 +316,38 @@
     @apply text-xs text-text-secondary;
   }
 
+  .athlete-helper-text-spaced {
+    @apply athlete-helper-text mt-0.5;
+  }
+
+  .athlete-photo-picker {
+    @apply flex flex-col gap-4 rounded-md border border-border bg-white/80 p-4 sm:flex-row sm:items-center;
+  }
+
+  .athlete-photo-preview {
+    @apply flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-gray-100 text-primary shadow-md;
+  }
+
+  .athlete-photo-preview img {
+    @apply h-full w-full object-cover;
+  }
+
+  .athlete-photo-title {
+    @apply font-heading text-lg uppercase tracking-tight text-text-primary;
+  }
+
+  .athlete-photo-actions {
+    @apply mt-3 flex flex-wrap items-center gap-3;
+  }
+
+  .athlete-btn-outline-compact {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary transition-colors hover:border-primary hover:text-primary cursor-pointer;
+  }
+
+  .athlete-link-action {
+    @apply text-xs font-semibold uppercase tracking-wide text-primary hover:text-primary-hover;
+  }
+
   .athlete-category-badge {
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200;
   }
@@ -723,5 +755,191 @@
 
   .athlete-tcfg-draggable-row.is-dragging {
     @apply border-primary bg-primary/5 opacity-80;
+  }
+
+  /* Página de pagamento da quota de um atleta (a partir do perfil do encarregado) */
+  .athlete-fees-page {
+    @apply min-h-screen bg-gray-50 px-4 py-10;
+  }
+
+  .athlete-fees-container {
+    @apply mx-auto flex w-full max-w-4xl flex-col gap-4;
+  }
+
+  .athlete-fees-back {
+    @apply flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary hover:text-primary;
+  }
+
+  .athlete-fees-title {
+    @apply font-heading text-2xl text-text-primary;
+  }
+
+  .athlete-fees-subtitle {
+    @apply -mt-3 text-sm font-semibold text-primary;
+  }
+
+  .athlete-fees-empty {
+    @apply rounded-lg border border-dashed border-border bg-gray-50 p-6 text-center text-sm text-text-secondary;
+  }
+
+  .athlete-fees-error {
+    @apply mx-6 mb-6 text-sm font-medium text-red-700;
+  }
+
+  /* Secção de mensalidades — espelho visual do "Resumo Financeiro" do sócio, com CSS próprio. */
+  .athlete-fee-section {
+    @apply overflow-hidden rounded-xl border border-border bg-white shadow-sm;
+  }
+
+  .athlete-fee-section-header {
+    @apply flex items-center gap-3 border-b border-border bg-gray-50/50 px-6 py-5;
+  }
+
+  .athlete-fee-section-icon {
+    @apply rounded-lg bg-primary/10 p-2 text-primary;
+  }
+
+  .athlete-fee-section-title {
+    @apply font-heading text-xl uppercase tracking-tight text-text-primary;
+  }
+
+  .athlete-fee-section-desc {
+    @apply mt-1 text-xs text-text-secondary;
+  }
+
+  .athlete-fee-section-body {
+    @apply p-6;
+  }
+
+  .athlete-fee-grid {
+    @apply mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3;
+  }
+
+  .athlete-fee-card {
+    @apply rounded-lg border border-border bg-muted/30 p-4 text-center;
+  }
+
+  .athlete-fee-card-danger {
+    @apply rounded-lg border border-red-100 bg-red-50/50 p-4 text-center;
+  }
+
+  .athlete-fee-label {
+    @apply mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary;
+  }
+
+  .athlete-fee-label-danger {
+    @apply mb-2 text-xs font-semibold uppercase tracking-wider text-red-600;
+  }
+
+  .athlete-fee-value {
+    @apply font-heading text-3xl tracking-tight text-primary;
+  }
+
+  .athlete-fee-value-danger {
+    @apply font-heading text-3xl tracking-tight text-red-600;
+  }
+
+  .athlete-fee-selector {
+    @apply mb-8 rounded-lg border border-border bg-white p-4;
+  }
+
+  .athlete-fee-selector-header {
+    @apply mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between;
+  }
+
+  .athlete-fee-payment-title {
+    @apply mb-4 border-b border-border pb-2 text-sm font-semibold uppercase tracking-wider text-text-primary;
+  }
+
+  .athlete-fee-payment-title-inline {
+    @apply mb-0 flex-1 border-b-0 pb-0;
+  }
+
+  .athlete-fee-helper-text {
+    @apply mt-2 text-xs text-text-secondary;
+  }
+
+  .athlete-fee-total {
+    @apply rounded-md bg-muted/40 px-4 py-3 text-sm text-text-secondary;
+  }
+
+  .athlete-fee-total strong {
+    @apply ml-2 text-base text-primary;
+  }
+
+  .athlete-fee-actions {
+    @apply mb-4 flex flex-wrap gap-2;
+  }
+
+  .athlete-fee-btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-md border border-border bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary transition-colors hover:border-primary hover:text-primary;
+  }
+
+  .athlete-fee-table-wrap {
+    @apply mb-4 overflow-x-auto rounded-lg border border-border;
+  }
+
+  .athlete-fee-table {
+    @apply min-w-full divide-y divide-border text-sm;
+  }
+
+  .athlete-fee-table th {
+    @apply bg-muted/40 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-text-secondary;
+  }
+
+  .athlete-fee-table td {
+    @apply px-4 py-3 text-text-primary;
+  }
+
+  .athlete-fee-table tbody tr {
+    @apply border-t border-border bg-white;
+  }
+
+  .athlete-fee-row-disabled {
+    @apply opacity-55;
+  }
+
+  .athlete-fee-table-value {
+    @apply font-semibold;
+  }
+
+  .athlete-fee-checkbox {
+    @apply h-4 w-4 rounded border-border bg-muted text-primary focus:ring-2 focus:ring-primary;
+  }
+
+  .athlete-fee-pagination {
+    @apply mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-text-secondary;
+  }
+
+  .athlete-fee-pagination button:disabled {
+    @apply cursor-not-allowed opacity-50 hover:border-border hover:text-text-secondary;
+  }
+
+  .athlete-fee-btn-primary {
+    @apply inline-flex h-10 items-center justify-center gap-2 rounded-md border-2 border-primary bg-primary px-6 text-sm font-semibold uppercase tracking-wide text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .athlete-fee-history-header {
+    @apply mb-4 flex flex-col gap-3 border-b border-border pb-2 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .athlete-fee-history-filter {
+    @apply flex flex-col gap-1 text-xs font-semibold uppercase tracking-wider text-text-secondary sm:min-w-48;
+  }
+
+  .athlete-fee-history-select {
+    @apply h-10 rounded-md border border-border bg-white px-3 text-sm font-medium normal-case tracking-normal text-text-primary focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
+  }
+
+  .athlete-fee-empty-history {
+    @apply flex flex-col items-center justify-center py-10 text-center text-text-secondary;
+  }
+
+  .athlete-fee-empty-history-icon {
+    @apply mb-3 opacity-20;
+  }
+
+  .athlete-fee-link {
+    @apply text-xs font-semibold uppercase tracking-wide text-primary hover:text-primary-hover;
   }
 }
