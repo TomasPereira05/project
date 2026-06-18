@@ -1,5 +1,6 @@
 import { BASE_URL } from "../../shared/config/config";
 import { HttpError } from "../../shared/types/HttpError";
+import type { FeeOption, FeeSelection } from "../../shared/types/fees";
 import type {
   Athlete,
   AthleteAdmin,
@@ -7,10 +8,19 @@ import type {
   AthleteInput,
   AthleteStatus,
   AthleteUpdateRequest,
+  ManagedAthlete,
   PaginatedResponse,
   TeamCatalogCategory,
   TeamGroup,
 } from "./types";
+
+/** Sessão de checkout do Stripe. Wrapper próprio (convenção sponsors/events) — mesma forma, alvo atleta. */
+export type CheckoutSession = {
+  paymentId: number;
+  chargeId: number;
+  sessionId: string;
+  checkoutUrl: string;
+};
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -65,6 +75,34 @@ export function getMyAthlete() {
   return request<AthleteAdmin>("/athletes/me");
 }
 
+/**
+ * Atletas que a conta gere (pai/mãe/EE a gerir os filhos), para o painel do perfil. Lista
+ * vazia se não gere ninguém. GET /api/athletes/managed
+ */
+export function getManagedAthletes() {
+  return request<ManagedAthlete[]>("/athletes/managed");
+}
+
+/**
+ * Opções de mensalidade do atleta (grelha de meses com estado de pagamento). Mesma fonte que a
+ * quota de sócio — é a quota do member do atleta. GET /api/members/{memberId}/fees/options
+ */
+export function fetchAthleteFeeOptions(memberId: number) {
+  return request<FeeOption[]>(`/members/${memberId}/fees/options`);
+}
+
+/**
+ * Arranca o checkout Stripe para as mensalidades selecionadas do atleta. Reutiliza o endpoint
+ * comum de pagamentos; o backend autoriza o encarregado via `user_athlete`.
+ * POST /api/payments/checkout-session
+ */
+export function createAthleteFeesCheckoutSession(memberId: number, fees: FeeSelection[]) {
+  return request<CheckoutSession>("/payments/checkout-session", {
+    method: "POST",
+    body: JSON.stringify({ memberId, membershipFees: fees }),
+  });
+}
+
 /** Inscreve um atleta novo (cria Member + Athlete + Guardians). POST /api/athletes */
 export function createAthlete(input: AthleteInput) {
   return request<AthleteAdmin>("/athletes", {
@@ -109,9 +147,9 @@ export function getByMemberIdAdmin(memberId: number) {
   return request<AthleteAdmin>(`/athletes/member/${memberId}`);
 }
 
-/** Update administrativo dos campos editáveis. PUT /api/athletes/{id} */
+/** Update administrativo dos campos editáveis. PUT /api/athletes/{id}/edit */
 export function updateAthlete(athleteId: number, payload: AthleteUpdateRequest) {
-  return request<AthleteAdmin>(`/athletes/${athleteId}`, {
+  return request<AthleteAdmin>(`/athletes/${athleteId}/edit`, {
     method: "PUT",
     body: JSON.stringify(payload),
   });

@@ -6,12 +6,14 @@ import { initialRegisterValues, toAthleteInput, type RegisterValues } from "../u
 import { HttpError } from "../../../shared/types/HttpError";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { todayISO } from "../../../shared/utils";
+import { uploadFile } from "../../files";
 
 export function useCreateAthlete(t: TFunction<"translation", undefined>) {
   const auth = useAuth();
   const alreadyHasMember = auth.activeMemberId != null;
   const [values, setValues] = useState<RegisterValues>(initialRegisterValues);
   const [categories, setCategories] = useState<TeamCatalogCategory[]>([]);
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -86,10 +88,17 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
       setIsSubmitting(false);
       return;
     }
+    if (!photoFile) {
+      setErrorMessage(t("athletes.register.errors.photoRequired"));
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      await createAthlete(toAthleteInput(values));
+      const created = await createAthlete(toAthleteInput(values));
+      await uploadFile("ATHLETE", created.athleteId, "ATHLETE_PHOTO", photoFile);
       setSuccessMessage(t("athletes.register.success"));
+      setPhotoFile(null);
       setValues({ ...initialRegisterValues, teamCategoryId: values.teamCategoryId });
     } catch (error) {
       const fallback = t("athletes.register.errors.submit");
@@ -107,6 +116,8 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
     handleChange,
     handleSubmit,
     isSubmitting,
+    photoFile,
+    setPhotoFile,
     successMessage,
     values,
   };

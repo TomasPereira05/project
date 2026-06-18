@@ -26,18 +26,21 @@ import pt.isel.jagoz.http.model.athlete.AthleteUpdateRequest
 import pt.isel.jagoz.http.model.athlete.TeamCategoryChangeRequest
 import pt.isel.jagoz.http.model.athlete.toAdminDto
 import pt.isel.jagoz.http.model.athlete.toDetailDto
+import pt.isel.jagoz.http.model.athlete.toManagedAthleteDto
 import pt.isel.jagoz.http.model.athlete.toPublicDto
 import pt.isel.jagoz.http.model.athlete.toRegistrationInput
-import pt.isel.jagoz.http.model.athlete.toServiceInput
+import pt.isel.jagoz.http.model.athlete.toUpdateInput
 import pt.isel.jagoz.http.model.member.ApprovalRequest
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
 import pt.isel.jagoz.service.AthleteService
 import pt.isel.jagoz.service.Page
+import pt.isel.jagoz.service.PaymentService
 
 @RestController
 class AthleteController(
     private val athleteService: AthleteService,
+    private val paymentService: PaymentService,
 ) {
     // ─────────────────────────────────────────────────────────────────
     // PÚBLICOS (anónimo OK)
@@ -85,6 +88,24 @@ class AthleteController(
         )
     }
 
+    /**
+     * Atletas que a conta autenticada gere (pai/mãe/EE a gerir os filhos), via `user_athlete`.
+     * Alimenta a secção "Os Meus Atletas" do perfil. Devolve cards leves — sem os dados
+     * sensíveis do detalhe admin — com o estado da quota para sinalizar atrasos.
+     */
+    @GetMapping(Uris.Athletes.GET_MANAGED)
+    fun getManaged(user: AuthenticatedUser): ResponseEntity<*> {
+        val athletes = athleteService.getManagedAthletes(user.userId)
+        val membersById = athleteService.loadMembersFor(athletes)
+        val dtos =
+            athletes.mapNotNull { a ->
+                membersById[a.memberId]?.let { m ->
+                    a.toManagedAthleteDto(m, feeOverdue = paymentService.isMembershipFeeOverdue(m.memberId))
+                }
+            }
+        return ResponseEntity.ok(dtos)
+    }
+
     /** Inscreve um atleta novo. Cria Member (ATLETA_SOCIO, PENDENTE) + Athlete + Guardians. */
     @PostMapping(Uris.Athletes.CREATE_ATHLETE)
     fun createAthlete(
@@ -102,8 +123,12 @@ class AthleteController(
             } else {
                 null
             }
+        // Quando um user normal inscreve um atleta que não é ele próprio (um filho), liga-o à
+        // sua conta para aparecer no perfil. Inscrições feitas por staff não vão para o perfil deles.
+        val creatorUserId = if (!input.isSelfRegistration && user.role == Role.NORMAL) user.userId else null
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-        val serviceInput = input.toRegistrationInput(userId = resolvedUserId, registrationDate = today)
+        val serviceInput =
+            input.toRegistrationInput(userId = resolvedUserId, creatorUserId = creatorUserId, registrationDate = today)
         return athleteService.registerAthlete(serviceInput).handle(
             onFailure = { handleAthleteError(it) },
             onSuccess = { athlete ->
@@ -195,15 +220,7 @@ class AthleteController(
         return athleteService
             .updateAthlete(
                 athleteId = athleteId,
-                jerseyNumber = request.jerseyNumber,
-                position = request.position,
-                school = request.school,
-                schoolYear = request.schoolYear,
-                schoolClass = request.schoolClass,
-                lastClub = request.lastClub,
-                season = request.season,
-                hasFamilyInClub = request.hasFamilyInClub,
-                guardians = request.guardians?.map { it.toServiceInput() },
+                input = request.toUpdateInput(),
             ).handle(
                 onFailure = { handleAthleteError(it) },
                 onSuccess = { athlete -> respondAdminDto(athlete) },
@@ -306,22 +323,42 @@ class AthleteController(
 
     private fun handleAthleteError(error: AthleteError): ResponseEntity<Any> =
         when (error) {
-            is AthleteError.NotFound -> Problem.AthleteNotFound(error.field, error.value).response(HttpStatus.NOT_FOUND)
-            is AthleteError.DomainError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-            is AthleteError.ValidationError -> Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
-            is AthleteError.InvalidOperation ->
+            is AthleteError.NotFound -> {
+                Problem.AthleteNotFound(error.field, error.value).response(HttpStatus.NOT_FOUND)
+            }
+
+            is AthleteError.DomainError -> {
+                Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+            }
+
+            is AthleteError.ValidationError -> {
+                Problem.ValidationError(error.message).response(HttpStatus.BAD_REQUEST)
+            }
+
+            is AthleteError.InvalidOperation -> {
                 Problem.InvalidOperation("athlete-operation", error.message).response(HttpStatus.BAD_REQUEST)
-            is AthleteError.AlreadyRegistered ->
+            }
+
+            is AthleteError.AlreadyRegistered -> {
                 Problem.AthleteAlreadyRegistered(error.userId).response(HttpStatus.CONFLICT)
-            is AthleteError.TeamCategoryNotFound ->
+            }
+
+            is AthleteError.TeamCategoryNotFound -> {
                 Problem.TeamCategoryNotFound(error.teamCategoryId).response(HttpStatus.NOT_FOUND)
-            is AthleteError.GuardianMemberNotFound ->
+            }
+
+            is AthleteError.GuardianMemberNotFound -> {
                 Problem.GuardianMemberNotFound(error.memberNumber).response(HttpStatus.NOT_FOUND)
-            is AthleteError.InvalidStateTransition ->
+            }
+
+            is AthleteError.InvalidStateTransition -> {
                 Problem
                     .AthleteInvalidStateTransition(error.athleteId, error.currentStatus, error.attempted)
                     .response(HttpStatus.CONFLICT)
-            is AthleteError.InvalidDateField ->
+            }
+
+            is AthleteError.InvalidDateField -> {
                 Problem.InvalidAthleteDateField(error.field, error.reason).response(HttpStatus.BAD_REQUEST)
+            }
         }
 }

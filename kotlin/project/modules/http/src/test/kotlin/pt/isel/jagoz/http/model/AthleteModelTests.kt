@@ -84,7 +84,7 @@ class AthleteModelTests {
                 listOf(
                     Guardian(
                         guardianId = 3,
-                        athleteId = 5,
+                        athleteId = listOf(5L),
                         memberId = null,
                         name = "Pai",
                         role = GuardianRole.FATHER,

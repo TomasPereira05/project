@@ -10,8 +10,8 @@ val MAX_REGISTRATION_DATE = LocalDate.parse("9999-12-31")
 
 // Membership quota constants (in cents)
 
-/** Membership quota for athlete members - 0 cents (athletes don't pay membership fee). */
-const val ATHLETE_MEMBER_QUOTA = 0
+/** Quota mensal por defeito de um atleta - 2000 cêntimos (20,00€). Editável por atleta (admin). */
+const val ATHLETE_MEMBER_QUOTA = 2000
 
 /** Minimum membership quota for regular members - 150 cents (1.50â‚¬). */
 const val REGULAR_MEMBER_MIN_QUOTA = 150

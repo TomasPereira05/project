@@ -3,18 +3,6 @@ package pt.isel.jagoz.http.model.athlete
 import kotlinx.datetime.LocalDate
 import pt.isel.jagoz.service.AthleteRegistrationInput
 
-/**
- * Body do endpoint de inscrição de atleta.
- *
- * Consumido por: `POST /api/athletes`
- *
- * Espelha o formulário em papel: dados pessoais (vão para Member), dados atléticos
- * (vão para Athlete) e lista de guardians. As datas chegam como strings ISO-8601
- * (`YYYY-MM-DD`) e são parseadas para `LocalDate` no mapper.
- *
- * O service (`AthleteService.registerAthlete`) cria Member + Athlete + Guardians
- * numa só transacção — ver `project_athlete_member_relationship.md`.
- */
 data class AthleteCreationInputDto(
     // Dados pessoais (vão para Member)
     val completeName: String,
@@ -43,28 +31,18 @@ data class AthleteCreationInputDto(
     val teamCategoryId: Long,
     val hasFamilyInClub: Boolean,
     val schoolCertificationAccepted: Boolean,
-    // Agregado familiar
     val guardians: List<GuardianInputDto>,
-    /**
-     * `true` quando o user autenticado se está a inscrever a si próprio. Nesse caso o
-     * controller liga `member.user_id` à conta autenticada. Quando `false` (por defeito),
-     * o Member fica sem `user_id` — caso típico de inscrição em nome de familiares ou de
-     * inscrição feita por ADMIN/SECRETARIA.
-     */
     val isSelfRegistration: Boolean = false,
 )
 
-/**
- * Converte o DTO HTTP no input do service. `userId` vem do `AuthenticatedUser`
- * (o controller obtém-no via argument resolver) e `registrationDate` é gerada
- * pelo controller no momento do pedido.
- */
 fun AthleteCreationInputDto.toRegistrationInput(
     userId: Long?,
+    creatorUserId: Long?,
     registrationDate: LocalDate,
 ): AthleteRegistrationInput =
     AthleteRegistrationInput(
         userId = userId,
+        creatorUserId = creatorUserId,
         completeName = completeName,
         birthDate = LocalDate.parse(birthDate),
         birthplace = birthplace,

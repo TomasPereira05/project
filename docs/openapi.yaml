@@ -487,9 +487,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AthletePublic"
+    delete:
+      tags: [Athletes]
+      summary: Desativar atleta
+      parameters:
+        - $ref: "#/components/parameters/AthleteId"
+      responses:
+        "200":
+          description: Atleta desativado
+  /api/athletes/{athleteId}/edit:
     put:
       tags: [Athletes]
-      summary: Atualizar atleta
+      summary: Atualizar atleta (dados pessoais + desportivos)
+      description: >-
+        Update administrativo. Grava os dados pessoais (Member) e do Athlete na
+        mesma transacao. A mudanca de escalao usa o endpoint dedicado /team-category.
+        Requer role SECRETARIA ou ADMIN.
       parameters:
         - $ref: "#/components/parameters/AthleteId"
       requestBody:
@@ -539,15 +552,6 @@ paths:
       responses:
         "200":
           description: Categoria alterada
-  /api/athletes/{athleteId}/deactivate:
-    patch:
-      tags: [Athletes]
-      summary: Desativar atleta
-      parameters:
-        - $ref: "#/components/parameters/AthleteId"
-      responses:
-        "200":
-          description: Atleta desativado
   /api/athletes/{athleteId}/reactivate:
     put:
       tags: [Athletes]
@@ -1878,7 +1882,47 @@ components:
             $ref: "#/components/schemas/GuardianInput"
     AthleteUpdateInput:
       type: object
+      description: >-
+        Update administrativo do atleta. Inclui os dados pessoais que vivem no
+        Member e os dados do Athlete — o backend grava ambos numa so transacao.
       properties:
+        # Dados pessoais (Member)
+        completeName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        birthplace:
+          type: string
+          nullable: true
+        email:
+          type: string
+        phone:
+          type: string
+        homePhone:
+          type: string
+          nullable: true
+        address:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        nif:
+          type: string
+        # Dados pessoais (Athlete)
+        nationality:
+          type: string
+        niss:
+          type: string
+        numeroUtente:
+          type: string
+        bi:
+          type: string
+        biExpirationDate:
+          type: string
+          format: date
+        # Dados desportivos / escolares
         jerseyNumber:
           type: integer
           nullable: true
@@ -1902,12 +1946,26 @@ components:
           nullable: true
         hasFamilyInClub:
           type: boolean
-          nullable: true
         guardians:
           type: array
           nullable: true
           items:
             $ref: "#/components/schemas/GuardianInput"
+      required:
+        - completeName
+        - birthDate
+        - email
+        - phone
+        - address
+        - postalCode
+        - city
+        - nif
+        - nationality
+        - niss
+        - numeroUtente
+        - bi
+        - biExpirationDate
+        - hasFamilyInClub
     AthletePublic:
       type: object
       properties:

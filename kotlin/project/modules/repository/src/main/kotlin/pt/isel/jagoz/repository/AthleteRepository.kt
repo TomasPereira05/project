@@ -10,6 +10,27 @@ interface AthleteRepository {
 
     fun findByMemberId(memberId: Long): Athlete?
 
+    /**
+     * Atletas que uma conta de user gere (encarregado a gerir os filhos), via `user_athlete`.
+     * Alimenta a secção "Os Meus Atletas" do perfil. Sem carregar guardians.
+     */
+    fun findByManagingUser(userId: Long): List<Athlete>
+
+    /** Liga uma conta de user a um atleta que gere (idempotente). */
+    fun linkUserToAthlete(
+        userId: Long,
+        athleteId: Long,
+    )
+
+    /**
+     * `true` se o user gere o atleta cujo member é [memberId] (via `user_athlete`). Usado
+     * para autorizar o encarregado a pagar a quota do atleta.
+     */
+    fun isUserManagingMember(
+        userId: Long,
+        memberId: Long,
+    ): Boolean
+
     // Listagens (sem guardians)
     fun findAllActive(): List<Athlete>
 

@@ -146,4 +146,40 @@
   .user-form-overlay {
     @apply absolute inset-0 bg-gradient-to-r from-[#001D4A]/90 via-primary/70 to-transparent z-10;
   }
+
+  .user-athlete-list {
+    @apply flex flex-col gap-3;
+  }
+
+  .user-athlete-card {
+    @apply flex flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between;
+  }
+
+  .user-athlete-info {
+    @apply flex flex-col;
+  }
+
+  .user-athlete-name {
+    @apply text-base font-semibold text-text-primary;
+  }
+
+  .user-athlete-category {
+    @apply text-sm text-text-secondary;
+  }
+
+  .user-athlete-fee {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider sm:ml-auto sm:mr-3;
+  }
+
+  .user-athlete-fee.is-ok {
+    @apply border border-green-200 bg-green-50 text-green-700;
+  }
+
+  .user-athlete-fee.is-overdue {
+    @apply border border-red-200 bg-red-50 text-red-700;
+  }
+
+  .user-athlete-actions {
+    @apply flex flex-wrap gap-2;
+  }
 }

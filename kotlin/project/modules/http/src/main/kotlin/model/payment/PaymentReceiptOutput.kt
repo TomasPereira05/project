@@ -109,5 +109,5 @@ fun PaymentReceipt.toHtml(): String {
           </main>
         </body>
         </html>
-    """.trimIndent()
+        """.trimIndent()
 }

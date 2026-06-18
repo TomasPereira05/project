@@ -1,6 +1,6 @@
-import { type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, type ChangeEvent, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, CheckCircle2, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Camera, CheckCircle2, ShieldAlert } from "lucide-react";
 import type { RegisterValues, TeamCatalogCategory } from "..";
 import { todayISO, tomorrowISO } from "../../../shared/utils";
 
@@ -16,6 +16,8 @@ type AthleteFormProps = {
   isSubmitting: boolean;
   errorMessage: string;
   successMessage: string;
+  photoFile?: File | null;
+  onPhotoChange?: (file: File | null) => void;
 };
 
 export function AthleteForm({
@@ -30,8 +32,18 @@ export function AthleteForm({
   isSubmitting,
   errorMessage,
   successMessage,
+  photoFile,
+  onPhotoChange,
 }: AthleteFormProps) {
   const { t } = useTranslation();
+  const photoPreviewUrl = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
+
+  useEffect(
+    () => () => {
+      if (photoPreviewUrl) URL.revokeObjectURL(photoPreviewUrl);
+    },
+    [photoPreviewUrl],
+  );
 
   return (
     <div className="athlete-card-padded">
@@ -62,6 +74,39 @@ export function AthleteForm({
       )}
 
       <form onSubmit={onSubmit} className="space-y-8">
+        {onPhotoChange && (
+          <div className="athlete-photo-picker">
+            <div className="athlete-photo-preview">
+              {photoPreviewUrl ? (
+                <img src={photoPreviewUrl} alt={photoFile?.name ?? t("athletes.form.photoTitle")} />
+              ) : (
+                <Camera size={28} />
+              )}
+            </div>
+            <div>
+              <p className="athlete-photo-title">{t("athletes.form.photoTitle")}</p>
+              <p className="athlete-helper-text-spaced">{t("athletes.form.photoHelp")}</p>
+              <div className="athlete-photo-actions">
+                <label className="athlete-btn-outline-compact">
+                  <Camera size={16} />
+                  {photoFile ? t("files.actions.changePhoto") : t("files.actions.choosePhoto")}
+                  <input
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    onChange={(event) => onPhotoChange(event.target.files?.[0] ?? null)}
+                    type="file"
+                  />
+                </label>
+                {photoFile && (
+                  <button className="athlete-link-action" onClick={() => onPhotoChange(null)} type="button">
+                    {t("athletes.form.removePhoto")}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         <section className="space-y-4">
           <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
             {t("athletes.register.sections.who")}

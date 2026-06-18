@@ -12,6 +12,8 @@ export default function CreateAthlete() {
     handleChange,
     handleSubmit,
     isSubmitting,
+    photoFile,
+    setPhotoFile,
     successMessage,
     values,
   } = useCreateAthlete(t);
@@ -34,6 +36,8 @@ export default function CreateAthlete() {
             isSubmitting={isSubmitting}
             errorMessage={errorMessage}
             successMessage={successMessage}
+            photoFile={photoFile}
+            onPhotoChange={setPhotoFile}
           />
         </div>
       </main>

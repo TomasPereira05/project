@@ -54,7 +54,7 @@ class AthleteDomainTests {
     private fun fatherGuardian() =
         Guardian(
             guardianId = 10,
-            athleteId = 1,
+            athleteId = listOf(1L),
             memberId = null,
             name = "Pai do Atleta",
             role = GuardianRole.FATHER,
@@ -68,7 +68,7 @@ class AthleteDomainTests {
     private fun legalGuardian() =
         Guardian(
             guardianId = 11,
-            athleteId = 1,
+            athleteId = listOf(1L),
             memberId = null,
             name = "Encarregado Legal",
             role = GuardianRole.LEGAL_GUARDIAN,
