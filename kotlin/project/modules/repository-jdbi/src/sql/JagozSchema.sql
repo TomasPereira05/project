@@ -92,7 +92,6 @@ CREATE TABLE athlete (
 
 CREATE TABLE guardian (
     guardian_id SERIAL PRIMARY KEY,
-    athlete_id  INT NOT NULL REFERENCES athlete(athlete_id) ON DELETE CASCADE,
     member_id   INT REFERENCES member(member_id) ON DELETE SET NULL,
     name        VARCHAR(255) NOT NULL,
     role        guardian_role NOT NULL,
@@ -113,6 +112,14 @@ CREATE TABLE guardian (
             AND contact_phone IS NULL
             )
         )
+);
+
+-- Associação N:N entre encarregados de educação e atletas.
+-- Permite que o mesmo guardian (ex.: um pai sócio) fique ligado a vários filhos atletas.
+CREATE TABLE guardian_athlete (
+    guardian_id INT NOT NULL REFERENCES guardian(guardian_id) ON DELETE CASCADE,
+    athlete_id  INT NOT NULL REFERENCES athlete(athlete_id)  ON DELETE CASCADE,
+    PRIMARY KEY (guardian_id, athlete_id)
 );
 
 CREATE TABLE other_sport (
@@ -249,6 +256,15 @@ CREATE TABLE users (
 ALTER TABLE sponsor
     ADD CONSTRAINT sponsor_user_id_fkey
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL;
+
+-- Atletas geridos por uma conta de user (encarregado de educação a gerir os filhos).
+-- É o que alimenta a secção "Os Meus Atletas" do perfil e autoriza o pagamento da quota.
+-- A inscrição do próprio user como atleta usa member.user_id, não esta tabela.
+CREATE TABLE user_athlete (
+    user_id    INT NOT NULL REFERENCES users(user_id)   ON DELETE CASCADE,
+    athlete_id INT NOT NULL REFERENCES athlete(athlete_id) ON DELETE CASCADE,
+    PRIMARY KEY (user_id, athlete_id)
+);
 
 CREATE TABLE user_token (
     token_validation VARCHAR(255) PRIMARY KEY,

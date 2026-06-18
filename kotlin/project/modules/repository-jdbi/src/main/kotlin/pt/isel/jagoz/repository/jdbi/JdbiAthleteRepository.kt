@@ -33,6 +33,55 @@ class JdbiAthleteRepository(
             .findOne()
             .orElse(null)
 
+    override fun findByManagingUser(userId: Long): List<Athlete> =
+        handle
+            .createQuery(
+                """
+                $SELECT_ATHLETE_BASE
+                WHERE a.athlete_id IN (
+                    SELECT ua.athlete_id FROM jagoz.user_athlete ua WHERE ua.user_id = :userId
+                )
+                ORDER BY a.athlete_id DESC
+                """.trimIndent(),
+            ).bind("userId", userId)
+            .mapTo(Athlete::class.java)
+            .list()
+
+    override fun linkUserToAthlete(
+        userId: Long,
+        athleteId: Long,
+    ) {
+        handle
+            .createUpdate(
+                """
+                INSERT INTO jagoz.user_athlete (user_id, athlete_id)
+                VALUES (:userId, :athleteId)
+                ON CONFLICT DO NOTHING
+                """.trimIndent(),
+            ).bind("userId", userId)
+            .bind("athleteId", athleteId)
+            .execute()
+    }
+
+    override fun isUserManagingMember(
+        userId: Long,
+        memberId: Long,
+    ): Boolean =
+        handle
+            .createQuery(
+                """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM jagoz.user_athlete ua
+                    JOIN jagoz.athlete a ON a.athlete_id = ua.athlete_id
+                    WHERE ua.user_id = :userId AND a.member_id = :memberId
+                )
+                """.trimIndent(),
+            ).bind("userId", userId)
+            .bind("memberId", memberId)
+            .mapTo(Boolean::class.java)
+            .one()
+
     override fun findAllActive(): List<Athlete> =
         handle
             .createQuery(
@@ -271,42 +320,97 @@ class JdbiAthleteRepository(
             .execute()
     }
 
+    /**
+     * Liga uma lista de guardians a um atleta. Como um mesmo encarregado pode ter vários
+     * filhos atletas, faz find-or-create: reutiliza o guardian existente (dedup por
+     * `member_id` quando é sócio, senão por `email`) e cria apenas a associação N:N na
+     * `guardian_athlete`. Só insere uma linha nova em `guardian` quando o encarregado
+     * ainda não existe.
+     */
     override fun saveGuardians(
         athleteId: Long,
         guardians: List<Guardian>,
     ) {
-        if (guardians.isEmpty()) return
-        val batch =
-            handle.prepareBatch(
+        guardians.forEach { g ->
+            val guardianId = findExistingGuardianId(g.memberId, g.email) ?: insertGuardian(g)
+            linkGuardianToAthlete(guardianId, athleteId)
+        }
+    }
+
+    /**
+     * Desliga o atleta de todos os seus guardians (remove as linhas da `guardian_athlete`)
+     * e apaga os guardians que ficaram órfãos — preservando os que ainda estão ligados a
+     * outros atletas (ex.: um pai com outro filho no clube).
+     */
+    override fun deleteGuardiansByAthleteId(athleteId: Long) {
+        handle
+            .createUpdate("DELETE FROM jagoz.guardian_athlete WHERE athlete_id = :athleteId")
+            .bind("athleteId", athleteId)
+            .execute()
+        handle
+            .createUpdate(
+                """
+                DELETE FROM jagoz.guardian g
+                WHERE NOT EXISTS (
+                    SELECT 1 FROM jagoz.guardian_athlete ga WHERE ga.guardian_id = g.guardian_id
+                )
+                """.trimIndent(),
+            ).execute()
+    }
+
+    private fun findExistingGuardianId(
+        memberId: Long?,
+        email: String,
+    ): Long? =
+        if (memberId != null) {
+            handle
+                .createQuery("SELECT guardian_id FROM jagoz.guardian WHERE member_id = :memberId ORDER BY guardian_id LIMIT 1")
+                .bind("memberId", memberId)
+        } else {
+            handle
+                .createQuery(
+                    "SELECT guardian_id FROM jagoz.guardian WHERE member_id IS NULL AND lower(email) = lower(:email) ORDER BY guardian_id LIMIT 1",
+                ).bind("email", email)
+        }.mapTo(Long::class.java)
+            .findOne()
+            .orElse(null)
+
+    private fun insertGuardian(g: Guardian): Long =
+        handle
+            .createUpdate(
                 """
                 INSERT INTO jagoz.guardian (
-                    athlete_id, member_id, name, role, kinship, email, phone,
+                    member_id, name, role, kinship, email, phone,
                     professional_activity, contact_phone
                 ) VALUES (
-                    :athleteId, :memberId, :name, CAST(:role AS jagoz.guardian_role), :kinship, :email, :phone,
+                    :memberId, :name, CAST(:role AS jagoz.guardian_role), :kinship, :email, :phone,
                     :professionalActivity, :contactPhone
                 )
                 """.trimIndent(),
-            )
-        guardians.forEach { g ->
-            batch
-                .bind("athleteId", athleteId)
-                .bind("memberId", g.memberId)
-                .bind("name", g.name)
-                .bind("role", g.role.name)
-                .bind("kinship", g.kinship)
-                .bind("email", g.email)
-                .bind("phone", g.phone)
-                .bind("professionalActivity", g.professionalActivity)
-                .bind("contactPhone", g.contactPhone)
-                .add()
-        }
-        batch.execute()
-    }
+            ).bind("memberId", g.memberId)
+            .bind("name", g.name)
+            .bind("role", g.role.name)
+            .bind("kinship", g.kinship)
+            .bind("email", g.email)
+            .bind("phone", g.phone)
+            .bind("professionalActivity", g.professionalActivity)
+            .bind("contactPhone", g.contactPhone)
+            .executeAndReturnGeneratedKeys()
+            .mapTo(Long::class.java)
+            .one()
 
-    override fun deleteGuardiansByAthleteId(athleteId: Long) {
+    private fun linkGuardianToAthlete(
+        guardianId: Long,
+        athleteId: Long,
+    ) {
         handle
-            .createUpdate("DELETE FROM jagoz.guardian WHERE athlete_id = :athleteId")
+            .createUpdate(
+                """
+                INSERT INTO jagoz.guardian_athlete (guardian_id, athlete_id)
+                VALUES (:guardianId, :athleteId)
+                ON CONFLICT DO NOTHING
+                """.trimIndent(),
+            ).bind("guardianId", guardianId)
             .bind("athleteId", athleteId)
             .execute()
     }
@@ -315,11 +419,16 @@ class JdbiAthleteRepository(
         handle
             .createQuery(
                 """
-                SELECT guardian_id, athlete_id, member_id, name, role, kinship, email, phone,
-                       professional_activity, contact_phone
-                FROM jagoz.guardian
-                WHERE athlete_id = :athleteId
-                ORDER BY guardian_id ASC
+                SELECT g.guardian_id, g.member_id, g.name, g.role, g.kinship, g.email, g.phone,
+                       g.professional_activity, g.contact_phone,
+                       (SELECT array_agg(ga2.athlete_id ORDER BY ga2.athlete_id)
+                          FROM jagoz.guardian_athlete ga2
+                         WHERE ga2.guardian_id = g.guardian_id) AS athlete_ids
+                FROM jagoz.guardian g
+                WHERE g.guardian_id IN (
+                    SELECT ga.guardian_id FROM jagoz.guardian_athlete ga WHERE ga.athlete_id = :athleteId
+                )
+                ORDER BY g.guardian_id ASC
                 """.trimIndent(),
             ).bind("athleteId", athleteId)
             .mapTo(Guardian::class.java)

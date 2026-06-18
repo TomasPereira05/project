@@ -215,11 +215,22 @@ class PaymentService(
                 transaction.memberRepository.findById(memberId)
                     ?: return@run failure(PaymentError.DomainError("Member $memberId not found"))
 
-            if (!canPayMember(authenticatedUser, member)) {
+            if (!canPayMember(transaction, authenticatedUser, member)) {
                 return@run failure(PaymentError.DomainError("Not authorized"))
             }
 
             success(buildMembershipFeeOptions(member, transaction))
+        }
+
+    /**
+     * Quota em atraso = existe um mês anterior ao actual, dentro do período de sócio,
+     * cuja quota não está paga. Usado pelo painel do encarregado para sinalizar atletas
+     * com pagamentos pendentes. Membros não-activos (ou sem quota) nunca estão "em atraso".
+     */
+    fun isMembershipFeeOverdue(memberId: Long): Boolean =
+        transactionManager.run { transaction ->
+            val member = transaction.memberRepository.findById(memberId) ?: return@run false
+            membershipFeeOverdue(member, transaction)
         }
 
     fun markMembershipFeesPaid(
@@ -590,12 +601,15 @@ class PaymentService(
     }
 
     private fun canPayMember(
+        transaction: Transaction,
         authenticatedUser: AuthenticatedUser,
         member: Member,
     ): Boolean =
         authenticatedUser.canManageBackoffice() ||
             member.userId == authenticatedUser.userId ||
-            member.memberId == authenticatedUser.activeMemberId
+            member.memberId == authenticatedUser.activeMemberId ||
+            // Encarregado a pagar a quota de um atleta que gere (via user_athlete).
+            transaction.athleteRepository.isUserManagingMember(authenticatedUser.userId, member.memberId)
 
     private fun createMembershipFeeCharge(
         transaction: Transaction,
@@ -611,7 +625,7 @@ class PaymentService(
             transaction.memberRepository.findById(memberId)
                 ?: return failure(PaymentError.DomainError("Member $memberId not found"))
 
-        if (!canPayMember(authenticatedUser, member)) {
+        if (!canPayMember(transaction, authenticatedUser, member)) {
             return failure(PaymentError.DomainError("Not authorized"))
         }
 
@@ -810,6 +824,39 @@ class PaymentService(
         }.toList()
     }
 
+    /**
+     * Percorre os meses desde o início do sócio até ao mês anterior ao actual; está em
+     * atraso se algum desses meses não tiver quota paga. Mesma fonte de dados que
+     * [buildMembershipFeeOptions], mas devolve só um booleano para listagens.
+     */
+    private fun membershipFeeOverdue(
+        member: Member,
+        transaction: Transaction,
+    ): Boolean {
+        if (member.membershipQuota <= 0 || member.status != MemberStatus.ATIVO) return false
+
+        val today =
+            Clock.System
+                .now()
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
+        val currentMonth = YearMonth(today.year, today.monthNumber)
+        val startDate = member.approvalDate ?: member.registrationDate
+        val itemByFee =
+            transaction.chargeItemRepository
+                .findWithStatusByMember(member.memberId)
+                .associateBy { "${it.item.season}-${it.item.month}" }
+
+        var cursor = YearMonth(startDate.year, startDate.monthNumber)
+        while (compareYearMonth(cursor, currentMonth) < 0) {
+            val season = seasonFor(cursor.year, cursor.month)
+            val item = itemByFee["$season-${cursor.month}"]
+            if (item == null || item.chargeStatus != ChargeStatus.PAID) return true
+            cursor = addMonths(cursor, 1)
+        }
+        return false
+    }
+
     private fun feeKey(
         season: String,
         month: Int,
@@ -849,7 +896,10 @@ class PaymentService(
                 ?.date
                 ?.toString()
                 ?: charge.paidAt?.toString()
-                ?: payment.createdAt.toLocalDateTime(TimeZone.currentSystemDefault()).date.toString()
+                ?: payment.createdAt
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                    .date
+                    .toString()
 
         return success(
             PaymentReceipt(
@@ -877,7 +927,7 @@ class PaymentService(
 
         charge.memberId?.let { memberId ->
             val member = transaction.memberRepository.findById(memberId) ?: return false
-            return canPayMember(authenticatedUser, member)
+            return canPayMember(transaction, authenticatedUser, member)
         }
 
         charge.sponsorshipId?.let { sponsorshipId ->
