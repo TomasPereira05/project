@@ -3,7 +3,7 @@ package pt.isel.jagoz.domain.athlete
 data class Guardian(
     val guardianId: Long,
     // Aponta para o Atleta (Menor)
-    val athleteId: Long,
+    val athleteId: List<Long>,
     // Caso o encarregado de educação seja sócio
     val memberId: Long?,
     val name: String,
