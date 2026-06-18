@@ -275,7 +275,7 @@ function renderAdminContent({
               </>
             ) : (
               <>
-                <Link className="athlete-btn-primary-sm" to={`${athleteBasePath}/${athlete.athleteId}/edit`}>
+                <Link className="athlete-btn-primary-sm" to={`/admin/athletes/${athlete.athleteId}/edit`}>
                   <PencilLine size={18} />
                   {t("athletes.detail.actions.update")}
                 </Link>
