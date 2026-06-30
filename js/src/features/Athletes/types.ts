@@ -133,7 +133,7 @@ export type AthleteAdmin = {
 
 /**
  * Card leve de um atleta gerido por uma conta de user (secção "Os Meus Atletas"). Espelha
- * `ManagedAthleteDto` no backend. Sem dados sensíveis — só o necessário para listar e
+ * `ManagedAthleteOutput` no backend. Sem dados sensíveis — só o necessário para listar e
  * sinalizar quotas em atraso.
  */
 export type ManagedAthlete = {
