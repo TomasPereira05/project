@@ -41,7 +41,7 @@ data class AthleteUpdateRequest(
     val lastClub: String?,
     val season: String?,
     val hasFamilyInClub: Boolean,
-    val guardians: List<GuardianInputDto>? = null,
+    val guardians: List<GuardianInput>? = null,
 )
 
 fun AthleteUpdateRequest.toUpdateInput(): AthleteUpdateInput =

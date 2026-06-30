@@ -13,11 +13,11 @@ import pt.isel.jagoz.http.model.member.tooutput
  * (detalhe admin).
  *
  * Inclui todos os dados sensíveis: NIF/BI/NISS, contactos, morada (via `member`),
- * número de utente, guardians completos. Não retorna a entidade de domínio
+ * número de utente, guardians completos. Não devolve a entidade de domínio
  * directamente — campos derivados como `epocasRepresentadas` ficam consistentes
- * com `AthleteDetailDto`.
+ * com `AthleteDetailOutput`.
  */
-data class AthleteAdminDto(
+data class AthleteAdminOutput(
     val athleteId: Long,
     val member: MemberOutput,
     val nationality: String,
@@ -47,7 +47,7 @@ data class AthleteAdminDto(
      *  - INATIVO   : Member aprovado mas atleta marcado inactivo (ex-jogador)
      */
     val status: String,
-    val guardians: List<GuardianDto>,
+    val guardians: List<GuardianOutput>,
 )
 
 private fun deriveStatus(
@@ -61,8 +61,8 @@ private fun deriveStatus(
         MemberStatus.INATIVO -> "INATIVO"
     }
 
-fun Athlete.toAdminDto(member: Member): AthleteAdminDto =
-    AthleteAdminDto(
+fun Athlete.toAdminOutput(member: Member): AthleteAdminOutput =
+    AthleteAdminOutput(
         athleteId = athleteId,
         member = member.tooutput(),
         nationality = nationality,
@@ -85,5 +85,5 @@ fun Athlete.toAdminDto(member: Member): AthleteAdminDto =
         schoolCertificationAccepted = schoolCertificationAccepted,
         active = active,
         status = deriveStatus(member, active),
-        guardians = guardians.map { it.toDto() },
+        guardians = guardians.map { it.toOutput() },
     )

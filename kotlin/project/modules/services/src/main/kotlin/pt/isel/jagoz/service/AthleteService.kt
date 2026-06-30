@@ -287,7 +287,7 @@ class AthleteService(
 
     /**
      * Lista completa para o painel admin — inclui PENDENTES e REJEITADOS.
-     * O DTO no controller deriva o status visual juntando `member.status` e `athlete.active`.
+     * O modelo de resposta no controller deriva o status visual juntando `member.status` e `athlete.active`.
      */
     fun getAllAthletes(): List<Athlete> =
         transactionManager.run { tx ->
@@ -401,14 +401,14 @@ class AthleteService(
         }
 
     /**
-     * Carrega o Member associado a um atleta. Útil para o controller construir DTOs
+     * Carrega o Member associado a um atleta. Útil para o controller construir as respostas
      * que precisam de campos do Member (nome, data de nascimento, contactos).
      */
     fun loadMember(memberId: Long): Member? = transactionManager.run { tx -> tx.memberRepository.findById(memberId) }
 
     /**
      * Bulk load de Members para uma lista de atletas, indexado por memberId.
-     * Evita N+1 quando o controller mapeia uma lista de Athletes para DTOs.
+     * Evita N+1 quando o controller mapeia uma lista de Athletes para respostas.
      */
     fun loadMembersFor(athletes: List<Athlete>): Map<Long, Member> {
         if (athletes.isEmpty()) return emptyMap()

@@ -18,7 +18,7 @@ import pt.isel.jagoz.domain.member.Member
  *       `athlete_season_history`. Mantemos `List<String>` para não partir o frontend
  *       quando isso for adicionado.
  */
-data class AthleteDetailDto(
+data class AthleteDetailOutput(
     val id: Long,
     val nome: String,
     val numero: Int?,
@@ -31,11 +31,11 @@ data class AthleteDetailDto(
     val epocasRepresentadas: List<String>,
 )
 
-fun Athlete.toDetailDto(
+fun Athlete.toDetailOutput(
     member: Member,
     today: LocalDate,
-): AthleteDetailDto =
-    AthleteDetailDto(
+): AthleteDetailOutput =
+    AthleteDetailOutput(
         id = athleteId,
         nome = member.completeName,
         numero = jerseyNumber,
@@ -48,7 +48,7 @@ fun Athlete.toDetailDto(
         epocasRepresentadas = listOfNotNull(season),
     )
 
-/** Idade em anos completos. Partilhado por DTOs públicos. */
+/** Idade em anos completos. Partilhado pelos modelos públicos de atleta. */
 internal fun calculateAge(
     birthDate: LocalDate,
     today: LocalDate,

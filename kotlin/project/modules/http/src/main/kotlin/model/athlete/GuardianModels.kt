@@ -2,9 +2,9 @@ package pt.isel.jagoz.http.model.athlete
 
 import pt.isel.jagoz.domain.athlete.Guardian
 import pt.isel.jagoz.domain.athlete.GuardianRole
-import pt.isel.jagoz.service.GuardianInput
+import pt.isel.jagoz.service.GuardianInput as GuardianServiceInput
 
-data class GuardianDto(
+data class GuardianOutput(
     val guardianId: Long,
     val name: String,
     val role: GuardianRole,
@@ -15,8 +15,8 @@ data class GuardianDto(
     val contactPhone: String?,
 )
 
-fun Guardian.toDto(): GuardianDto =
-    GuardianDto(
+fun Guardian.toOutput(): GuardianOutput =
+    GuardianOutput(
         guardianId = guardianId,
         name = name,
         role = role,
@@ -27,7 +27,7 @@ fun Guardian.toDto(): GuardianDto =
         contactPhone = contactPhone,
     )
 
-data class GuardianInputDto(
+data class GuardianInput(
     val name: String,
     val role: GuardianRole,
     val kinship: String?,
@@ -38,8 +38,8 @@ data class GuardianInputDto(
     val memberNumber: Int? = null,
 )
 
-fun GuardianInputDto.toServiceInput(): GuardianInput =
-    GuardianInput(
+fun GuardianInput.toServiceInput(): GuardianServiceInput =
+    GuardianServiceInput(
         name = name,
         role = role,
         kinship = kinship,
