@@ -28,6 +28,7 @@ import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
+import kotlin.time.Duration.Companion.hours
 
 data class SectorDraft(
     val sectorId: Long?,
@@ -54,6 +55,33 @@ data class EventWithSectors(
 data class TicketWithSector(
     val ticket: Ticket,
     val sectorName: String,
+)
+
+/** Resultado da leitura de um QR à porta. Só VALID consome o bilhete (CONFIRMED -> USED). */
+enum class TicketValidationOutcome {
+    // bilhete confirmado e válido para este evento; foi marcado como usado agora
+    VALID,
+
+    // já tinha sido validado antes (ver ticket.usedAt)
+    ALREADY_USED,
+
+    // o token existe mas é de outro evento (leitor aberto para o evento errado)
+    WRONG_EVENT,
+
+    // bilhete confirmado e válido, mas a leitura está fora da janela de entrada do jogo (não foi consumido)
+    OUTSIDE_WINDOW,
+
+    // o bilhete foi cancelado (evento cancelado ou compra anulada)
+    CANCELLED,
+
+    // token desconhecido / não corresponde a nenhum bilhete confirmado
+    INVALID,
+}
+
+data class TicketValidationResult(
+    val outcome: TicketValidationOutcome,
+    // dados do bilhete para mostrar ao operador; null quando o token é desconhecido (INVALID)
+    val ticket: TicketWithSector? = null,
 )
 
 /** Uma linha do carrinho: 1 bilhete num setor, com tipo de preço (e credenciais de sócio se MEMBER anónimo). */
@@ -237,6 +265,65 @@ class EventService(
             )
         }
 
+    /**
+     * Valida um bilhete à porta a partir do token lido do QR. Corre numa só transação: o consumo
+     * (CONFIRMED -> USED) é atómico (UPDATE condicional no estado), por isso duas leituras simultâneas
+     * do mesmo bilhete resolvem-se sozinhas — só a primeira devolve VALID, a segunda ALREADY_USED.
+     *
+     * Só [eventId] inexistente é erro (URL errada); token desconhecido, bilhete usado/cancelado ou de
+     * outro evento são *resultados* normais (o operador vê-os no ecrã), não erros.
+     */
+    fun validateTicket(
+        eventId: Long,
+        token: String,
+    ): Either<EventError, TicketValidationResult> =
+        transactionManager.run { tx ->
+            val event =
+                tx.eventRepository.findById(eventId)
+                    ?: return@run failure(EventError.NotFound("Event $eventId not found"))
+
+            val cleaned = token.trim()
+            if (cleaned.isBlank()) return@run failure(EventError.Validation("token must not be blank"))
+
+            val ticket =
+                tx.ticketRepository.findByQrCode(cleaned)
+                    ?: return@run success(TicketValidationResult(TicketValidationOutcome.INVALID))
+
+            val sectorName =
+                tx.eventRepository
+                    .findSectorsByEvent(ticket.eventId)
+                    .firstOrNull { it.sectorId == ticket.sectorId }
+                    ?.name ?: "?"
+            val withSector = TicketWithSector(ticket, sectorName)
+
+            if (ticket.eventId != eventId) {
+                return@run success(TicketValidationResult(TicketValidationOutcome.WRONG_EVENT, withSector))
+            }
+
+            when (ticket.status) {
+                TicketStatus.CONFIRMED -> {
+                    val nowInstant = Clock.System.now()
+                    if (!isWithinEntryWindow(event, nowInstant)) {
+                        // bilhete genuíno e confirmado, mas fora da janela do jogo — não consome
+                        success(TicketValidationResult(TicketValidationOutcome.OUTSIDE_WINDOW, withSector))
+                    } else {
+                        if (tx.ticketRepository.markAsUsed(ticket.ticketId, nowInstant)) {
+                            val used = ticket.copy(status = TicketStatus.USED, usedAt = nowInstant)
+                            success(TicketValidationResult(TicketValidationOutcome.VALID, withSector.copy(ticket = used)))
+                        } else {
+                            // corrida: outra leitura consumiu-o entretanto; relê para devolver o usedAt real
+                            val reread = tx.ticketRepository.findById(ticket.ticketId) ?: ticket
+                            success(TicketValidationResult(TicketValidationOutcome.ALREADY_USED, withSector.copy(ticket = reread)))
+                        }
+                    }
+                }
+                TicketStatus.USED -> success(TicketValidationResult(TicketValidationOutcome.ALREADY_USED, withSector))
+                TicketStatus.CANCELLED -> success(TicketValidationResult(TicketValidationOutcome.CANCELLED, withSector))
+                // RESERVED não devia ter qr_code (só é atribuído na confirmação); por segurança, INVALID
+                TicketStatus.RESERVED -> success(TicketValidationResult(TicketValidationOutcome.INVALID, withSector))
+            }
+        }
+
     /** Valida credenciais de sócio (compra anónima): existe, está ATIVO e a data de nascimento coincide. */
     fun validateMemberCredentials(
         memberNumber: Int,
@@ -396,6 +483,20 @@ class EventService(
             is PaymentError.DomainError -> EventError.InvalidOperation(message)
         }
 
+    /**
+     * Janela de validação à porta, à volta do início do jogo. Substitui um TTL no token (decisão (c)):
+     * o servidor impõe a janela, por isso o bilhete não precisa de expiração própria. Ancorada ao
+     * [Event.startsAt] (Instant) em vez do "dia do evento" — robusto a jogos que passam da meia-noite.
+     */
+    private fun isWithinEntryWindow(
+        event: Event,
+        now: Instant,
+    ): Boolean {
+        val opensAt = event.startsAt - DOORS_OPEN_BEFORE
+        val closesAt = event.startsAt + GATE_CLOSES_AFTER
+        return now in opensAt..closesAt
+    }
+
     private fun parseStartsAt(local: String): Instant? = runCatching { parseLisbonLocalDateTime(local) }.getOrNull()
 
     private fun validateSectorDrafts(sectors: List<SectorDraft>): EventError? {
@@ -454,5 +555,10 @@ class EventService(
     private companion object {
         // decisão #10: limite de bilhetes por compra (normais + sócio somados)
         const val MAX_TICKETS_PER_PURCHASE = 5
+
+        // Janela operacional de check-in à porta. Valores escolhidos para MVP/demo;
+        // poderão passar a configuração do clube no futuro (ex.: "portas abrem 1h antes").
+        val DOORS_OPEN_BEFORE = 3.hours
+        val GATE_CLOSES_AFTER = 6.hours
     }
 }

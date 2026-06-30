@@ -98,3 +98,10 @@ data class MemberCredentialInput(
     // ISO "yyyy-MM-dd"
     val memberBirthDate: String,
 )
+
+// ---- validação de bilhete à porta (backoffice) ----
+
+data class TicketValidateInput(
+    // token lido do QR (o UUID atribuído na confirmação)
+    val token: String,
+)

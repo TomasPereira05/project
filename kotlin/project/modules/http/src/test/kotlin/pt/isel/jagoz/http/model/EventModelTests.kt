@@ -2,7 +2,6 @@ package pt.isel.jagoz.http.model
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.domain.event.EventSector
 import pt.isel.jagoz.domain.event.EventStatus
@@ -165,7 +164,7 @@ class EventModelTests {
                         buyerName = "Comprador",
                         status = TicketStatus.USED,
                         qrCode = "qr-1",
-                        usedAt = LocalDateTime.parse("2027-01-01T21:00:00"),
+                        usedAt = Instant.parse("2027-01-01T21:00:00Z"),
                     ),
                 sectorName = "Casa",
             ).toOutput()
@@ -174,6 +173,6 @@ class EventModelTests {
         assertEquals("Casa", output.sectorName)
         assertEquals(TicketPriceType.MEMBER, output.priceType)
         assertEquals(TicketStatus.USED, output.status)
-        assertEquals("2027-01-01T21:00", output.usedAt)
+        assertEquals("2027-01-01T21:00:00Z", output.usedAt)
     }
 }

@@ -123,6 +123,7 @@ object Uris {
         const val TICKETS = "$PREFIX/events/{eventId}/tickets"
         const val CHECKOUT = "$PREFIX/events/{eventId}/checkout"
         const val VALIDATE_MEMBER = "$PREFIX/events/validate-member" // público: valida nº+data de sócio no wizard
+        const val VALIDATE_TICKET = "$PREFIX/events/{eventId}/tickets/validate" // backoffice: valida QR à porta
 
         fun byId(eventId: Long): URI = UriTemplate(GET_BY_ID).expand(eventId)
     }
