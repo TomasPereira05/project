@@ -1107,8 +1107,31 @@
       "edit": "Edit",
       "cancel": "Cancel",
       "tickets": "Tickets",
+      "scan": "Validate entry",
       "confirmCancel": "Cancel event \"{{name}}\"? Sold tickets will be cancelled.",
       "cancelled": "Event cancelled and seats released."
+    },
+    "scan": {
+      "eyebrow": "Door validation",
+      "title": "Validate entry",
+      "description": "Point the camera at the ticket's QR Code to validate entry.",
+      "back": "Back to events",
+      "hint": "Center the ticket's QR Code in the frame.",
+      "idle": "Waiting for a ticket scan...",
+      "cameraError": "Could not access the camera. Check the browser permissions (camera access requires HTTPS) or use manual entry.",
+      "scanNext": "Scan next",
+      "manualLabel": "Manual code entry",
+      "manualPlaceholder": "Paste or type the ticket code",
+      "manualSubmit": "Validate",
+      "usedAtLabel": "Validated at",
+      "outcomes": {
+        "VALID": "Valid entry",
+        "ALREADY_USED": "Ticket already used",
+        "WRONG_EVENT": "Ticket for another event",
+        "OUTSIDE_WINDOW": "Valid ticket, but outside the entry window",
+        "CANCELLED": "Cancelled ticket",
+        "INVALID": "Invalid ticket"
+      }
     },
     "form": {
       "eyebrow": "Event",
