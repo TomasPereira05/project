@@ -8,6 +8,7 @@ import type {
   EventOutput,
   EventStatusFilter,
   EventTicketOutput,
+  TicketValidationOutput,
 } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -110,5 +111,13 @@ export function validateMemberCredential(memberNumber: number, memberBirthDate: 
   return request<{ valid: boolean }>("/events/validate-member", {
     method: "POST",
     body: JSON.stringify({ memberNumber, memberBirthDate }),
+  });
+}
+
+/** Valida um bilhete à porta a partir do token lido do QR (backoffice). Consome-o se válido. */
+export function validateTicket(eventId: number, token: string) {
+  return request<TicketValidationOutput>(`/events/${eventId}/tickets/validate`, {
+    method: "POST",
+    body: JSON.stringify({ token }),
   });
 }

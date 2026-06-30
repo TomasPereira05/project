@@ -39,7 +39,7 @@ import { Home } from "./features/Home";
 import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
 import { AdminHome, AdminLayout } from "./features/admin";
-import { EventsList, EventForm, EventTickets, EventsPublicList, TicketCheckout } from "./features/events";
+import { EventsList, EventForm, EventTickets, TicketScanner, EventsPublicList, TicketCheckout } from "./features/events";
 
 const router = createBrowserRouter([
   {
@@ -277,6 +277,10 @@ const router = createBrowserRouter([
       {
         path: "events/:eventId/tickets",
         element: <EventTickets />,
+      },
+      {
+        path: "events/:eventId/scan",
+        element: <TicketScanner />,
       },
     ],
   },

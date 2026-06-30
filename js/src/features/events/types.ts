@@ -81,3 +81,16 @@ export type CheckoutSessionOutput = {
   sessionId: string;
   checkoutUrl: string;
 };
+
+export type TicketValidationOutcome =
+  | "VALID"
+  | "ALREADY_USED"
+  | "WRONG_EVENT"
+  | "OUTSIDE_WINDOW"
+  | "CANCELLED"
+  | "INVALID";
+
+export type TicketValidationOutput = {
+  outcome: TicketValidationOutcome;
+  ticket: EventTicketOutput | null;
+};

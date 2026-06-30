@@ -112,6 +112,9 @@ export default function EventsList() {
                           </Link>
                           {event.status !== "CANCELLED" && (
                             <>
+                              <Link to={`/admin/events/${event.eventId}/scan`} className="events-action-btn">
+                                {t("events.list.scan")}
+                              </Link>
                               <Link to={`/admin/events/${event.eventId}/edit`} className="events-action-btn">
                                 {t("events.list.edit")}
                               </Link>

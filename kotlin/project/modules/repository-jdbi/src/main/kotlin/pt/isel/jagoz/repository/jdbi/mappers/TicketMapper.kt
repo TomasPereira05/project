@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository.jdbi.mappers
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import org.jdbi.v3.core.mapper.RowMapper
 import org.jdbi.v3.core.statement.StatementContext
 import pt.isel.jagoz.domain.event.Ticket
@@ -26,6 +26,7 @@ class TicketMapper : RowMapper<Ticket> {
             buyerName = rs.getString("buyer_name"),
             status = TicketStatus.valueOf(rs.getString("status")),
             qrCode = rs.getString("qr_code"),
-            usedAt = rs.getString("used_at")?.let { LocalDateTime.parse(it.replace(" ", "T")) },
+            // used_at é TIMESTAMPTZ; lê-se como Instant, igual ao TokenMapper/PaymentMapper.
+            usedAt = rs.getTimestamp("used_at")?.toInstant()?.let { Instant.fromEpochMilliseconds(it.toEpochMilli()) },
         )
 }

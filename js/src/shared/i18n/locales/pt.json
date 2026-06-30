@@ -1107,8 +1107,31 @@
       "edit": "Editar",
       "cancel": "Cancelar",
       "tickets": "Bilhetes",
+      "scan": "Validar entradas",
       "confirmCancel": "Cancelar o evento \"{{name}}\"? Os bilhetes vendidos serão cancelados.",
       "cancelled": "Evento cancelado e lugares libertados."
+    },
+    "scan": {
+      "eyebrow": "Validação à porta",
+      "title": "Validar entradas",
+      "description": "Aponta a câmara ao QR Code do bilhete para validar a entrada.",
+      "back": "Voltar aos eventos",
+      "hint": "Centra o QR Code do bilhete no enquadramento.",
+      "idle": "Aguardando leitura de um bilhete...",
+      "cameraError": "Não foi possível aceder à câmara. Confirma as permissões do navegador (o acesso à câmara exige HTTPS) ou usa a introdução manual.",
+      "scanNext": "Validar próximo",
+      "manualLabel": "Introdução manual do código",
+      "manualPlaceholder": "Cola ou digita o código do bilhete",
+      "manualSubmit": "Validar",
+      "usedAtLabel": "Validado às",
+      "outcomes": {
+        "VALID": "Entrada válida",
+        "ALREADY_USED": "Bilhete já utilizado",
+        "WRONG_EVENT": "Bilhete de outro evento",
+        "OUTSIDE_WINDOW": "Bilhete válido, mas fora da janela de entrada",
+        "CANCELLED": "Bilhete cancelado",
+        "INVALID": "Bilhete inválido"
+      }
     },
     "form": {
       "eyebrow": "Evento",

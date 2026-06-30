@@ -3,7 +3,7 @@ package pt.isel.jagoz.http.model.athlete
 import kotlinx.datetime.LocalDate
 import pt.isel.jagoz.service.AthleteRegistrationInput
 
-data class AthleteCreationInputDto(
+data class AthleteCreationInput(
     // Dados pessoais (vão para Member)
     val completeName: String,
     val birthDate: String,
@@ -31,11 +31,11 @@ data class AthleteCreationInputDto(
     val teamCategoryId: Long,
     val hasFamilyInClub: Boolean,
     val schoolCertificationAccepted: Boolean,
-    val guardians: List<GuardianInputDto>,
+    val guardians: List<GuardianInput>,
     val isSelfRegistration: Boolean = false,
 )
 
-fun AthleteCreationInputDto.toRegistrationInput(
+fun AthleteCreationInput.toRegistrationInput(
     userId: Long?,
     creatorUserId: Long?,
     registrationDate: LocalDate,

@@ -20,14 +20,14 @@ import pt.isel.jagoz.domain.athlete.AthleteStatus
 import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.utils.handle
-import pt.isel.jagoz.http.model.athlete.AthleteCreationInputDto
-import pt.isel.jagoz.http.model.athlete.AthletePublicDto
+import pt.isel.jagoz.http.model.athlete.AthleteCreationInput
+import pt.isel.jagoz.http.model.athlete.AthletePublicOutput
 import pt.isel.jagoz.http.model.athlete.AthleteUpdateRequest
 import pt.isel.jagoz.http.model.athlete.TeamCategoryChangeRequest
-import pt.isel.jagoz.http.model.athlete.toAdminDto
-import pt.isel.jagoz.http.model.athlete.toDetailDto
-import pt.isel.jagoz.http.model.athlete.toManagedAthleteDto
-import pt.isel.jagoz.http.model.athlete.toPublicDto
+import pt.isel.jagoz.http.model.athlete.toAdminOutput
+import pt.isel.jagoz.http.model.athlete.toDetailOutput
+import pt.isel.jagoz.http.model.athlete.toManagedAthleteOutput
+import pt.isel.jagoz.http.model.athlete.toPublicOutput
 import pt.isel.jagoz.http.model.athlete.toRegistrationInput
 import pt.isel.jagoz.http.model.athlete.toUpdateInput
 import pt.isel.jagoz.http.model.member.ApprovalRequest
@@ -50,12 +50,12 @@ class AthleteController(
     @GetMapping(Uris.Athletes.LIST_BY_CATEGORY)
     fun listByCategory(
         @PathVariable teamCategoryId: Long,
-    ): ResponseEntity<List<AthletePublicDto>> {
+    ): ResponseEntity<List<AthletePublicOutput>> {
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
         val athletes = athleteService.listByTeamCategory(teamCategoryId, activeOnly = true)
         val membersById = athleteService.loadMembersFor(athletes)
-        val dtos = athletes.mapNotNull { a -> membersById[a.memberId]?.let { m -> a.toPublicDto(m, today) } }
-        return ResponseEntity.ok(dtos)
+        val outputs = athletes.mapNotNull { a -> membersById[a.memberId]?.let { m -> a.toPublicOutput(m, today) } }
+        return ResponseEntity.ok(outputs)
     }
 
     /** Detalhe público do atleta (não expõe data de nascimento — só idade calculada). */
@@ -65,7 +65,7 @@ class AthleteController(
     ): ResponseEntity<*> =
         athleteService.getAthleteDetail(athleteId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondDetailDto(athlete) },
+            onSuccess = { athlete -> respondDetailOutput(athlete) },
         )
 
     // ─────────────────────────────────────────────────────────────────
@@ -84,7 +84,7 @@ class AthleteController(
                 ?: return Problem.AthleteNotFound("activeMemberId", "null").response(HttpStatus.NOT_FOUND)
         return athleteService.getAthleteDetailByMemberId(memberId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -97,19 +97,19 @@ class AthleteController(
     fun getManaged(user: AuthenticatedUser): ResponseEntity<*> {
         val athletes = athleteService.getManagedAthletes(user.userId)
         val membersById = athleteService.loadMembersFor(athletes)
-        val dtos =
+        val outputs =
             athletes.mapNotNull { a ->
                 membersById[a.memberId]?.let { m ->
-                    a.toManagedAthleteDto(m, feeOverdue = paymentService.isMembershipFeeOverdue(m.memberId))
+                    a.toManagedAthleteOutput(m, feeOverdue = paymentService.isMembershipFeeOverdue(m.memberId))
                 }
             }
-        return ResponseEntity.ok(dtos)
+        return ResponseEntity.ok(outputs)
     }
 
     /** Inscreve um atleta novo. Cria Member (ATLETA_SOCIO, PENDENTE) + Athlete + Guardians. */
     @PostMapping(Uris.Athletes.CREATE_ATHLETE)
     fun createAthlete(
-        @RequestBody input: AthleteCreationInputDto,
+        @RequestBody input: AthleteCreationInput,
         user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val resolvedUserId =
@@ -139,7 +139,7 @@ class AthleteController(
                             .response(HttpStatus.INTERNAL_SERVER_ERROR)
                 ResponseEntity
                     .created(Uris.Athletes.byId(athlete.athleteId))
-                    .body(athlete.toAdminDto(member))
+                    .body(athlete.toAdminOutput(member))
             },
         )
     }
@@ -171,13 +171,13 @@ class AthleteController(
                 status ?: emptyList(),
             )
         val membersById = athleteService.loadMembersFor(athletesPage.items)
-        val itemDtos =
+        val items =
             athletesPage.items.mapNotNull { a ->
-                membersById[a.memberId]?.let { m -> a.toAdminDto(m) }
+                membersById[a.memberId]?.let { m -> a.toAdminOutput(m) }
             }
         return ResponseEntity.ok(
             Page(
-                items = itemDtos,
+                items = items,
                 page = athletesPage.page,
                 size = athletesPage.size,
                 total = athletesPage.total,
@@ -194,7 +194,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.getAthleteDetail(athleteId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -206,7 +206,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.getAthleteByMemberId(memberId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -223,7 +223,7 @@ class AthleteController(
                 input = request.toUpdateInput(),
             ).handle(
                 onFailure = { handleAthleteError(it) },
-                onSuccess = { athlete -> respondAdminDto(athlete) },
+                onSuccess = { athlete -> respondAdminOutput(athlete) },
             )
     }
 
@@ -236,7 +236,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.changeTeamCategory(athleteId, request.teamCategoryId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -248,7 +248,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.markInactive(athleteId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -260,7 +260,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.reactivate(athleteId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -274,7 +274,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.approveAthlete(athleteId, approvalRequest.approvalDate.toLocalDate()).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -287,7 +287,7 @@ class AthleteController(
         requireSecretariaOrAdmin(user)?.let { return it }
         return athleteService.rejectAthlete(athleteId).handle(
             onFailure = { handleAthleteError(it) },
-            onSuccess = { athlete -> respondAdminDto(athlete) },
+            onSuccess = { athlete -> respondAdminOutput(athlete) },
         )
     }
 
@@ -302,23 +302,23 @@ class AthleteController(
             Problem.Unauthorized("requires SECRETARIA or ADMIN role").response(HttpStatus.FORBIDDEN)
         }
 
-    private fun respondDetailDto(athlete: Athlete): ResponseEntity<Any> {
+    private fun respondDetailOutput(athlete: Athlete): ResponseEntity<Any> {
         val member =
             athleteService.loadMember(athlete.memberId)
                 ?: return Problem
                     .AthleteNotFound("memberId", athlete.memberId)
                     .response(HttpStatus.INTERNAL_SERVER_ERROR)
         val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-        return ResponseEntity.ok<Any>(athlete.toDetailDto(member, today))
+        return ResponseEntity.ok<Any>(athlete.toDetailOutput(member, today))
     }
 
-    private fun respondAdminDto(athlete: Athlete): ResponseEntity<Any> {
+    private fun respondAdminOutput(athlete: Athlete): ResponseEntity<Any> {
         val member =
             athleteService.loadMember(athlete.memberId)
                 ?: return Problem
                     .AthleteNotFound("memberId", athlete.memberId)
                     .response(HttpStatus.INTERNAL_SERVER_ERROR)
-        return ResponseEntity.ok<Any>(athlete.toAdminDto(member))
+        return ResponseEntity.ok<Any>(athlete.toAdminOutput(member))
     }
 
     private fun handleAthleteError(error: AthleteError): ResponseEntity<Any> =
