@@ -18,6 +18,19 @@ export function isoToLisbonInput(iso: string): string {
   return `${get("year")}-${get("month")}-${get("day")}T${get("hour")}:${get("minute")}`;
 }
 
+/**
+ * Mostra a hora "HH:mm" em Lisboa de um Instant UTC ("...Z") — usado para a hora de validação
+ * de um bilhete (usedAt), que o servidor envia como Instant.
+ */
+export function formatLocalTime(iso: string): string {
+  return new Intl.DateTimeFormat("pt-PT", {
+    timeZone: LISBON,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(iso));
+}
+
 /** Mostra data + hora de um evento em hora de Lisboa para a UI. */
 export function formatEventDateTime(iso: string): string {
   return new Intl.DateTimeFormat("pt-PT", {
