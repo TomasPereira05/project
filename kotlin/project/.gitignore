@@ -38,3 +38,7 @@ out/
 
 ### Kotlin ###
 .kotlin
+
+### Preview do bilhete (gerado por :services:ticketPreview) ###
+bilhete-sample.pdf
+bilhete-sample-p*.png

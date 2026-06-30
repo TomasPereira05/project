@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import pt.isel.jagoz.domain.event.Ticket
 
 interface TicketRepository {
@@ -35,6 +35,6 @@ interface TicketRepository {
 
     fun markAsUsed(
         ticketId: Long,
-        usedAt: LocalDateTime,
+        usedAt: Instant,
     ): Boolean
 }
