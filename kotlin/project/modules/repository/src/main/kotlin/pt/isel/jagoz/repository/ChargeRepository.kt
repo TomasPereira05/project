@@ -14,6 +14,8 @@ interface ChargeRepository {
 
     fun findPendingBySponsorship(sponsorshipId: Long): Charge?
 
+    fun countPending(): Long
+
     fun existsByMemberSeasonMonth(
         memberId: Long,
         season: String,

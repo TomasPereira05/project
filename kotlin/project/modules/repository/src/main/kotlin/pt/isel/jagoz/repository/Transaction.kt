@@ -40,4 +40,10 @@ interface Transaction {
     val teamGroupRepository: TeamGroupRepository
 
     val fileRepository: FileRepository
+
+    val trainingScheduleRepository: TrainingScheduleRepository
+
+    val seasonRepository: SeasonRepository
+
+    val emailNotificationLogRepository: EmailNotificationLogRepository
 }

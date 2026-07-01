@@ -15,6 +15,7 @@ export type Sponsor = {
   phone: string;
   nif: string;
   userId: number | null;
+  accountUsername?: string | null;
 };
 
 export type SponsorType = "PUB" | "TEAM" | "OTHER";

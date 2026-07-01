@@ -11,6 +11,7 @@ import type {
   ManagedAthlete,
   PaginatedResponse,
   TeamCatalogCategory,
+  TrainingSchedule,
   TeamGroup,
 } from "./types";
 
@@ -198,6 +199,17 @@ export function rejectAthlete(athleteId: number) {
 
 export function fetchAllTeamCategories() {
   return request<TeamCatalogCategory[]>("/teams/categories");
+}
+
+export function fetchTeamTrainingSchedules(teamCategoryId: number, season?: string) {
+  const search = new URLSearchParams();
+  if (season?.trim()) search.set("season", season.trim());
+  const query = search.toString();
+  return request<TrainingSchedule[]>(`/teams/${teamCategoryId}/training-schedules${query ? `?${query}` : ""}`);
+}
+
+export function fetchActiveSeason() {
+  return request<{ seasonId: number; name: string; startsAt: string; endsAt: string; active: boolean }>("/seasons/active");
 }
 
 export function createTeamCategory(payload: { teamGroupId: number; code: string; label: string; sortOrder: number }) {

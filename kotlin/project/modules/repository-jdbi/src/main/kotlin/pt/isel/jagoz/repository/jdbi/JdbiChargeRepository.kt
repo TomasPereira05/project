@@ -52,6 +52,12 @@ class JdbiChargeRepository(
             .findOne()
             .orElse(null)
 
+    override fun countPending(): Long =
+        handle
+            .createQuery("SELECT COUNT(*) FROM jagoz.charge WHERE status = 'PENDING'")
+            .mapTo(Long::class.java)
+            .one()
+
     override fun existsByMemberSeasonMonth(
         memberId: Long,
         season: String,

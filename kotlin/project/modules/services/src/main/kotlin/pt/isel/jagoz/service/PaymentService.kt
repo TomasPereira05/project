@@ -88,6 +88,7 @@ data class PaymentReceipt(
     val type: ChargeType,
     val payerName: String,
     val payerNif: String?,
+    val payerAddressLines: List<String>,
     val paidAt: String,
     val amount: Int,
     val provider: String,
@@ -314,20 +315,23 @@ class PaymentService(
                 return@run failure(PaymentError.InvalidOperation("Sponsorship is not paid"))
             }
 
+            val paidAt =
+                Clock.System
+                    .now()
+                    .toLocalDateTime(TimeZone.currentSystemDefault())
+                    .date
+                    .toString()
+
             success(
                 PaymentReceipt(
-                    receiptNumber = "REC-SP-${sponsorship.sponsorshipId.toString().padStart(6, '0')}",
+                    receiptNumber = "${paidAt.take(4)}/${sponsorship.sponsorshipId}",
                     paymentId = 0,
                     chargeId = 0,
                     type = ChargeType.SPONSORSHIP_FEE,
                     payerName = sponsor.name,
                     payerNif = sponsor.nif,
-                    paidAt =
-                        Clock.System
-                            .now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .date
-                            .toString(),
+                    payerAddressLines = emptyList(),
+                    paidAt = paidAt,
                     amount = sponsorship.price,
                     provider = "MANUAL",
                     providerRef = null,
@@ -903,12 +907,22 @@ class PaymentService(
 
         return success(
             PaymentReceipt(
-                receiptNumber = "REC-${payment.paymentId.toString().padStart(6, '0')}",
+                receiptNumber = "${paidAt.take(4)}/${payment.paymentId}",
                 paymentId = payment.paymentId,
                 chargeId = charge.chargeId,
                 type = charge.type,
                 payerName = member?.completeName ?: sponsor?.name ?: charge.chargeUser?.username ?: charge.chargeUser?.email ?: "Cliente",
                 payerNif = member?.nif ?: sponsor?.nif,
+                payerAddressLines =
+                    member
+                        ?.let {
+                            listOf(
+                                it.address,
+                                "${it.postalCode} ${it.city}",
+                                "Portugal",
+                            )
+                        }
+                        ?: emptyList(),
                 paidAt = paidAt,
                 amount = payment.amount,
                 provider = payment.provider,

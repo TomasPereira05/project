@@ -26,6 +26,15 @@ class EmailService(
         val qrToken: String,
     )
 
+    data class OverduePaymentEmailLine(
+        val label: String,
+        val description: String,
+        val season: String,
+        val month: String,
+        val dueDate: String,
+        val amountCents: Int,
+    )
+
     /**
      * Envia o email de confirmação de compra. Os bilhetes seguem num **PDF anexo** (um documento
      * com os dados do jogo e um QR por bilhete), gerado a partir de XHTML — reaproveitando a
@@ -55,6 +64,66 @@ class EmailService(
         )
         logger.info("Ticket purchase email sent to {} ({} tickets)", buyerEmail, lines.size)
     }
+
+    fun sendOverduePaymentReminderEmail(
+        memberName: String,
+        memberEmail: String,
+        paymentUrl: String,
+        lines: List<OverduePaymentEmailLine>,
+    ) {
+        val rows = lines.joinToString("") { overduePaymentRowHtml(it) }
+        val body = overduePaymentEmailHtml(memberName, paymentUrl, rows, lines.sumOf { it.amountCents })
+
+        emailSender.sendEmail(
+            to = memberEmail,
+            subject = "Regularizacao de quotas e mensalidades",
+            body = body,
+            isHtml = true,
+        )
+        logger.info("Overdue payment reminder email sent to {} ({} items)", memberEmail, lines.size)
+    }
+
+    private fun overduePaymentRowHtml(line: OverduePaymentEmailLine): String =
+        """
+        <tr>
+          <td style="padding:12px;border-top:1px solid #e2e8f0;">
+            <div style="font-weight:700;color:#0f172a;">${line.label}</div>
+            <div style="color:#475569;font-size:13px;margin-top:2px;">${line.description}</div>
+            <div style="color:#64748b;font-size:12px;margin-top:4px;">${line.month} ${line.season} · vence em ${line.dueDate}</div>
+          </td>
+          <td style="padding:12px;border-top:1px solid #e2e8f0;text-align:right;font-weight:700;color:#0f172a;">
+            ${formatEuros(line.amountCents)}
+          </td>
+        </tr>
+        """.trimIndent()
+
+    private fun overduePaymentEmailHtml(
+        memberName: String,
+        paymentUrl: String,
+        rowsHtml: String,
+        totalCents: Int,
+    ): String =
+        """
+        <div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;color:#0f172a;">
+          <div style="background:#004F98;border-top:3px solid #FACC15;color:#fff;padding:24px;border-radius:12px 12px 0 0;">
+            <div style="font-size:12px;letter-spacing:0.15em;text-transform:uppercase;opacity:0.8;">Pagamentos em atraso</div>
+            <h1 style="margin:6px 0 0;font-size:22px;">Regularizacao de quotas e mensalidades</h1>
+          </div>
+          <div style="border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px;padding:24px;">
+            <p style="margin:0 0 16px;">Ola $memberName, existem pagamentos em atraso associados a tua ficha:</p>
+            <table style="width:100%;border-collapse:collapse;">$rowsHtml</table>
+            <div style="margin-top:16px;text-align:right;font-size:15px;">
+              <strong>Total em atraso: ${formatEuros(totalCents)}</strong>
+            </div>
+            <div style="margin-top:22px;">
+              <a href="$paymentUrl" style="display:inline-block;background:#004F98;color:#fff;text-decoration:none;border-radius:8px;padding:12px 16px;font-weight:700;">
+                Ver pagamentos
+              </a>
+            </div>
+            <p style="margin:20px 0 0;color:#64748b;font-size:12px;">Se ja regularizaste estes valores recentemente, podes ignorar este email.</p>
+          </div>
+        </div>
+        """.trimIndent()
 
     /**
      * Renderiza o PDF do bilhete com [lines] **sem enviar email** — usado pelo alvo de preview

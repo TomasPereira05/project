@@ -34,7 +34,7 @@ class JdbiChargeItemRepository(
         handle
             .createQuery(
                 """
-                SELECT ci.*, c.status AS charge_status, paid_payment.payment_id
+                SELECT ci.*, c.status AS charge_status, c.type AS charge_type, paid_payment.payment_id
                 FROM jagoz.charge_item ci
                 JOIN jagoz.charge c ON c.charge_id = ci.charge_id
                 LEFT JOIN LATERAL (
@@ -59,8 +59,9 @@ class JdbiChargeItemRepository(
                             month = rs.getInt("month"),
                             amount = rs.getInt("amount"),
                             description = rs.getString("description"),
-                        ),
+                    ),
                     chargeStatus = ChargeStatus.valueOf(rs.getString("charge_status")),
+                    chargeType = pt.isel.jagoz.domain.payment.ChargeType.valueOf(rs.getString("charge_type")),
                     paymentId = (rs.getObject("payment_id") as? Number)?.toLong(),
                 )
             }.list()

@@ -29,6 +29,21 @@ export type TeamGroup = {
   sortOrder: number | null;
 };
 
+export type TrainingSchedule = {
+  trainingScheduleId: number;
+  teamCategoryId: number;
+  teamLabel: string;
+  teamCode: string;
+  season: string;
+  weekday: number;
+  startTime: string;
+  endTime: string;
+  fieldName: string;
+  fieldZone: string | null;
+  active: boolean;
+  notes: string | null;
+};
+
 /** Espelha `MemberOutput` no backend. Usado dentro de `AthleteAdmin.member`. */
 export type MemberOutput = {
   memberId: number;

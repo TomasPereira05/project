@@ -68,6 +68,43 @@ CREATE TABLE team_category (
     sort_order INT NOT NULL DEFAULT 0
 );
 
+CREATE TABLE club_season (
+    season_id SERIAL PRIMARY KEY,
+    name VARCHAR(9) UNIQUE NOT NULL,
+    starts_at DATE NOT NULL,
+    ends_at DATE NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT chk_club_season_name CHECK (name ~ '^[0-9]{4}/[0-9]{4}$'),
+    CONSTRAINT chk_club_season_dates CHECK (starts_at < ends_at)
+);
+
+CREATE UNIQUE INDEX club_season_single_active_idx
+    ON club_season (active)
+    WHERE active = true;
+
+CREATE TABLE training_schedule (
+    training_schedule_id SERIAL PRIMARY KEY,
+    team_category_id INT NOT NULL REFERENCES team_category(team_category_id) ON DELETE CASCADE,
+    season VARCHAR(9) NOT NULL,
+    weekday INT NOT NULL CHECK (weekday BETWEEN 1 AND 7),
+    start_time VARCHAR(5) NOT NULL,
+    end_time VARCHAR(5) NOT NULL,
+    field_name VARCHAR(120) NOT NULL,
+    field_zone VARCHAR(120),
+    active BOOLEAN NOT NULL DEFAULT TRUE,
+    notes TEXT,
+
+    CONSTRAINT chk_training_schedule_time_format CHECK (
+        start_time ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+        AND end_time ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'
+        AND start_time < end_time
+    )
+);
+
+CREATE INDEX training_schedule_week_idx
+    ON training_schedule (season, active, weekday, start_time);
+
 CREATE TABLE athlete (
     athlete_id       SERIAL PRIMARY KEY,
     member_id        INT NOT NULL UNIQUE REFERENCES member(member_id) ON DELETE CASCADE,
@@ -354,6 +391,21 @@ CREATE TABLE charge_item (
 
     UNIQUE (charge_id, season, month)
 );
+
+CREATE TABLE email_notification_log (
+    email_notification_log_id SERIAL PRIMARY KEY,
+    notification_type VARCHAR(80) NOT NULL,
+    member_id INT NOT NULL REFERENCES member(member_id) ON DELETE CASCADE,
+    charge_id INT REFERENCES charge(charge_id) ON DELETE SET NULL,
+    charge_type charge_type NOT NULL,
+    season VARCHAR(50) NOT NULL,
+    month INT NOT NULL CHECK (month BETWEEN 1 AND 12),
+    recipient_email VARCHAR(255) NOT NULL,
+    sent_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX email_notification_log_lookup_idx
+    ON email_notification_log (notification_type, member_id, charge_type, season, month, sent_at DESC);
 
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,

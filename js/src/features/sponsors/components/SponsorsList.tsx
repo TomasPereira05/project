@@ -123,7 +123,7 @@ export default function SponsorsList() {
                         {sponsor.userId ? (
                           <Link className="sponsor-user-link" to={`/admin/users/${sponsor.userId}`}>
                             <UserRound size={16} />
-                            #{sponsor.userId}
+                            {sponsor.accountUsername}
                           </Link>
                         ) : (
                           <span className="sponsor-muted-text">{t("sponsors.companies.noAccount")}</span>

@@ -993,7 +993,16 @@
       "viewAria": "View {{name}} profile",
       "ageMissing": "Age —",
       "trainingSchedules": "Training schedules",
-      "noSchedules": "No schedules defined."
+      "noSchedules": "No schedules defined.",
+      "weekdays": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
     },
     "teamSettings": {
       "eyebrow": "Teams",
@@ -1209,11 +1218,13 @@
       "members": "Members",
       "athletes": "Athletes",
       "teams": "Teams",
+      "trainingSchedules": "Schedules",
       "sponsorApprovals": "Approvals",
       "sponsorSettings": "Sponsorship table",
       "users": "Users",
       "sponsors": "Sponsorships",
-      "sponsorCompanies": "Sponsors"
+      "sponsorCompanies": "Sponsors",
+      "seasons": "Seasons"
     },
     "home": {
       "eyebrow": "Back office",
@@ -1263,7 +1274,138 @@
       "pendingAthletes": "Pending athletes",
       "sponsorships": "Sponsorships",
       "pendingSponsorships": "To approve",
+      "approvedUnpaidSponsorships": "Approved unpaid",
+      "activeSeason": "Active season: {{season}}",
       "error": "Could not load all numbers."
+    },
+    "alerts": {
+      "eyebrow": "Alerts",
+      "title": "Important pending items",
+      "loading": "Loading alerts...",
+      "empty": "No critical alerts right now.",
+      "pendingMembers": {
+        "title": "{{count}} pending members",
+        "description": "Member requests waiting for a decision."
+      },
+      "pendingAthletes": {
+        "title": "{{count}} pending athletes",
+        "description": "Athlete registrations waiting for review."
+      },
+      "pendingSponsorships": {
+        "title": "{{count}} sponsorships to approve",
+        "description": "Submitted requests that need review."
+      },
+      "pendingCharges": {
+        "title": "{{count}} pending charges",
+        "description": "Created payments that have not been completed."
+      },
+      "todayTraining": {
+        "title": "{{count}} trainings today",
+        "description": "Active blocks scheduled today in the active season."
+      }
+    },
+    "seasons": {
+      "eyebrow": "Configuration",
+      "title": "Season management",
+      "description": "Create sports seasons, define dates, and choose the active season used by schedules and public views.",
+      "loading": "Loading seasons...",
+      "empty": "There are no seasons yet.",
+      "list": {
+        "eyebrow": "Seasons",
+        "title": "Season list"
+      },
+      "table": {
+        "name": "Name",
+        "period": "Period",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive"
+      },
+      "actions": {
+        "edit": "Edit season",
+        "activate": "Make active"
+      },
+      "form": {
+        "createEyebrow": "New season",
+        "editEyebrow": "Edit season",
+        "createTitle": "Add season",
+        "editTitle": "Season details",
+        "name": "Name",
+        "startsAt": "Start",
+        "endsAt": "End",
+        "create": "Add",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "feedback": {
+        "created": "Season created successfully.",
+        "updated": "Season updated successfully.",
+        "activated": "Active season updated."
+      },
+      "errors": {
+        "load": "Could not load seasons.",
+        "save": "Could not save the season. Check the format and dates.",
+        "activate": "Could not activate the season."
+      }
+    },
+    "training": {
+      "eyebrow": "Training",
+      "title": "Training schedules",
+      "description": "Organize weekly field occupation by team, season, day, and zone.",
+      "loading": "Loading schedules...",
+      "empty": "There are no schedules for these filters yet.",
+      "weekdays": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
+      "overview": {
+        "eyebrow": "Field occupation",
+        "title": "Weekly schedule",
+        "manage": "Manage schedules"
+      },
+      "filters": {
+        "season": "Season",
+        "showInactive": "Show inactive schedules"
+      },
+      "board": {
+        "eyebrow": "Weekly map",
+        "title": "Field occupation"
+      },
+      "form": {
+        "createEyebrow": "New block",
+        "editEyebrow": "Edit block",
+        "createTitle": "Add training",
+        "editTitle": "Training details",
+        "team": "Team",
+        "weekday": "Day",
+        "startTime": "Start",
+        "endTime": "End",
+        "fieldName": "Field",
+        "fieldZone": "Zone",
+        "notes": "Notes",
+        "create": "Add",
+        "save": "Save",
+        "saving": "Saving..."
+      },
+      "feedback": {
+        "created": "Schedule created successfully.",
+        "updated": "Schedule updated successfully.",
+        "deactivated": "Schedule marked inactive.",
+        "reactivated": "Schedule reactivated."
+      },
+      "errors": {
+        "load": "Could not load schedules.",
+        "save": "Could not save the schedule. Check whether there is overlap in the same field and zone.",
+        "toggle": "Could not change the schedule status."
+      }
     }
   },
   "users": {

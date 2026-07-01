@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
-import { BadgeEuro, Clock3, Settings, Ticket, Trophy, UserCheck, Users } from "lucide-react";
+import { AlertTriangle, BadgeEuro, CalendarClock, Clock3, Settings, Ticket, Trophy, UserCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
 import { useAdminOverviewStats } from "../hooks/useAdminOverviewStats";
+import { fetchTrainingSchedules} from "../api";
+import type { TrainingSchedule } from "../types";
+import { dayKeys, TrainingScheduleBoard } from "./TrainingScheduleBoard";
 
 const adminCards = [
   {
@@ -39,6 +43,36 @@ const adminCards = [
 export default function AdminHome() {
   const { t } = useTranslation();
   const { hasError, isLoading, stats } = useAdminOverviewStats();
+  const [schedules, setSchedules] = useState<TrainingSchedule[]>([]);
+  const [isScheduleLoading, setIsScheduleLoading] = useState(true);
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadSchedules() {
+      if (!stats.activeSeason) {
+        setSchedules([]);
+        setIsScheduleLoading(false);
+        return;
+      }
+
+      setIsScheduleLoading(true);
+      try {
+        const response = await fetchTrainingSchedules({ season: stats.activeSeason, activeOnly: true });
+        if (!ignore) setSchedules(response);
+      } catch {
+        if (!ignore) setSchedules([]);
+      } finally {
+        if (!ignore) setIsScheduleLoading(false);
+      }
+    }
+
+    void loadSchedules();
+
+    return () => {
+      ignore = true;
+    };
+  }, [stats.activeSeason]);
 
   const statGroups = [
     {
@@ -62,9 +96,50 @@ export default function AdminHome() {
       cards: [
         { icon: BadgeEuro, labelKey: "admin.stats.sponsorships", value: stats.totalSponsorships },
         { icon: Clock3, labelKey: "admin.stats.pendingSponsorships", value: stats.pendingSponsorships },
+        { icon: BadgeEuro, labelKey: "admin.stats.approvedUnpaidSponsorships", value: stats.approvedUnpaidSponsorships },
       ],
     },
   ];
+
+  const alerts = [
+    {
+      icon: Users,
+      titleKey: "admin.alerts.pendingMembers.title",
+      descriptionKey: "admin.alerts.pendingMembers.description",
+      value: stats.pendingMembers,
+      to: "/admin/members",
+    },
+    {
+      icon: Trophy,
+      titleKey: "admin.alerts.pendingAthletes.title",
+      descriptionKey: "admin.alerts.pendingAthletes.description",
+      value: stats.pendingAthletes,
+      to: "/admin/athletes",
+    },
+    {
+      icon: BadgeEuro,
+      titleKey: "admin.alerts.pendingSponsorships.title",
+      descriptionKey: "admin.alerts.pendingSponsorships.description",
+      value: stats.pendingSponsorships,
+      to: "/admin/sponsors/approvals",
+    },
+    {
+      icon: Clock3,
+      titleKey: "admin.alerts.pendingCharges.title",
+      descriptionKey: "admin.alerts.pendingCharges.description",
+      value: stats.pendingCharges,
+      to: "/admin/sponsors",
+    },
+    {
+      icon: CalendarClock,
+      titleKey: "admin.alerts.todayTraining.title",
+      descriptionKey: "admin.alerts.todayTraining.description",
+      value: stats.todayTrainingSchedules,
+      to: "/admin/training-schedules",
+    },
+  ];
+
+  const criticalAlerts = alerts.filter((alert) => alert.value > 0);
 
   return (
     <main className="admin-home">
@@ -78,6 +153,7 @@ export default function AdminHome() {
         <div className="admin-section-header">
           <div>
             <p className="admin-eyebrow">{t("admin.stats.eyebrow")}</p>
+            <h2>{t("admin.stats.activeSeason", { season: stats.activeSeason ?? "-" })}</h2>
           </div>
           {hasError ? <span className="admin-stats-error">{t("admin.stats.error")}</span> : null}
         </div>
@@ -101,6 +177,63 @@ export default function AdminHome() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="admin-stats-section">
+        <div className="admin-section-header">
+          <div>
+            <p className="admin-eyebrow">{t("admin.alerts.eyebrow")}</p>
+            <h2>{t("admin.alerts.title")}</h2>
+          </div>
+        </div>
+        {isLoading ? (
+          <div className="sponsor-empty-card">{t("admin.alerts.loading")}</div>
+        ) : criticalAlerts.length === 0 ? (
+          <div className="admin-alert-empty">
+            <AlertTriangle size={20} />
+            <span>{t("admin.alerts.empty")}</span>
+          </div>
+        ) : (
+          <div className="admin-alert-grid">
+            {criticalAlerts.map((alert) => {
+              const Icon = alert.icon;
+
+              return (
+                <Link className="admin-alert-card" key={alert.titleKey} to={alert.to}>
+                  <Icon size={22} />
+                  <div>
+                    <strong>{t(alert.titleKey, { count: alert.value })}</strong>
+                    <p>{t(alert.descriptionKey)}</p>
+                  </div>
+                  <span>{alert.value.toLocaleString()}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="admin-stats-section">
+        <div className="admin-section-header">
+          <div>
+            <p className="admin-eyebrow">{t("admin.training.overview.eyebrow")}</p>
+            <h2>{t("admin.training.overview.title")}</h2>
+          </div>
+          <Link className="member-link-action" to="/admin/training-schedules">
+            {t("admin.training.overview.manage")}
+          </Link>
+        </div>
+        {isScheduleLoading ? (
+          <div className="sponsor-empty-card">{t("admin.training.loading")}</div>
+        ) : schedules.length === 0 ? (
+          <div className="sponsor-empty-card">{t("admin.training.empty")}</div>
+        ) : (
+          <TrainingScheduleBoard
+            compact
+            schedules={schedules}
+            dayLabel={(weekday) => t(`admin.training.weekdays.${dayKeys[weekday - 1]}`)}
+          />
+        )}
       </section>
 
       <section className="admin-card-grid">

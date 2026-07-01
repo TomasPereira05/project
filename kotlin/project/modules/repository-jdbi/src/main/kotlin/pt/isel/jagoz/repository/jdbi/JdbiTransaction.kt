@@ -4,6 +4,7 @@ import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.repository.AthleteRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.ChargeRepository
+import pt.isel.jagoz.repository.EmailNotificationLogRepository
 import pt.isel.jagoz.repository.EquipmentPlacementRepository
 import pt.isel.jagoz.repository.EventRepository
 import pt.isel.jagoz.repository.FileRepository
@@ -11,6 +12,7 @@ import pt.isel.jagoz.repository.MemberRepository
 import pt.isel.jagoz.repository.OtherSportRepository
 import pt.isel.jagoz.repository.PaymentRepository
 import pt.isel.jagoz.repository.PubOptionRepository
+import pt.isel.jagoz.repository.SeasonRepository
 import pt.isel.jagoz.repository.SponsorRepository
 import pt.isel.jagoz.repository.SponsorshipRepository
 import pt.isel.jagoz.repository.TeamCategoryPriceOverrideRepository
@@ -19,6 +21,7 @@ import pt.isel.jagoz.repository.TeamGroupPriceRepository
 import pt.isel.jagoz.repository.TeamGroupRepository
 import pt.isel.jagoz.repository.TicketRepository
 import pt.isel.jagoz.repository.Transaction
+import pt.isel.jagoz.repository.TrainingScheduleRepository
 import pt.isel.jagoz.repository.UserRepository
 
 class JdbiTransaction(
@@ -42,4 +45,7 @@ class JdbiTransaction(
     override val teamGroupPriceRepository: TeamGroupPriceRepository = JdbiTeamGroupPriceRepository(handle)
     override val teamGroupRepository: TeamGroupRepository = JdbiTeamGroupRepository(handle)
     override val fileRepository: FileRepository = JdbiFileRepository(handle)
+    override val trainingScheduleRepository: TrainingScheduleRepository = JdbiTrainingScheduleRepository(handle)
+    override val seasonRepository: SeasonRepository = JdbiSeasonRepository(handle)
+    override val emailNotificationLogRepository: EmailNotificationLogRepository = JdbiEmailNotificationLogRepository(handle)
 }

@@ -4,12 +4,17 @@ import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
   fetchAllTeamCategories,
+  fetchActiveSeason,
+  fetchTeamTrainingSchedules,
   listByCategory,
   type Athlete,
   type TeamCatalogCategory,
+  type TrainingSchedule,
 } from "..";
 import AthletePageBackground from "./AthletePageBackground";
 import { getInitials } from "../../../shared/utils";
+
+const weekdayKeys = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 
 export default function AthleteByTeamCategory() {
   const { t } = useTranslation();
@@ -18,6 +23,7 @@ export default function AthleteByTeamCategory() {
   const [category, setCategory] = useState<TeamCatalogCategory | null>(null);
   const [categoryUnknown, setCategoryUnknown] = useState(false);
   const [athletes, setAthletes] = useState<Athlete[]>([]);
+  const [schedules, setSchedules] = useState<TrainingSchedule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -38,7 +44,10 @@ export default function AthleteByTeamCategory() {
       }
 
       try {
-        const allCategories = await fetchAllTeamCategories();
+        const [allCategories, activeSeason] = await Promise.all([
+          fetchAllTeamCategories(),
+          fetchActiveSeason(),
+        ]);
         const matched = allCategories.find((c) => c.code === teamCategory);
         if (!matched) {
           if (!ignore) {
@@ -48,10 +57,14 @@ export default function AthleteByTeamCategory() {
           return;
         }
 
-        const response = await listByCategory(matched.teamId);
+        const [athletesResponse, schedulesResponse] = await Promise.all([
+          listByCategory(matched.teamId),
+          fetchTeamTrainingSchedules(matched.teamId, activeSeason.name),
+        ]);
         if (!ignore) {
           setCategory(matched);
-          setAthletes(response);
+          setAthletes(athletesResponse);
+          setSchedules(schedulesResponse);
         }
       } catch {
         if (!ignore) {
@@ -75,6 +88,17 @@ export default function AthleteByTeamCategory() {
     if (category) return t("athletes.category.heading", { category: category.label });
     return t("athletes.category.unknown");
   }, [category, t]);
+
+  const sortedSchedules = useMemo(
+    () =>
+      [...schedules].sort(
+        (left, right) =>
+          left.weekday - right.weekday ||
+          left.startTime.localeCompare(right.startTime) ||
+          left.endTime.localeCompare(right.endTime),
+      ),
+    [schedules],
+  );
 
   return (
     <>
@@ -175,7 +199,25 @@ export default function AthleteByTeamCategory() {
               <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border mb-4">
                 {t("athletes.category.trainingSchedules")}
               </h3>
-              <p className="text-text-secondary">{t("athletes.category.noSchedules")}</p>
+              {sortedSchedules.length === 0 ? (
+                <p className="text-text-secondary">{t("athletes.category.noSchedules")}</p>
+              ) : (
+                <div className="athlete-training-grid">
+                  {sortedSchedules.map((schedule) => (
+                    <article className="athlete-training-card" key={schedule.trainingScheduleId}>
+                      <div>
+                        <strong>{t(`athletes.category.weekdays.${weekdayKeys[schedule.weekday - 1]}`)}</strong>
+                        <span>{schedule.startTime} - {schedule.endTime}</span>
+                      </div>
+                      <p>
+                        {schedule.fieldName}
+                        {schedule.fieldZone ? ` · ${schedule.fieldZone}` : ""}
+                      </p>
+                      {schedule.notes ? <small>{schedule.notes}</small> : null}
+                    </article>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
