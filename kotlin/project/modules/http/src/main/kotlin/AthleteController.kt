@@ -291,10 +291,6 @@ class AthleteController(
         )
     }
 
-    // ─────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────
-
     private fun requireSecretariaOrAdmin(user: AuthenticatedUser): ResponseEntity<Any>? =
         if (user.role == Role.SECRETARIA || user.role == Role.ADMIN) {
             null

@@ -3,7 +3,6 @@ package pt.isel.jagoz.service
 import jakarta.inject.Named
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.minus
@@ -77,6 +76,7 @@ class PaymentReminderService(
                 val memberReminders =
                     activeMembers.mapNotNull { member ->
                         val lines =
+
                             overdueLinesFor(member, transaction, today)
                                 .filterNot { line ->
                                     transaction.emailNotificationLogRepository.existsSentSince(
@@ -147,73 +147,6 @@ class PaymentReminderService(
         )
     }
 
-    private fun oldSendOverduePaymentReminders(): PaymentReminderSummary {
-        return transactionManager.run { transaction ->
-            val activeMembers = transaction.memberRepository.findAllActive()
-            var emailsSent = 0
-            var remindersSent = 0
-
-            activeMembers.forEach { member ->
-                val lines =
-                    overdueLinesFor(member, transaction, today)
-                        .filterNot { line ->
-                            transaction.emailNotificationLogRepository.existsSentSince(
-                                notificationType = NOTIFICATION_TYPE,
-                                memberId = member.memberId,
-                                chargeType = line.chargeType,
-                                season = line.season,
-                                month = line.month,
-                                since = reminderWindowStart,
-                            )
-                        }
-
-                if (lines.isEmpty()) return@forEach
-
-                emailService.sendOverduePaymentReminderEmail(
-                    memberName = member.completeName,
-                    memberEmail = member.email,
-                    paymentUrl = "${stripeProperties.publicUrl.trimEnd('/')}/members/${member.memberId}",
-                    lines =
-                        lines.map {
-                            EmailService.OverduePaymentEmailLine(
-                                label = reminderLabel(it.chargeType),
-                                description = it.description,
-                                season = it.season,
-                                month = monthLabel(it.month),
-                                dueDate = it.dueDate.toString(),
-                                amountCents = it.amount,
-                            )
-                        },
-                )
-
-                lines.forEach { line ->
-                    transaction.emailNotificationLogRepository.save(
-                        EmailNotificationLog(
-                            emailNotificationLogId = 0,
-                            notificationType = NOTIFICATION_TYPE,
-                            memberId = member.memberId,
-                            chargeId = line.chargeId,
-                            chargeType = line.chargeType,
-                            season = line.season,
-                            month = line.month,
-                            recipientEmail = member.email,
-                            sentAt = now,
-                        ),
-                    )
-                }
-
-                emailsSent++
-                remindersSent += lines.size
-            }
-
-            PaymentReminderSummary(
-                membersScanned = activeMembers.size,
-                emailsSent = emailsSent,
-                remindersSent = remindersSent,
-            )
-        }
-    }
-
     private fun overdueLinesFor(
         member: Member,
         transaction: Transaction,
@@ -235,8 +168,11 @@ class PaymentReminderService(
 
                     val existing = existingItems[feeKey(season, yearMonth.month, ChargeType.MEMBER_FEE)]
                     when (existing?.chargeStatus) {
-                        ChargeStatus.PAID -> null
-                        ChargeStatus.PENDING ->
+                        ChargeStatus.PAID -> {
+                            null
+                        }
+
+                        ChargeStatus.PENDING -> {
                             OverdueReminderLine(
                                 chargeId = existing.item.chargeId,
                                 chargeType = ChargeType.MEMBER_FEE,
@@ -246,7 +182,9 @@ class PaymentReminderService(
                                 dueDate = dueDate,
                                 description = existing.item.description,
                             )
-                        else ->
+                        }
+
+                        else -> {
                             OverdueReminderLine(
                                 chargeId = null,
                                 chargeType = ChargeType.MEMBER_FEE,
@@ -256,8 +194,9 @@ class PaymentReminderService(
                                 dueDate = dueDate,
                                 description = "Quota ${monthLabel(yearMonth.month)} $season",
                             )
+                        }
                     }
-                }
+                }.toList()
             } else {
                 emptyList()
             }

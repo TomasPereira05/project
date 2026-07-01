@@ -34,9 +34,9 @@ import pt.isel.jagoz.repository.TeamCategoryRepository
 import pt.isel.jagoz.repository.TeamGroupPriceRepository
 import pt.isel.jagoz.repository.TeamGroupRepository
 import pt.isel.jagoz.repository.TicketRepository
+import pt.isel.jagoz.repository.TrainingScheduleRepository
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
-import pt.isel.jagoz.repository.TrainingScheduleRepository
 import pt.isel.jagoz.repository.UserRepository
 import kotlin.test.Test
 import kotlin.test.assertContains

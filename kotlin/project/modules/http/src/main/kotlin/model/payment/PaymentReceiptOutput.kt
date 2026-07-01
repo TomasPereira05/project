@@ -72,18 +72,19 @@ fun PaymentReceipt.toHtml(): String {
             .ifBlank { "<p>Portugal</p>" }
     val reference = providerRef?.takeIf { it.isNotBlank() } ?: "-"
     val rows =
-        lines.mapIndexed { index, line ->
-            """
-            <tr>
-              <td class="code">${receiptCode(index)}</td>
-              <td>${esc(line.description)}</td>
-              <td class="number">1,00</td>
-              <td class="number">${money(line.amount)}</td>
-              <td class="number">0,00%</td>
-              <td class="number">0,00%</td>
-            </tr>
-            """.trimIndent()
-        }.joinToString("")
+        lines
+            .mapIndexed { index, line ->
+                """
+                <tr>
+                  <td class="code">${receiptCode(index)}</td>
+                  <td>${esc(line.description)}</td>
+                  <td class="number">1,00</td>
+                  <td class="number">${money(line.amount)}</td>
+                  <td class="number">0,00%</td>
+                  <td class="number">0,00%</td>
+                </tr>
+                """.trimIndent()
+            }.joinToString("")
 
     return """
         <!doctype html>

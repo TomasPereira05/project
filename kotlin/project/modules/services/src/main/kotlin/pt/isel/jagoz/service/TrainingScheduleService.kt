@@ -79,7 +79,8 @@ class TrainingScheduleService(
                 )
             val id = transaction.trainingScheduleRepository.save(scheduleToSave)
             val created =
-                transaction.trainingScheduleRepository.findAll(scheduleToSave.season, false)
+                transaction.trainingScheduleRepository
+                    .findAll(scheduleToSave.season, false)
                     .first { it.schedule.trainingScheduleId == id }
             success(created)
         }
@@ -119,7 +120,8 @@ class TrainingScheduleService(
                 )
             transaction.trainingScheduleRepository.update(updated)
             val output =
-                transaction.trainingScheduleRepository.findAll(updated.season, false)
+                transaction.trainingScheduleRepository
+                    .findAll(updated.season, false)
                     .first { it.schedule.trainingScheduleId == trainingScheduleId }
             success(output)
         }
@@ -148,7 +150,8 @@ class TrainingScheduleService(
 
             transaction.trainingScheduleRepository.setActive(trainingScheduleId, active)
             val output =
-                transaction.trainingScheduleRepository.findAll(schedule.season, false)
+                transaction.trainingScheduleRepository
+                    .findAll(schedule.season, false)
                     .first { it.schedule.trainingScheduleId == trainingScheduleId }
             success(output)
         }
