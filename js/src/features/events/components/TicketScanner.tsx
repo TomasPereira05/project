@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Scanner, type IDetectedBarcode, type IScannerError } from "@yudiel/react-qr-scanner";
+import { Scanner } from "@yudiel/react-qr-scanner";
 import { AlertTriangle, ArrowLeft, CheckCircle2, ScanLine, XCircle } from "lucide-react";
-import { useStatusHandler } from "../../../shared/hooks/useStatusHandler";
 import FormBox from "../../../shared/components/MessageFormBox";
-import { fetchEvent, validateTicket } from "../api";
 import { formatLocalTime } from "../utils/datetime";
-import type { EventOutput, TicketValidationOutcome, TicketValidationOutput } from "../types";
+import type { TicketValidationOutcome } from "../types";
+import { useTicketScanner } from "../hooks";
 
 type Severity = "valid" | "warning" | "danger";
 
@@ -32,67 +29,23 @@ export default function TicketScanner() {
   const { t } = useTranslation();
   const params = useParams();
   const eventId = Number(params.eventId);
-  const { message, type, handleError } = useStatusHandler();
-
-  const [event, setEvent] = useState<EventOutput | null>(null);
-  const [result, setResult] = useState<TicketValidationOutput | null>(null);
-  const [cameraError, setCameraError] = useState(false);
-  const [manualToken, setManualToken] = useState("");
-  // evita pedidos concorrentes (a câmara dispara onScan em rajada)
-  const processingRef = useRef(false);
-
-  useEffect(() => {
-    let ignore = false;
-    fetchEvent(eventId)
-      .then((loaded) => {
-        if (!ignore) setEvent(loaded);
-      })
-      .catch(handleError);
-    return () => {
-      ignore = true;
-    };
-  }, [eventId, handleError]);
-
-  const submitToken = useCallback(
-    async (token: string) => {
-      const cleaned = token.trim();
-      if (!cleaned || processingRef.current) return;
-      processingRef.current = true;
-      try {
-        setResult(await validateTicket(eventId, cleaned));
-      } catch (error) {
-        handleError(error);
-      } finally {
-        processingRef.current = false;
-      }
-    },
-    [eventId, handleError],
-  );
-
-  const onScan = useCallback(
-    (codes: IDetectedBarcode[]) => {
-      const raw = codes[0]?.rawValue;
-      if (raw) void submitToken(raw);
-    },
-    [submitToken],
-  );
-
-  const onScanError = useCallback((error: IScannerError) => {
-    // falha de permissão/arranque da câmara: caímos para a entrada manual
-    console.warn("ticket scanner camera error", error);
-    setCameraError(true);
-  }, []);
-
-  const onManualSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    await submitToken(manualToken);
-    setManualToken("");
-  };
+  const {
+    event,
+    result,
+    cameraError,
+    manualToken,
+    setManualToken,
+    message,
+    type,
+    onScan,
+    onScanError,
+    onManualSubmit,
+    clearResult,
+    paused,
+  } = useTicketScanner(eventId);
 
   const severity: Severity | null = result ? SEVERITY_BY_OUTCOME[result.outcome] : null;
   const ResultIcon = severity ? ICON_BY_SEVERITY[severity] : null;
-  // pausa a câmara enquanto um resultado está em ecrã (evita re-leitura do mesmo bilhete)
-  const paused = result !== null;
 
   return (
     <main className="events-page">
@@ -184,7 +137,7 @@ export default function TicketScanner() {
                 </div>
               )}
 
-              <button type="button" className="events-button-primary" onClick={() => setResult(null)}>
+              <button type="button" className="events-button-primary" onClick={clearResult}>
                 <ScanLine size={16} />
                 {t("events.scan.scanNext")}
               </button>

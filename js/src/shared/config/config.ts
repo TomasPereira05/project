@@ -1,6 +1,7 @@
 export const BASE_URL = "/api";
 export const LOGO_SRC = '/images/logo_GDUE.png';
 export const HERO_IMG_SRC = '/images/hero_Background.jpg';
+export const FIELD_VIEW_IMG_SRC = '/images/Field_view.jpeg';
 export const FPF_LOGO_SRC = '/images/FPF_LOGO.png';
 export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/ihG13cuBswEBygjz9";
 export const TWITTER_URL = "https://x.com/GEriceirense";

@@ -1,10 +1,9 @@
 import { BASE_URL } from "../../shared/config/config";
 import { HttpError } from "../../shared/types/HttpError";
-import { centsFromEuroInput } from "../../shared/utils";
 import type {
   CheckoutSessionOutput,
   EventCheckoutInput,
-  EventFormValues,
+  EventInput,
   EventOutput,
   EventStatusFilter,
   EventTicketOutput,
@@ -37,29 +36,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return JSON.parse(text) as T;
 }
 
-// <input type="datetime-local"> dá "yyyy-MM-ddTHH:mm" (sem segundos); o parser do
-// servidor (kotlinx LocalDateTime) exige segundos. Normalizamos para "...:00".
-function ensureSeconds(local: string): string {
-  return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local) ? `${local}:00` : local;
-}
-
-function toBody(values: EventFormValues) {
-  return {
-    name: values.name.trim(),
-    description: values.description.trim(),
-    // string local; o servidor interpreta em Europe/Lisbon
-    startsAt: ensureSeconds(values.startsAt),
-    location: values.location.trim(),
-    priceNormal: centsFromEuroInput(values.priceNormal),
-    priceMember: centsFromEuroInput(values.priceMember),
-    sectors: values.sectors.map((sector) => ({
-      sectorId: sector.sectorId,
-      name: sector.name.trim(),
-      capacity: Number.parseInt(sector.capacity, 10) || 0,
-    })),
-  };
-}
-
 export function fetchEvents(status: EventStatusFilter = "all") {
   const search = new URLSearchParams({ status });
   return request<EventOutput[]>(`/events?${search.toString()}`);
@@ -74,17 +50,17 @@ export function fetchEvent(eventId: number) {
   return request<EventOutput>(`/events/${eventId}`);
 }
 
-export function createEvent(values: EventFormValues) {
+export function createEvent(input: EventInput) {
   return request<EventOutput>("/events", {
     method: "POST",
-    body: JSON.stringify(toBody(values)),
+    body: JSON.stringify(input),
   });
 }
 
-export function updateEvent(eventId: number, values: EventFormValues) {
+export function updateEvent(eventId: number, input: EventInput) {
   return request<EventOutput>(`/events/${eventId}`, {
     method: "PUT",
-    body: JSON.stringify(toBody(values)),
+    body: JSON.stringify(input),
   });
 }
 
