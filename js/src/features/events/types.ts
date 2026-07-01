@@ -59,6 +59,26 @@ export type EventFormValues = {
   sectors: SectorFormValue[];
 };
 
+// ---- payload de criação/edição (form values já normalizados para o servidor) ----
+
+export type SectorInput = {
+  sectorId: number | null; // null = setor novo
+  name: string;
+  capacity: number;
+};
+
+export type EventInput = {
+  name: string;
+  description: string;
+  // string local ("...:00"); o servidor interpreta em Europe/Lisbon
+  startsAt: string;
+  location: string;
+  // cêntimos
+  priceNormal: number;
+  priceMember: number;
+  sectors: SectorInput[];
+};
+
 // ---- compra de bilhetes (público) ----
 
 export type TicketLineInput = {

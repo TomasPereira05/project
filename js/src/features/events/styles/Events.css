@@ -198,8 +198,25 @@
   }
 
   /* ===== Pública: catálogo de bilhetes (/tickets) ===== */
+  /* fundo com a foto do estádio (FIELD_VIEW_IMG_SRC) sem qualquer camada por cima:
+     a foto aparece tal e qual. O conteúdo assenta em cards brancos (cards de
+     evento, painel do wizard, cabeçalho) para manter tudo legível. */
+  .events-public-page {
+    @apply relative min-h-screen overflow-hidden;
+  }
+
+  .events-public-bg {
+    @apply absolute inset-0 bg-cover bg-center bg-no-repeat z-0;
+  }
+
   .events-public {
     @apply mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8;
+  }
+
+  /* cabeçalho num painel branco (em vez de flutuar sobre a foto): o texto escuro
+     fica sempre legível e a foto do estádio aparece sem edição (só página pública) */
+  .events-public-header {
+    @apply rounded-2xl border border-border bg-white/95 px-6 py-5 shadow-soft;
   }
 
   .events-public-grid {
