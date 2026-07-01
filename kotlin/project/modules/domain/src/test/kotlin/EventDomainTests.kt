@@ -2,7 +2,6 @@ package pt.isel.jagoz.event
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
 import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.domain.event.EventDomain
 import pt.isel.jagoz.domain.event.Ticket
@@ -140,7 +139,7 @@ class EventDomainTests {
 
     @Test
     fun `markTicketUsed flags confirmed ticket and sets usedAt`() {
-        val at = LocalDateTime.parse("2027-01-01T10:00:00")
+        val at = Instant.parse("2027-01-01T10:00:00Z")
         val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.CONFIRMED), at)
         val ticket = assertIs<Ticket>(assertIs<Either.Right<*>>(res).value)
         assertEquals(TicketStatus.USED, ticket.status)
@@ -149,13 +148,13 @@ class EventDomainTests {
 
     @Test
     fun `markTicketUsed rejects already used ticket`() {
-        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.USED), LocalDateTime.parse("2027-01-01T10:00:00"))
+        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.USED), Instant.parse("2027-01-01T10:00:00Z"))
         assertIs<TicketError.InvalidOperation>(assertIs<Either.Left<*>>(res).value)
     }
 
     @Test
     fun `markTicketUsed rejects ticket that is not confirmed`() {
-        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.RESERVED), LocalDateTime.parse("2027-01-01T10:00:00"))
+        val res = domain.markTicketUsed(sampleTicket().copy(status = TicketStatus.RESERVED), Instant.parse("2027-01-01T10:00:00Z"))
         assertIs<TicketError.InvalidOperation>(assertIs<Either.Left<*>>(res).value)
     }
 

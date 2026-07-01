@@ -11,7 +11,7 @@ import java.io.ByteArrayOutputStream
 /**
  * Gera o PNG do QR de um bilhete a partir do seu token (campo `qrCode`, atribuído na
  * confirmação do pagamento). Usado pelo email de compra (imagem inline via CID) e, mais
- * tarde, pela validação à porta. Função pura — sem estado nem efeitos externos.
+ * tarde, pela validação à porta.
  */
 @Named
 class QrCodeGenerator {

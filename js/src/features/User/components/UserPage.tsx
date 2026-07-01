@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
+  CreditCard,
   IdCard,
   LogOut,
   Mail,
@@ -23,7 +24,7 @@ export default function UserPage() {
   const { t } = useTranslation();
   const { id, username, email, role, activeMemberId, clearAuth } = useAuth();
 
-  const { member, athlete } = useUserProfile(activeMemberId);
+  const { member, athlete, managedAthletes } = useUserProfile(activeMemberId);
   const { claimError, claimForm, claimMessage, claimed, handleSponsorClaim, setClaimForm } =
     useSponsorClaim(t);
 
@@ -166,43 +167,98 @@ export default function UserPage() {
           </div>
         </section>
 
-        {athlete && (
+        <section className="user-section-card">
+          <div className="user-section-header">
+            <div className="user-section-icon">
+              <UserPlus size={20} />
+            </div>
+            <div>
+              <h2 className="user-section-title">{t("userPage.athlete.title")}</h2>
+              <p className="user-section-description">
+                {athlete
+                  ? t("userPage.athlete.currentCategory", { category: athlete.teamCategoryLabel })
+                  : t("userPage.athlete.noAthleteDescription")}
+              </p>
+            </div>
+          </div>
+
+          {athlete ? (
+            <>
+              <div className="user-link-actions">
+                <Link to={`/athletes/${athlete.athleteId}`} className="user-button-primary">
+                  <UserPlus size={18} />
+                  {t("userPage.athlete.view")}
+                </Link>
+              </div>
+              <div className="user-section-body pt-0">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <FileUploadList
+                    accept="application/pdf,image/png,image/jpeg,image/webp"
+                    kind="ATHLETE_ID_CARD"
+                    ownerId={athlete.athleteId}
+                    ownerType="ATHLETE"
+                    title={t("files.kinds.ATHLETE_ID_CARD")}
+                  />
+                  <FileUploadList
+                    accept="application/pdf,image/png,image/jpeg,image/webp"
+                    kind="ATHLETE_MEDICAL_EXAM"
+                    ownerId={athlete.athleteId}
+                    ownerType="ATHLETE"
+                    title={t("files.kinds.ATHLETE_MEDICAL_EXAM")}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="user-link-actions">
+              <Link to="/athletes/register" className="user-button-primary">
+                <UserPlus size={18} />
+                {t("userPage.athlete.become")}
+              </Link>
+            </div>
+          )}
+        </section>
+
+        {managedAthletes.length > 0 && (
           <section className="user-section-card">
             <div className="user-section-header">
               <div className="user-section-icon">
-                <UserPlus size={20} />
+                <Users size={20} />
               </div>
               <div>
-                <h2 className="user-section-title">{t("userPage.athlete.title")}</h2>
-                <p className="user-section-description">
-                  {t("userPage.athlete.currentCategory", { category: athlete.teamCategoryLabel })}
-                </p>
+                <h2 className="user-section-title">{t("userPage.myAthletes.title")}</h2>
+                <p className="user-section-description">{t("userPage.myAthletes.description")}</p>
               </div>
             </div>
 
-            <div className="user-link-actions">
-              <Link to={`/athletes/${athlete.athleteId}`} className="user-button-primary">
-                <UserPlus size={18} />
-                {t("userPage.athlete.view")}
-              </Link>
-            </div>
-            <div className="user-section-body pt-0">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FileUploadList
-                  accept="application/pdf,image/png,image/jpeg,image/webp"
-                  kind="ATHLETE_ID_CARD"
-                  ownerId={athlete.athleteId}
-                  ownerType="ATHLETE"
-                  title={t("files.kinds.ATHLETE_ID_CARD")}
-                />
-                <FileUploadList
-                  accept="application/pdf,image/png,image/jpeg,image/webp"
-                  kind="ATHLETE_MEDICAL_EXAM"
-                  ownerId={athlete.athleteId}
-                  ownerType="ATHLETE"
-                  title={t("files.kinds.ATHLETE_MEDICAL_EXAM")}
-                />
-              </div>
+            <div className="user-section-body">
+              <ul className="user-athlete-list">
+                {managedAthletes.map((managed) => (
+                  <li key={managed.athleteId} className="user-athlete-card">
+                    <div className="user-athlete-info">
+                      <p className="user-athlete-name">{managed.name}</p>
+                      <p className="user-athlete-category">{managed.teamCategoryLabel}</p>
+                    </div>
+                    <span className={`user-athlete-fee ${managed.feeOverdue ? "is-overdue" : "is-ok"}`}>
+                      {managed.feeOverdue ? t("userPage.myAthletes.feeOverdue") : t("userPage.myAthletes.feeOk")}
+                    </span>
+                    <div className="user-athlete-actions">
+                      <Link
+                        to={`/athletes/${managed.athleteId}/fees`}
+                        state={{ memberId: managed.memberId, name: managed.name }}
+                        className="user-button-primary"
+                      >
+                        <CreditCard size={18} />
+                        {t("userPage.myAthletes.payFee")}
+                      </Link>
+                      <Link to={`/athletes/${managed.athleteId}`} className="user-button-outline">
+                        <UserPlus size={18} />
+                        {t("userPage.myAthletes.view")}
+                      </Link>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
         )}

@@ -146,6 +146,20 @@ export type AthleteAdmin = {
   guardians: Guardian[];
 };
 
+/**
+ * Card leve de um atleta gerido por uma conta de user (secção "Os Meus Atletas"). Espelha
+ * `ManagedAthleteOutput` no backend. Sem dados sensíveis — só o necessário para listar e
+ * sinalizar quotas em atraso.
+ */
+export type ManagedAthlete = {
+  athleteId: number;
+  memberId: number;
+  name: string;
+  teamCategoryLabel: string;
+  status: AthleteStatus;
+  feeOverdue: boolean;
+};
+
 /** Body de POST /api/athletes. Espelha o formulário completo. */
 export type AthleteInput = {
   // Dados pessoais (vão para Member)
@@ -181,8 +195,28 @@ export type AthleteInput = {
   isSelfRegistration: boolean;
 };
 
-/** Body de PUT /api/athletes/{id}. Update administrativo. */
+/** Body de PUT /api/athletes/{id}/edit. Update administrativo (Member + Athlete). */
 export type AthleteUpdateRequest = {
+  // Dados pessoais (Member)
+  completeName: string;
+  birthDate: string;
+  birthplace: string | null;
+  email: string;
+  phone: string;
+  homePhone: string | null;
+  address: string;
+  postalCode: string;
+  city: string;
+  nif: string;
+  // Quota mensal do atleta em cêntimos (editável pelo admin).
+  membershipQuota: number;
+  // Dados pessoais (Athlete)
+  nationality: string;
+  niss: string;
+  numeroUtente: string;
+  bi: string;
+  biExpirationDate: string;
+  // Dados desportivos / escolares
   jerseyNumber: number | null;
   position: string | null;
   school: string | null;

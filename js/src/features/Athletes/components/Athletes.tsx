@@ -310,7 +310,7 @@ export default function Athletes() {
                                   aria-label={t("athletes.common.edit")}
                                   className="athlete-btn-table-edit"
                                   title={t("athletes.common.edit")}
-                                  to={`${athleteBasePath}/${athlete.athleteId}/edit`}
+                                  to={`${athleteBasePath}/${athlete.athleteId}`}
                                 >
                                   <Pencil size={16} />
                                 </Link>

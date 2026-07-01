@@ -5,6 +5,8 @@ import pt.isel.jagoz.domain.event.EventStatus
 import pt.isel.jagoz.domain.event.TicketPriceType
 import pt.isel.jagoz.domain.event.TicketStatus
 import pt.isel.jagoz.service.EventWithSectors
+import pt.isel.jagoz.service.TicketValidationOutcome
+import pt.isel.jagoz.service.TicketValidationResult
 import pt.isel.jagoz.service.TicketWithSector
 
 data class SectorOutput(
@@ -77,4 +79,16 @@ fun TicketWithSector.toOutput() =
         status = ticket.status,
         qrCode = ticket.qrCode,
         usedAt = ticket.usedAt?.toString(),
+    )
+
+data class TicketValidationOutput(
+    val outcome: TicketValidationOutcome,
+    // null quando o token é desconhecido (INVALID sem bilhete); caso contrário, dados para o operador
+    val ticket: EventTicketOutput?,
+)
+
+fun TicketValidationResult.toOutput() =
+    TicketValidationOutput(
+        outcome = outcome,
+        ticket = ticket?.toOutput(),
     )

@@ -1,4 +1,20 @@
 {
+  "shared": {
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    }
+  },
   "common": {
     "soon": "coming soon"
   },
@@ -150,7 +166,17 @@
     "athlete": {
       "title": "Athlete",
       "currentCategory": "Current category: {{category}}.",
-      "view": "View Athlete Profile"
+      "noAthleteDescription": "You are not registered as an athlete yet.",
+      "view": "View Athlete Profile",
+      "become": "Register as Athlete"
+    },
+    "myAthletes": {
+      "title": "My Athletes",
+      "description": "Athletes under your care. Track their categories and pay their fees.",
+      "feeOk": "Fees up to date",
+      "feeOverdue": "Fees overdue",
+      "payFee": "Pay Fees",
+      "view": "View Athlete"
     },
     "sponsorClaim": {
       "title": "Sponsor",
@@ -707,6 +733,49 @@
     }
   },
   "athletes": {
+    "fees": {
+      "back": "Back to Profile",
+      "title": "Monthly Fees Payment",
+      "loading": "Loading fees…",
+      "noContext": "Open this page from the \"My Athletes\" section of your profile.",
+      "sectionTitle": "Monthly Fees",
+      "sectionDescription": "Athlete payment history and status.",
+      "monthlyFee": "Monthly Fee",
+      "overdueFees": "Overdue Fees",
+      "debtTotal": "Total Owed",
+      "selectTitle": "Select fees",
+      "selectDescription": "Choose the overdue, current or upcoming fees you want to pay in a single checkout.",
+      "selectedTotal": "Selected total",
+      "paySelected": "Pay selected",
+      "paymentStarting": "Preparing payment...",
+      "selectOverdue": "Select overdue",
+      "selectSeason": "Select {{season}}",
+      "select": "Select",
+      "selectFee": "Select fee for {{month}} of season {{season}}",
+      "month": "Month",
+      "season": "Season",
+      "dueDate": "Due date",
+      "value": "Amount",
+      "status": "Status",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{page}} of {{totalPages}}",
+      "statuses": {
+        "OPEN": "Unpaid",
+        "PENDING": "Pending",
+        "PAID": "Paid",
+        "CANCELLED": "Cancelled"
+      },
+      "paymentHistory": "Payment History",
+      "filterSeason": "Filter by season",
+      "allSeasons": "All seasons",
+      "emptyHistory": "This athlete has no fees to show in the history.",
+      "emptyFilteredHistory": "There are no payments for the selected season.",
+      "receipt": "Receipt",
+      "viewReceipt": "View receipt",
+      "loadError": "Could not load the fees.",
+      "payError": "Could not start the payment."
+    },
     "common": {
       "back": "Back",
       "edit": "Edit",
@@ -846,6 +915,11 @@
       "contact": "Contact: {{phone}}",
       "activity": "Activity: {{activity}}"
     },
+    "form": {
+      "photoTitle": "Athlete photo",
+      "photoHelp": "This photo will be used as the main profile image. Required.",
+      "removePhoto": "Remove photo"
+    },
     "register": {
       "title": "Athlete registration",
       "description": "Registration form. After submission, the office receives a notification to download the file and forward it to AFL.",
@@ -883,6 +957,7 @@
       },
       "errors": {
         "loadCategories": "Could not load the age groups.",
+        "photoRequired": "An athlete photo is required.",
         "privacy": "Privacy consent must be accepted.",
         "selectCategory": "Select an age group.",
         "birthDate": "The date of birth must be before today.",
@@ -1041,8 +1116,31 @@
       "edit": "Edit",
       "cancel": "Cancel",
       "tickets": "Tickets",
+      "scan": "Validate entry",
       "confirmCancel": "Cancel event \"{{name}}\"? Sold tickets will be cancelled.",
       "cancelled": "Event cancelled and seats released."
+    },
+    "scan": {
+      "eyebrow": "Door validation",
+      "title": "Validate entry",
+      "description": "Point the camera at the ticket's QR Code to validate entry.",
+      "back": "Back to events",
+      "hint": "Center the ticket's QR Code in the frame.",
+      "idle": "Waiting for a ticket scan...",
+      "cameraError": "Could not access the camera. Check the browser permissions (camera access requires HTTPS) or use manual entry.",
+      "scanNext": "Scan next",
+      "manualLabel": "Manual code entry",
+      "manualPlaceholder": "Paste or type the ticket code",
+      "manualSubmit": "Validate",
+      "usedAtLabel": "Validated at",
+      "outcomes": {
+        "VALID": "Valid entry",
+        "ALREADY_USED": "Ticket already used",
+        "WRONG_EVENT": "Ticket for another event",
+        "OUTSIDE_WINDOW": "Valid ticket, but outside the entry window",
+        "CANCELLED": "Cancelled ticket",
+        "INVALID": "Invalid ticket"
+      }
     },
     "form": {
       "eyebrow": "Event",

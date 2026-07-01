@@ -1,4 +1,20 @@
 {
+  "shared": {
+    "months": {
+      "january": "Janeiro",
+      "february": "Fevereiro",
+      "march": "Março",
+      "april": "Abril",
+      "may": "Maio",
+      "june": "Junho",
+      "july": "Julho",
+      "august": "Agosto",
+      "september": "Setembro",
+      "october": "Outubro",
+      "november": "Novembro",
+      "december": "Dezembro"
+    }
+  },
   "common": {
     "soon": "em breve"
   },
@@ -150,7 +166,17 @@
     "athlete": {
       "title": "Atleta",
       "currentCategory": "Escalão atual: {{category}}.",
-      "view": "Ver Ficha de Atleta"
+      "noAthleteDescription": "Ainda não está inscrito como atleta.",
+      "view": "Ver Ficha de Atleta",
+      "become": "Inscrever-se como Atleta"
+    },
+    "myAthletes": {
+      "title": "Os Meus Atletas",
+      "description": "Atletas a seu cargo. Acompanhe os escalões e pague as quotas.",
+      "feeOk": "Quota em dia",
+      "feeOverdue": "Quota em atraso",
+      "payFee": "Pagar Quota",
+      "view": "Ver Atleta"
     },
     "sponsorClaim": {
       "title": "Patrocinador",
@@ -707,6 +733,49 @@
     }
   },
   "athletes": {
+    "fees": {
+      "back": "Voltar ao Perfil",
+      "title": "Pagamento de Mensalidades",
+      "loading": "A carregar mensalidades…",
+      "noContext": "Abra esta página a partir da secção \"Os Meus Atletas\" do seu perfil.",
+      "sectionTitle": "Mensalidades",
+      "sectionDescription": "Histórico e estado de pagamentos do atleta.",
+      "monthlyFee": "Mensalidade Mensal",
+      "overdueFees": "Mensalidades em Atraso",
+      "debtTotal": "Total em Dívida",
+      "selectTitle": "Selecionar mensalidades",
+      "selectDescription": "Escolha as mensalidades em atraso, atuais ou futuras que pretende pagar num único checkout.",
+      "selectedTotal": "Total selecionado",
+      "paySelected": "Pagar selecionadas",
+      "paymentStarting": "A preparar pagamento...",
+      "selectOverdue": "Selecionar atrasadas",
+      "selectSeason": "Selecionar {{season}}",
+      "select": "Selecionar",
+      "selectFee": "Selecionar mensalidade de {{month}} da época {{season}}",
+      "month": "Mês",
+      "season": "Época",
+      "dueDate": "Vencimento",
+      "value": "Valor",
+      "status": "Estado",
+      "previous": "Anterior",
+      "next": "Seguinte",
+      "page": "Página {{page}} de {{totalPages}}",
+      "statuses": {
+        "OPEN": "Por pagar",
+        "PENDING": "Pendente",
+        "PAID": "Pago",
+        "CANCELLED": "Cancelado"
+      },
+      "paymentHistory": "Histórico de Pagamentos",
+      "filterSeason": "Filtrar por época",
+      "allSeasons": "Todas as épocas",
+      "emptyHistory": "Este atleta não tem mensalidades para apresentar no histórico.",
+      "emptyFilteredHistory": "Não existem pagamentos para a época selecionada.",
+      "receipt": "Recibo",
+      "viewReceipt": "Ver recibo",
+      "loadError": "Não foi possível carregar as mensalidades.",
+      "payError": "Não foi possível iniciar o pagamento."
+    },
     "common": {
       "back": "Voltar",
       "edit": "Editar",
@@ -846,6 +915,11 @@
       "contact": "Contacto: {{phone}}",
       "activity": "Atividade: {{activity}}"
     },
+    "form": {
+      "photoTitle": "Foto do atleta",
+      "photoHelp": "Esta foto será usada como imagem principal do perfil. Obrigatória.",
+      "removePhoto": "Remover foto"
+    },
     "register": {
       "title": "Inscrição de atleta",
       "description": "Formulário de inscrição. Após submissão, a secretaria recebe notificação para descarregar o dossier e reencaminhá-lo à AFL.",
@@ -883,6 +957,7 @@
       },
       "errors": {
         "loadCategories": "Não foi possível carregar os escalões.",
+        "photoRequired": "É obrigatório escolher uma foto do atleta.",
         "privacy": "É necessário aceitar o consentimento de privacidade.",
         "selectCategory": "Seleciona um escalão.",
         "birthDate": "A data de nascimento tem de ser anterior a hoje.",
@@ -1041,8 +1116,31 @@
       "edit": "Editar",
       "cancel": "Cancelar",
       "tickets": "Bilhetes",
+      "scan": "Validar entradas",
       "confirmCancel": "Cancelar o evento \"{{name}}\"? Os bilhetes vendidos serão cancelados.",
       "cancelled": "Evento cancelado e lugares libertados."
+    },
+    "scan": {
+      "eyebrow": "Validação à porta",
+      "title": "Validar entradas",
+      "description": "Aponta a câmara ao QR Code do bilhete para validar a entrada.",
+      "back": "Voltar aos eventos",
+      "hint": "Centra o QR Code do bilhete no enquadramento.",
+      "idle": "Aguardando leitura de um bilhete...",
+      "cameraError": "Não foi possível aceder à câmara. Confirma as permissões do navegador (o acesso à câmara exige HTTPS) ou usa a introdução manual.",
+      "scanNext": "Validar próximo",
+      "manualLabel": "Introdução manual do código",
+      "manualPlaceholder": "Cola ou digita o código do bilhete",
+      "manualSubmit": "Validar",
+      "usedAtLabel": "Validado às",
+      "outcomes": {
+        "VALID": "Entrada válida",
+        "ALREADY_USED": "Bilhete já utilizado",
+        "WRONG_EVENT": "Bilhete de outro evento",
+        "OUTSIDE_WINDOW": "Bilhete válido, mas fora da janela de entrada",
+        "CANCELLED": "Bilhete cancelado",
+        "INVALID": "Bilhete inválido"
+      }
     },
     "form": {
       "eyebrow": "Evento",

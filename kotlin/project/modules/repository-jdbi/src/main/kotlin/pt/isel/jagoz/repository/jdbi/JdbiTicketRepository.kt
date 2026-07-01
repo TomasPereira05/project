@@ -1,6 +1,6 @@
 package pt.isel.jagoz.repository.jdbi
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.domain.event.Ticket
 import pt.isel.jagoz.repository.TicketRepository
@@ -113,7 +113,7 @@ class JdbiTicketRepository(
 
     override fun markAsUsed(
         ticketId: Long,
-        usedAt: LocalDateTime,
+        usedAt: Instant,
     ): Boolean =
         handle
             .createUpdate(

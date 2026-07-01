@@ -30,7 +30,14 @@ typealias AthleteResult = Either<AthleteError, Athlete>
  * Guardians numa só transacção.
  */
 data class AthleteRegistrationInput(
+    // Liga a inscrição do próprio user a `member.user_id` (auto-inscrição).
     val userId: Long?,
+    /**
+     * User que está a fazer a inscrição de um atleta que NÃO é ele próprio (pai/EE). Cria a
+     * associação em `user_athlete` para o atleta aparecer no perfil do criador. Nulo quando é
+     * a secretaria a inscrever em nome de terceiros (não deve ir para o perfil do staff).
+     */
+    val creatorUserId: Long?,
     // Dados pessoais (vão para Member)
     val completeName: String,
     val birthDate: LocalDate,
@@ -76,6 +83,44 @@ data class GuardianInput(
      * com `ValidationError`.
      */
     val memberNumber: Int? = null,
+)
+
+/**
+ * Input do update administrativo de um atleta. Tal como na inscrição, os dados pessoais
+ * vivem no Member e os restantes no Athlete — o service grava ambos os agregados na mesma
+ * transacção (ver `project_athlete_member_relationship.md`). Datas chegam já parseadas como
+ * `LocalDate` (o mapper HTTP trata da conversão das strings ISO).
+ */
+data class AthleteUpdateInput(
+    // Dados pessoais (Member)
+    val completeName: String,
+    val birthDate: LocalDate,
+    val birthplace: String?,
+    val email: String,
+    val phone: String,
+    val homePhone: String?,
+    val address: String,
+    val postalCode: String,
+    val city: String,
+    val nif: String,
+    // Quota mensal do atleta em cêntimos (editável pelo admin na ficha).
+    val membershipQuota: Int,
+    // Dados pessoais (Athlete)
+    val nationality: String,
+    val niss: String,
+    val numeroUtente: String,
+    val bi: String,
+    val biExpirationDate: LocalDate,
+    // Dados desportivos / escolares
+    val jerseyNumber: Int?,
+    val position: String?,
+    val school: String?,
+    val schoolYear: String?,
+    val schoolClass: String?,
+    val lastClub: String?,
+    val season: String?,
+    val hasFamilyInClub: Boolean,
+    val guardians: List<GuardianInput>? = null,
 )
 
 @Named
@@ -191,6 +236,9 @@ class AthleteService(
             val guardians = resolvedGuardians.map { (g, fk) -> g.toGuardian(athleteId, memberId = fk) }
             tx.athleteRepository.saveGuardians(athleteId, guardians)
 
+            // Liga o atleta à conta de quem o inscreveu, para aparecer no perfil "Os Meus Atletas".
+            input.creatorUserId?.let { tx.athleteRepository.linkUserToAthlete(it, athleteId) }
+
             success(athlete.copy(athleteId = athleteId, guardians = guardians))
         }
     }
@@ -239,7 +287,7 @@ class AthleteService(
 
     /**
      * Lista completa para o painel admin — inclui PENDENTES e REJEITADOS.
-     * O DTO no controller deriva o status visual juntando `member.status` e `athlete.active`.
+     * O modelo de resposta no controller deriva o status visual juntando `member.status` e `athlete.active`.
      */
     fun getAllAthletes(): List<Athlete> =
         transactionManager.run { tx ->
@@ -344,14 +392,23 @@ class AthleteService(
     }
 
     /**
-     * Carrega o Member associado a um atleta. Útil para o controller construir DTOs
+     * Atletas que a conta de user gere (para o painel do perfil), via `user_athlete`. Não
+     * carrega guardians — o painel só precisa do nome/escalão/estado.
+     */
+    fun getManagedAthletes(userId: Long): List<Athlete> =
+        transactionManager.run { tx ->
+            tx.athleteRepository.findByManagingUser(userId)
+        }
+
+    /**
+     * Carrega o Member associado a um atleta. Útil para o controller construir as respostas
      * que precisam de campos do Member (nome, data de nascimento, contactos).
      */
     fun loadMember(memberId: Long): Member? = transactionManager.run { tx -> tx.memberRepository.findById(memberId) }
 
     /**
      * Bulk load de Members para uma lista de atletas, indexado por memberId.
-     * Evita N+1 quando o controller mapeia uma lista de Athletes para DTOs.
+     * Evita N+1 quando o controller mapeia uma lista de Athletes para respostas.
      */
     fun loadMembersFor(athletes: List<Athlete>): Map<Long, Member> {
         if (athletes.isEmpty()) return emptyMap()
@@ -410,15 +467,7 @@ class AthleteService(
      */
     fun updateAthlete(
         athleteId: Long,
-        jerseyNumber: Int?,
-        position: String?,
-        school: String?,
-        schoolYear: String?,
-        schoolClass: String?,
-        lastClub: String?,
-        season: String?,
-        hasFamilyInClub: Boolean,
-        guardians: List<GuardianInput>?,
+        input: AthleteUpdateInput,
     ): AthleteResult {
         LOG.info("Updating athlete data athleteId=$athleteId")
 
@@ -427,22 +476,57 @@ class AthleteService(
                 tx.athleteRepository.findById(athleteId)
                     ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
 
+            // 1) Dados pessoais que vivem no Member — validados e gravados via memberDomain.
+            val currentMember =
+                tx.memberRepository.findById(current.memberId)
+                    ?: return@run failure(AthleteError.NotFound("memberId", current.memberId))
+            val candidateMember =
+                currentMember.copy(
+                    completeName = input.completeName,
+                    birthDate = input.birthDate,
+                    birthplace = input.birthplace,
+                    email = input.email,
+                    phone = input.phone,
+                    homePhone = input.homePhone,
+                    address = input.address,
+                    postalCode = input.postalCode,
+                    city = input.city,
+                    nif = input.nif,
+                    membershipQuota = input.membershipQuota,
+                )
+            val validatedMember =
+                when (val res = memberDomain.update(currentMember, candidateMember)) {
+                    is Either.Left -> return@run failure(memberErrorToAthleteError(res.value))
+                    is Either.Right -> res.value
+                }
+            tx.memberRepository.update(validatedMember)
+
+            // 2) Dados que vivem no Athlete (pessoais + desportivos/escolares).
             val updated =
                 current.copy(
-                    jerseyNumber = jerseyNumber,
-                    position = position,
-                    school = school,
-                    schoolYear = schoolYear,
-                    schoolClass = schoolClass,
-                    lastClub = lastClub,
-                    season = season,
-                    hasFamilyInClub = hasFamilyInClub,
+                    nationality = input.nationality,
+                    niss = input.niss,
+                    numeroUtente = input.numeroUtente,
+                    bi = input.bi,
+                    biExpirationDate = input.biExpirationDate,
+                    jerseyNumber = input.jerseyNumber,
+                    position = input.position,
+                    school = input.school,
+                    schoolYear = input.schoolYear,
+                    schoolClass = input.schoolClass,
+                    lastClub = input.lastClub,
+                    season = input.season,
+                    hasFamilyInClub = input.hasFamilyInClub,
                 )
+            when (val res = athleteDomain.validateForCreation(updated)) {
+                is Either.Left -> return@run failure(AthleteError.ValidationError(validationErrorMessage(res.value)))
+                is Either.Right -> Unit
+            }
             tx.athleteRepository.update(updated)
 
-            if (guardians != null) {
+            if (input.guardians != null) {
                 val resolved =
-                    guardians.map { g ->
+                    input.guardians.map { g ->
                         if (g.memberNumber == null) {
                             g to null
                         } else {
@@ -543,7 +627,7 @@ class AthleteService(
     ): Guardian =
         Guardian(
             guardianId = 0,
-            athleteId = athleteId,
+            athleteId = listOf(athleteId),
             memberId = memberId,
             name = name,
             role = role,

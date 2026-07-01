@@ -473,7 +473,11 @@ class SponsorshipService(
             transaction.userRepository.findById(authenticatedUser.userId)
                 ?: throw IllegalStateException("User ${authenticatedUser.userId} not found")
         val chargedUser = sponsor.userId?.let { transaction.userRepository.findById(it) }
-        val createdAt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val createdAt =
+            Clock.System
+                .now()
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .date
         val charge =
             Charge(
                 chargeId = 0,

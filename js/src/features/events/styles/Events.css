@@ -374,4 +374,91 @@
   .events-wizard-actions {
     @apply flex items-center justify-between gap-3;
   }
+
+  /* ===== Validação à porta (/admin/events/:id/scan) ===== */
+  .events-scan-layout {
+    @apply grid items-start gap-6 lg:grid-cols-2;
+  }
+
+  .events-scan-camera {
+    @apply relative mx-auto w-full max-w-md overflow-hidden rounded-2xl border border-border bg-black shadow-soft;
+  }
+
+  /* o <video> da lib preenche o contentor mantendo o enquadramento quadrado */
+  .events-scan-camera video {
+    @apply aspect-square h-full w-full object-cover;
+  }
+
+  .events-scan-hint {
+    @apply mt-3 text-center text-sm text-text-secondary;
+  }
+
+  .events-scan-camera-error {
+    @apply rounded-2xl border border-dashed border-amber-300 bg-amber-50 px-5 py-6 text-center text-sm font-medium text-amber-800;
+  }
+
+  /* painel de resultado: ocupa o lado direito; cor depende do desfecho */
+  .events-scan-result {
+    @apply flex flex-col gap-4 rounded-2xl border bg-white p-6 shadow-soft;
+  }
+
+  .events-scan-result.is-idle {
+    @apply items-center justify-center border-dashed border-border bg-muted/40 text-center text-sm text-text-secondary;
+  }
+
+  .events-scan-result.is-valid {
+    @apply border-emerald-300 bg-emerald-50;
+  }
+
+  .events-scan-result.is-warning {
+    @apply border-amber-300 bg-amber-50;
+  }
+
+  .events-scan-result.is-danger {
+    @apply border-red-300 bg-red-50;
+  }
+
+  .events-scan-result-head {
+    @apply flex items-center gap-3;
+  }
+
+  .events-scan-result.is-valid .events-scan-result-head {
+    @apply text-emerald-700;
+  }
+
+  .events-scan-result.is-warning .events-scan-result-head {
+    @apply text-amber-700;
+  }
+
+  .events-scan-result.is-danger .events-scan-result-head {
+    @apply text-red-700;
+  }
+
+  .events-scan-result-title {
+    @apply font-heading text-2xl uppercase tracking-tight;
+  }
+
+  .events-scan-details {
+    @apply flex flex-col divide-y divide-border/70 rounded-xl border border-border bg-white/70;
+  }
+
+  .events-scan-detail {
+    @apply flex items-center justify-between gap-4 px-4 py-2.5 text-sm;
+  }
+
+  .events-scan-detail-label {
+    @apply font-semibold uppercase tracking-wide text-text-secondary;
+  }
+
+  .events-scan-detail-value {
+    @apply text-right font-medium text-text-primary;
+  }
+
+  .events-scan-manual {
+    @apply flex flex-col gap-2 rounded-2xl border border-border bg-white p-4 shadow-soft sm:flex-row sm:items-end;
+  }
+
+  .events-scan-manual-field {
+    @apply flex flex-1 flex-col gap-1.5;
+  }
 }

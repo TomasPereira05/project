@@ -1,7 +1,7 @@
 package pt.isel.jagoz.domain.event
 
 import kotlinx.datetime.Clock
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 import org.springframework.stereotype.Component
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.ValidationError
@@ -93,7 +93,7 @@ class EventDomain {
      */
     fun markTicketUsed(
         ticket: Ticket,
-        usedAt: LocalDateTime,
+        usedAt: Instant,
     ): Either<TicketError, Ticket> {
         if (ticket.status == TicketStatus.USED) return failure(TicketError.InvalidOperation("ticket already used"))
         if (ticket.status != TicketStatus.CONFIRMED) {

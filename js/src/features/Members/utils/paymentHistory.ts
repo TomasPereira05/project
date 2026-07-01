@@ -1,5 +1,4 @@
 import type { Member, MembershipFeeOption, PaymentHistoryItem } from "../types";
-import { todayISO } from "../../../shared/utils/dateInputs";
 
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
@@ -54,21 +53,6 @@ export function buildPaymentHistory(member: Member, t?: Translate): PaymentHisto
       receiptPaymentId: null,
     };
   });
-}
-
-export function getDebtSummary(history: PaymentHistoryItem[]) {
-  const today = todayISO();
-  const pending = history.filter((item) => item.status === "PENDING" && item.dueDate <= today);
-  const pendingCents = pending.reduce((sum, item) => sum + item.amountCents, 0);
-
-  return {
-    pendingCount: pending.length,
-    pendingCents,
-  };
-}
-
-export function isFeeOverdue(option: Pick<MembershipFeeOption, "dueDate" | "selectable">) {
-  return option.selectable && option.dueDate <= todayISO();
 }
 
 export function buildPaymentHistoryFromFeeOptions(

@@ -14,8 +14,8 @@ import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.utils.handle
 import pt.isel.jagoz.http.model.payment.CreateCheckoutSessionInput
 import pt.isel.jagoz.http.model.payment.MarkMembershipFeesPaidInput
-import pt.isel.jagoz.http.model.payment.toOutput
 import pt.isel.jagoz.http.model.payment.toHtml
+import pt.isel.jagoz.http.model.payment.toOutput
 import pt.isel.jagoz.http.model.payment.toService
 import pt.isel.jagoz.http.utils.Problem
 import pt.isel.jagoz.http.utils.Uris
@@ -61,14 +61,15 @@ class PaymentController(
         @PathVariable memberId: Long,
         @RequestBody input: MarkMembershipFeesPaidInput,
     ): ResponseEntity<*> =
-        paymentService.markMembershipFeesPaid(
-            authenticatedUser,
-            memberId,
-            input.membershipFees.map { it.toService() },
-        ).handle(
-            onFailure = { handlePaymentError(it) },
-            onSuccess = { options -> ResponseEntity.ok(options.map { it.toOutput() }) },
-        )
+        paymentService
+            .markMembershipFeesPaid(
+                authenticatedUser,
+                memberId,
+                input.membershipFees.map { it.toService() },
+            ).handle(
+                onFailure = { handlePaymentError(it) },
+                onSuccess = { options -> ResponseEntity.ok(options.map { it.toOutput() }) },
+            )
 
     @GetMapping(Uris.Payments.RECEIPT, produces = [MediaType.TEXT_HTML_VALUE])
     fun getReceipt(

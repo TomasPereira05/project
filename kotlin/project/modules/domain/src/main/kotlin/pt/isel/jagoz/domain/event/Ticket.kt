@@ -1,6 +1,6 @@
 package pt.isel.jagoz.domain.event
 
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.Instant
 
 data class Ticket(
     val ticketId: Long,
@@ -18,5 +18,6 @@ data class Ticket(
     val status: TicketStatus = TicketStatus.RESERVED,
     // atribuído apenas na confirmação do pagamento
     val qrCode: String? = null,
-    val usedAt: LocalDateTime? = null,
+    // instante da validação à porta (coluna TIMESTAMPTZ); null enquanto não usado
+    val usedAt: Instant? = null,
 )

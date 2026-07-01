@@ -125,7 +125,12 @@ class FileServiceTests {
         assertEquals(1, files.saved.size)
         assertEquals(1, storage.puts.size)
         assertContains(storage.puts.single().key, "user/10/user_profile_photo/")
-        assertTrue(storage.puts.single().key.endsWith("-my_photo_.png"))
+        assertTrue(
+            storage.puts
+                .single()
+                .key
+                .endsWith("-my_photo_.png"),
+        )
     }
 
     @Test
@@ -448,17 +453,28 @@ class FileServiceTests {
         private val members: MutableMap<Long, Member> = mutableMapOf(),
     ) : MemberRepository {
         override fun findById(id: Long): Member? = members[id]
+
         override fun save(member: Member): Long = unsupported()
-        override fun update(member: Member) {
-            throw AssertionError("MemberRepository method should not be used")
-        }
+
+        override fun update(member: Member): Unit = throw AssertionError("MemberRepository method should not be used")
+
         override fun findByIds(ids: List<Long>): List<Member> = unsupported()
+
         override fun findByEmail(email: String): Member? = unsupported()
+
         override fun findByMemberNumber(memberNumber: Int): Member? = unsupported()
+
         override fun findAll(): List<Member> = unsupported()
-        override fun findPage(limit: Int, offset: Int): List<Member> = unsupported()
+
+        override fun findPage(
+            limit: Int,
+            offset: Int,
+        ): List<Member> = unsupported()
+
         override fun countAll(): Long = unsupported()
+
         override fun countByStatus(status: MemberStatus): Long = unsupported()
+
         override fun findPageFiltered(
             limit: Int,
             offset: Int,
@@ -474,7 +490,9 @@ class FileServiceTests {
         ): Long = unsupported()
 
         override fun findAllActive(): List<Member> = unsupported()
+
         override fun nextMemberNumber(): Int = unsupported()
+
         private fun <T> unsupported(): T = throw AssertionError("MemberRepository method should not be used")
     }
 
@@ -491,11 +509,20 @@ class FileServiceTests {
         }
 
         override fun findByMemberId(memberId: Long): Athlete? = unsupported()
+
         override fun findAllActive(): List<Athlete> = unsupported()
+
         override fun findAll(): List<Athlete> = unsupported()
-        override fun findPage(limit: Int, offset: Int): List<Athlete> = unsupported()
+
+        override fun findPage(
+            limit: Int,
+            offset: Int,
+        ): List<Athlete> = unsupported()
+
         override fun countAll(): Long = unsupported()
+
         override fun countByStatus(status: AthleteStatus): Long = unsupported()
+
         override fun findPageFiltered(
             limit: Int,
             offset: Int,
@@ -516,17 +543,16 @@ class FileServiceTests {
         ): List<Athlete> = unsupported()
 
         override fun findByIdWithDetail(id: Long): Athlete? = unsupported()
+
         override fun save(athlete: Athlete): Long = unsupported()
+
         override fun saveGuardians(
             athleteId: Long,
             guardians: List<Guardian>,
-        ) {
-            throw AssertionError("AthleteRepository method should not be used")
-        }
+        ): Unit = throw AssertionError("AthleteRepository method should not be used")
 
-        override fun deleteGuardiansByAthleteId(athleteId: Long) {
-            throw AssertionError("AthleteRepository method should not be used")
-        }
+        override fun deleteGuardiansByAthleteId(athleteId: Long): Unit = throw AssertionError("AthleteRepository method should not be used")
+
         private fun <T> unsupported(): T = throw AssertionError("AthleteRepository method should not be used")
     }
 }

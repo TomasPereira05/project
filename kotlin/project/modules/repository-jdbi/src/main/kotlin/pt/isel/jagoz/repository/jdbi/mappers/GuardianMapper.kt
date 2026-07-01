@@ -13,7 +13,10 @@ class GuardianMapper : RowMapper<Guardian> {
     ): Guardian =
         Guardian(
             guardianId = rs.getLong("guardian_id"),
-            athleteId = rs.getLong("athlete_id"),
+            athleteId =
+                (rs.getArray("athlete_ids")?.array as? Array<*>)
+                    ?.mapNotNull { (it as? Number)?.toLong() }
+                    ?: emptyList(),
             memberId = (rs.getObject("member_id") as? Number)?.toLong(),
             name = rs.getString("name"),
             role = GuardianRole.valueOf(rs.getString("role")),

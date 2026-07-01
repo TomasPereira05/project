@@ -8,12 +8,12 @@ import pt.isel.jagoz.domain.member.Member
 import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberStatus
 import pt.isel.jagoz.domain.team.TeamCategory
-import pt.isel.jagoz.http.model.athlete.AthleteCreationInputDto
+import pt.isel.jagoz.http.model.athlete.AthleteCreationInput
 import pt.isel.jagoz.http.model.athlete.AthleteUpdateRequest
-import pt.isel.jagoz.http.model.athlete.GuardianInputDto
-import pt.isel.jagoz.http.model.athlete.toAdminDto
-import pt.isel.jagoz.http.model.athlete.toDetailDto
-import pt.isel.jagoz.http.model.athlete.toPublicDto
+import pt.isel.jagoz.http.model.athlete.GuardianInput
+import pt.isel.jagoz.http.model.athlete.toAdminOutput
+import pt.isel.jagoz.http.model.athlete.toDetailOutput
+import pt.isel.jagoz.http.model.athlete.toPublicOutput
 import pt.isel.jagoz.http.model.athlete.toRegistrationInput
 import pt.isel.jagoz.http.model.athlete.toServiceInput
 import kotlin.test.Test
@@ -84,7 +84,7 @@ class AthleteModelTests {
                 listOf(
                     Guardian(
                         guardianId = 3,
-                        athleteId = 5,
+                        athleteId = listOf(5L),
                         memberId = null,
                         name = "Pai",
                         role = GuardianRole.FATHER,
@@ -98,55 +98,55 @@ class AthleteModelTests {
         )
 
     @Test
-    fun `public dto calculates age after birthday and hides sensitive fields`() {
-        val dto = athlete().toPublicDto(member(), LocalDate.parse("2026-05-18"))
+    fun `public output calculates age after birthday and hides sensitive fields`() {
+        val output = athlete().toPublicOutput(member(), LocalDate.parse("2026-05-18"))
 
-        assertEquals(5, dto.id)
-        assertEquals("Tiago Rocha", dto.nome)
-        assertEquals(16, dto.idade)
-        assertEquals("JUNIORES", dto.teamCategoryCode)
-        assertEquals("Juniores", dto.teamCategoryLabel)
-        assertEquals(10, dto.numero)
-        assertEquals("Medio", dto.posicao)
+        assertEquals(5, output.id)
+        assertEquals("Tiago Rocha", output.nome)
+        assertEquals(16, output.idade)
+        assertEquals("JUNIORES", output.teamCategoryCode)
+        assertEquals("Juniores", output.teamCategoryLabel)
+        assertEquals(10, output.numero)
+        assertEquals("Medio", output.posicao)
     }
 
     @Test
-    fun `detail dto calculates age before birthday and keeps current season list`() {
-        val dto = athlete().toDetailDto(member(), LocalDate.parse("2026-05-17"))
+    fun `detail output calculates age before birthday and keeps current season list`() {
+        val output = athlete().toDetailOutput(member(), LocalDate.parse("2026-05-17"))
 
-        assertEquals(15, dto.idade)
-        assertEquals(listOf("2025/2026"), dto.epocasRepresentadas)
-        assertEquals("/api/files/1/public-athlete-photo", dto.fotoUrl)
+        assertEquals(15, output.idade)
+        assertEquals(listOf("2025/2026"), output.epocasRepresentadas)
+        assertEquals("/api/files/1/public-athlete-photo", output.fotoUrl)
     }
 
     @Test
-    fun `admin dto derives status from member status and athlete active flag`() {
-        assertEquals("ATIVO", athlete(active = true).toAdminDto(member(MemberStatus.ATIVO)).status)
-        assertEquals("INATIVO", athlete(active = false).toAdminDto(member(MemberStatus.ATIVO)).status)
-        assertEquals("PENDENTE", athlete(active = true).toAdminDto(member(MemberStatus.PENDENTE)).status)
-        assertEquals("REJEITADO", athlete(active = true).toAdminDto(member(MemberStatus.REJEITADO)).status)
-        assertEquals("INATIVO", athlete(active = true).toAdminDto(member(MemberStatus.INATIVO)).status)
+    fun `admin output derives status from member status and athlete active flag`() {
+        assertEquals("ATIVO", athlete(active = true).toAdminOutput(member(MemberStatus.ATIVO)).status)
+        assertEquals("INATIVO", athlete(active = false).toAdminOutput(member(MemberStatus.ATIVO)).status)
+        assertEquals("PENDENTE", athlete(active = true).toAdminOutput(member(MemberStatus.PENDENTE)).status)
+        assertEquals("REJEITADO", athlete(active = true).toAdminOutput(member(MemberStatus.REJEITADO)).status)
+        assertEquals("INATIVO", athlete(active = true).toAdminOutput(member(MemberStatus.INATIVO)).status)
     }
 
     @Test
-    fun `admin dto includes complete sensitive athlete and guardian fields`() {
-        val dto = athlete().toAdminDto(member())
+    fun `admin output includes complete sensitive athlete and guardian fields`() {
+        val output = athlete().toAdminOutput(member())
 
-        assertEquals("11122233301", dto.niss)
-        assertEquals("300003001", dto.numeroUtente)
-        assertEquals("CC30001", dto.bi)
-        assertEquals("2030-05-01", dto.biExpirationDate)
-        assertTrue(dto.hasFamilyInClub)
-        assertTrue(dto.schoolCertificationAccepted)
-        assertEquals(1, dto.guardians.size)
-        assertEquals("Pai", dto.guardians.single().name)
-        assertEquals("pai@example.test", dto.guardians.single().email)
+        assertEquals("11122233301", output.niss)
+        assertEquals("300003001", output.numeroUtente)
+        assertEquals("CC30001", output.bi)
+        assertEquals("2030-05-01", output.biExpirationDate)
+        assertTrue(output.hasFamilyInClub)
+        assertTrue(output.schoolCertificationAccepted)
+        assertEquals(1, output.guardians.size)
+        assertEquals("Pai", output.guardians.single().name)
+        assertEquals("pai@example.test", output.guardians.single().email)
     }
 
     @Test
-    fun `creation dto maps to service registration input with parsed dates and guardians`() {
+    fun `creation input maps to service registration input with parsed dates and guardians`() {
         val input =
-            AthleteCreationInputDto(
+            AthleteCreationInput(
                 completeName = "Lara Nunes",
                 birthDate = "2009-10-21",
                 birthplace = "Mafra",
@@ -174,7 +174,7 @@ class AthleteModelTests {
                 schoolCertificationAccepted = true,
                 guardians =
                     listOf(
-                        GuardianInputDto(
+                        GuardianInput(
                             name = "Nuno",
                             role = GuardianRole.FATHER,
                             kinship = null,
@@ -203,7 +203,7 @@ class AthleteModelTests {
     @Test
     fun `guardian input maps nullable member number and legal guardian fields`() {
         val serviceInput =
-            GuardianInputDto(
+            GuardianInput(
                 name = "Teresa",
                 role = GuardianRole.LEGAL_GUARDIAN,
                 kinship = "Tia",

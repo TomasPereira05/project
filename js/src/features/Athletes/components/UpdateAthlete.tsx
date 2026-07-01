@@ -12,8 +12,29 @@ import {
   type TeamCatalogCategory,
 } from "..";
 import AthletePageBackground from "./AthletePageBackground";
+import { todayISO, tomorrowISO } from "../../../shared/utils";
 
 type FormState = {
+  // Dados pessoais (Member)
+  completeName: string;
+  birthDate: string;
+  birthplace: string;
+  email: string;
+  phone: string;
+  homePhone: string;
+  address: string;
+  postalCode: string;
+  city: string;
+  nif: string;
+  // Dados pessoais (Athlete)
+  nationality: string;
+  niss: string;
+  numeroUtente: string;
+  bi: string;
+  biExpirationDate: string;
+  // Quota mensal em euros (admin)
+  membershipQuota: string;
+  // Dados desportivos / escolares
   teamCategoryId: number;
   jerseyNumber: string;
   position: string;
@@ -27,6 +48,22 @@ type FormState = {
 
 function stateFromAthlete(a: AthleteAdmin): FormState {
   return {
+    completeName: a.member.completeName,
+    birthDate: a.member.birthDate,
+    birthplace: a.member.birthplace ?? "",
+    email: a.member.email,
+    phone: a.member.phone,
+    homePhone: a.member.homePhone ?? "",
+    address: a.member.address,
+    postalCode: a.member.postalCode,
+    city: a.member.city,
+    nif: a.member.nif,
+    membershipQuota: String(a.member.membershipQuota / 100),
+    nationality: a.nationality,
+    niss: a.niss,
+    numeroUtente: a.numeroUtente,
+    bi: a.bi,
+    biExpirationDate: a.biExpirationDate,
     teamCategoryId: a.teamCategoryId,
     jerseyNumber: a.jerseyNumber !== null ? String(a.jerseyNumber) : "",
     position: a.position ?? "",
@@ -42,6 +79,22 @@ function stateFromAthlete(a: AthleteAdmin): FormState {
 function toUpdateRequest(values: FormState): AthleteUpdateRequest {
   const parsedJersey = values.jerseyNumber.trim() === "" ? null : Number(values.jerseyNumber);
   return {
+    completeName: values.completeName.trim(),
+    birthDate: values.birthDate,
+    birthplace: values.birthplace.trim() || null,
+    email: values.email.trim(),
+    phone: values.phone.trim(),
+    homePhone: values.homePhone.trim() || null,
+    address: values.address.trim(),
+    postalCode: values.postalCode.trim(),
+    city: values.city.trim(),
+    nif: values.nif.trim(),
+    membershipQuota: Math.round((Number(values.membershipQuota) || 0) * 100),
+    nationality: values.nationality.trim(),
+    niss: values.niss.trim(),
+    numeroUtente: values.numeroUtente.trim(),
+    bi: values.bi.trim(),
+    biExpirationDate: values.biExpirationDate,
     jerseyNumber: Number.isFinite(parsedJersey) ? (parsedJersey as number) : null,
     position: values.position.trim() || null,
     school: values.school.trim() || null,
@@ -194,6 +247,82 @@ export default function UpdateAthlete() {
             <form onSubmit={handleSubmit} className="space-y-8">
               <section className="space-y-4">
                 <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
+                  {t("athletes.register.sections.personal")}
+                </h3>
+                <div className="athlete-form-grid">
+                  <div className="athlete-input-group athlete-input-group-span">
+                    <label className="athlete-label">{t("athletes.fields.completeName")}</label>
+                    <input className="athlete-input" name="completeName" value={values.completeName} onChange={handleChange} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.birthDate")}</label>
+                    <input type="date" className="athlete-input" name="birthDate" value={values.birthDate} onChange={handleChange} max={todayISO()} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.birthplace")}</label>
+                    <input className="athlete-input" name="birthplace" value={values.birthplace} onChange={handleChange} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.nationality")}</label>
+                    <input className="athlete-input" name="nationality" value={values.nationality} onChange={handleChange} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">NIF</label>
+                    <input className="athlete-input" name="nif" value={values.nif} onChange={handleChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">BI / CC / Passaporte</label>
+                    <input className="athlete-input" name="bi" value={values.bi} onChange={handleChange} pattern="[A-Za-z0-9]{8}" minLength={8} maxLength={8} title={t("athletes.validation.eightAlphanumeric")} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.biValidityFull")}</label>
+                    <input type="date" className="athlete-input" name="biExpirationDate" value={values.biExpirationDate} onChange={handleChange} min={tomorrowISO()} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.healthNumber")}</label>
+                    <input className="athlete-input" name="numeroUtente" value={values.numeroUtente} onChange={handleChange} pattern="\d{9}" minLength={9} maxLength={9} title={t("athletes.validation.nineDigits")} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">NISS</label>
+                    <input className="athlete-input" name="niss" value={values.niss} onChange={handleChange} pattern="\d{11}" minLength={11} maxLength={11} title={t("athletes.validation.elevenDigits")} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">Email</label>
+                    <input type="email" className="athlete-input" name="email" value={values.email} onChange={handleChange} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.phone")}</label>
+                    <input className="athlete-input" name="phone" value={values.phone} onChange={handleChange} pattern="\d{7,15}" title={t("athletes.validation.sevenToFifteenDigits")} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.homePhone")}</label>
+                    <input className="athlete-input" name="homePhone" value={values.homePhone} onChange={handleChange} placeholder={t("athletes.common.optional")} />
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
+                  {t("athletes.detail.sections.address")}
+                </h3>
+                <div className="athlete-form-grid">
+                  <div className="athlete-input-group athlete-input-group-span">
+                    <label className="athlete-label">{t("athletes.fields.address")}</label>
+                    <input className="athlete-input" name="address" value={values.address} onChange={handleChange} required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.postalCode")}</label>
+                    <input className="athlete-input" name="postalCode" value={values.postalCode} onChange={handleChange} pattern="\d{4}-\d{3}" title={t("athletes.validation.postalCode")} placeholder="1500-123" required />
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">{t("athletes.fields.city")}</label>
+                    <input className="athlete-input" name="city" value={values.city} onChange={handleChange} required />
+                  </div>
+                </div>
+              </section>
+
+              <section className="space-y-4">
+                <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
                   {t("athletes.detail.sections.sportsData")}
                 </h3>
                 <div className="athlete-form-grid">
@@ -206,6 +335,10 @@ export default function UpdateAthlete() {
                         </option>
                       ))}
                     </select>
+                  </div>
+                  <div className="athlete-input-group">
+                    <label className="athlete-label">Quota mensal (€)</label>
+                    <input className="athlete-input" type="number" min="0" step="0.01" name="membershipQuota" value={values.membershipQuota} onChange={handleChange} />
                   </div>
                   <div className="athlete-input-group">
                     <label className="athlete-label">{t("athletes.fields.number")}</label>

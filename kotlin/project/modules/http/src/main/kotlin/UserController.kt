@@ -66,20 +66,29 @@ class UserController(
         @RequestParam(required = false) search: String?,
         @RequestParam(required = false) role: String?,
     ): ResponseEntity<*> =
-        userService.getUsersPage(authenticatedUser, page, size, search, role?.let { runCatching { Role.valueOf(it.uppercase()) }.getOrNull() }).handle(
-            onFailure = { error -> serviceErrorToProblem(error) },
-            onSuccess = { usersPage ->
-                ResponseEntity.ok(
-                    Page(
-                        items = usersPage.items.map { it.toOutputModel() },
-                        page = usersPage.page,
-                        size = usersPage.size,
-                        total = usersPage.total,
-                        totalPages = usersPage.totalPages,
-                    ),
-                )
-            },
-        )
+        userService
+            .getUsersPage(
+                authenticatedUser,
+                page,
+                size,
+                search,
+                role?.let {
+                    runCatching { Role.valueOf(it.uppercase()) }.getOrNull()
+                },
+            ).handle(
+                onFailure = { error -> serviceErrorToProblem(error) },
+                onSuccess = { usersPage ->
+                    ResponseEntity.ok(
+                        Page(
+                            items = usersPage.items.map { it.toOutputModel() },
+                            page = usersPage.page,
+                            size = usersPage.size,
+                            total = usersPage.total,
+                            totalPages = usersPage.totalPages,
+                        ),
+                    )
+                },
+            )
 
     @GetMapping(Uris.Users.GET_BY_ID)
     fun getUserById(

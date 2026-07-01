@@ -14,7 +14,7 @@ import pt.isel.jagoz.domain.member.Member
  * calculada (em anos completos), tal como o detalhe público — para a UI conseguir
  * mostrar o card de atleta com idade.
  */
-data class AthletePublicDto(
+data class AthletePublicOutput(
     val id: Long,
     val nome: String,
     val numero: Int?,
@@ -26,11 +26,11 @@ data class AthletePublicDto(
     val fotoUrl: String?,
 )
 
-fun Athlete.toPublicDto(
+fun Athlete.toPublicOutput(
     member: Member,
     today: LocalDate,
-): AthletePublicDto =
-    AthletePublicDto(
+): AthletePublicOutput =
+    AthletePublicOutput(
         id = athleteId,
         nome = member.completeName,
         numero = jerseyNumber,

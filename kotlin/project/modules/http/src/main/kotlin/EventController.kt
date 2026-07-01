@@ -20,6 +20,7 @@ import pt.isel.jagoz.http.model.event.EventCheckoutInput
 import pt.isel.jagoz.http.model.event.EventCreateInput
 import pt.isel.jagoz.http.model.event.EventUpdateInput
 import pt.isel.jagoz.http.model.event.MemberCredentialInput
+import pt.isel.jagoz.http.model.event.TicketValidateInput
 import pt.isel.jagoz.http.model.event.toDraft
 import pt.isel.jagoz.http.model.event.toOutput
 import pt.isel.jagoz.http.model.payment.toOutput
@@ -133,6 +134,20 @@ class EventController(
         requestTokenProcessor.processAuthorizationHeaderValue(request.getHeader("Authorization"))?.let { return it }
         val cookie = request.cookies?.firstOrNull { it.name == "token" } ?: return null
         return requestTokenProcessor.processAuthorizationHeaderValue("Bearer ${cookie.value}")
+    }
+
+    // Backoffice: valida um bilhete à porta a partir do token lido do QR (marca-o como usado se válido).
+    @PostMapping(Uris.Events.VALIDATE_TICKET)
+    fun validateTicket(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable eventId: Long,
+        @RequestBody input: TicketValidateInput,
+    ): ResponseEntity<*> {
+        requireManager(authenticatedUser)?.let { return it }
+        return eventService.validateTicket(eventId, input.token).handle(
+            onFailure = { handleEventError(it) },
+            onSuccess = { ResponseEntity.ok(it.toOutput()) },
+        )
     }
 
     // Público: valida credenciais de sócio (nº + data de nascimento) para o passo do wizard.

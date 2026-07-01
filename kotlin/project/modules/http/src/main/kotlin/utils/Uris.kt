@@ -25,21 +25,15 @@ object Uris {
     }
 
     object Athletes {
-        // Públicos (anónimo ok)
         const val LIST_BY_CATEGORY = "$PREFIX/teams/{teamCategoryId}/athletes"
         const val GET_PUBLIC_DETAIL = "$PREFIX/athletes/{athleteId}"
-
-        // Autenticado — devolve detalhe completo do atleta do próprio user
         const val GET_ME = "$PREFIX/athletes/me"
-
-        // Autenticado (qualquer role)
+        const val GET_MANAGED = "$PREFIX/athletes/managed"
         const val CREATE_ATHLETE = "$PREFIX/athletes"
-
-        // SECRETARIA / ADMIN
         const val GET_ALL_ADMIN = "$PREFIX/athletes"
         const val GET_ADMIN_DETAIL = "$PREFIX/athletes/{athleteId}/admin"
         const val GET_BY_MEMBER_ID = "$PREFIX/athletes/member/{memberId}"
-        const val UPDATE_ATHLETE = "$PREFIX/athletes/{athleteId}"
+        const val UPDATE_ATHLETE = "$PREFIX/athletes/{athleteId}/edit"
         const val CHANGE_TEAM_CATEGORY = "$PREFIX/athletes/{athleteId}/team-category"
         const val DELETE_ATHLETE = "$PREFIX/athletes/{athleteId}"
         const val REACTIVATE_ATHLETE = "$PREFIX/athletes/{athleteId}/reactivate"
@@ -147,6 +141,7 @@ object Uris {
         const val TICKETS = "$PREFIX/events/{eventId}/tickets"
         const val CHECKOUT = "$PREFIX/events/{eventId}/checkout"
         const val VALIDATE_MEMBER = "$PREFIX/events/validate-member" // público: valida nº+data de sócio no wizard
+        const val VALIDATE_TICKET = "$PREFIX/events/{eventId}/tickets/validate" // backoffice: valida QR à porta
 
         fun byId(eventId: Long): URI = UriTemplate(GET_BY_ID).expand(eventId)
     }
