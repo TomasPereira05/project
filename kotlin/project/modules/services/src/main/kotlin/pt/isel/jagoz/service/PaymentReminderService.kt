@@ -76,6 +76,7 @@ class PaymentReminderService(
                 val memberReminders =
                     activeMembers.mapNotNull { member ->
                         val lines =
+
                             overdueLinesFor(member, transaction, today)
                                 .filterNot { line ->
                                     transaction.emailNotificationLogRepository.existsSentSince(
@@ -158,44 +159,49 @@ class PaymentReminderService(
                 .findWithStatusByMember(member.memberId)
                 .associateBy { feeKey(it.item.season, it.item.month, it.chargeType) }
 
-        val generatedMemberFeeLines: List<OverdueReminderLine> =
+        val generatedMemberFeeLines =
             if (member.category == MemberCategory.SOCIO && member.membershipQuota > 0) {
-                generateMemberFeeMonths(member, today)
-                    .mapNotNull { yearMonth ->
-                        val season = seasonFor(yearMonth.year, yearMonth.month)
-                        val dueDate = LocalDate(yearMonth.year, yearMonth.month, DUE_DAY)
-                        if (dueDate >= today) return@mapNotNull null
+                generateMemberFeeMonths(member, today).mapNotNull { yearMonth ->
+                    val season = seasonFor(yearMonth.year, yearMonth.month)
+                    val dueDate = LocalDate(yearMonth.year, yearMonth.month, DUE_DAY)
+                    if (dueDate >= today) return@mapNotNull null
 
-                        val existing = existingItems[feeKey(season, yearMonth.month, ChargeType.MEMBER_FEE)]
-                        when (existing?.chargeStatus) {
-                            ChargeStatus.PAID -> null
-                            ChargeStatus.PENDING ->
-                                OverdueReminderLine(
-                                    chargeId = existing.item.chargeId,
-                                    chargeType = ChargeType.MEMBER_FEE,
-                                    season = season,
-                                    month = yearMonth.month,
-                                    amount = existing.item.amount,
-                                    dueDate = dueDate,
-                                    description = existing.item.description,
-                                )
-                            else ->
-                                OverdueReminderLine(
-                                    chargeId = null,
-                                    chargeType = ChargeType.MEMBER_FEE,
-                                    season = season,
-                                    month = yearMonth.month,
-                                    amount = member.membershipQuota,
-                                    dueDate = dueDate,
-                                    description = "Quota ${monthLabel(yearMonth.month)} $season",
-                                )
+                    val existing = existingItems[feeKey(season, yearMonth.month, ChargeType.MEMBER_FEE)]
+                    when (existing?.chargeStatus) {
+                        ChargeStatus.PAID -> {
+                            null
                         }
-                    }.toList()
+
+                        ChargeStatus.PENDING -> {
+                            OverdueReminderLine(
+                                chargeId = existing.item.chargeId,
+                                chargeType = ChargeType.MEMBER_FEE,
+                                season = season,
+                                month = yearMonth.month,
+                                amount = existing.item.amount,
+                                dueDate = dueDate,
+                                description = existing.item.description,
+                            )
+                        }
+
+                        else -> {
+                            OverdueReminderLine(
+                                chargeId = null,
+                                chargeType = ChargeType.MEMBER_FEE,
+                                season = season,
+                                month = yearMonth.month,
+                                amount = member.membershipQuota,
+                                dueDate = dueDate,
+                                description = "Quota ${monthLabel(yearMonth.month)} $season",
+                            )
+                        }
+                    }
+                }.toList()
             } else {
                 emptyList()
             }
 
-        val existingAthleteMonthlyLines: List<OverdueReminderLine> =
+        val existingAthleteMonthlyLines =
             existingItems.values
                 .filter { it.chargeType == ChargeType.ATHLETE_MONTHLY_FEE && it.chargeStatus == ChargeStatus.PENDING }
                 .mapNotNull { existing ->

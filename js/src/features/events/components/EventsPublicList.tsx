@@ -1,41 +1,24 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { CalendarDays, MapPin, Ticket } from "lucide-react";
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
-import { useStatusHandler } from "../../../shared/hooks/useStatusHandler";
 import FormBox from "../../../shared/components/MessageFormBox";
 import { formatCurrency } from "../../../shared/utils";
-import { fetchAvailableEvents } from "../api";
-import type { EventOutput } from "../types";
+import { FIELD_VIEW_IMG_SRC } from "../../../shared/config/config";
 import { formatEventDateTime } from "../utils/datetime";
+import { useAvailableEvents } from "../hooks";
 
 export default function EventsPublicList() {
   const { t } = useTranslation();
-  const [events, setEvents] = useState<EventOutput[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { message, type, handleError } = useStatusHandler();
-
-  useEffect(() => {
-    let ignore = false;
-    fetchAvailableEvents()
-      .then((list) => {
-        if (!ignore) setEvents(list);
-      })
-      .catch(handleError)
-      .finally(() => {
-        if (!ignore) setLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [handleError]);
+  const { events, loading, message, type } = useAvailableEvents();
 
   return (
     <div>
       <Header />
-      <main className="events-public">
+      <main className="events-public-page">
+        <div className="events-public-bg" style={{ backgroundImage: `url(${FIELD_VIEW_IMG_SRC})` }} />
+        <div className="events-public relative z-20">
         <section className="events-public-header">
           <p className="events-eyebrow">{t("events.public.eyebrow")}</p>
           <h1 className="events-title">{t("events.public.title")}</h1>
@@ -94,6 +77,7 @@ export default function EventsPublicList() {
             })}
           </div>
         )}
+        </div>
       </main>
       <Footer />
     </div>

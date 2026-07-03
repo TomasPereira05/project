@@ -1,46 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
-import { useStatusHandler } from "../../../shared/hooks/useStatusHandler";
 import FormBox from "../../../shared/components/MessageFormBox";
-import { cancelEvent, fetchEvents } from "../api";
-import type { EventOutput, EventStatusFilter } from "../types";
+import type { EventStatusFilter } from "../types";
 import { formatEventDateTime } from "../utils/datetime";
+import { useEventsList } from "../hooks";
 
 const FILTERS: EventStatusFilter[] = ["scheduled", "past", "cancelled", "all"];
 
 export default function EventsList() {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState<EventStatusFilter>("scheduled");
-  const [events, setEvents] = useState<EventOutput[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { message, type, setSuccess, handleError } = useStatusHandler();
-
-  const reload = useCallback(() => {
-    setLoading(true);
-    fetchEvents(filter)
-      .then(setEvents)
-      .catch(handleError)
-      .finally(() => setLoading(false));
-  }, [filter, handleError]);
-
-  useEffect(() => {
-    reload();
-  }, [reload]);
-
-  const onCancel = async (event: EventOutput) => {
-    if (!window.confirm(t("events.list.confirmCancel", { name: event.name }))) {
-      return;
-    }
-    try {
-      await cancelEvent(event.eventId);
-      setSuccess(t("events.list.cancelled"));
-      reload();
-    } catch (error) {
-      handleError(error);
-    }
-  };
+  const { filter, setFilter, events, loading, message, type, cancel } = useEventsList(t);
 
   return (
     <main className="events-page">
@@ -121,7 +91,7 @@ export default function EventsList() {
                               <button
                                 type="button"
                                 className="events-action-btn-danger"
-                                onClick={() => onCancel(event)}
+                                onClick={() => cancel(event)}
                               >
                                 {t("events.list.cancel")}
                               </button>
