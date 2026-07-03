@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { BadgeEuro, Building2, CalendarClock, ClipboardCheck, LayoutDashboard, Settings, Ticket, Trophy, UserCog, Users } from "lucide-react";
+import { BadgeEuro, Building2, CalendarClock, ClipboardCheck, LayoutDashboard, Settings, ShieldCheck, Ticket, Trophy, UserCog, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Header from "../../../shared/components/Header";
 import Footer from "../../../shared/components/Footer";
@@ -34,6 +34,7 @@ const adminNavGroups = [
     items: [
       { to: "/admin/team-settings", labelKey: "admin.nav.teams", icon: Settings },
       { to: "/admin/seasons", labelKey: "admin.nav.seasons", icon: CalendarClock },
+      { to: "/admin/audit-logs", labelKey: "admin.nav.auditLogs", icon: ShieldCheck },
       { to: "/admin/sponsors/settings", labelKey: "admin.nav.sponsorSettings", icon: Settings },
     ],
   },

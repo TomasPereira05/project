@@ -62,6 +62,7 @@ object Uris {
 
     object Admin {
         const val OVERVIEW_STATS = "$PREFIX/admin/overview/stats"
+        const val AUDIT_LOGS = "$PREFIX/admin/audit-logs"
     }
 
     object Seasons {

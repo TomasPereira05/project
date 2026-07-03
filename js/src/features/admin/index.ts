@@ -1,3 +1,4 @@
+export { default as AuditLogs } from "./components/AuditLogs";
 export { default as AdminHome } from "./components/AdminHome";
 export { default as AdminLayout } from "./components/AdminLayout";
 export { default as SeasonSettings } from "./components/SeasonSettings";

@@ -1224,7 +1224,8 @@
       "users": "Utilizadores",
       "sponsors": "Patrocínios",
       "sponsorCompanies": "Patrocinadores",
-      "seasons": "Épocas"
+      "seasons": "Épocas",
+      "auditLogs": "Auditoria"
     },
     "home": {
       "eyebrow": "Backoffice",
@@ -1258,6 +1259,27 @@
       "people": "Pessoas",
       "sponsorships": "Patrocínios",
       "settings": "Configuração"
+    },
+    "audit": {
+      "eyebrow": "Segurança",
+      "title": "Auditoria",
+      "description": "Consulta operações realizadas na plataforma",
+      "listEyebrow": "Registos",
+      "listTitle": "Atividade recente",
+      "loading": "A carregar auditoria...",
+      "empty": "Ainda não existem registos de auditoria.",
+      "anonymous": "Anónimo",
+      "columns": {
+        "when": "Quando",
+        "user": "Utilizador",
+        "action": "Ação",
+        "path": "Endpoint",
+        "status": "Estado",
+        "request": "Request"
+      },
+      "errors": {
+        "load": "Não foi possível carregar os registos de auditoria."
+      }
     },
     "stats": {
       "eyebrow": "Resumo",

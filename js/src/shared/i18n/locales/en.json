@@ -1224,7 +1224,8 @@
       "users": "Users",
       "sponsors": "Sponsorships",
       "sponsorCompanies": "Sponsors",
-      "seasons": "Seasons"
+      "seasons": "Seasons",
+      "auditLogs": "Audit"
     },
     "home": {
       "eyebrow": "Back office",
@@ -1258,6 +1259,27 @@
       "people": "People",
       "sponsorships": "Sponsorships",
       "settings": "Configuration"
+    },
+    "audit": {
+      "eyebrow": "Security",
+      "title": "Audit",
+      "description": "Review operations performed in the platform",
+      "listEyebrow": "Records",
+      "listTitle": "Recent activity",
+      "loading": "Loading audit logs...",
+      "empty": "There are no audit records yet.",
+      "anonymous": "Anonymous",
+      "columns": {
+        "when": "When",
+        "user": "User",
+        "action": "Action",
+        "path": "Endpoint",
+        "status": "Status",
+        "request": "Request"
+      },
+      "errors": {
+        "load": "Could not load audit logs."
+      }
     },
     "stats": {
       "eyebrow": "Summary",

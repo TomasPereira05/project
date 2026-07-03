@@ -2,6 +2,7 @@ package pt.isel.jagoz.repository.jdbi
 
 import org.jdbi.v3.core.Handle
 import pt.isel.jagoz.repository.AthleteRepository
+import pt.isel.jagoz.repository.AuditLogRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.EmailNotificationLogRepository
@@ -27,6 +28,7 @@ import pt.isel.jagoz.repository.UserRepository
 class JdbiTransaction(
     private val handle: Handle,
 ) : Transaction {
+    override val auditLogRepository: AuditLogRepository = JdbiAuditLogRepository(handle)
     override val memberRepository: MemberRepository = JdbiMemberRepository(handle)
     override val athleteRepository: AthleteRepository = JdbiAthleteRepository(handle)
     override val userRepository: UserRepository = JdbiUserRepository(handle)

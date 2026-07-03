@@ -16,6 +16,7 @@ import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.repository.AthleteRepository
+import pt.isel.jagoz.repository.AuditLogRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.EmailNotificationLogRepository
@@ -362,6 +363,7 @@ class FileServiceTests {
         override val athleteRepository: AthleteRepository = FakeAthleteRepository(),
         override val fileRepository: FileRepository = FakeFileRepository(),
     ) : Transaction {
+        override val auditLogRepository: AuditLogRepository get() = unsupported()
         override val userRepository: UserRepository get() = unsupported()
         override val eventRepository: EventRepository get() = unsupported()
         override val ticketRepository: TicketRepository get() = unsupported()

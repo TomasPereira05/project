@@ -227,6 +227,31 @@
     @apply text-text-primary;
   }
 
+  .admin-users-table small {
+    @apply mt-1 block text-xs text-text-secondary;
+  }
+
+  .admin-users-table code {
+    @apply rounded-lg bg-slate-100 px-2 py-1 text-xs font-semibold text-text-primary;
+  }
+
+  .admin-audit-table {
+    @apply min-w-[1040px];
+  }
+
+  .admin-audit-success,
+  .admin-audit-failure {
+    @apply inline-flex rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-[0.12em];
+  }
+
+  .admin-audit-success {
+    @apply border-emerald-200 bg-emerald-50 text-emerald-700;
+  }
+
+  .admin-audit-failure {
+    @apply border-red-200 bg-red-50 text-red-700;
+  }
+
   .admin-user-role-badge {
     @apply inline-flex rounded-full border px-3 py-1 text-xs font-semibold;
   }

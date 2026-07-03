@@ -35,10 +35,10 @@ import {
 } from "./features/sponsors";
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
-import { Home } from "./features/Home";
+import { Home } from "./features/home";
 import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
-import { AdminHome, AdminLayout, SeasonSettings, TrainingSchedules } from "./features/admin";
+import { AdminHome, AdminLayout, AuditLogs, SeasonSettings, TrainingSchedules } from "./features/admin";
 import { EventsList, EventForm, EventTickets, TicketScanner, EventsPublicList, TicketCheckout } from "./features/events";
 
 const router = createBrowserRouter([
@@ -273,6 +273,10 @@ const router = createBrowserRouter([
       {
         path: "seasons",
         element: <SeasonSettings />,
+      },
+      {
+        path: "audit-logs",
+        element: <AuditLogs />,
       },
       {
         path: "events/new",
