@@ -6,6 +6,7 @@ import org.jdbi.v3.core.kotlin.KotlinPlugin
 import org.jdbi.v3.postgres.PostgresPlugin
 import pt.isel.jagoz.domain.athlete.Athlete
 import pt.isel.jagoz.domain.athlete.Guardian
+import pt.isel.jagoz.domain.audit.AuditLog
 import pt.isel.jagoz.domain.event.Event
 import pt.isel.jagoz.domain.event.EventSector
 import pt.isel.jagoz.domain.event.Ticket
@@ -26,6 +27,7 @@ import pt.isel.jagoz.domain.team.TeamGroupPrice
 import pt.isel.jagoz.domain.user.Token
 import pt.isel.jagoz.domain.user.User
 import pt.isel.jagoz.repository.jdbi.mappers.AthleteMapper
+import pt.isel.jagoz.repository.jdbi.mappers.AuditLogMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeItemMapper
 import pt.isel.jagoz.repository.jdbi.mappers.ChargeMapper
 import pt.isel.jagoz.repository.jdbi.mappers.EquipmentPlacementMapper
@@ -82,6 +84,7 @@ fun Jdbi.configureWithAppRequirements(): Jdbi {
     registerRowMapper(PubOption::class.java, PubOptionMapper())
     registerRowMapper(TeamGroup::class.java, TeamGroupMapper())
     registerRowMapper(TeamGroupPrice::class.java, TeamGroupPriceMapper())
+    registerRowMapper(AuditLog::class.java, AuditLogMapper())
 
     return this
 }

@@ -407,6 +407,31 @@ CREATE TABLE email_notification_log (
 CREATE INDEX email_notification_log_lookup_idx
     ON email_notification_log (notification_type, member_id, charge_type, season, month, sent_at DESC);
 
+CREATE TABLE audit_log (
+    audit_log_id SERIAL PRIMARY KEY,
+    occurred_at TIMESTAMPTZ NOT NULL,
+    request_id VARCHAR(80) NOT NULL,
+    user_id INT REFERENCES users(user_id) ON DELETE SET NULL,
+    username VARCHAR(255),
+    role user_role,
+    action VARCHAR(120) NOT NULL,
+    method VARCHAR(12) NOT NULL,
+    path VARCHAR(600) NOT NULL,
+    query_string VARCHAR(1000),
+    status_code INT NOT NULL,
+    duration_ms BIGINT NOT NULL,
+    ip_address VARCHAR(80),
+    user_agent VARCHAR(500),
+    outcome VARCHAR(30) NOT NULL,
+    target_type VARCHAR(80),
+    target_id VARCHAR(120),
+    error_message VARCHAR(1000)
+);
+
+CREATE INDEX audit_log_occurred_idx ON audit_log (occurred_at DESC);
+CREATE INDEX audit_log_user_idx ON audit_log (user_id, occurred_at DESC);
+CREATE INDEX audit_log_action_idx ON audit_log (action, occurred_at DESC);
+
 CREATE TABLE payment (
     payment_id SERIAL PRIMARY KEY,
     charge_id INT NOT NULL REFERENCES charge(charge_id) ON DELETE CASCADE,

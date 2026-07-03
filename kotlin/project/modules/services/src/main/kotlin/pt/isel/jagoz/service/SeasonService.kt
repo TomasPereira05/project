@@ -55,8 +55,9 @@ class SeasonService(
         validateSeason(season)?.let { return failure(it) }
 
         return transactionManager.run { transaction ->
-            val current = transaction.seasonRepository.findById(seasonId)
-                ?: return@run failure(SeasonError.DomainError("Season not found"))
+            val current =
+                transaction.seasonRepository.findById(seasonId)
+                    ?: return@run failure(SeasonError.DomainError("Season not found"))
             val duplicate = transaction.seasonRepository.findByName(season.name.trim())
             if (duplicate != null && duplicate.seasonId != seasonId) {
                 failure(SeasonError.ValidationError("Season already exists"))
@@ -75,8 +76,9 @@ class SeasonService(
         if (!authenticatedUser.canManageBackoffice()) return failure(SeasonError.DomainError("Not authorized"))
 
         return transactionManager.run { transaction ->
-            val season = transaction.seasonRepository.findById(seasonId)
-                ?: return@run failure(SeasonError.DomainError("Season not found"))
+            val season =
+                transaction.seasonRepository.findById(seasonId)
+                    ?: return@run failure(SeasonError.DomainError("Season not found"))
             transaction.seasonRepository.setActive(seasonId)
             success(season.copy(active = true))
         }

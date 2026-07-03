@@ -16,6 +16,7 @@ import pt.isel.jagoz.domain.user.AuthenticatedUser
 import pt.isel.jagoz.domain.user.Role
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.repository.AthleteRepository
+import pt.isel.jagoz.repository.AuditLogRepository
 import pt.isel.jagoz.repository.ChargeItemRepository
 import pt.isel.jagoz.repository.ChargeRepository
 import pt.isel.jagoz.repository.EmailNotificationLogRepository
@@ -34,9 +35,9 @@ import pt.isel.jagoz.repository.TeamCategoryRepository
 import pt.isel.jagoz.repository.TeamGroupPriceRepository
 import pt.isel.jagoz.repository.TeamGroupRepository
 import pt.isel.jagoz.repository.TicketRepository
+import pt.isel.jagoz.repository.TrainingScheduleRepository
 import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
-import pt.isel.jagoz.repository.TrainingScheduleRepository
 import pt.isel.jagoz.repository.UserRepository
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -362,6 +363,7 @@ class FileServiceTests {
         override val athleteRepository: AthleteRepository = FakeAthleteRepository(),
         override val fileRepository: FileRepository = FakeFileRepository(),
     ) : Transaction {
+        override val auditLogRepository: AuditLogRepository get() = unsupported()
         override val userRepository: UserRepository get() = unsupported()
         override val eventRepository: EventRepository get() = unsupported()
         override val ticketRepository: TicketRepository get() = unsupported()

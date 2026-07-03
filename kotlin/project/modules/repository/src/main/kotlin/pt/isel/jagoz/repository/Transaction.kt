@@ -5,6 +5,8 @@ package pt.isel.jagoz.repository
  * The JDBI implementation will attach each repository to the same Handle.
  */
 interface Transaction {
+    val auditLogRepository: AuditLogRepository
+
     val memberRepository: MemberRepository
 
     val athleteRepository: AthleteRepository

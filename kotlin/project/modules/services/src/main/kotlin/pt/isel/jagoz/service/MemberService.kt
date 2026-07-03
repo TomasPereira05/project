@@ -8,6 +8,8 @@ import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberDomain
 import pt.isel.jagoz.domain.member.MemberError
 import pt.isel.jagoz.domain.member.MemberStatus
+import pt.isel.jagoz.domain.user.AuthenticatedUser
+import pt.isel.jagoz.domain.user.canManageBackoffice
 import pt.isel.jagoz.domain.utils.Either
 import pt.isel.jagoz.domain.utils.failure
 import pt.isel.jagoz.domain.utils.success
@@ -15,6 +17,8 @@ import pt.isel.jagoz.repository.Transaction
 import pt.isel.jagoz.repository.TransactionManager
 
 typealias MemberResult = Either<MemberError, Member>
+typealias MemberListResult = Either<MemberError, List<Member>>
+typealias MemberPageResult = Either<MemberError, Page<Member>>
 
 /**
  * Service layer for member management operations.
@@ -39,6 +43,7 @@ class MemberService(
     fun createMember(
         member: Member,
         linkedUsername: String? = null,
+        authenticatedUser: AuthenticatedUser,
     ): MemberResult {
         LOG.info("Creating new member registration for: ${member.email}")
 
@@ -85,8 +90,15 @@ class MemberService(
      * @param memberId the member's ID
      * @return the [Member] if found, null otherwise
      */
-    fun getMemberById(memberId: Long): MemberResult {
+    fun getMemberById(
+        memberId: Long,
+        authenticatedUser: AuthenticatedUser,
+    ): MemberResult {
         LOG.debug("Retrieving member by ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice() || authenticatedUser.activeMemberId != memberId) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -104,7 +116,14 @@ class MemberService(
      * @param email the member's email
      * @return the [Member] if found, null otherwise
      */
-    fun getMemberByEmail(email: String): MemberResult {
+    fun getMemberByEmail(
+        email: String,
+        authenticatedUser: AuthenticatedUser,
+    ): MemberResult {
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
+
         return transactionManager.run { transaction ->
             val member =
                 transaction.memberRepository.findByEmail(email)
@@ -114,44 +133,36 @@ class MemberService(
         }
     }
 
-    /**
-     * Retrieves all members.
-     *
-     * @return list of all [Member]s
-     */
-    fun getAllMembers(): List<Member> {
-        LOG.debug("Retrieving all members")
-
-        return transactionManager.run { transaction ->
-            val members = transaction.memberRepository.findAll()
-            LOG.debug("Found ${members.size} members")
-            members
-        }
-    }
-
     fun getMembersPage(
         page: Int,
         size: Int,
         search: String? = null,
         category: MemberCategory? = null,
         status: MemberStatus? = null,
-    ): Page<Member> {
+        authenticatedUser: AuthenticatedUser,
+    ): MemberPageResult {
         LOG.debug("Retrieving members page $page with size $size")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         val request = pageRequest(page, size)
         val normalizedSearch = search?.trim()?.takeIf { it.isNotEmpty() }
         return transactionManager.run { transaction ->
-            pageOf(
-                items =
-                    transaction.memberRepository.findPageFiltered(
-                        request.size,
-                        request.offset,
-                        normalizedSearch,
-                        category,
-                        status,
-                    ),
-                request = request,
-                total = transaction.memberRepository.countFiltered(normalizedSearch, category, status),
+            success(
+                pageOf(
+                    items =
+                        transaction.memberRepository.findPageFiltered(
+                            request.size,
+                            request.offset,
+                            normalizedSearch,
+                            category,
+                            status,
+                        ),
+                    request = request,
+                    total = transaction.memberRepository.countFiltered(normalizedSearch, category, status),
+                ),
             )
         }
     }
@@ -161,13 +172,17 @@ class MemberService(
      *
      * @return list of active [Member]s
      */
-    fun getAllActiveMembers(): List<Member> {
+    fun getAllActiveMembers(authenticatedUser: AuthenticatedUser): MemberListResult {
         LOG.debug("Retrieving all active members")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val members = transaction.memberRepository.findAllActive()
             LOG.debug("Found ${members.size} active members")
-            members
+            success(members)
         }
     }
 
@@ -182,8 +197,13 @@ class MemberService(
     fun approveMember(
         memberId: Long,
         approvalDate: LocalDate,
+        authenticatedUser: AuthenticatedUser,
     ): MemberResult {
         LOG.info("Approving member with ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -219,8 +239,15 @@ class MemberService(
      * @param memberId the ID of the member to reject
      * @return Either a [MemberError] if the operation fails or the updated [Member]
      */
-    fun rejectMember(memberId: Long): MemberResult {
+    fun rejectMember(
+        memberId: Long,
+        authenticatedUser: AuthenticatedUser,
+    ): MemberResult {
         LOG.info("Rejecting member with ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -248,8 +275,15 @@ class MemberService(
      * @param memberId the ID of the member to deactivate
      * @return Either a [MemberError] if the operation fails or the updated [Member]
      */
-    fun deactivateMember(memberId: Long): MemberResult {
+    fun deactivateMember(
+        memberId: Long,
+        authenticatedUser: AuthenticatedUser,
+    ): MemberResult {
         LOG.info("Deactivating member with ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -281,8 +315,13 @@ class MemberService(
     fun reactivateMember(
         memberId: Long,
         reactivationDate: LocalDate,
+        authenticatedUser: AuthenticatedUser,
     ): MemberResult {
         LOG.info("Reactivating member with ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -325,8 +364,13 @@ class MemberService(
         city: String,
         homePhone: String? = null,
         billingLocation: String? = null,
+        authenticatedUser: AuthenticatedUser,
     ): MemberResult {
         LOG.info("Updating contact details for member ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -359,8 +403,13 @@ class MemberService(
     fun updateMember(
         memberId: Long,
         candidate: Member,
+        authenticatedUser: AuthenticatedUser,
     ): MemberResult {
         LOG.info("Updating member ID: $memberId")
+
+        if (!authenticatedUser.canManageBackoffice() || authenticatedUser.activeMemberId != memberId) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)
@@ -393,8 +442,13 @@ class MemberService(
     fun changeMemberCategory(
         memberId: Long,
         newCategory: MemberCategory,
+        authenticatedUser: AuthenticatedUser,
     ): MemberResult {
         LOG.info("Changing category for member ID: $memberId to $newCategory")
+
+        if (!authenticatedUser.canManageBackoffice()) {
+            return failure(MemberError.Unauthorized("Not authorized"))
+        }
 
         return transactionManager.run { transaction ->
             val memberResult = getMemberOrFail(transaction, memberId)

@@ -1,8 +1,8 @@
 import { BASE_URL } from "../../shared/config/config";
 import { HttpError } from "../../shared/types/HttpError";
-import type { AdminOverviewStats, Season, SeasonInput, TrainingSchedule, TrainingScheduleInput } from "./types";
+import type { AdminOverviewStats, AuditLog, PaginatedResponse, Season, SeasonInput, TrainingSchedule, TrainingScheduleInput } from "./types";
 
-export type { AdminOverviewStats, Season, SeasonInput, TrainingSchedule, TrainingScheduleInput } from "./types";
+export type { AdminOverviewStats, AuditLog, PaginatedResponse, Season, SeasonInput, TrainingSchedule, TrainingScheduleInput } from "./types";
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`, {
@@ -23,6 +23,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export function fetchAdminOverviewStats() {
   return request<AdminOverviewStats>("/admin/overview/stats");
+}
+
+export function fetchAuditLogs(page = 1, size = 20) {
+  const search = new URLSearchParams({ page: String(page), size: String(size) });
+  return request<PaginatedResponse<AuditLog>>(`/admin/audit-logs?${search.toString()}`);
 }
 
 export function fetchSeasons() {

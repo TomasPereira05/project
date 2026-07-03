@@ -59,9 +59,11 @@ class JdbiChargeItemRepository(
                             month = rs.getInt("month"),
                             amount = rs.getInt("amount"),
                             description = rs.getString("description"),
-                    ),
+                        ),
                     chargeStatus = ChargeStatus.valueOf(rs.getString("charge_status")),
-                    chargeType = pt.isel.jagoz.domain.payment.ChargeType.valueOf(rs.getString("charge_type")),
+                    chargeType =
+                        pt.isel.jagoz.domain.payment.ChargeType
+                            .valueOf(rs.getString("charge_type")),
                     paymentId = (rs.getObject("payment_id") as? Number)?.toLong(),
                 )
             }.list()

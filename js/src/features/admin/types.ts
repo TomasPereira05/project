@@ -13,6 +13,35 @@ export type AdminOverviewStats = {
   activeSeason: string | null;
 };
 
+export type PaginatedResponse<T> = {
+  items: T[];
+  page: number;
+  size: number;
+  total: number;
+  totalPages: number;
+};
+
+export type AuditLog = {
+  auditLogId: number;
+  occurredAt: string;
+  requestId: string;
+  userId: number | null;
+  username: string | null;
+  role: string | null;
+  action: string;
+  method: string;
+  path: string;
+  queryString: string | null;
+  statusCode: number;
+  durationMs: number;
+  ipAddress: string | null;
+  userAgent: string | null;
+  outcome: string;
+  targetType: string | null;
+  targetId: string | null;
+  errorMessage: string | null;
+};
+
 export type Season = {
   seasonId: number;
   name: string;
