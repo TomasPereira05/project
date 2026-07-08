@@ -442,6 +442,7 @@ class AthleteDomainTests {
                     is AthleteError.ValidationError -> "v"
                     is AthleteError.DomainError -> "d"
                     is AthleteError.AlreadyRegistered -> "ar"
+                    is AthleteError.AlreadyExists -> "ae"
                     is AthleteError.TeamCategoryNotFound -> "tcnf"
                     is AthleteError.GuardianMemberNotFound -> "gmnf"
                     is AthleteError.InvalidStateTransition -> "ist"

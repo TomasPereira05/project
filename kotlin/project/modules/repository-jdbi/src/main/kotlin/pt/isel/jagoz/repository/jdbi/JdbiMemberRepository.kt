@@ -43,6 +43,13 @@ class JdbiMemberRepository(
             .findOne()
             .orElse(null)
 
+    override fun existsByNif(nif: String): Boolean =
+        handle
+            .createQuery("SELECT EXISTS (SELECT 1 FROM jagoz.member WHERE nif = :nif)")
+            .bind("nif", nif)
+            .mapTo(Boolean::class.java)
+            .one()
+
     override fun findAll(): List<Member> =
         handle
             .createQuery("SELECT * FROM jagoz.member ORDER BY member_number ASC")

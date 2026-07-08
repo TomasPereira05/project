@@ -148,15 +148,20 @@ class FileService(
         kind: FileKind,
     ): FileError.Validation? =
         when (kind) {
-            FileKind.USER_PROFILE_PHOTO ->
+            FileKind.USER_PROFILE_PHOTO -> {
                 if (ownerType == FileOwnerType.USER) null else FileError.Validation("user profile photo must belong to a user")
-            FileKind.MEMBER_PHOTO ->
+            }
+
+            FileKind.MEMBER_PHOTO -> {
                 if (ownerType == FileOwnerType.MEMBER) null else FileError.Validation("member photo must belong to a member")
+            }
+
             FileKind.ATHLETE_PHOTO,
             FileKind.ATHLETE_ID_CARD,
             FileKind.ATHLETE_MEDICAL_EXAM,
-            ->
+            -> {
                 if (ownerType == FileOwnerType.ATHLETE) null else FileError.Validation("athlete files must belong to an athlete")
+            }
         }
 
     private fun validateContent(
@@ -189,15 +194,22 @@ class FileService(
     ): Boolean {
         if (user.canManageBackoffice()) return true
         return when (ownerType) {
-            FileOwnerType.USER -> user.userId == ownerId
+            FileOwnerType.USER -> {
+                user.userId == ownerId
+            }
+
             FileOwnerType.MEMBER -> {
                 val member = tx.memberRepository.findById(ownerId) ?: return false
                 member.memberId == user.activeMemberId || member.userId == user.userId
             }
+
             FileOwnerType.ATHLETE -> {
                 val athlete = tx.athleteRepository.findById(ownerId) ?: return false
                 val member = tx.memberRepository.findById(athlete.memberId) ?: return false
-                member.memberId == user.activeMemberId || member.userId == user.userId
+                member.memberId == user.activeMemberId ||
+                    member.userId == user.userId ||
+                    // Quem inscreveu o atleta (pai/EE, via user_athlete) também gere os ficheiros dele.
+                    tx.athleteRepository.isUserManagingMember(user.userId, member.memberId)
             }
         }
     }

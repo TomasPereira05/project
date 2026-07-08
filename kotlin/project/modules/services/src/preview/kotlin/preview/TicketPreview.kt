@@ -41,10 +41,10 @@ fun main(args: Array<String>) {
 
     val pdf =
         service.renderTicketPdf(
-            buyerName = "Maria Sousa",
+            buyerName = "John Doe",
             eventName = "GDUE vs Mafra",
             eventWhen = "Sáb, 12 Jul 2026 · 20:00",
-            location = "Estádio Municipal da Ericeira",
+            location = "Campo Henrique Tomás Frade",
             lines = lines,
         )
 

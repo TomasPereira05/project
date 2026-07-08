@@ -88,16 +88,21 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
       setIsSubmitting(false);
       return;
     }
-    if (!photoFile) {
-      setErrorMessage(t("athletes.register.errors.photoRequired"));
-      setIsSubmitting(false);
-      return;
-    }
-
     try {
       const created = await createAthlete(toAthleteInput(values));
-      await uploadFile("ATHLETE", created.athleteId, "ATHLETE_PHOTO", photoFile);
-      setSuccessMessage(t("athletes.register.success"));
+      // A foto segue num request separado: se falhar, o atleta JÁ está criado —
+      // mostra-se sucesso com aviso, nunca "falhou" (pode adicionar-se na ficha).
+      let photoFailed = false;
+      if (photoFile) {
+        try {
+          await uploadFile("ATHLETE", created.athleteId, "ATHLETE_PHOTO", photoFile);
+        } catch {
+          photoFailed = true;
+        }
+      }
+      setSuccessMessage(
+        photoFailed ? t("athletes.register.successPhotoFailed") : t("athletes.register.success"),
+      );
       setPhotoFile(null);
       setValues({ ...initialRegisterValues, teamCategoryId: values.teamCategoryId });
     } catch (error) {

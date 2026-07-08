@@ -582,6 +582,11 @@
     @apply text-text-secondary hover:text-primary transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wide;
   }
 
+  /* Pill legível sobre o background fotográfico (mesmo padrão do member-detail-back) */
+  .athlete-detail-back {
+    @apply rounded-full border border-white/30 bg-white/15 px-4 py-2 text-white shadow-soft backdrop-blur transition hover:border-white/70 hover:bg-white hover:text-primary;
+  }
+
   /* Alertas (sucesso) */
   .athlete-alert-success {
     @apply mb-6 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md flex items-center gap-3 text-sm;
@@ -787,7 +792,7 @@
 
   /* Página de pagamento da quota de um atleta (a partir do perfil do encarregado) */
   .athlete-fees-page {
-    @apply min-h-screen bg-gray-50 px-4 py-10;
+    @apply relative min-h-screen overflow-hidden bg-gray-50 px-4 py-10;
   }
 
   .athlete-fees-container {
@@ -795,7 +800,7 @@
   }
 
   .athlete-fees-back {
-    @apply flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-text-secondary hover:text-primary;
+    @apply flex w-fit items-center gap-2 text-sm font-semibold uppercase tracking-wide rounded-full border border-white/30 bg-white/15 px-4 py-2 text-white shadow-soft backdrop-blur transition hover:border-white/70 hover:bg-white hover:text-primary;
   }
 
   .athlete-fees-title {

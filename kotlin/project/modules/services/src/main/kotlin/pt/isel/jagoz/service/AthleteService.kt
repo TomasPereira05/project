@@ -138,7 +138,9 @@ class AthleteService(
      *   1. Member com category=ATLETA_SOCIO, status=PENDENTE, quota=0
      *   2. Athlete a apontar para esse member_id
      *   3. Lista de Guardians associados ao athlete
-     * Tudo na mesma transacção. Rollback automático se qualquer validação ou INSERT falhar.
+     * Tudo na mesma transacção, com TODAS as validações antes da primeira escrita:
+     * devolver Either.Left não faz rollback (só exceções fazem), por isso nenhuma
+     * failure pode acontecer depois de um INSERT/UPDATE.
      */
     fun registerAthlete(input: AthleteRegistrationInput): AthleteResult {
         LOG.info("Registering new athlete ${input.completeName} for nif=${input.nif}")
@@ -168,6 +170,14 @@ class AthleteService(
                                 ?: return@run failure(AthleteError.GuardianMemberNotFound(g.memberNumber))
                         g to existing.memberId
                     }
+                }
+
+            // Auto-inscrição: resolve o user antes de qualquer escrita, para esta
+            // failure não poder acontecer com o Member já gravado.
+            val selfUser =
+                input.userId?.let { userId ->
+                    tx.userRepository.findById(userId)
+                        ?: return@run failure(AthleteError.NotFound("userId", userId))
                 }
 
             val member =
@@ -201,12 +211,16 @@ class AthleteService(
                 is Either.Right -> Unit
             }
 
-            val memberId = tx.memberRepository.save(member)
+            if (tx.memberRepository.existsByNif(input.nif)) {
+                return@run failure(AthleteError.AlreadyExists("nif", input.nif))
+            }
 
+            // memberId=0 é placeholder: o domínio não valida esse campo e o valor real
+            // só existe depois do INSERT do Member, que ainda não pode acontecer.
             val athlete =
                 Athlete(
                     athleteId = 0,
-                    memberId = memberId,
+                    memberId = 0,
                     nationality = input.nationality,
                     niss = input.niss,
                     numeroUtente = input.numeroUtente,
@@ -232,14 +246,32 @@ class AthleteService(
                 is Either.Right -> Unit
             }
 
-            val athleteId = tx.athleteRepository.save(athlete)
+            tx.athleteRepository.findDuplicateUniqueField(input.niss, input.numeroUtente, input.bi)?.let { field ->
+                val value =
+                    when (field) {
+                        "niss" -> input.niss
+                        "numeroUtente" -> input.numeroUtente
+                        else -> input.bi
+                    }
+                return@run failure(AthleteError.AlreadyExists(field, value))
+            }
+
+            // ── Escritas: a partir daqui qualquer falha é exceção → rollback total ──
+            val memberId = tx.memberRepository.save(member)
+
+            // Auto-inscrição: liga a conta ao Member acabado de criar, como o fluxo de
+            // sócio já faz (MemberService.createMember), para o perfil e /athletes/me
+            // resolverem o member deste user.
+            selfUser?.let { tx.userRepository.update(it.copy(activeMemberId = memberId)) }
+
+            val athleteId = tx.athleteRepository.save(athlete.copy(memberId = memberId))
             val guardians = resolvedGuardians.map { (g, fk) -> g.toGuardian(athleteId, memberId = fk) }
             tx.athleteRepository.saveGuardians(athleteId, guardians)
 
             // Liga o atleta à conta de quem o inscreveu, para aparecer no perfil "Os Meus Atletas".
             input.creatorUserId?.let { tx.athleteRepository.linkUserToAthlete(it, athleteId) }
 
-            success(athlete.copy(athleteId = athleteId, guardians = guardians))
+            success(athlete.copy(athleteId = athleteId, memberId = memberId, guardians = guardians))
         }
     }
 
@@ -392,8 +424,9 @@ class AthleteService(
     }
 
     /**
-     * Atletas que a conta de user gere (para o painel do perfil), via `user_athlete`. Não
-     * carrega guardians — o painel só precisa do nome/escalão/estado.
+     * Atletas do painel "Os Meus Atletas": os que a conta inscreveu (via `user_athlete`)
+     * e o próprio atleta quando o user também o é (via `member.user_id`). Não carrega
+     * guardians — o painel só precisa do nome/escalão/estado.
      */
     fun getManagedAthletes(userId: Long): List<Athlete> =
         transactionManager.run { tx ->
@@ -615,7 +648,7 @@ class AthleteService(
     private fun memberErrorToAthleteError(error: MemberError): AthleteError =
         when (error) {
             is MemberError.ValidationError -> AthleteError.ValidationError("member: ${error.message}")
-            is MemberError.AlreadyExists -> AthleteError.ValidationError("member: ${error.field}=${error.value} already exists")
+            is MemberError.AlreadyExists -> AthleteError.AlreadyExists(error.field, error.value.toString())
             is MemberError.Conflict -> AthleteError.ValidationError("member: ${error.message}")
             is MemberError.InvalidOperation -> AthleteError.InvalidOperation("member: ${error.reason}")
             else -> AthleteError.ValidationError("member: $error")

@@ -339,6 +339,10 @@ class AthleteController(
                 Problem.AthleteAlreadyRegistered(error.userId).response(HttpStatus.CONFLICT)
             }
 
+            is AthleteError.AlreadyExists -> {
+                Problem.MemberAlreadyExists(error.field, error.value).response(HttpStatus.CONFLICT)
+            }
+
             is AthleteError.TeamCategoryNotFound -> {
                 Problem.TeamCategoryNotFound(error.teamCategoryId).response(HttpStatus.NOT_FOUND)
             }

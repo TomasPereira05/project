@@ -30,7 +30,8 @@ class MemberDomain {
      * Postconditions:
      * - returns a copy of [member] with status set to [MemberStatus.ATIVO], approvalDate set
      *   to [approvalDate] and monthlyQuota adjusted according to the member category
-     *   (ATLETA_SOCIO -> 0.0, SOCIO -> at least 1.5).
+     *   (ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA, a mensalidade de atleta — 20 EUR por defeito;
+     *   SOCIO -> pelo menos REGULAR_MEMBER_MIN_QUOTA, 1.50 EUR).
      *
      * Errors:
      * - Returns [MemberError.InvalidTransition] when the current status is not PENDENTE.
@@ -53,8 +54,8 @@ class MemberDomain {
 
         val newQuota =
             when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA // 0 cÃªntimos - nÃ£o paga quota
-                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA) // mÃ­nimo 150 cÃªntimos (1.50â‚¬)
+                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA // mensalidade de atleta (20 EUR por defeito); isento da quota de socio
+                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA) // minimo 150 centimos (1.50 EUR)
             }
 
         val updated =
@@ -230,7 +231,7 @@ class MemberDomain {
      *
      * Postconditions:
      * - Returns a copy of [member] in the new category with monthlyQuota adjusted according
-     *   to category rules (ATLETA_SOCIO -> 0.0, SOCIO -> at least 1.5).
+     *   to category rules (ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA, SOCIO -> at least REGULAR_MEMBER_MIN_QUOTA).
      *
      * Errors:
      * - Returns [MemberError.DomainError] when the member already belongs to [newCategory].
@@ -262,8 +263,8 @@ class MemberDomain {
      * Compute the canonical membership quota for the given [member] according to business rules.
      * Values are in cents (centimos).
      *
-     * - [MemberCategory.ATLETA_SOCIO] -> 0 cents
-     * - [MemberCategory.SOCIO] -> at least 150 cents (1.50â‚¬) or the existing membershipQuota if higher
+     * - [MemberCategory.ATLETA_SOCIO] -> ATHLETE_MEMBER_QUOTA (mensalidade de atleta; 2000 cents / 20 EUR por defeito)
+     * - [MemberCategory.SOCIO] -> at least 150 cents (1.50 EUR) or the existing membershipQuota if higher
      *
      * @param member the member whose quota to compute
      * @return the computed membership quota in cents

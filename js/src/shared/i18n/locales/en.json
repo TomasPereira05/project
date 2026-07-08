@@ -917,7 +917,7 @@
     },
     "form": {
       "photoTitle": "Athlete photo",
-      "photoHelp": "This photo will be used as the main profile image. Required.",
+      "photoHelp": "This photo will be used as the main profile image. Optional — it can be added later on the athlete's page.",
       "removePhoto": "Remove photo"
     },
     "register": {
@@ -926,6 +926,7 @@
       "submit": "Submit registration",
       "submitting": "Submitting...",
       "success": "Registration submitted. The office will be notified to validate the file with AFL.",
+      "successPhotoFailed": "Registration submitted, but the photo could not be uploaded — you can add it later on the athlete's page.",
       "sections": {
         "who": "Who is being registered",
         "personal": "Personal details",
@@ -957,7 +958,6 @@
       },
       "errors": {
         "loadCategories": "Could not load the age groups.",
-        "photoRequired": "An athlete photo is required.",
         "privacy": "Privacy consent must be accepted.",
         "selectCategory": "Select an age group.",
         "birthDate": "The date of birth must be before today.",

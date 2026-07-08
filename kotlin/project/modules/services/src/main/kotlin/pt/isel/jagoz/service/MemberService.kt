@@ -96,8 +96,8 @@ class MemberService(
     ): MemberResult {
         LOG.debug("Retrieving member by ID: $memberId")
 
-        if (!authenticatedUser.canManageBackoffice() || authenticatedUser.activeMemberId != memberId) {
-            return failure(MemberError.Unauthorized("Not authorized"))
+        if (!authenticatedUser.canManageBackoffice() && authenticatedUser.activeMemberId != memberId) {
+            return failure(MemberError.Forbidden("Not authorized"))
         }
 
         return transactionManager.run { transaction ->
@@ -407,8 +407,8 @@ class MemberService(
     ): MemberResult {
         LOG.info("Updating member ID: $memberId")
 
-        if (!authenticatedUser.canManageBackoffice() || authenticatedUser.activeMemberId != memberId) {
-            return failure(MemberError.Unauthorized("Not authorized"))
+        if (!authenticatedUser.canManageBackoffice() && authenticatedUser.activeMemberId != memberId) {
+            return failure(MemberError.Forbidden("Not authorized"))
         }
 
         return transactionManager.run { transaction ->
@@ -421,6 +421,7 @@ class MemberService(
                     LOG.warn("Member update validation failed: ${result.value}")
                     result
                 }
+
                 is Either.Right -> {
                     val updated = result.value
                     transaction.memberRepository.update(updated)

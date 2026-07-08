@@ -17,6 +17,8 @@ interface MemberRepository {
 
     fun findByMemberNumber(memberNumber: Int): Member?
 
+    fun existsByNif(nif: String): Boolean
+
     fun findAll(): List<Member>
 
     fun findPage(
