@@ -111,7 +111,7 @@ export function AthleteForm({
           <h3 className="font-heading text-lg text-text-primary uppercase tracking-tight pb-2 border-b border-border">
             {t("athletes.register.sections.who")}
           </h3>
-          <label className="athlete-checkbox-group group">
+          <label className={`athlete-checkbox-group group${alreadyHasMember ? " opacity-60 cursor-not-allowed" : ""}`}>
             <div className="mt-1">
               <input
                 type="checkbox"
@@ -127,14 +127,12 @@ export function AthleteForm({
                 {t("athletes.register.self.title")}
               </span>
               <p className="text-xs text-text-secondary mt-0.5">
-                {t("athletes.register.self.help")}
-                {alreadyHasMember && (
-                  <>
-                    {" "}
-                    <span className="font-semibold">
-                      {t("athletes.register.self.unavailable")}
-                    </span>
-                  </>
+                {alreadyHasMember ? (
+                  <span className="font-semibold">
+                    {t("athletes.register.self.unavailable")}
+                  </span>
+                ) : (
+                  t("athletes.register.self.help")
                 )}
               </p>
             </div>

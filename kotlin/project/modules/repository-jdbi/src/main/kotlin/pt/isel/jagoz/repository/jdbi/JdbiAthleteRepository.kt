@@ -41,6 +41,9 @@ class JdbiAthleteRepository(
                 WHERE a.athlete_id IN (
                     SELECT ua.athlete_id FROM jagoz.user_athlete ua WHERE ua.user_id = :userId
                 )
+                   OR a.member_id IN (
+                    SELECT m.member_id FROM jagoz.member m WHERE m.user_id = :userId
+                )
                 ORDER BY a.athlete_id DESC
                 """.trimIndent(),
             ).bind("userId", userId)
@@ -81,6 +84,30 @@ class JdbiAthleteRepository(
             .bind("memberId", memberId)
             .mapTo(Boolean::class.java)
             .one()
+
+    override fun findDuplicateUniqueField(
+        niss: String,
+        numeroUtente: String,
+        bi: String,
+    ): String? =
+        handle
+            .createQuery(
+                """
+                SELECT CASE
+                           WHEN niss = :niss THEN 'niss'
+                           WHEN numero_utente = :numeroUtente THEN 'numeroUtente'
+                           ELSE 'bi'
+                       END
+                FROM jagoz.athlete
+                WHERE niss = :niss OR numero_utente = :numeroUtente OR bi = :bi
+                LIMIT 1
+                """.trimIndent(),
+            ).bind("niss", niss)
+            .bind("numeroUtente", numeroUtente)
+            .bind("bi", bi)
+            .mapTo(String::class.java)
+            .findOne()
+            .orElse(null)
 
     override fun findAllActive(): List<Athlete> =
         handle

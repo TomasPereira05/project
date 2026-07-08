@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowLeft, CheckCircle2, PencilLine, XCircle } from "lucide-react";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   approveAthlete,
@@ -58,10 +58,8 @@ function PageWrapper({ children }: { children: ReactNode }) {
 export default function AthletePage() {
   const { t } = useTranslation();
   const { athleteId } = useParams();
-  const location = useLocation();
   const { role } = useAuth();
   const adminView = isAdminLike(role);
-  const athleteBasePath = location.pathname.startsWith("/admin") ? "/admin/athletes" : "/athletes";
 
   const [publicAthlete, setPublicAthlete] = useState<AthleteDetail | null>(null);
   const [adminAthlete, setAdminAthlete] = useState<AthleteAdmin | null>(null);
@@ -155,10 +153,10 @@ export default function AthletePage() {
         <div className="athlete-alert-error">
           <p className="athlete-alert-text">{errorMessage}</p>
         </div>
-        <Link className="athlete-btn-back" to={athleteBasePath}>
+        <button onClick={() => window.history.back()} className="athlete-btn-back athlete-detail-back">
           <ArrowLeft size={16} />
           {t("athletes.common.back")}
-        </Link>
+        </button>
       </PageWrapper>
     );
   }
@@ -170,7 +168,6 @@ export default function AthletePage() {
           athlete: adminAthlete,
           feedback,
           errorMessage,
-          athleteBasePath,
           onToggle: handleToggleActive,
           onApprove: handleApprove,
           onReject: handleReject,
@@ -195,7 +192,6 @@ function renderAdminContent({
   athlete,
   feedback,
   errorMessage,
-  athleteBasePath,
   onToggle,
   onApprove,
   onReject,
@@ -204,7 +200,6 @@ function renderAdminContent({
   athlete: AthleteAdmin;
   feedback: string;
   errorMessage: string;
-  athleteBasePath: string;
   onToggle: () => void;
   onApprove: () => void;
   onReject: () => void;
@@ -214,10 +209,10 @@ function renderAdminContent({
   return (
     <>
       <div className="athlete-topbar">
-        <Link to={athleteBasePath} className="athlete-btn-back">
+        <button onClick={() => window.history.back()} className="athlete-btn-back athlete-detail-back">
           <ArrowLeft size={18} />
           {t("athletes.common.back")}
-        </Link>
+        </button>
       </div>
 
       {feedback && (
@@ -415,10 +410,10 @@ function renderPublicContent(athlete: AthleteDetail, t: (key: string, options?: 
   return (
     <>
       <div className="athlete-topbar">
-        <Link to={`/athletes/category/${athlete.teamCategoryCode}`} className="athlete-btn-back">
+        <button onClick={() => window.history.back()} className="athlete-btn-back athlete-detail-back">
           <ArrowLeft size={18} />
-          {t("athletes.detail.backToCategory")}
-        </Link>
+          {t("athletes.common.back")}
+        </button>
       </div>
 
       <section className="athlete-section-card">

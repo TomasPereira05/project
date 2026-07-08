@@ -917,7 +917,7 @@
     },
     "form": {
       "photoTitle": "Foto do atleta",
-      "photoHelp": "Esta foto será usada como imagem principal do perfil. Obrigatória.",
+      "photoHelp": "Esta foto será usada como imagem principal do perfil. Opcional — pode ser adicionada mais tarde na ficha do atleta.",
       "removePhoto": "Remover foto"
     },
     "register": {
@@ -926,6 +926,7 @@
       "submit": "Submeter inscrição",
       "submitting": "A submeter...",
       "success": "Inscrição submetida. A secretaria será notificada para validar a ficha junto da AFL.",
+      "successPhotoFailed": "Inscrição submetida, mas a foto não foi carregada — pode adicioná-la mais tarde na ficha do atleta.",
       "sections": {
         "who": "Quem está a ser inscrito",
         "personal": "Dados pessoais",
@@ -957,7 +958,6 @@
       },
       "errors": {
         "loadCategories": "Não foi possível carregar os escalões.",
-        "photoRequired": "É obrigatório escolher uma foto do atleta.",
         "privacy": "É necessário aceitar o consentimento de privacidade.",
         "selectCategory": "Seleciona um escalão.",
         "birthDate": "A data de nascimento tem de ser anterior a hoje.",

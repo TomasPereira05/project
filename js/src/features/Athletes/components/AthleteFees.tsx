@@ -5,6 +5,7 @@ import { ArrowLeft, CreditCard, User, Wallet } from "lucide-react";
 import { useAthleteFees } from "../hooks";
 import { formatCurrency, formatDate, monthName } from "../../../shared/utils";
 import { BASE_URL } from "../../../shared/config/config";
+import AthletePageBackground from "./AthletePageBackground";
 
 const ALL_HISTORY_SEASONS = "all";
 
@@ -68,8 +69,9 @@ export default function AthleteFees() {
 
   return (
     <main className="athlete-fees-page">
-      <div className="athlete-fees-container">
-        <Link to="/user" className="athlete-fees-back">
+      <AthletePageBackground />
+      <div className="athlete-fees-container relative z-20">
+        <Link to="/profile" className="athlete-fees-back">
           <ArrowLeft size={18} />
           {t("athletes.fees.back")}
         </Link>

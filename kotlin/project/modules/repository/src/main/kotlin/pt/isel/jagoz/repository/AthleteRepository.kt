@@ -31,6 +31,17 @@ interface AthleteRepository {
         memberId: Long,
     ): Boolean
 
+    /**
+     * Nome do primeiro campo único (niss, numeroUtente, bi) já usado por outro atleta,
+     * ou null se não houver conflito. Usado na inscrição para falhar com 409 antes de
+     * qualquer INSERT, em vez de rebentar na constraint com 500.
+     */
+    fun findDuplicateUniqueField(
+        niss: String,
+        numeroUtente: String,
+        bi: String,
+    ): String?
+
     // Listagens (sem guardians)
     fun findAllActive(): List<Athlete>
 

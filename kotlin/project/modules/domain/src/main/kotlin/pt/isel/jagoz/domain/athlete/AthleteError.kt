@@ -30,6 +30,12 @@ sealed class AthleteError {
         val userId: Long,
     ) : AthleteError()
 
+    /** A unique field (nif, niss, numeroUtente, bi) is already taken by another record. */
+    data class AlreadyExists(
+        val field: String,
+        val value: String,
+    ) : AthleteError()
+
     /** The provided team category does not exist. */
     data class TeamCategoryNotFound(
         val teamCategoryId: Long,
