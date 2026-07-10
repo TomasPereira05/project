@@ -28,10 +28,11 @@ services:
         condition: service_healthy
     environment:
       SERVER_PORT: 8080
-      DB_URL: jdbc:postgresql://postgres:5432/jagoz?user=postgres&password=postgres
+      DB_URL: ${DB_URL:-jdbc:postgresql://postgres:5432/jagoz?user=postgres&password=postgres}
       EMAIL_HOST: ${EMAIL_HOST:-smtp.example.com}
       EMAIL_PORT: ${EMAIL_PORT:-587}
       EMAIL_USERNAME: ${EMAIL_USERNAME:-change-me@example.com}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Jagoz}
       EMAIL_PASSWORD: ${EMAIL_PASSWORD:-change-me}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_change_me}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_change_me}
