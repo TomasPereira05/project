@@ -6,3 +6,4 @@ export * from "./centsFromEuroInput";
 export * from "./euroInputFromCents";
 export * from "./formatCurrency";
 export * from "./getInitials";
+export * from "./paymentReturnPath";

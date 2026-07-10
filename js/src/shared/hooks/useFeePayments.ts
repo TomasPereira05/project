@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import type { FeeDebtSummary, FeeOption, FeeSelection } from "../types/fees";
 import { feeKey, getDefaultSelectedFees, getFeeDebtSummary } from "../utils/feeOptions";
+import { redirectToPaymentCheckout } from "../utils/paymentReturnPath";
 
 const FEE_OPTIONS_PAGE_SIZE = 8;
 
@@ -103,7 +104,7 @@ export function useFeePayments({
       setIsPaying(true);
       setErrorMessage("");
       const session = await createCheckout(selectedFeeOptions.map(({ season, month }) => ({ season, month })));
-      window.location.assign(session.checkoutUrl);
+      redirectToPaymentCheckout(session.checkoutUrl);
     } catch {
       setErrorMessage(payErrorMessage);
       setIsPaying(false);

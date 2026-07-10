@@ -716,20 +716,18 @@
     }
   },
   "payments": {
+    "back": "Voltar",
+    "home": "Voltar ao início",
     "success": {
       "eyebrow": "Pagamento concluído",
       "title": "Pagamento recebido",
-      "description": "O pagamento foi processado pelo Stripe. O estado do patrocínio será atualizado assim que o backend receber a confirmação.",
-      "session": "Sessão Stripe:",
-      "backToSponsorships": "Ver os meus patrocínios",
-      "home": "Voltar ao início"
+      "description": "O pagamento foi processado pelo Stripe. O estado será atualizado assim que a confirmação for recebida.",
+      "session": "Sessão Stripe:"
     },
     "cancel": {
       "eyebrow": "Pagamento cancelado",
       "title": "O pagamento não foi concluído",
-      "description": "Pode voltar aos seus patrocínios e tentar novamente quando quiser.",
-      "backToSponsorships": "Ver os meus patrocínios",
-      "home": "Voltar ao início"
+      "description": "Pode voltar à página anterior e tentar novamente quando quiser."
     }
   },
   "athletes": {
