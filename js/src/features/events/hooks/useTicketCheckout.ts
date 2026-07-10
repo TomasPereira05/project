@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { TFunction } from "i18next";
 import { useAuth } from "../../../shared/hooks/useAuth";
 import { useStatusHandler } from "../../../shared/hooks/useStatusHandler";
+import { redirectToPaymentCheckout } from "../../../shared/utils/paymentReturnPath";
 import { fetchEvent, startTicketCheckout, validateMemberCredential } from "../api";
 import type { EventOutput, TicketLineInput, TicketPriceType } from "../types";
 
@@ -120,7 +121,7 @@ export function useTicketCheckout(eventId: number, t: TFunction<"translation", u
         };
       });
       const session = await startTicketCheckout(eventId, { buyerName: buyerName.trim(), buyerEmail: buyerEmail.trim(), lines });
-      window.location.assign(session.checkoutUrl);
+      redirectToPaymentCheckout(session.checkoutUrl);
     } catch (error) {
       handleError(error);
       setSubmitting(false);

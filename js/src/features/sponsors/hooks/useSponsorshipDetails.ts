@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import i18n from "../../../shared/i18n";
+import { redirectToPaymentCheckout } from "../../../shared/utils/paymentReturnPath";
 import { createSponsorshipCheckoutSession, fetchCatalogSnapshot, fetchSponsorById, fetchSponsorshipById, updateSponsorshipDetails } from "../api";
 import type { CatalogSnapshot, Sponsor, Sponsorship } from "../types";
 import { emptySponsorCatalogs, sortSponsorCatalogs } from "../utils";
@@ -69,7 +70,7 @@ export function useSponsorshipDetails(sponsorshipId?: string) {
 
     try {
       const session = await createSponsorshipCheckoutSession(sponsorship.sponsorshipId);
-      window.location.assign(session.checkoutUrl);
+      redirectToPaymentCheckout(session.checkoutUrl);
     } catch (error) {
       setErrorMessage(error instanceof Error ? error.message : i18n.t("sponsors.details.paymentError"));
       setIsPaying(false);

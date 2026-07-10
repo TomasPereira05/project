@@ -716,20 +716,18 @@
     }
   },
   "payments": {
+    "back": "Back",
+    "home": "Back home",
     "success": {
       "eyebrow": "Payment completed",
       "title": "Payment received",
-      "description": "The payment was processed by Stripe. The sponsorship status will update once the backend receives the confirmation.",
-      "session": "Stripe session:",
-      "backToSponsorships": "View my sponsorships",
-      "home": "Back home"
+      "description": "The payment was processed by Stripe. The status will update once the confirmation is received.",
+      "session": "Stripe session:"
     },
     "cancel": {
       "eyebrow": "Payment cancelled",
       "title": "The payment was not completed",
-      "description": "You can return to your sponsorships and try again whenever you want.",
-      "backToSponsorships": "View my sponsorships",
-      "home": "Back home"
+      "description": "You can return to the previous page and try again whenever you want."
     }
   },
   "athletes": {
