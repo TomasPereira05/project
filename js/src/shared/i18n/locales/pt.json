@@ -1,4 +1,32 @@
 {
+  "problems": {
+    "types": {
+      "unknown-error": "Ocorreu um erro inesperado. Tenta novamente mais tarde.",
+      "member-not-found": "Sócio não encontrado.",
+      "member-already-exists": "Já existe um sócio com estes dados.",
+      "user-not-found": "Utilizador não encontrado.",
+      "user-already-exists": "Já existe um utilizador com estes dados.",
+      "athlete-not-found": "Atleta não encontrado.",
+      "athlete-already-registered": "Já existe uma inscrição de atleta associada a esta conta.",
+      "team-category-not-found": "Escalão não encontrado.",
+      "guardian-member-not-found": "O sócio indicado como encarregado de educação não foi encontrado.",
+      "athlete-invalid-state-transition": "Operação incompatível com o estado atual do atleta.",
+      "invalid-athlete-date-field": "Valor de data inválido na inscrição do atleta.",
+      "user-related-resource-not-found": "Recurso associado ao utilizador não encontrado.",
+      "sponsor-not-found": "Patrocinador não encontrado.",
+      "sponsorship-not-found": "Patrocínio não encontrado.",
+      "unauthorized": "Autenticação inválida ou em falta.",
+      "invalid-transition": "Transição de estado inválida."
+    },
+    "reasons": {
+      "eventNotOpenForSales": "O evento não está aberto para venda de bilhetes.",
+      "eventAlreadyStarted": "O evento já começou.",
+      "invalidMemberCredentials": "Credenciais de sócio inválidas ou sócio inativo.",
+      "oneMemberTicketPerEvent": "Cada sócio só pode comprar um bilhete de sócio por evento.",
+      "memberAlreadyHasTicket": "O sócio n.º {{number}} já tem um bilhete para este evento.",
+      "sectorSoldOut": "O setor \"{{name}}\" está esgotado."
+    }
+  },
   "shared": {
     "months": {
       "january": "Janeiro",
@@ -721,8 +749,7 @@
     "success": {
       "eyebrow": "Pagamento concluído",
       "title": "Pagamento recebido",
-      "description": "O pagamento foi processado pelo Stripe. O estado será atualizado assim que a confirmação for recebida.",
-      "session": "Sessão Stripe:"
+      "description": "O pagamento foi processado pelo Stripe. O estado será atualizado assim que a confirmação for recebida."
     },
     "cancel": {
       "eyebrow": "Pagamento cancelado",
@@ -1125,11 +1152,8 @@
       "back": "Voltar aos eventos",
       "hint": "Centra o QR Code do bilhete no enquadramento.",
       "idle": "Aguardando leitura de um bilhete...",
-      "cameraError": "Não foi possível aceder à câmara. Confirma as permissões do navegador (o acesso à câmara exige HTTPS) ou usa a introdução manual.",
+      "cameraError": "Não foi possível aceder à câmara. Confirma as permissões do navegador (o acesso à câmara exige HTTPS).",
       "scanNext": "Validar próximo",
-      "manualLabel": "Introdução manual do código",
-      "manualPlaceholder": "Cola ou digita o código do bilhete",
-      "manualSubmit": "Validar",
       "usedAtLabel": "Validado às",
       "outcomes": {
         "VALID": "Entrada válida",

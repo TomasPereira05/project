@@ -233,8 +233,6 @@ class EmailService(
                                   <div class="field-meta">$typeLabel · ${formatEuros(line.priceCents)}</div>
                                   <div class="field-label spaced">Portador</div>
                                   <div class="field-value">${esc(buyerName)}</div>
-                                  <div class="field-label spaced">Bilhete N.º</div>
-                                  <div class="field-value mono">${readableId(line.qrToken)}</div>
                                 </td>
                                 <td class="card-qr">
                                   <img class="qr" src="data:image/png;base64,$qrBase64" alt="QR" />
@@ -338,16 +336,6 @@ class EmailService(
             ImageIO.write(faded, "PNG", out)
             out.toByteArray()
         }
-    }
-
-    /**
-     * ID legível do bilhete, derivado do token do QR (apenas apresentação — o token não muda). Pega
-     * nos caracteres alfanuméricos em maiúsculas e mostra um bloco curto agrupado (ex.: "A3F9-2K7Q"),
-     * útil para referência manual à porta quando o QR não pode ser lido.
-     */
-    private fun readableId(qrToken: String): String {
-        val cleaned = qrToken.filter { it.isLetterOrDigit() }.uppercase().take(8)
-        return if (cleaned.isEmpty()) "—" else cleaned.chunked(4).joinToString("-")
     }
 
     /** Escapa texto para XHTML/HTML (igual ao recibo). */

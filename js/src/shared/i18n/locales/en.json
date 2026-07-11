@@ -1,4 +1,32 @@
 {
+  "problems": {
+    "types": {
+      "unknown-error": "An unexpected error occurred. Please try again later.",
+      "member-not-found": "Member not found.",
+      "member-already-exists": "A member with these details already exists.",
+      "user-not-found": "User not found.",
+      "user-already-exists": "A user with these details already exists.",
+      "athlete-not-found": "Athlete not found.",
+      "athlete-already-registered": "There is already an athlete registration linked to this account.",
+      "team-category-not-found": "Team category not found.",
+      "guardian-member-not-found": "The member indicated as guardian was not found.",
+      "athlete-invalid-state-transition": "Operation incompatible with the athlete's current status.",
+      "invalid-athlete-date-field": "Invalid date value in the athlete registration.",
+      "user-related-resource-not-found": "Resource linked to the user was not found.",
+      "sponsor-not-found": "Sponsor not found.",
+      "sponsorship-not-found": "Sponsorship not found.",
+      "unauthorized": "Missing or invalid authentication.",
+      "invalid-transition": "Invalid state transition."
+    },
+    "reasons": {
+      "eventNotOpenForSales": "The event is not open for ticket sales.",
+      "eventAlreadyStarted": "The event has already started.",
+      "invalidMemberCredentials": "Invalid member credentials or inactive member.",
+      "oneMemberTicketPerEvent": "Each member can buy at most one member ticket per event.",
+      "memberAlreadyHasTicket": "Member no. {{number}} already has a ticket for this event.",
+      "sectorSoldOut": "Sector \"{{name}}\" is sold out."
+    }
+  },
   "shared": {
     "months": {
       "january": "January",
@@ -721,8 +749,7 @@
     "success": {
       "eyebrow": "Payment completed",
       "title": "Payment received",
-      "description": "The payment was processed by Stripe. The status will update once the confirmation is received.",
-      "session": "Stripe session:"
+      "description": "The payment was processed by Stripe. The status will update once the confirmation is received."
     },
     "cancel": {
       "eyebrow": "Payment cancelled",
@@ -1125,11 +1152,8 @@
       "back": "Back to events",
       "hint": "Center the ticket's QR Code in the frame.",
       "idle": "Waiting for a ticket scan...",
-      "cameraError": "Could not access the camera. Check the browser permissions (camera access requires HTTPS) or use manual entry.",
+      "cameraError": "Could not access the camera. Check the browser permissions (camera access requires HTTPS).",
       "scanNext": "Scan next",
-      "manualLabel": "Manual code entry",
-      "manualPlaceholder": "Paste or type the ticket code",
-      "manualSubmit": "Validate",
       "usedAtLabel": "Validated at",
       "outcomes": {
         "VALID": "Valid entry",

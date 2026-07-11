@@ -42,7 +42,9 @@ export class HttpError extends Error {
                 return new HttpError(text, response.status);
             }
 
-            const message = errorData.message || errorData.detail || errorData.description || defaultMessage;
+            // Problem Details: "reason" carrega a causa específica (ex.: InvalidOperation),
+            // preferida à "description" genérica do tipo de problema.
+            const message = errorData.message || errorData.detail || errorData.reason || errorData.description || defaultMessage;
             return new HttpError(
                 message,
                 response.status,

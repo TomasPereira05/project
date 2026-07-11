@@ -19,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import type { AthleteStatus } from "..";
 import { ATHLETE_STATUS_OPTIONS, ATHLETES_PAGE_SIZE, useAthletesList } from "../hooks";
 import { formatDate } from "../../../shared/utils";
-import AthletePageBackground from "./AthletePageBackground";
 
 function statusLabel(status: AthleteStatus, t: (key: string) => string): string {
   switch (status) {
@@ -93,7 +92,6 @@ export default function Athletes() {
   return (
     <>
       <main className="athlete-page">
-        <AthletePageBackground />
         <div className="athlete-container relative z-20">
           <header className="athlete-header-container">
             <div>
