@@ -144,13 +144,6 @@ cd kotlin/project
 
 Os testes dos módulos que precisam de PostgreSQL usam `kotlin/project/docker-compose.yml`, com o serviço `db-tests` na porta `5433`.
 
-Frontend:
-
-```powershell
-cd js
-npm run dev
-```
-
 ## Documentação adicional
 
 - API: `docs/openapi.yaml`
