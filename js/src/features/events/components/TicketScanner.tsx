@@ -33,13 +33,10 @@ export default function TicketScanner() {
     event,
     result,
     cameraError,
-    manualToken,
-    setManualToken,
     message,
     type,
     onScan,
     onScanError,
-    onManualSubmit,
     clearResult,
     paused,
   } = useTicketScanner(eventId);
@@ -84,25 +81,6 @@ export default function TicketScanner() {
                 <p className="events-scan-hint">{t("events.scan.hint")}</p>
               </>
             )}
-
-            <form className="events-scan-manual" onSubmit={onManualSubmit}>
-              <div className="events-scan-manual-field">
-                <label className="events-sector-field-label" htmlFor="manual-token">
-                  {t("events.scan.manualLabel")}
-                </label>
-                <input
-                  id="manual-token"
-                  className="events-input"
-                  value={manualToken}
-                  onChange={(e) => setManualToken(e.target.value)}
-                  placeholder={t("events.scan.manualPlaceholder")}
-                  autoComplete="off"
-                />
-              </div>
-              <button type="submit" className="events-button-secondary" disabled={!manualToken.trim()}>
-                {t("events.scan.manualSubmit")}
-              </button>
-            </form>
           </div>
 
           {result && severity && ResultIcon ? (

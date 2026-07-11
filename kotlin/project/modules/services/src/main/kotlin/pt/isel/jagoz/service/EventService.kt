@@ -169,7 +169,10 @@ class EventService(
                     status = EventStatus.SCHEDULED,
                 )
             when (val v = eventDomain.validateEventForCreation(event)) {
-                is Either.Left -> return@run failure(v.value.toEventError())
+                is Either.Left -> {
+                    return@run failure(v.value.toEventError())
+                }
+
                 is Either.Right -> {}
             }
             validateSectorDrafts(draft.sectors)?.let { return@run failure(it) }
@@ -223,7 +226,10 @@ class EventService(
                     priceMember = draft.priceMember,
                 )
             when (val v = eventDomain.validateEventScalars(updated)) {
-                is Either.Left -> return@run failure(v.value.toEventError())
+                is Either.Left -> {
+                    return@run failure(v.value.toEventError())
+                }
+
                 is Either.Right -> {}
             }
             validateSectorDrafts(draft.sectors)?.let { return@run failure(it) }
@@ -249,7 +255,6 @@ class EventService(
                     tx.eventRepository.releaseSeat(ticket.sectorId)
                 }
             }
-            // TODO(Fase 3): enviar email aos compradores com instruções de reembolso manual
             success(Unit)
         }
 
@@ -317,10 +322,19 @@ class EventService(
                         }
                     }
                 }
-                TicketStatus.USED -> success(TicketValidationResult(TicketValidationOutcome.ALREADY_USED, withSector))
-                TicketStatus.CANCELLED -> success(TicketValidationResult(TicketValidationOutcome.CANCELLED, withSector))
+
+                TicketStatus.USED -> {
+                    success(TicketValidationResult(TicketValidationOutcome.ALREADY_USED, withSector))
+                }
+
+                TicketStatus.CANCELLED -> {
+                    success(TicketValidationResult(TicketValidationOutcome.CANCELLED, withSector))
+                }
+
                 // RESERVED não devia ter qr_code (só é atribuído na confirmação); por segurança, INVALID
-                TicketStatus.RESERVED -> success(TicketValidationResult(TicketValidationOutcome.INVALID, withSector))
+                TicketStatus.RESERVED -> {
+                    success(TicketValidationResult(TicketValidationOutcome.INVALID, withSector))
+                }
             }
         }
 

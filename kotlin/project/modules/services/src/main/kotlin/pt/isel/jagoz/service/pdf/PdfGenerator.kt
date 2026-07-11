@@ -5,6 +5,7 @@ import jakarta.inject.Named
 import java.io.ByteArrayOutputStream
 
 /**
+ *
  * Converte um documento XHTML num PDF (bytes). Reutiliza a mesma ideia do recibo de pagamento
  * (`PaymentReceipt.toHtml`): em vez de o browser imprimir o HTML, geramos o PDF no servidor para
  * o anexar ao email do bilhete.

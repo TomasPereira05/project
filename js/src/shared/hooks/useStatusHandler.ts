@@ -1,5 +1,7 @@
 import { useReducer, useCallback, useRef, useEffect } from 'react';
+import i18n from "../i18n";
 import { HttpError } from "../types/HttpError";
+import { translateHttpError } from "../utils/problemMessages";
 
 export type MessageType = "error" | "success" | null;
 
@@ -86,17 +88,21 @@ export function useStatusHandler() {
         console.error("Error caught in useStatusHandler:", error);
 
         if (error instanceof HttpError) {
-            
-            if (error.title) {
+            // Traduz o Problem (reason conhecida ou type) para PT/EN; sem tradução,
+            // mostra a mensagem do backend, mais específica do que o title genérico.
+            const translated = translateHttpError(error);
+            if (translated) {
+                setError(translated);
+            } else if (error.title) {
                 setError(error.title);
             } else {
-                setError("An unexpected error occurred. Please check your internet connection.");
+                setError(i18n.t("problems.types.unknown-error"));
             }
         } else if (error instanceof Error) {
-            
-            setError(error.message || "An unexpected error occurred.");
+
+            setError(error.message || i18n.t("problems.types.unknown-error"));
         } else {
-             setError("An unexpected error occurred.");
+             setError(i18n.t("problems.types.unknown-error"));
         }
     }, [setError]);
 

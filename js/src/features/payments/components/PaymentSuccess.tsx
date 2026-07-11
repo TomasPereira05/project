@@ -1,7 +1,7 @@
 import { CheckCircle2, ExternalLink } from "lucide-react";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../shared/components/Footer";
 import Header from "../../../shared/components/Header";
 import { clearPaymentReturnPath, getPaymentReturnPath } from "../../../shared/utils/paymentReturnPath";
@@ -9,8 +9,6 @@ import { clearPaymentReturnPath, getPaymentReturnPath } from "../../../shared/ut
 export default function PaymentSuccess() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const sessionId = searchParams.get("session_id");
   const returnPath = useMemo(() => getPaymentReturnPath(), []);
 
   function handleBack() {
@@ -29,11 +27,6 @@ export default function PaymentSuccess() {
             <h1 className="text-3xl font-bold text-slate-950">{t("payments.success.title")}</h1>
             <p className="text-base leading-7 text-slate-600">{t("payments.success.description")}</p>
           </div>
-          {sessionId ? (
-            <p className="w-full rounded-md bg-slate-100 px-4 py-3 text-sm text-slate-600">
-              {t("payments.success.session")} <span className="font-mono text-slate-800">{sessionId}</span>
-            </p>
-          ) : null}
           <div className="flex flex-wrap justify-center gap-3">
             <button className="inline-flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800" onClick={handleBack} type="button">
               {t("payments.back")}

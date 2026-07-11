@@ -55,7 +55,6 @@ data class CheckoutSessionResult(
     val checkoutUrl: String,
 )
 
-/** Linha do Stripe Checkout (nome do produto + valor em cêntimos). */
 data class StripeLineItem(
     val name: String,
     val amountCents: Int,
