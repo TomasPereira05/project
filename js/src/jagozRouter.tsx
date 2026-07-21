@@ -35,7 +35,8 @@ import {
 } from "./features/sponsors";
 import { AuthProvider } from "./shared/context/AuthContextProvider";
 import { AuthRequire, Require } from "./shared/components/Require";
-import { Home } from "./features/home";
+import NotFound from "./shared/components/NotFound";
+import { Home } from "./features/Home";
 import { UserDetails, UserPage, UsersLayout, UsersList } from "./features/User";
 import { PaymentCancel, PaymentSuccess } from "./features/payments";
 import { AdminHome, AdminLayout, AuditLogs, SeasonSettings, TrainingSchedules } from "./features/admin";
@@ -311,6 +312,10 @@ const router = createBrowserRouter([
   {
     path: "/payments/cancel",
     element: <PaymentCancel />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

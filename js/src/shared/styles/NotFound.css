@@ -1,0 +1,49 @@
+@layer components {
+  .notfound-page {
+    @apply min-h-screen flex flex-col;
+  }
+
+  .notfound-main {
+    @apply relative flex-1 flex flex-col;
+  }
+
+  .notfound-bg {
+    @apply absolute inset-0 bg-cover bg-center bg-no-repeat z-0;
+  }
+
+  .notfound-overlay {
+    @apply absolute inset-0 bg-gradient-to-b from-[#001D4A]/90 via-[#001D4A]/70 to-[#001D4A]/90 z-10;
+  }
+
+  .notfound-content {
+    @apply relative z-20 flex-1 flex flex-col items-center justify-center text-center gap-3 px-4 py-24 text-white;
+  }
+
+  .notfound-icon {
+    @apply text-white/70;
+  }
+
+  .notfound-code {
+    @apply font-heading text-7xl sm:text-8xl font-bold tracking-tight;
+  }
+
+  .notfound-title {
+    @apply font-heading text-2xl sm:text-3xl uppercase tracking-tight;
+  }
+
+  .notfound-desc {
+    @apply max-w-md text-sm sm:text-base text-white/80;
+  }
+
+  .notfound-actions {
+    @apply mt-6 flex flex-col sm:flex-row items-center justify-center gap-3;
+  }
+
+  .notfound-btn-primary {
+    @apply w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-12 px-8 border-2 border-primary bg-primary text-white hover:bg-primary-hover transition-colors rounded-md;
+  }
+
+  .notfound-btn-outline {
+    @apply w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-12 px-8 border-2 border-white/60 bg-transparent text-white hover:bg-white hover:text-primary transition-colors rounded-md;
+  }
+}

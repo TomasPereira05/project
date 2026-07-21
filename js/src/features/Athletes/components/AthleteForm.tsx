@@ -1,6 +1,6 @@
-import { useEffect, useMemo, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, type ChangeEvent, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { ArrowLeft, Camera, CheckCircle2, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Camera, ShieldAlert } from "lucide-react";
 import type { RegisterValues, TeamCatalogCategory } from "..";
 import { todayISO, tomorrowISO } from "../../../shared/utils";
 
@@ -15,7 +15,6 @@ type AthleteFormProps = {
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   isSubmitting: boolean;
   errorMessage: string;
-  successMessage: string;
   photoFile?: File | null;
   onPhotoChange?: (file: File | null) => void;
 };
@@ -31,12 +30,17 @@ export function AthleteForm({
   onSubmit,
   isSubmitting,
   errorMessage,
-  successMessage,
   photoFile,
   onPhotoChange,
 }: AthleteFormProps) {
   const { t } = useTranslation();
+  const errorAlertRef = useRef<HTMLDivElement>(null);
   const photoPreviewUrl = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
+
+  // O alerta vive no topo de um formulário longo; sem isto a mensagem fica fora do ecrã após o submit.
+  useEffect(() => {
+    if (errorMessage) errorAlertRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [errorMessage]);
 
   useEffect(
     () => () => {
@@ -60,16 +64,9 @@ export function AthleteForm({
       </div>
 
       {errorMessage && (
-        <div className="athlete-alert-error">
+        <div ref={errorAlertRef} className="athlete-alert-error">
           <ShieldAlert size={20} className="text-red-500" />
           <p className="text-sm font-medium">{errorMessage}</p>
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="athlete-alert-success">
-          <CheckCircle2 size={20} className="text-green-500" />
-          <p className="text-sm font-medium">{successMessage}</p>
         </div>
       )}
 

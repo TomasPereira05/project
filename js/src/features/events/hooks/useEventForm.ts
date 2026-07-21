@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import type { TFunction } from "i18next";
 import { useStatusHandler } from "../../../shared/hooks/useStatusHandler";
 import { createEvent, fetchEvent, updateEvent } from "../api";
 import type { EventFormValues, SectorFormValue } from "../types";
 import { emptyForm, safeCents, toEventInput, toFormValues } from "../utils";
 
-export function useEventForm(eventId: number | undefined, t: TFunction<"translation", undefined>) {
+export function useEventForm(eventId: number | undefined) {
   const navigate = useNavigate();
   const isEdit = eventId !== undefined;
 

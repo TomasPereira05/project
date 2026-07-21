@@ -22,7 +22,7 @@ export default function EventForm() {
     memberNotCheaper,
     submit,
     goBack,
-  } = useEventForm(eventId, t);
+  } = useEventForm(eventId);
 
   if (loading) {
     return (

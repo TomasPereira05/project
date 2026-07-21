@@ -8,6 +8,11 @@ import { useAuth } from "../../../shared/hooks/useAuth";
 import { todayISO } from "../../../shared/utils";
 import { uploadFile } from "../../files";
 
+export type CreatedAthlete = {
+  athleteId: number;
+  photoFailed: boolean;
+};
+
 export function useCreateAthlete(t: TFunction<"translation", undefined>) {
   const auth = useAuth();
   const alreadyHasMember = auth.activeMemberId != null;
@@ -16,7 +21,7 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [created, setCreated] = useState<CreatedAthlete | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -61,7 +66,6 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
     event.preventDefault();
     setIsSubmitting(true);
     setErrorMessage("");
-    setSuccessMessage("");
 
     if (!values.privacyAccepted) {
       setErrorMessage(t("athletes.register.errors.privacy"));
@@ -89,20 +93,18 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
       return;
     }
     try {
-      const created = await createAthlete(toAthleteInput(values));
+      const athlete = await createAthlete(toAthleteInput(values));
       // A foto segue num request separado: se falhar, o atleta JÁ está criado —
       // mostra-se sucesso com aviso, nunca "falhou" (pode adicionar-se na ficha).
       let photoFailed = false;
       if (photoFile) {
         try {
-          await uploadFile("ATHLETE", created.athleteId, "ATHLETE_PHOTO", photoFile);
+          await uploadFile("ATHLETE", athlete.athleteId, "ATHLETE_PHOTO", photoFile);
         } catch {
           photoFailed = true;
         }
       }
-      setSuccessMessage(
-        photoFailed ? t("athletes.register.successPhotoFailed") : t("athletes.register.success"),
-      );
+      setCreated({ athleteId: athlete.athleteId, photoFailed });
       setPhotoFile(null);
       setValues({ ...initialRegisterValues, teamCategoryId: values.teamCategoryId });
     } catch (error) {
@@ -114,16 +116,23 @@ export function useCreateAthlete(t: TFunction<"translation", undefined>) {
     }
   }
 
+  // Fecha o painel de confirmação e volta ao formulário limpo (os values já foram repostos no sucesso).
+  function registerAnother() {
+    setCreated(null);
+    setErrorMessage("");
+  }
+
   return {
     alreadyHasMember,
     categories,
+    created,
     errorMessage,
     handleChange,
     handleSubmit,
     isSubmitting,
     photoFile,
+    registerAnother,
     setPhotoFile,
-    successMessage,
     values,
   };
 }

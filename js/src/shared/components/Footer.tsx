@@ -65,8 +65,8 @@ export default function Footer() {
             <a href={GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer" className="footer-location-link" aria-label="Google Maps">
               <MapPin size={18} />
               <span>
-                Campo Henrique Tomas Frade<br />
-                Urbanizacao da Camacha<br />
+                Campo Henrique Tomás Frade<br />
+                Urbanização da Camacha<br />
                 2655-302 Ericeira
               </span>
             </a>

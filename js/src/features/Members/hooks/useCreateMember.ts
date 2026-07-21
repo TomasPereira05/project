@@ -11,7 +11,7 @@ export function useCreateMember(userId: number | null | undefined, role: string 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [successMessage, setSuccessMessage] = useState("");
+  const [createdMemberId, setCreatedMemberId] = useState<number | null>(null);
 
   function handleChange(event: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     const target = event.target;
@@ -41,7 +41,6 @@ export function useCreateMember(userId: number | null | undefined, role: string 
 
     setIsSubmitting(true);
     setErrorMessage("");
-    setSuccessMessage("");
 
     try {
       const isStaffCreation = role === "ADMIN" || role === "SECRETARIA";
@@ -51,7 +50,7 @@ export function useCreateMember(userId: number | null | undefined, role: string 
       if (photoFile) {
         await uploadFile("MEMBER", created.memberId, "MEMBER_PHOTO", photoFile);
       }
-      setSuccessMessage(t("members.create.success"));
+      setCreatedMemberId(created.memberId);
       setPhotoFile(null);
       setValues(defaultMemberFormValues());
     } catch {
@@ -61,14 +60,21 @@ export function useCreateMember(userId: number | null | undefined, role: string 
     }
   }
 
+  // Fecha o painel de confirmação e volta ao formulário limpo (os values já foram repostos no sucesso).
+  function registerAnother() {
+    setCreatedMemberId(null);
+    setErrorMessage("");
+  }
+
   return {
+    createdMemberId,
     errorMessage,
     handleChange,
     handleSubmit,
     isSubmitting,
     photoFile,
+    registerAnother,
     setPhotoFile,
-    successMessage,
     values,
   };
 }

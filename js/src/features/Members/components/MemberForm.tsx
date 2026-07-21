@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { ArrowLeft, Camera, CheckCircle2, ShieldAlert } from "lucide-react";
 import type { MemberFormValues } from "..";
@@ -12,7 +12,7 @@ type MemberFormProps = {
   submitLabel: string;
   isSubmitting: boolean;
   errorMessage: string;
-  successMessage: string;
+  successMessage?: string;
   photoFile?: File | null;
   onPhotoChange?: (file: File | null) => void;
   readonlyIdentity?: boolean;
@@ -37,7 +37,15 @@ export function MemberForm({
 }: MemberFormProps) {
   const { t } = useTranslation();
   const [hasReadPrivacyText, setHasReadPrivacyText] = useState(values.privacyAccepted);
+  const alertsRef = useRef<HTMLDivElement>(null);
   const photoPreviewUrl = useMemo(() => (photoFile ? URL.createObjectURL(photoFile) : null), [photoFile]);
+
+  // Os alertas vivem no topo de um formulário longo; sem isto a mensagem fica fora do ecrã após o submit.
+  useEffect(() => {
+    if (errorMessage || successMessage) {
+      alertsRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [errorMessage, successMessage]);
 
   useEffect(() => {
     if (values.privacyAccepted) {
@@ -66,17 +74,21 @@ export function MemberForm({
         </button>
       </div>
 
-      {errorMessage && (
-        <div className="member-alert-error">
-          <ShieldAlert size={20} className="member-alert-icon-error" />
-          <p className="member-alert-text">{errorMessage}</p>
-        </div>
-      )}
+      {(errorMessage || successMessage) && (
+        <div ref={alertsRef}>
+          {errorMessage && (
+            <div className="member-alert-error">
+              <ShieldAlert size={20} className="member-alert-icon-error" />
+              <p className="member-alert-text">{errorMessage}</p>
+            </div>
+          )}
 
-      {successMessage && (
-        <div className="member-alert-success">
-          <CheckCircle2 size={20} className="member-alert-icon-success" />
-          <p className="member-alert-text">{successMessage}</p>
+          {successMessage && (
+            <div className="member-alert-success">
+              <CheckCircle2 size={20} className="member-alert-icon-success" />
+              <p className="member-alert-text">{successMessage}</p>
+            </div>
+          )}
         </div>
       )}
 
