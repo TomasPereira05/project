@@ -3,6 +3,7 @@ export const LOGO_SRC = '/images/logo_GDUE.png';
 export const HERO_IMG_SRC = '/images/hero_Background.jpg';
 export const FIELD_VIEW_IMG_SRC = '/images/Field_view.jpeg';
 export const FPF_LOGO_SRC = '/images/FPF_LOGO.png';
+export const NOT_FOUND_IMG_SRC = '/images/home_seats1.jpeg';
 export const GOOGLE_MAPS_URL = "https://maps.app.goo.gl/ihG13cuBswEBygjz9";
 export const TWITTER_URL = "https://x.com/GEriceirense";
 export const YOUTUBE_URL = "https://www.youtube.com/channel/UCEFxBYkA5n4slapcE2JNZjQ";

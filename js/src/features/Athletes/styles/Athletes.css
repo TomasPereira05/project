@@ -596,6 +596,23 @@
     @apply text-green-500;
   }
 
+  /* Confirmação de inscrição (substitui o formulário após sucesso) */
+  .athlete-confirmation {
+    @apply flex flex-col items-center text-center gap-4 py-16;
+  }
+
+  .athlete-confirmation-icon {
+    @apply text-green-500;
+  }
+
+  .athlete-confirmation-actions {
+    @apply mt-4 flex flex-col sm:flex-row items-center justify-center gap-3 w-full;
+  }
+
+  .athlete-btn-outline {
+    @apply w-full sm:w-auto inline-flex items-center justify-center gap-2 text-sm font-semibold uppercase tracking-wide h-12 px-8 border-2 border-border bg-white text-text-primary hover:bg-muted hover:border-text-secondary transition-colors rounded-md;
+  }
+
   /* Loading de formulário */
   .athlete-form-loading-container {
     @apply flex flex-col items-center justify-center py-20 text-white gap-3;

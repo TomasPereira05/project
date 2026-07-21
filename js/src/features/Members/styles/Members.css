@@ -227,6 +227,19 @@
     @apply text-sm font-medium;
   }
 
+  /* Confirmação de inscrição (substitui o formulário após sucesso) */
+  .member-confirmation {
+    @apply flex flex-col items-center text-center gap-4 py-16;
+  }
+
+  .member-confirmation-icon {
+    @apply text-green-500;
+  }
+
+  .member-confirmation-actions {
+    @apply mt-4 flex flex-col sm:flex-row items-center justify-center gap-3 w-full;
+  }
+
   /* Status Badges */
   /* Loading States */
   .member-loading-container {

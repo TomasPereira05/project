@@ -304,6 +304,11 @@
       "description": "Application form with the data needed for evaluation by the club.",
       "submit": "Submit request",
       "success": "Request submitted successfully. The member number will be assigned on approval.",
+      "confirmation": {
+        "title": "Request submitted!",
+        "viewProfile": "View member profile",
+        "registerAnother": "Register another member"
+      },
       "errors": {
         "privacy": "You must accept the privacy consent before submitting.",
         "minimumQuota": "The minimum monthly fee is 1.50 EUR.",
@@ -743,6 +748,12 @@
       }
     }
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Out of bounds! You've landed in the stands — the page you're looking for isn't on the pitch. Head back to the home page.",
+    "backHome": "Back to home page",
+    "goBack": "Go back"
+  },
   "payments": {
     "back": "Back",
     "home": "Back home",
@@ -952,6 +963,11 @@
       "submitting": "Submitting...",
       "success": "Registration submitted. The office will be notified to validate the file with AFL.",
       "successPhotoFailed": "Registration submitted, but the photo could not be uploaded — you can add it later on the athlete's page.",
+      "confirmation": {
+        "title": "Registration submitted!",
+        "viewProfile": "View athlete profile",
+        "registerAnother": "Register another athlete"
+      },
       "sections": {
         "who": "Who is being registered",
         "personal": "Personal details",

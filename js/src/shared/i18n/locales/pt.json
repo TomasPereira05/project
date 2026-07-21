@@ -304,6 +304,11 @@
       "description": "Formulário de candidatura com os dados necessários para avaliação por parte do clube.",
       "submit": "Submeter pedido",
       "success": "Pedido submetido com sucesso. O número de sócio será atribuído na aprovação.",
+      "confirmation": {
+        "title": "Pedido submetido!",
+        "viewProfile": "Ver ficha de sócio",
+        "registerAnother": "Registar outro sócio"
+      },
       "errors": {
         "privacy": "Tem de aceitar o consentimento de privacidade para submeter.",
         "minimumQuota": "A quota mensal mínima é 1,50 EUR.",
@@ -743,6 +748,12 @@
       }
     }
   },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "Bola fora! Foste parar às bancadas — a página que procuras não está em campo. Volta ao relvado pela página inicial.",
+    "backHome": "Voltar à página inicial",
+    "goBack": "Voltar atrás"
+  },
   "payments": {
     "back": "Voltar",
     "home": "Voltar ao início",
@@ -952,6 +963,11 @@
       "submitting": "A submeter...",
       "success": "Inscrição submetida. A secretaria será notificada para validar a ficha junto da AFL.",
       "successPhotoFailed": "Inscrição submetida, mas a foto não foi carregada — pode adicioná-la mais tarde na ficha do atleta.",
+      "confirmation": {
+        "title": "Inscrição submetida!",
+        "viewProfile": "Ver ficha do atleta",
+        "registerAnother": "Inscrever outro atleta"
+      },
       "sections": {
         "who": "Quem está a ser inscrito",
         "personal": "Dados pessoais",
