@@ -6,6 +6,7 @@ import pt.isel.jagoz.domain.member.MemberCategory
 import pt.isel.jagoz.domain.member.MemberDomain
 import pt.isel.jagoz.domain.member.MemberError
 import pt.isel.jagoz.domain.member.MemberStatus
+import pt.isel.jagoz.domain.utils.ATHLETE_MEMBER_QUOTA
 import pt.isel.jagoz.domain.utils.Either
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -88,11 +89,11 @@ class MemberDomainTests {
     }
 
     @Test
-    fun `approve sets zero quota for ATLETA_SOCIO`() {
+    fun `approve keeps the athlete quota set on the member for ATLETA_SOCIO`() {
         val atleta = sampleMember(status = MemberStatus.PENDENTE, category = MemberCategory.ATLETA_SOCIO, membershipQuota = 500)
         val res = domain.approve(atleta, LocalDate.parse("2025-04-01"))
         assertTrue(res is Either.Right)
-        assertEquals(0, res.value.membershipQuota)
+        assertEquals(500, res.value.membershipQuota)
     }
 
     @Test
@@ -185,11 +186,11 @@ class MemberDomainTests {
     }
 
     @Test
-    fun `reactivate sets zero quota for ATLETA_SOCIO`() {
+    fun `reactivate keeps the athlete quota set on the member for ATLETA_SOCIO`() {
         val m = sampleMember(status = MemberStatus.INATIVO, category = MemberCategory.ATLETA_SOCIO, membershipQuota = 300)
         val res = domain.reactivate(m, LocalDate.parse("2025-06-01"))
         assertTrue(res is Either.Right)
-        assertEquals(0, res.value.membershipQuota)
+        assertEquals(300, res.value.membershipQuota)
     }
 
     // ---- updateContact ----
@@ -277,12 +278,12 @@ class MemberDomainTests {
     // ---- changeCategory ----
 
     @Test
-    fun `changeCategory SOCIO to ATLETA_SOCIO zeroes quota`() {
+    fun `changeCategory SOCIO to ATLETA_SOCIO sets athlete quota`() {
         val m = sampleMember(category = MemberCategory.SOCIO, membershipQuota = 500)
         val res = domain.changeCategory(m, MemberCategory.ATLETA_SOCIO)
         assertTrue(res is Either.Right)
         assertEquals(MemberCategory.ATLETA_SOCIO, res.value.category)
-        assertEquals(0, res.value.membershipQuota)
+        assertEquals(ATHLETE_MEMBER_QUOTA, res.value.membershipQuota)
     }
 
     @Test
@@ -304,9 +305,9 @@ class MemberDomainTests {
     // ---- calculateMembershipQuota ----
 
     @Test
-    fun `calculateMembershipQuota returns zero for ATLETA_SOCIO`() {
+    fun `calculateMembershipQuota keeps the member quota for ATLETA_SOCIO`() {
         val m = sampleMember(category = MemberCategory.ATLETA_SOCIO, membershipQuota = 1000)
-        assertEquals(0, domain.calculateMembershipQuota(m))
+        assertEquals(1000, domain.calculateMembershipQuota(m))
     }
 
     @Test

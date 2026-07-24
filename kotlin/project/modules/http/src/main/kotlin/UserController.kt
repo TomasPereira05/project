@@ -40,14 +40,17 @@ class UserController(
 ) {
     @PostMapping(Uris.Users.CREATE_USER)
     fun createUser(
-        @RequestBody request: CreateUserRequest,
+        @Valid @RequestBody request: CreateUserRequest,
     ): ResponseEntity<*> =
         userService
             .createUser(
                 email = request.email,
                 username = request.username,
                 password = request.password,
-                role = request.role,
+                // Endpoint de registo público (sem autenticação): o papel nunca pode vir do
+                // cliente, senão qualquer um se auto-cria ADMIN. Força-se NORMAL; a elevação
+                // faz-se só pela via autenticada UserController.updateUserRole (backoffice).
+                role = Role.NORMAL,
                 activeMemberId = request.activeMemberId,
             ).handle(
                 onFailure = { error -> serviceErrorToProblem(error) },
@@ -195,7 +198,7 @@ class UserController(
 
     @PostMapping(Uris.Users.LOGIN)
     fun login(
-        @RequestBody request: LoginRequest,
+        @Valid @RequestBody request: LoginRequest,
         httpRequest: HttpServletRequest,
     ): ResponseEntity<*> =
         userService.login(request.identifier, request.password).handle(

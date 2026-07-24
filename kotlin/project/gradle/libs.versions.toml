@@ -1,0 +1,43 @@
+# Catalogo de versoes partilhado por todos os modulos.
+# Regra: dependencias com versao explicita vivem aqui; no modulo `host`, as dependencias
+# geridas pelo BOM do Spring Boot (starters, jackson-module-kotlin, kotlin-reflect)
+# continuam declaradas sem versao, porque uma versao directa sobreporia o BOM.
+# As versoes dos plugins (Kotlin, Boot, ktlint) estao no settings.gradle.kts.
+
+[versions]
+kotlinx-datetime = "0.6.0"
+jdbi = "3.37.1"
+postgresql = "42.7.2"
+jackson = "2.18.0"
+jakarta-inject = "2.0.1"
+jakarta-servlet = "6.1.0"
+slf4j = "2.0.16"
+spring-security = "6.5.5"
+stripe = "31.3.0"
+gson = "2.11.0"
+zxing = "3.5.3"
+openhtmltopdf = "1.0.10"
+aws-sdk = "2.30.31"
+
+[libraries]
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+
+jdbi-core = { module = "org.jdbi:jdbi3-core", version.ref = "jdbi" }
+jdbi-kotlin = { module = "org.jdbi:jdbi3-kotlin", version.ref = "jdbi" }
+jdbi-postgres = { module = "org.jdbi:jdbi3-postgres", version.ref = "jdbi" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+
+jakarta-inject-api = { module = "jakarta.inject:jakarta.inject-api", version.ref = "jakarta-inject" }
+jakarta-servlet-api = { module = "jakarta.servlet:jakarta.servlet-api", version.ref = "jakarta-servlet" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+spring-security-core = { module = "org.springframework.security:spring-security-core", version.ref = "spring-security" }
+
+stripe-java = { module = "com.stripe:stripe-java", version.ref = "stripe" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
+zxing-javase = { module = "com.google.zxing:javase", version.ref = "zxing" }
+openhtmltopdf-pdfbox = { module = "com.openhtmltopdf:openhtmltopdf-pdfbox", version.ref = "openhtmltopdf" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk" }

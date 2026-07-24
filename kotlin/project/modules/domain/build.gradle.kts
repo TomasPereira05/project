@@ -6,10 +6,10 @@ group = "pt.isel"
 version = "0.0.1-SNAPSHOT"
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+    implementation(libs.kotlinx.datetime)
 
     testImplementation(kotlin("test"))
-    api("org.springframework.security:spring-security-core:6.5.5")
+    api(libs.spring.security.core)
 }
 
 tasks.test {

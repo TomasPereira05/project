@@ -354,117 +354,142 @@ class EventService(
      * nº + data de nascimento para anónimo), reserva os lugares de forma atómica, cria a charge
      * TICKET_PURCHASE e os bilhetes RESERVED, e abre a sessão Stripe (Payment PENDING).
      * Os bilhetes só passam a CONFIRMED no webhook de pagamento (peça 3).
+     *
+     * Atomicidade: devolver `Either.Left` de dentro de `transactionManager.run` COMITA as
+     * escritas já feitas (o rollback do JDBI só dispara com exceção). Por isso o fluxo tem
+     * duas fases — a fase 1 valida o carrinho inteiro sem escrever nada (Left aqui não deixa
+     * rasto), e a fase 2 só escreve. As falhas que só podem surgir na fase 2 (corrida de
+     * lotação com outra transação, Stripe) saem por [CheckoutAborted], que reverte tudo.
      */
     fun startTicketCheckout(
         eventId: Long,
         draft: TicketPurchaseDraft,
         authenticatedUser: AuthenticatedUser?,
     ): Either<EventError, CheckoutSessionResult> =
-        transactionManager.run { tx ->
-            val event =
-                tx.eventRepository.findById(eventId)
-                    ?: return@run failure(EventError.NotFound("Event $eventId not found"))
-            if (event.status != EventStatus.SCHEDULED) {
-                return@run failure(EventError.InvalidOperation("event is not open for ticket sales"))
-            }
-            if (event.startsAt <= Clock.System.now()) {
-                return@run failure(EventError.InvalidOperation("event has already started"))
-            }
-            if (draft.lines.isEmpty()) {
-                return@run failure(EventError.Validation("select at least one ticket"))
-            }
-            if (draft.lines.size > MAX_TICKETS_PER_PURCHASE) {
-                return@run failure(EventError.Validation("at most $MAX_TICKETS_PER_PURCHASE tickets per purchase"))
-            }
+        try {
+            transactionManager.run { tx ->
+                // ---- fase 1: validações (só leituras) ----
+                val event =
+                    tx.eventRepository.findById(eventId)
+                        ?: return@run failure(EventError.NotFound("Event $eventId not found"))
+                if (event.status != EventStatus.SCHEDULED) {
+                    return@run failure(EventError.InvalidOperation("event is not open for ticket sales"))
+                }
+                if (event.startsAt <= Clock.System.now()) {
+                    return@run failure(EventError.InvalidOperation("event has already started"))
+                }
+                if (draft.lines.isEmpty()) {
+                    return@run failure(EventError.Validation("select at least one ticket"))
+                }
+                if (draft.lines.size > MAX_TICKETS_PER_PURCHASE) {
+                    return@run failure(EventError.Validation("at most $MAX_TICKETS_PER_PURCHASE tickets per purchase"))
+                }
 
-            val sectorsById = tx.eventRepository.findSectorsByEvent(eventId).associateBy { it.sectorId }
-            val priceFor = { type: TicketPriceType ->
-                if (type == TicketPriceType.MEMBER) event.priceMember else event.priceNormal
-            }
+                val sectorsById = tx.eventRepository.findSectorsByEvent(eventId).associateBy { it.sectorId }
+                val priceFor = { type: TicketPriceType ->
+                    if (type == TicketPriceType.MEMBER) event.priceMember else event.priceNormal
+                }
 
-            val buyer = authenticatedUser?.let { tx.userRepository.findById(it.userId) }
-            val charge =
-                Charge(
-                    chargeId = 0,
-                    type = ChargeType.TICKET_PURCHASE,
-                    memberId = null,
-                    sponsorshipId = null,
-                    value = draft.lines.sumOf { priceFor(it.priceType) },
-                    status = ChargeStatus.PENDING,
-                    season = null,
-                    month = null,
-                    createdAt =
-                        Clock.System
-                            .now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault())
-                            .date,
-                    creationUser = buyer,
-                    chargeUser = buyer,
-                    paidAt = null,
-                )
-            val chargeId = tx.chargeRepository.save(charge)
+                val usedMemberIds = mutableSetOf<Long>()
+                val requestedPerSector = mutableMapOf<Long, Int>()
+                // bilhetes validados com chargeId provisório; a charge ainda não existe na fase 1
+                val validatedTickets = mutableListOf<Pair<Ticket, String>>()
+                for (line in draft.lines) {
+                    val sector =
+                        sectorsById[line.sectorId]
+                            ?: return@run failure(EventError.Validation("sector ${line.sectorId} does not belong to this event"))
+                    val price = priceFor(line.priceType)
 
-            val usedMemberIds = mutableSetOf<Long>()
-            val lineItems = mutableListOf<StripeLineItem>()
-            for (line in draft.lines) {
-                val sector =
-                    sectorsById[line.sectorId]
-                        ?: return@run failure(EventError.Validation("sector ${line.sectorId} does not belong to this event"))
-                val price = priceFor(line.priceType)
-
-                var memberId: Long? = null
-                var memberNumber: Int? = null
-                if (line.priceType == TicketPriceType.MEMBER) {
-                    val member =
-                        resolveDiscountMember(tx, line, authenticatedUser)
-                            ?: return@run failure(EventError.InvalidOperation("invalid or inactive member credentials"))
-                    if (!usedMemberIds.add(member.memberId)) {
-                        return@run failure(EventError.InvalidOperation("a member can buy at most one member ticket per event"))
+                    var memberId: Long? = null
+                    var memberNumber: Int? = null
+                    if (line.priceType == TicketPriceType.MEMBER) {
+                        val member =
+                            resolveDiscountMember(tx, line, authenticatedUser)
+                                ?: return@run failure(EventError.InvalidOperation("invalid or inactive member credentials"))
+                        if (!usedMemberIds.add(member.memberId)) {
+                            return@run failure(EventError.InvalidOperation("a member can buy at most one member ticket per event"))
+                        }
+                        if (tx.ticketRepository.existsActiveMemberTicket(eventId, member.memberId)) {
+                            return@run failure(
+                                EventError.InvalidOperation("member #${member.memberNumber} already has a ticket for this event"),
+                            )
+                        }
+                        memberId = member.memberId
+                        memberNumber = member.memberNumber
                     }
-                    if (tx.ticketRepository.existsActiveMemberTicket(eventId, member.memberId)) {
-                        return@run failure(
-                            EventError.InvalidOperation("member #${member.memberNumber} already has a ticket for this event"),
+
+                    val requested = (requestedPerSector[line.sectorId] ?: 0) + 1
+                    requestedPerSector[line.sectorId] = requested
+                    if (sector.occupied + requested > sector.capacity) {
+                        return@run failure(EventError.InvalidOperation("sector '${sector.name}' is sold out"))
+                    }
+
+                    val ticket =
+                        Ticket(
+                            ticketId = 0,
+                            eventId = eventId,
+                            sectorId = line.sectorId,
+                            chargeId = 0,
+                            memberId = memberId,
+                            memberNumber = memberNumber,
+                            priceType = line.priceType,
+                            price = price,
+                            buyerEmail = draft.buyerEmail.trim(),
+                            buyerName = draft.buyerName.trim(),
+                            status = TicketStatus.RESERVED,
+                            qrCode = null,
+                            usedAt = null,
                         )
+                    when (val v = eventDomain.validateTicketForPurchase(ticket)) {
+                        is Either.Left -> return@run failure(v.value.toEventError())
+                        is Either.Right -> Unit
                     }
-                    memberId = member.memberId
-                    memberNumber = member.memberNumber
+                    validatedTickets += ticket to sector.name
                 }
 
-                // reserva atómica do lugar; uma falha posterior faz rollback de todas as reservas
-                if (!tx.eventRepository.reserveSeat(line.sectorId)) {
-                    return@run failure(EventError.InvalidOperation("sector '${sector.name}' is sold out"))
-                }
-
-                val ticket =
-                    Ticket(
-                        ticketId = 0,
-                        eventId = eventId,
-                        sectorId = line.sectorId,
-                        chargeId = chargeId,
-                        memberId = memberId,
-                        memberNumber = memberNumber,
-                        priceType = line.priceType,
-                        price = price,
-                        buyerEmail = draft.buyerEmail.trim(),
-                        buyerName = draft.buyerName.trim(),
-                        status = TicketStatus.RESERVED,
-                        qrCode = null,
-                        usedAt = null,
+                // ---- fase 2: escritas (o carrinho inteiro já validou) ----
+                val buyer = authenticatedUser?.let { tx.userRepository.findById(it.userId) }
+                val charge =
+                    Charge(
+                        chargeId = 0,
+                        type = ChargeType.TICKET_PURCHASE,
+                        memberId = null,
+                        sponsorshipId = null,
+                        value = draft.lines.sumOf { priceFor(it.priceType) },
+                        status = ChargeStatus.PENDING,
+                        season = null,
+                        month = null,
+                        createdAt =
+                            Clock.System
+                                .now()
+                                .toLocalDateTime(TimeZone.currentSystemDefault())
+                                .date,
+                        creationUser = buyer,
+                        chargeUser = buyer,
+                        paidAt = null,
                     )
-                when (val v = eventDomain.validateTicketForPurchase(ticket)) {
-                    is Either.Left -> return@run failure(v.value.toEventError())
-                    is Either.Right -> tx.ticketRepository.save(ticket)
-                }
-                lineItems += StripeLineItem("${event.name} — ${sector.name} (${priceTypeLabel(line.priceType)})", price)
-            }
+                val chargeId = tx.chargeRepository.save(charge)
 
-            val savedCharge =
-                tx.chargeRepository.findById(chargeId)
-                    ?: return@run failure(EventError.NotFound("charge $chargeId not found"))
-            when (val result = paymentService.createSessionAndPayment(tx, savedCharge, lineItems, draft.buyerEmail.trim())) {
-                is Either.Left -> failure(result.value.toEventError())
-                is Either.Right -> success(result.value)
+                val lineItems = mutableListOf<StripeLineItem>()
+                for ((ticket, sectorName) in validatedTickets) {
+                    // a fase 1 verificou a lotação, mas outra transação pode ter vendido entretanto
+                    if (!tx.eventRepository.reserveSeat(ticket.sectorId)) {
+                        throw CheckoutAborted(EventError.InvalidOperation("sector '$sectorName' is sold out"))
+                    }
+                    tx.ticketRepository.save(ticket.copy(chargeId = chargeId))
+                    lineItems += StripeLineItem("${event.name} — $sectorName (${priceTypeLabel(ticket.priceType)})", ticket.price)
+                }
+
+                val savedCharge =
+                    tx.chargeRepository.findById(chargeId)
+                        ?: throw CheckoutAborted(EventError.NotFound("charge $chargeId not found"))
+                when (val result = paymentService.createSessionAndPayment(tx, savedCharge, lineItems, draft.buyerEmail.trim())) {
+                    is Either.Left -> throw CheckoutAborted(result.value.toEventError())
+                    is Either.Right -> success(result.value)
+                }
             }
+        } catch (aborted: CheckoutAborted) {
+            failure(aborted.error)
         }
 
     /**
@@ -576,3 +601,11 @@ class EventService(
         val GATE_CLOSES_AFTER = 6.hours
     }
 }
+
+/**
+ * Sinal interno de aborto do checkout: força o rollback da transação (que `Either.Left`
+ * não faz) e transporta o erro de domínio até ao `catch` em [EventService.startTicketCheckout].
+ */
+private class CheckoutAborted(
+    val error: EventError,
+) : RuntimeException()

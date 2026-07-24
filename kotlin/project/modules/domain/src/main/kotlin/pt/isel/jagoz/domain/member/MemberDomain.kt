@@ -30,7 +30,8 @@ class MemberDomain {
      * Postconditions:
      * - returns a copy of [member] with status set to [MemberStatus.ATIVO], approvalDate set
      *   to [approvalDate] and monthlyQuota adjusted according to the member category
-     *   (ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA, a mensalidade de atleta — 20 EUR por defeito;
+     *   (ATLETA_SOCIO -> mantém a mensalidade definida no member — o default de 20 EUR é
+     *   atribuído na inscrição e o admin pode ajustá-la na ficha;
      *   SOCIO -> pelo menos REGULAR_MEMBER_MIN_QUOTA, 1.50 EUR).
      *
      * Errors:
@@ -52,11 +53,7 @@ class MemberDomain {
             return failure(MemberError.ValidationError("approvalDate cannot be before registrationDate"))
         }
 
-        val newQuota =
-            when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA // mensalidade de atleta (20 EUR por defeito); isento da quota de socio
-                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA) // minimo 150 centimos (1.50 EUR)
-            }
+        val newQuota = calculateMembershipQuota(member)
 
         val updated =
             member.copy(
@@ -141,12 +138,13 @@ class MemberDomain {
         if (reactivationDate < member.registrationDate) {
             return failure(MemberError.ValidationError("reactivationDate cannot be before registrationDate"))
         }
-        val newQuota =
-            when (member.category) {
-                MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA
-                MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA)
-            }
-        return success(member.copy(status = MemberStatus.ATIVO, approvalDate = reactivationDate, membershipQuota = newQuota))
+        return success(
+            member.copy(
+                status = MemberStatus.ATIVO,
+                approvalDate = reactivationDate,
+                membershipQuota = calculateMembershipQuota(member),
+            ),
+        )
     }
 
     /**
@@ -263,7 +261,9 @@ class MemberDomain {
      * Compute the canonical membership quota for the given [member] according to business rules.
      * Values are in cents (centimos).
      *
-     * - [MemberCategory.ATLETA_SOCIO] -> ATHLETE_MEMBER_QUOTA (mensalidade de atleta; 2000 cents / 20 EUR por defeito)
+     * - [MemberCategory.ATLETA_SOCIO] -> mantém o membershipQuota do member (o default de
+     *   ATHLETE_MEMBER_QUOTA — 2000 cents / 20 EUR — é atribuído na inscrição e em
+     *   [changeCategory]; o admin pode ajustá-lo na ficha do atleta)
      * - [MemberCategory.SOCIO] -> at least 150 cents (1.50 EUR) or the existing membershipQuota if higher
      *
      * @param member the member whose quota to compute
@@ -271,7 +271,7 @@ class MemberDomain {
      */
     fun calculateMembershipQuota(member: Member): Int =
         when (member.category) {
-            MemberCategory.ATLETA_SOCIO -> ATHLETE_MEMBER_QUOTA
+            MemberCategory.ATLETA_SOCIO -> member.membershipQuota
             MemberCategory.SOCIO -> maxOf(member.membershipQuota, REGULAR_MEMBER_MIN_QUOTA)
         }
 

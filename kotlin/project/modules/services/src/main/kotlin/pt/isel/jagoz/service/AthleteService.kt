@@ -497,6 +497,10 @@ class AthleteService(
      * Update administrativo: substitui os campos editáveis do atleta. A categoria fica
      * fora — usa [changeTeamCategory] para isso (transição com validação dedicada).
      * Se [guardians] for não-nulo, substitui o conjunto inteiro (delete-all + insert).
+     *
+     * Ordem obrigatória: TODAS as validações antes de QUALQUER escrita — devolver
+     * `Either.Left` de dentro de `transactionManager.run` comita o que já foi escrito
+     * (o rollback do JDBI só dispara com exceção).
      */
     fun updateAthlete(
         athleteId: Long,
@@ -509,7 +513,7 @@ class AthleteService(
                 tx.athleteRepository.findById(athleteId)
                     ?: return@run failure(AthleteError.NotFound("athleteId", athleteId))
 
-            // 1) Dados pessoais que vivem no Member — validados e gravados via memberDomain.
+            // 1) Validar os dados pessoais que vivem no Member (via memberDomain).
             val currentMember =
                 tx.memberRepository.findById(current.memberId)
                     ?: return@run failure(AthleteError.NotFound("memberId", current.memberId))
@@ -532,9 +536,8 @@ class AthleteService(
                     is Either.Left -> return@run failure(memberErrorToAthleteError(res.value))
                     is Either.Right -> res.value
                 }
-            tx.memberRepository.update(validatedMember)
 
-            // 2) Dados que vivem no Athlete (pessoais + desportivos/escolares).
+            // 2) Validar os dados que vivem no Athlete (pessoais + desportivos/escolares).
             val updated =
                 current.copy(
                     nationality = input.nationality,
@@ -555,28 +558,37 @@ class AthleteService(
                 is Either.Left -> return@run failure(AthleteError.ValidationError(validationErrorMessage(res.value)))
                 is Either.Right -> Unit
             }
-            tx.athleteRepository.update(updated)
 
-            if (input.guardians != null) {
-                val resolved =
-                    input.guardians.map { g ->
-                        if (g.memberNumber == null) {
-                            g to null
-                        } else {
-                            val existing =
-                                tx.memberRepository.findByMemberNumber(g.memberNumber)
-                                    ?: return@run failure(AthleteError.GuardianMemberNotFound(g.memberNumber))
-                            g to existing.memberId
+            // 3) Resolver e validar os guardians (só leituras e validação pura).
+            val newGuardians =
+                if (input.guardians != null) {
+                    val resolved =
+                        input.guardians.map { g ->
+                            if (g.memberNumber == null) {
+                                g to null
+                            } else {
+                                val existing =
+                                    tx.memberRepository.findByMemberNumber(g.memberNumber)
+                                        ?: return@run failure(AthleteError.GuardianMemberNotFound(g.memberNumber))
+                                g to existing.memberId
+                            }
+                        }
+                    resolved.forEach { (g, fk) ->
+                        when (val res = athleteDomain.validateGuardianForCreation(g.toGuardian(athleteId, fk))) {
+                            is Either.Left -> return@run failure(AthleteError.ValidationError(validationErrorMessage(res.value)))
+                            is Either.Right -> Unit
                         }
                     }
-                resolved.forEach { (g, fk) ->
-                    when (val res = athleteDomain.validateGuardianForCreation(g.toGuardian(athleteId, fk))) {
-                        is Either.Left -> return@run failure(AthleteError.ValidationError(validationErrorMessage(res.value)))
-                        is Either.Right -> Unit
-                    }
+                    resolved.map { (g, fk) -> g.toGuardian(athleteId, fk) }
+                } else {
+                    null
                 }
+
+            // 4) Nada pode falhar a partir daqui — só agora escrever.
+            tx.memberRepository.update(validatedMember)
+            tx.athleteRepository.update(updated)
+            if (newGuardians != null) {
                 tx.athleteRepository.deleteGuardiansByAthleteId(athleteId)
-                val newGuardians = resolved.map { (g, fk) -> g.toGuardian(athleteId, fk) }
                 tx.athleteRepository.saveGuardians(athleteId, newGuardians)
                 success(updated.copy(guardians = newGuardians))
             } else {
