@@ -1,5 +1,6 @@
 package pt.isel.jagoz.http
 
+import jakarta.validation.Valid
 import kotlinx.datetime.toLocalDate
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -77,7 +78,7 @@ class MemberController(
     @PostMapping(Uris.Members.CREATE_MEMBER)
     fun createMember(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody member: MemberCreateInput,
+        @Valid @RequestBody member: MemberCreateInput,
     ): ResponseEntity<*> =
         memberService.createMember(member.toMember(), member.linkedUsername, authenticatedUser).handle(
             onFailure = { error -> handleMemberError(error) },
@@ -88,7 +89,7 @@ class MemberController(
     fun updateMember(
         authenticatedUser: AuthenticatedUser,
         @PathVariable memberId: Long,
-        @RequestBody input: MemberUpdateInput,
+        @Valid @RequestBody input: MemberUpdateInput,
     ): ResponseEntity<*> =
         memberService.updateMember(memberId, input.toCandidate(), authenticatedUser).handle(
             onFailure = { error -> handleMemberError(error) },
@@ -109,7 +110,7 @@ class MemberController(
     fun approveMember(
         authenticatedUser: AuthenticatedUser,
         @PathVariable memberId: Long,
-        @RequestBody approvalRequest: ApprovalRequest,
+        @Valid @RequestBody approvalRequest: ApprovalRequest,
     ): ResponseEntity<*> =
         memberService.approveMember(memberId, approvalRequest.approvalDate.toLocalDate(), authenticatedUser).handle(
             onFailure = { error -> handleMemberError(error) },

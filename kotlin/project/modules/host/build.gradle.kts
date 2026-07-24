@@ -26,13 +26,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-mail")
 
-    implementation("org.jdbi:jdbi3-core:3.37.1")
-    implementation("org.postgresql:postgresql:42.7.2")
+    implementation(libs.jdbi.core)
+    implementation(libs.postgresql)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+    implementation(libs.kotlinx.datetime)
 
-    implementation("org.springframework.security:spring-security-core:6.5.4")
-    implementation("software.amazon.awssdk:s3:2.30.31")
+    implementation(libs.spring.security.core)
+    implementation(libs.aws.s3)
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -47,9 +47,6 @@ kotlin {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    if (System.getenv("DB_URL") == null) {
-        environment("DB_URL", "jdbc:postgresql://localhost:5433/jagoz?user=postgres&password=mscx2003")
-    }
     dependsOn(":repository-jdbi:dbTestsWait")
     finalizedBy(":repository-jdbi:dbTestsDown")
 }

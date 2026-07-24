@@ -1,5 +1,6 @@
 package pt.isel.jagoz.http
 
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -31,7 +32,7 @@ class PaymentController(
     @PostMapping(Uris.Payments.CREATE_CHECKOUT_SESSION)
     fun createCheckoutSession(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody input: CreateCheckoutSessionInput,
+        @Valid @RequestBody input: CreateCheckoutSessionInput,
     ): ResponseEntity<*> =
         paymentService
             .createCheckoutSession(
@@ -59,7 +60,7 @@ class PaymentController(
     fun markMembershipFeesPaid(
         authenticatedUser: AuthenticatedUser,
         @PathVariable memberId: Long,
-        @RequestBody input: MarkMembershipFeesPaidInput,
+        @Valid @RequestBody input: MarkMembershipFeesPaidInput,
     ): ResponseEntity<*> =
         paymentService
             .markMembershipFeesPaid(

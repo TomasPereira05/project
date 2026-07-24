@@ -466,6 +466,8 @@ class FileServiceTests {
 
         override fun findByMemberNumber(memberNumber: Int): Member? = unsupported()
 
+        override fun existsByNif(nif: String): Boolean = unsupported()
+
         override fun findAll(): List<Member> = unsupported()
 
         override fun findPage(
@@ -511,6 +513,24 @@ class FileServiceTests {
         }
 
         override fun findByMemberId(memberId: Long): Athlete? = unsupported()
+
+        override fun findByManagingUser(userId: Long): List<Athlete> = unsupported()
+
+        override fun linkUserToAthlete(
+            userId: Long,
+            athleteId: Long,
+        ): Unit = throw AssertionError("AthleteRepository method should not be used")
+
+        override fun isUserManagingMember(
+            userId: Long,
+            memberId: Long,
+        ): Boolean = unsupported()
+
+        override fun findDuplicateUniqueField(
+            niss: String,
+            numeroUtente: String,
+            bi: String,
+        ): String? = unsupported()
 
         override fun findAllActive(): List<Athlete> = unsupported()
 

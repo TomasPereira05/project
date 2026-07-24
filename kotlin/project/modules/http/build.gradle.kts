@@ -1,8 +1,8 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
-    id("org.springframework.boot") version "3.5.5"
-    id("io.spring.dependency-management") version "1.1.7"
+    id("org.springframework.boot")
+    id("io.spring.dependency-management")
 }
 
 group = "pt.isel"
@@ -11,12 +11,12 @@ version = "0.0.1-SNAPSHOT"
 dependencies {
     implementation(project(":domain"))
     implementation(project(":services"))
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.1")
+    implementation(libs.kotlinx.datetime)
 
     implementation("org.springframework:spring-webmvc")
-    compileOnly("jakarta.servlet:jakarta.servlet-api:6.1.0")
+    compileOnly(libs.jakarta.servlet.api)
 
-    implementation("org.slf4j:slf4j-api:2.0.16")
+    implementation(libs.slf4j.api)
     implementation("org.springframework.boot:spring-boot-starter-validation")
     testImplementation(kotlin("test"))
     implementation(kotlin("stdlib"))
@@ -24,9 +24,11 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    if (System.getenv("DB_URL") == null) {
-        environment("DB_URL", "jdbc:postgresql://localhost:5433/jagoz?user=postgres&password=mscx2003")
-    }
+}
+
+// Módulo de biblioteca: o entry point Spring Boot vive no host, por isso não há bootJar aqui.
+tasks.bootJar {
+    enabled = false
 }
 kotlin {
     jvmToolchain(21)

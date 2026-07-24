@@ -16,6 +16,7 @@ import pt.isel.jagoz.http.model.athlete.toDetailOutput
 import pt.isel.jagoz.http.model.athlete.toPublicOutput
 import pt.isel.jagoz.http.model.athlete.toRegistrationInput
 import pt.isel.jagoz.http.model.athlete.toServiceInput
+import pt.isel.jagoz.http.model.athlete.toUpdateInput
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -188,9 +189,15 @@ class AthleteModelTests {
                 isSelfRegistration = true,
             )
 
-        val serviceInput = input.toRegistrationInput(userId = 77, registrationDate = LocalDate.parse("2026-05-01"))
+        val serviceInput =
+            input.toRegistrationInput(
+                userId = 77,
+                creatorUserId = 88,
+                registrationDate = LocalDate.parse("2026-05-01"),
+            )
 
         assertEquals(77, serviceInput.userId)
+        assertEquals(88, serviceInput.creatorUserId)
         assertEquals(LocalDate.parse("2009-10-21"), serviceInput.birthDate)
         assertEquals(LocalDate.parse("2031-09-11"), serviceInput.biExpirationDate)
         assertEquals(LocalDate.parse("2026-05-01"), serviceInput.registrationDate)
@@ -221,9 +228,25 @@ class AthleteModelTests {
     }
 
     @Test
-    fun `athlete update request is a simple partial update carrier`() {
+    fun `update request maps to service input with parsed dates and optional guardians`() {
         val request =
             AthleteUpdateRequest(
+                completeName = "Tiago Rocha",
+                birthDate = "2010-05-18",
+                birthplace = "Mafra",
+                email = "tiago@example.test",
+                phone = "912345678",
+                homePhone = null,
+                address = "Rua",
+                postalCode = "2640-001",
+                city = "Mafra",
+                nif = "123456789",
+                membershipQuota = 2000,
+                nationality = "Portuguesa",
+                niss = "11122233301",
+                numeroUtente = "300003001",
+                bi = "CC30001",
+                biExpirationDate = "2030-05-01",
                 jerseyNumber = 8,
                 position = "Defesa",
                 school = null,
@@ -232,12 +255,16 @@ class AthleteModelTests {
                 lastClub = null,
                 season = "2026/2027",
                 hasFamilyInClub = false,
-                guardians = emptyList(),
+                guardians = null,
             )
 
-        assertEquals(8, request.jerseyNumber)
-        assertEquals("Defesa", request.position)
-        assertEquals("2026/2027", request.season)
-        assertEquals(emptyList(), request.guardians)
+        val serviceInput = request.toUpdateInput()
+
+        assertEquals(LocalDate.parse("2010-05-18"), serviceInput.birthDate)
+        assertEquals(LocalDate.parse("2030-05-01"), serviceInput.biExpirationDate)
+        assertEquals(2000, serviceInput.membershipQuota)
+        assertEquals(8, serviceInput.jerseyNumber)
+        assertEquals("2026/2027", serviceInput.season)
+        assertNull(serviceInput.guardians)
     }
 }

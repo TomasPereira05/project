@@ -1,5 +1,6 @@
 package pt.isel.jagoz.http
 
+import jakarta.validation.Valid
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDate
@@ -109,7 +110,7 @@ class AthleteController(
     /** Inscreve um atleta novo. Cria Member (ATLETA_SOCIO, PENDENTE) + Athlete + Guardians. */
     @PostMapping(Uris.Athletes.CREATE_ATHLETE)
     fun createAthlete(
-        @RequestBody input: AthleteCreationInput,
+        @Valid @RequestBody input: AthleteCreationInput,
         user: AuthenticatedUser,
     ): ResponseEntity<*> {
         val resolvedUserId =
@@ -213,7 +214,7 @@ class AthleteController(
     @PutMapping(Uris.Athletes.UPDATE_ATHLETE)
     fun updateAthlete(
         @PathVariable athleteId: Long,
-        @RequestBody request: AthleteUpdateRequest,
+        @Valid @RequestBody request: AthleteUpdateRequest,
         user: AuthenticatedUser,
     ): ResponseEntity<*> {
         requireSecretariaOrAdmin(user)?.let { return it }
@@ -230,7 +231,7 @@ class AthleteController(
     @PutMapping(Uris.Athletes.CHANGE_TEAM_CATEGORY)
     fun changeTeamCategory(
         @PathVariable athleteId: Long,
-        @RequestBody request: TeamCategoryChangeRequest,
+        @Valid @RequestBody request: TeamCategoryChangeRequest,
         user: AuthenticatedUser,
     ): ResponseEntity<*> {
         requireSecretariaOrAdmin(user)?.let { return it }
@@ -268,7 +269,7 @@ class AthleteController(
     @PutMapping(Uris.Athletes.APPROVE_ATHLETE)
     fun approveAthlete(
         @PathVariable athleteId: Long,
-        @RequestBody approvalRequest: ApprovalRequest,
+        @Valid @RequestBody approvalRequest: ApprovalRequest,
         user: AuthenticatedUser,
     ): ResponseEntity<*> {
         requireSecretariaOrAdmin(user)?.let { return it }

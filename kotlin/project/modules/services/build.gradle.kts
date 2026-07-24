@@ -9,26 +9,26 @@ dependencies {
     api(project(":domain"))
     api(project(":repository"))
 
-    implementation("jakarta.inject:jakarta.inject-api:2.0.1")
-    implementation("org.slf4j:slf4j-api:2.0.16")
+    implementation(libs.jakarta.inject.api)
+    implementation(libs.slf4j.api)
 
     testImplementation(project(":repository-jdbi"))
-    testImplementation("org.jdbi:jdbi3-core:3.37.1")
-    testImplementation("org.postgresql:postgresql:42.7.2")
+    testImplementation(libs.jdbi.core)
+    testImplementation(libs.postgresql)
 
     testImplementation(kotlin("test"))
 
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
-    implementation("com.stripe:stripe-java:31.3.0")
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.stripe.java)
+    implementation(libs.gson)
 
     // QR dos bilhetes (Fase 4): core gera a matriz, javase renderiza para PNG (MatrixToImageWriter)
-    implementation("com.google.zxing:core:3.5.3")
-    implementation("com.google.zxing:javase:3.5.3")
+    implementation(libs.zxing.core)
+    implementation(libs.zxing.javase)
 
     // Bilhete em PDF (anexo do email): renderiza um documento XHTML -> PDF, reutilizando a
     // mesma abordagem de template HTML do recibo de pagamento.
-    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10")
+    implementation(libs.openhtmltopdf.pdfbox)
 }
 
 // Source set isolado para o preview do bilhete (não mistura com os testes, que dependem de DB).
@@ -52,9 +52,6 @@ tasks.register<JavaExec>("ticketPreview") {
 
 tasks.test {
     useJUnitPlatform()
-    if (System.getenv("DB_URL") == null) {
-        environment("DB_URL", "jdbc:postgresql://localhost:5433/jagoz?user=postgres&password=mscx2003")
-    }
     dependsOn(":repository-jdbi:dbTestsWait")
     finalizedBy(":repository-jdbi:dbTestsDown")
 }

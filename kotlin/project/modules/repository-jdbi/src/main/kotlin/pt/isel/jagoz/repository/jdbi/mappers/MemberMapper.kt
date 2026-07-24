@@ -17,7 +17,8 @@ class MemberMapper : RowMapper<Member> {
 
         return Member(
             memberId = rs.getLong("member_id"),
-            userId = rs.getLong("user_id"),
+            // getLong devolve 0 para NULL — member sem conta associada tem de ficar null
+            userId = (rs.getObject("user_id") as? Number)?.toLong(),
             memberNumber = memberNumber,
             completeName = rs.getString("complete_name"),
             birthDate = LocalDate.parse(rs.getString("birth_date")),
